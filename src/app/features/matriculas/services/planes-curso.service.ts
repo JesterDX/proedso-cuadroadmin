@@ -9,7 +9,7 @@ import { PlanCurso } from '../models/plan-curso.model';
 })
 export class PlanesCursoService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/planes-curso';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/planes-curso';
 
   listar(): Observable<ApiResponse<PlanCurso[]>> {
     return this.http.get<ApiResponse<PlanCurso[]>>(this.apiUrl);
