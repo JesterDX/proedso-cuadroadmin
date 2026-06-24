@@ -1,50 +1,36 @@
 @use 'sass:color';
 
 // ==========================================================================
-// SCSS DESIGN: TECHNICAL MINIMALISM FOR PROEDSO DASHBOARD
+// SYSTEM DESIGN: EDITORIAL & HUMAN INTERFACE (DASHBOARD SIMPLE Y CÓMODO)
 // ==========================================================================
 
-// --- 1. Variables & Design Tokens ---
-$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-$c-surface: #ffffff;
-$c-background: #f8fafc; // Blanco con ligerísimo matiz azul frío
-$c-text-main: #0f172a;  // Slate oscuro (base azul)
-$c-text-muted: #64748b; // Slate medio
-$c-border: #e2e8f0;
-$c-border-hover: #94a3b8;
+// Paleta Neutral Orgánica (Lectura cómoda, contraste natural)
+$c-brand: #0f172a;       // Texto principal jerárquico
+$c-txt: #334155;         // Texto general
+$c-txt-muted: #64748b;   // Metadatos y subtítulos
+$c-bg: #f8fafc;          // Fondo limpio del sistema
+$c-surface: #ffffff;     // Tarjetas puras
 
-// Paleta Institucional Azulada
-$c-accent: #102544;       // Azul marino profundo
-$c-accent-hover: #1e3a8a; // Azul hovers activos
-$c-primary: #2563eb;      // Azul estándar de acciones secundarias
-$c-primary-bg: #eff6ff;   // Fondo sutil para elementos activos
+// Acentos Orgánicos (Finos y amigables)
+$c-accent: #2563eb;      // Azul principal
+$c-accent-hover: #1d4ed8;
+$c-border: #e2e8f0;      
 
-// Alertas semánticas finas
-$c-danger: #dc2626;
-$c-danger-bg: #fef2f2;
-$c-success: #16a34a;
-$c-warning: #d97706;
+$c-success: #0d9488;     // Teal sofisticado (Verde)
+$c-warning: #ea580c;     // Naranja quemado
+$c-danger: #e11d48;      // Carmesí fino
+$c-purple: #7c3aed;      // Morado suave
 
-$radius-sm: 4px;
-$radius-md: 6px;
-$radius-lg: 8px;
-
-$shadow-crisp: 0 1px 2px rgba(15, 23, 42, 0.06);
-$shadow-float: 0 8px 24px rgba(15, 23, 42, 0.08);
-
-// --- 2. Mixins Estructurales ---
-@mixin mono-label {
-  font-family: $font-mono;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
-}
+// Esquinas más suaves y amigables (Recuperando tu estilo original)
+$r-card: 16px;           
+$r-btn: 10px;
+$soft-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+$wire-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
 
 // ==========================================================================
-// MAIN COMPONENT STYLES
+// ESTILOS DEL DASHBOARD
 // ==========================================================================
 
 .dashboard {
@@ -52,63 +38,60 @@ $shadow-float: 0 8px 24px rgba(15, 23, 42, 0.08);
   flex-direction: column;
   gap: 24px;
   font-family: $font-sans;
-  background-color: $c-background;
-  color: $c-text-main;
-  -webkit-font-smoothing: antialiased;
+  background: $c-bg;
+  color: $c-txt;
+  padding: 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box; }
 }
 
-// --- Welcome Header Card ---
-.welcome-card {
+// Tarjetas Base
+.welcome-card,
+.stat-card,
+.panel-card {
   background: $c-surface;
+  border-radius: $r-card;
   border: 1px solid $c-border;
-  border-bottom: 3px solid $c-accent; // Línea gruesa de firma técnica
-  border-radius: $radius-lg;
-  box-shadow: $shadow-crisp;
-  padding: 32px;
+  box-shadow: $soft-shadow;
+}
+
+// --- Encabezado de Bienvenida ---
+.welcome-card {
+  padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
 
   h1 {
-    margin: 0;
-    color: $c-text-main;
-    font-size: 2rem;
-    font-weight: 500;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
+    margin: 0 0 6px 0;
+    color: $c-brand;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   p {
-    margin: 8px 0 0;
-    color: $c-text-muted;
-    font-size: 0.875rem;
+    margin: 0;
+    color: $c-txt-muted;
+    font-size: 14.5px;
   }
 }
 
-// Badge de Administrador Pasaporte/ID
+// Etiqueta Píldora (Simple y clásica)
 .admin-badge {
-  @include mono-label;
-  background: transparent;
+  background: rgba($c-danger, 0.1);
   color: $c-danger;
-  border: 1px solid rgba($c-danger, 0.4);
-  padding: 6px 14px;
-  border-radius: $radius-sm;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 13px;
   font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: $c-danger;
-    border-radius: 50%;
-  }
+  letter-spacing: 0.02em;
 }
 
-// --- KPIs Stats Grid ---
+// --- Grilla de Estadísticas (KPIs) ---
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -116,40 +99,32 @@ $shadow-float: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 .stat-card {
-  background: $c-surface;
-  border: 1px solid $c-border;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-crisp;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  position: relative;
-  overflow: hidden;
+  gap: 8px;
 
   .label {
-    @include mono-label;
-    color: $c-text-muted;
-    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: $c-txt-muted;
   }
 
   h3 {
     margin: 0;
-    font-family: $font-sans;
-    font-size: 2rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    color: $c-text-main; // Base unificada
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
-  // Sutiles bordes superiores en lugar de pintar números enteros de colores
-  &.blue { border-top: 3px solid $c-primary; }
-  &.green { border-top: 3px solid $c-success; }
-  &.orange { border-top: 3px solid $c-warning; }
-  &.purple { border-top: 3px solid #7c3aed; }
+  // Colores limpios aplicados directamente al texto
+  &.blue h3 { color: $c-accent; }
+  &.green h3 { color: $c-success; }
+  &.orange h3 { color: $c-warning; }
+  &.purple h3 { color: $c-purple; }
 }
 
-// --- Panel Grid Layout ---
+// --- Grilla de Paneles Inferiores ---
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -157,59 +132,48 @@ $shadow-float: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 .panel-card {
-  background: $c-surface;
-  border: 1px solid $c-border;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-crisp;
   padding: 28px;
 
   h2 {
     margin: 0 0 20px 0;
-    font-size: 1.125rem;
+    font-size: 16px;
     font-weight: 600;
-    color: $c-text-main;
-    padding-bottom: 12px;
-    border-bottom: 1px solid $c-border;
+    color: $c-brand;
   }
 }
 
-// --- Quick Actions (Buttons Sharp) ---
+// --- Acciones Rápidas (Botones amigables) ---
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 
   button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    height: 44px;
-    padding: 0 16px;
-    border: 1px solid $c-border;
-    border-radius: $radius-md;
+    border: none;
     background: $c-surface;
-    color: $c-text-main;
+    color: $c-txt;
+    border: 1px solid $c-border;
+    padding: 12px 16px;
+    border-radius: $r-btn;
+    cursor: pointer;
     font-family: $font-sans;
     font-weight: 500;
-    font-size: 0.875rem;
-    cursor: pointer;
+    font-size: 14px;
+    box-shadow: $wire-shadow;
     transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
     &:hover {
-      border-color: $c-accent;
-      background: $c-primary-bg;
+      background: $c-bg;
       color: $c-accent;
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: $shadow-focus;
+      border-color: #cbd5e1;
     }
   }
 }
 
-// --- Lists Design & Structural Geometry ---
+// --- Listas Simples (Sin cajas raras) ---
 ul {
   margin: 0;
   padding: 0;
@@ -219,38 +183,28 @@ ul {
   gap: 12px;
 
   li {
-    margin: 0;
-    padding: 10px 14px;
-    background: $c-background;
-    border: 1px solid $c-border;
-    border-radius: $radius-sm;
-    font-size: 0.875rem;
-    font-family: $font-sans;
-    color: $c-text-main;
+    font-size: 14px;
+    color: $c-txt;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    
-    // Transforma los datos dinámicos o números internos en estilo mono de manera implícita
-    &::after {
-      font-family: $font-mono;
-      font-weight: 500;
-      color: $c-text-main;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
   }
 }
 
-// Alertas Finas de Contraste Controlado
+// Lista de Alertas
 .alerts li {
-  background: $c-danger-bg;
-  border-color: rgba($c-danger, 0.2);
   color: $c-danger;
   font-weight: 500;
-  box-shadow: inset 3px 0 0 $c-danger; // Fina línea indicadora izquierda
 }
 
 // ==========================================================================
-// RESPONSIVE DESIGN MEDIA QUERIES
+// RESPONSIVO
 // ==========================================================================
 @media (max-width: 1024px) {
   .stats-grid {
@@ -259,11 +213,11 @@ ul {
 }
 
 @media (max-width: 768px) {
+  .dashboard { padding: 16px; }
+  
   .welcome-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
-    padding: 24px;
   }
 
   .stats-grid,
