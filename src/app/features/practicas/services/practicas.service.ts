@@ -15,7 +15,7 @@ export class PracticasService {
   private http = inject(HttpClient);
 
   private apiUrl =
-    '/api/practicas';
+    'https://proedso-back-wtdl.onrender.com/api/practicas';
 
   listarPracticasOrdenadas(
     filtros?: any
