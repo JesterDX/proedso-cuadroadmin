@@ -281,10 +281,10 @@
                   </div>
                   <div class="h-actions">
                     <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
-                    <a *ngIf="h.comprobante_url" [href]="h.comprobante_url" target="_blank" class="btn-voucher">📎 Ver
-                      comprobante</a>
+                    <a *ngIf="h.comprobante_url" [href]="getComprobanteUrl(h.comprobante_url)" target="_blank" class="btn-voucher">
+                      📎 Ver comprobante
+                    </a>
                   </div>
-                </div>
               </div>
               <div class="empty-mini" *ngIf="!historial.length">Sin movimientos registrados</div>
             </div>
