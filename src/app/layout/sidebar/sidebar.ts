@@ -83,8 +83,7 @@ export class Sidebar {
           icon: this.icons.academic,
           expanded: true,
           children: [
-            { label: 'Cursos', route: '/cursos' },
-            { label: 'Máquinas', route: '/maquinas' },
+
             { label: 'Prácticas', route: '/practicas' }
           ]
         },
