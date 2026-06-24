@@ -9,7 +9,7 @@ import { EstadoAlumno } from '../models/estado-alumno.model';
 })
 export class EstadosAlumnoService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/estados-alumno';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/estados-alumno';
 
   listar(): Observable<ApiResponse<EstadoAlumno[]>> {
     return this.http.get<ApiResponse<EstadoAlumno[]>>(this.apiUrl);
