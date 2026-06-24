@@ -7,54 +7,78 @@
 .welcome-card,
 .stat-card,
 .panel-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5ebf3;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15,23,42,.05);
 }
 
 .welcome-card {
   padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   h1 {
-    margin: 0 0 8px;
-    color: #12284b;
-    font-size: 2rem;
-    font-weight: 800;
+    margin: 0;
+    color: #0f172a;
   }
 
   p {
-    margin: 0;
+    margin-top: 6px;
     color: #64748b;
   }
 }
 
+.admin-badge {
+  background: #dc2626;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4,1fr);
   gap: 16px;
 }
 
 .stat-card {
   padding: 20px;
 
-  h3 {
-    margin: 0;
-    color: #2563eb;
-    font-size: 2rem;
-    font-weight: 800;
+  .label {
+    display: block;
+    color: #64748b;
+    margin-bottom: 8px;
   }
 
-  p {
-    margin: 8px 0 0;
-    color: #475569;
-    font-weight: 500;
+  h3 {
+    margin: 0;
+    font-size: 2rem;
   }
+}
+
+.blue h3 {
+  color: #2563eb;
+}
+
+.green h3 {
+  color: #16a34a;
+}
+
+.orange h3 {
+  color: #ea580c;
+}
+
+.purple h3 {
+  color: #7c3aed;
 }
 
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2,1fr);
   gap: 18px;
 }
 
@@ -62,17 +86,41 @@
   padding: 22px;
 
   h2 {
-    margin: 0 0 14px;
-    color: #12284b;
-    font-size: 1.25rem;
-    font-weight: 800;
+    margin-bottom: 16px;
+    color: #0f172a;
   }
+}
 
-  ul {
-    margin: 0;
-    padding-left: 18px;
-    color: #475569;
-    display: grid;
-    gap: 8px;
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+
+  button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+
+    &:hover {
+      background: #1d4ed8;
+    }
+  }
+}
+
+.alerts li {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+ul {
+  margin: 0;
+  padding-left: 18px;
+
+  li {
+    margin-bottom: 10px;
   }
 }
