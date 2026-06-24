@@ -9,7 +9,7 @@ import { Maquina } from '../models/maquina.model';
 })
 export class MaquinasService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/maquinas';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/maquinas';
 
   listar(): Observable<ApiResponse<Maquina[]>> {
     return this.http.get<ApiResponse<Maquina[]>>(this.apiUrl);
