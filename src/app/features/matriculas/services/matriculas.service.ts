@@ -12,7 +12,7 @@ import { MatriculaFinanzasData } from '../models/matricula-finanzas.model';
 })
 export class MatriculasService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/matriculas';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/matriculas';
 
   listar(
     estado?: string,
