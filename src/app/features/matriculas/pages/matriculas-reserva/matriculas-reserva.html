@@ -1,0 +1,87 @@
+<section class="matriculas-page">
+  <div class="page-header">
+    <div>
+      <h1>Matrículas en reserva</h1>
+      <p>Consulta de matrículas con estado reserva.</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state-card">
+    Cargando matrículas en reserva...
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="state-card error-state">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && !errorMsg" class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Alumno</th>
+          <th>Plan de curso</th>
+          <th>Estado</th>
+          <th>Fecha matrícula</th>
+          <th>Fecha inicio</th>
+          <th>Fecha fin estimada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let matricula of matriculasPaginadas; trackBy: trackByMatriculaId">
+          <td>{{ matricula.id }}</td>
+          <td>{{ getNombreAlumno(matricula.alumno_id) }}</td>
+          <td>{{ getNombrePlan(matricula.plan_curso_id) }}</td>
+          <td>
+            <span class="estado-badge estado-badge--reserva">
+              Reserva
+            </span>
+          </td>
+          <td>{{ formatFechaVista(matricula.fecha_matricula) }}</td>
+          <td>{{ formatFechaVista(matricula.fecha_inicio) }}</td>
+          <td>{{ formatFechaVista(matricula.fecha_fin_estimada) }}</td>
+          <td>
+            <div class="table-actions">
+              <a [routerLink]="['/matriculas', matricula.id]" class="btn-table btn-view btn-view--pro">
+                <span class="btn-view__icon">👁</span>
+                <span class="btn-view__text">Ver ficha</span>
+              </a>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="matriculas.length === 0">
+          <td colspan="8" class="empty-cell">
+            No hay matrículas en reserva.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="table-pagination" *ngIf="totalPaginas > 1">
+      <div class="pagination-info">
+        Visualizando <strong>{{ inicioRegistro }}</strong> a <strong>{{ finRegistro }}</strong>
+        de <strong>{{ totalRegistros }}</strong> matrículas
+      </div>
+
+      <div class="pagination-controls">
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina - 1)"
+          [disabled]="actualPagina === 1">
+          Anterior
+        </button>
+
+        <button type="button" class="btn-page" *ngFor="let pagina of paginasVisibles"
+          [class.active]="pagina === actualPagina" (click)="irAPagina(pagina)">
+          {{ pagina }}
+        </button>
+
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina + 1)"
+          [disabled]="actualPagina === totalPaginas">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

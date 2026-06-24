@@ -1,0 +1,294 @@
+@use 'sass:color';
+
+// ==========================================================================
+// MERGED DESIGN: COMFORTABLE PAYMENTS WITH TECHNICAL MINIMALISM
+// ==========================================================================
+
+// --- 1. Variables & Design Tokens (From your preferred component) ---
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+
+$c-surface: #ffffff;
+$c-background: #f8fafc; // Blanco con un ligerísimo tinte azul
+$c-text-main: #0f172a;  // Slate oscuro (base azul)
+$c-text-muted: #64748b; // Slate medio
+$c-border: #e2e8f0;
+$c-border-hover: #94a3b8;
+
+// El azul institucional técnico como color base
+$c-accent: #102544;       // Azul marino profundo
+$c-accent-hover: #1e3a8a; // Azul hovers
+$c-primary: #2563eb;      // Azul estándar para acciones secundarias
+$c-primary-bg: #eff6ff;   // Hover suave azul
+
+$c-danger: #dc2626;
+$c-danger-bg: #fef2f2;
+$c-success: #16a34a;
+$c-success-bg: #f0fdf4;
+$c-warning: #d97706;
+$c-warning-bg: #fffbeb;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+
+$shadow-crisp: 0 1px 2px rgba(15, 23, 42, 0.06);
+$shadow-float: 0 8px 24px rgba(15, 23, 42, 0.12);
+$shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-accent;
+
+// --- 2. Mixins Premium ---
+@mixin mono-label {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+@mixin clean-scrollbar {
+  &::-webkit-scrollbar { width: 5px; height: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { 
+    background: $c-border; 
+    border-radius: $radius-sm;
+    &:hover { background: $c-border-hover; }
+  }
+}
+
+// ==========================================================================
+// STRUCTURE & LAYOUT COMPONENTS
+// ==========================================================================
+
+.pagos-container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: $c-background;
+  font-family: $font-sans;
+  color: $c-text-main;
+  -webkit-font-smoothing: antialiased;
+  padding: 32px;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box; }
+}
+
+// Encabezado Editorial Técnico
+.main-header {
+  border-bottom: 3px solid $c-accent; // Línea gruesa firma del nuevo estilo
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+
+  .header-info {
+    h1 { margin: 0; color: $c-text-main; font-size: 2rem; font-weight: 500; letter-spacing: -0.04em; line-height: 1.1; }
+    p { margin: 8px 0 0; color: $c-text-muted; font-size: 0.875rem; }
+  }
+}
+
+// Toolbar Estructurada
+.toolbar {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-crisp;
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+
+  .filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+
+    label { 
+      @include mono-label;
+      color: $c-text-main;
+    }
+
+    input, select {
+      width: 100%; height: 40px; border: 1px solid $c-border; border-radius: $radius-sm; padding: 0 12px; outline: none; background: $c-surface; color: $c-text-main; font-family: $font-sans; font-size: 0.875rem; transition: border-color 0.2s, box-shadow 0.2s;
+      &:focus { border-color: $c-accent; box-shadow: 0 0 0 1px $c-accent; }
+    }
+  }
+}
+
+// Layout Maestro-Detalle Split Inteligente
+.split-layout {
+  display: flex; gap: 28px; width: 100%; align-items: flex-start;
+
+  .list-section {
+    flex: 1; min-width: 0;
+  }
+
+  // Panel Lateral Técnico Confortable
+  .detail-sidebar {
+    flex: 0 0 42%; min-width: 460px; max-width: 520px; background: $c-surface; border: 1px solid $c-border; border-radius: $radius-lg; box-shadow: $shadow-float; position: sticky; top: 32px; max-height: calc(100vh - 64px); display: flex; flex-direction: column; overflow: hidden; animation: slideInRight 0.2s ease-out;
+  }
+}
+
+.sidebar-header {
+  padding: 24px 32px; border-bottom: 1px solid $c-border; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  .header-title-area {
+    h2, h3 { margin: 0; color: $c-text-main; font-size: 1.25rem; font-weight: 600; }
+    p { margin: 6px 0 0; color: $c-text-muted; font-size: 0.875rem; }
+  }
+  .btn-close { width: 32px; height: 32px; border: 1px solid transparent; border-radius: $radius-sm; background: transparent; color: $c-text-muted; cursor: pointer; font-size: 1.2rem; display: grid; place-items: center; transition: all 0.15s ease; &:hover { background: $c-danger-bg; border-color: rgba($c-danger, 0.3); color: $c-danger; } }
+}
+
+.sidebar-body { padding: 32px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 24px; @include clean-scrollbar; }
+
+// Fichas de Datos Estilo Técnico
+.info-general-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;
+  .full-width { grid-column: 1 / -1; }
+}
+
+.summary-card {
+  padding: 0;
+  .label { @include mono-label; color: $c-text-muted; display: block; margin-bottom: 8px; }
+  .amount { margin: 0; color: $c-text-main; font-size: 0.9375rem; line-height: 1.5; font-weight: 500; }
+}
+
+// Barra de Progreso Muted Técnica
+.progress-bar-container {
+  display: flex; align-items: center; width: 100%; background: $c-border; height: 4px; border-radius: $radius-sm; position: relative; margin-top: 8px;
+  .progress-bar-fill { background: $c-accent; height: 100%; border-radius: $radius-sm; }
+  .progress-text { position: absolute; right: 0; top: -18px; font-family: $font-mono; font-size: 0.75rem; color: $c-text-muted; }
+}
+
+// Tarjetas y Contenedores Base
+.card, .section-card {
+  background: $c-surface; border: 1px solid $c-border; border-radius: $radius-lg; box-shadow: $shadow-crisp; margin-bottom: 24px; overflow: hidden;
+}
+
+.grupo-header {
+  padding: 16px 20px; background: $c-background; border-bottom: 1px solid $c-border; display: flex; justify-content: space-between; align-items: center;
+  h3 { margin: 0; font-size: 0.875rem; font-weight: 600; color: $c-text-main; }
+  span { font-family: $font-mono; font-size: 0.75rem; color: $c-text-muted; background: $c-surface; padding: 2px 8px; border-radius: $radius-sm; border: 1px solid $c-border; }
+}
+
+// ==========================================================================
+// NUEVA ARQUITECTURA DE TABLA CON TIPOGRAFÍA TÉCNICA
+// ==========================================================================
+table {
+  width: 100%; border-collapse: collapse; text-align: left;
+
+  thead {
+    background: $c-background;
+    tr { border-bottom: 1px solid $c-border; }
+    th { padding: 12px 16px; color: $c-text-muted; @include mono-label; }
+  }
+
+  td { padding: 12px 16px; font-size: 0.875rem; color: $c-text-main; vertical-align: middle; }
+
+  tbody tr {
+    border-bottom: 1px solid $c-border; transition: background 0.12s ease; position: relative;
+    &:last-child { border-bottom: none; }
+    &:hover td { background: $c-primary-bg; } // El sutil hover azulado del nuevo estilo
+    
+    &.row-selected { 
+      background: $c-primary-bg !important;
+      td { color: $c-accent; font-weight: 500; }
+    }
+
+    // Bordes Izquierdos Finitos de Alerta Semántica Confortable
+    &.estado-moroso {
+      box-shadow: inset 3px 0 0 $c-danger;
+      .avatar { background: $c-danger-bg; color: $c-danger; }
+      .status-pill.pending { color: $c-danger; font-weight: 600; }
+    }
+
+    &.estado-por-vencer {
+      box-shadow: inset 3px 0 0 $c-warning;
+      .avatar { background: $c-warning-bg; color: $c-warning; }
+      .status-pill.pending { color: $c-warning; font-weight: 600; }
+    }
+
+    &.estado-al-dia {
+      box-shadow: inset 3px 0 0 $c-success;
+      .avatar { background: $c-success-bg; color: $c-success; }
+    }
+  }
+
+  // Celda Alumno con el Avatar de Estilo Pasaporte/ID (Cuadrado Amigable)
+  .td-alumno {
+    display: flex; align-items: center; gap: 12px;
+    
+    .avatar { 
+      width: 36px; height: 36px; border-radius: $radius-md; background: $c-background; border: 1px solid $c-border; color: $c-text-muted; display: grid; place-items: center; font-family: $font-mono; font-weight: 500; font-size: 0.875rem; transition: all 0.2s;
+    }
+    .nombre { font-weight: 500; color: $c-text-main; }
+  }
+
+  // Tags en caja sólida nítida
+  .curso-tag {
+    display: inline-block; background: $c-background; color: $c-text-main; padding: 4px 8px; border-radius: $radius-sm; font-size: 0.8125rem; font-weight: 500; border: 1px solid $c-border;
+  }
+
+  // Botón de Ver Detalles Fino del Nuevo Componente
+  .btn-detail {
+    min-width: 64px; height: 32px; padding: 0 12px; border: 1px solid $c-border; border-radius: $radius-sm; background: transparent; cursor: pointer; font-family: $font-sans; font-weight: 500; font-size: 0.8125rem; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; color: $c-primary;
+    &:hover { border-color: $c-primary; background: $c-primary-bg; }
+  }
+}
+
+// Tablas internas dentro del panel de Detalles
+.inner-table {
+  width: 100%; border: 1px solid $c-border; border-radius: $radius-sm; margin-top: 10px; background: $c-surface; border-collapse: collapse;
+  thead { background: $c-background; th { @include mono-label; } }
+  td, th { padding: 10px 14px; font-size: 0.8125rem; border-bottom: 1px solid $c-border; }
+  tr:last-child td { border-bottom: none; }
+}
+
+.dashboard-section {
+  margin-bottom: 24px;
+  .sidebar-title { @include mono-label; color: $c-text-main; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid $c-border; }
+  .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+}
+
+// --- Status Chips Mono & Wireframe ---
+.status-pill {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: $radius-sm; @include mono-label; border: 1px solid currentColor; background: $c-surface; white-space: nowrap; font-size: 0.6875rem;
+  &::before { content: ''; width: 6px; height: 6px; background: currentColor; }
+
+  &.paid { color: $c-success; border-color: rgba($c-success, 0.3); }
+  &.pending { color: $c-text-muted; border-color: $c-border; }
+}
+
+// --- Buttons (Solid, Sharp, Premium Blue) ---
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; cursor: pointer; border-radius: $radius-md; font-family: $font-sans; font-weight: 500; font-size: 0.875rem; padding: 0 16px; height: 40px; transition: all 0.15s ease; background: $c-accent; color: $c-surface;
+  &:hover { background: $c-accent-hover; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &.btn-sm { height: 32px; padding: 0 12px; font-size: 0.8125rem; border-radius: $radius-sm; }
+}
+
+// --- Paginación Técnica Muted ---
+.pagination-bar {
+  display: flex; justify-content: space-between; align-items: center; padding: 24px; background: $c-surface; border-top: 1px solid $c-border;
+  .pagination-info { color: $c-text-muted; font-family: $font-mono; font-size: 0.8125rem; strong { color: $c-text-main; font-weight: 500; } }
+  
+  .pagination-buttons {
+    display: flex; align-items: center; gap: 8px;
+    .page-indicator { font-family: $font-mono; font-size: 0.875rem; color: $c-text-main; margin-right: 4px; }
+    
+    .btn-page {
+      min-width: 36px; height: 36px; padding: 0 12px; border: 1px solid $c-border; border-radius: $radius-sm; background: $c-surface; color: $c-text-main; font-family: $font-mono; font-size: 0.875rem; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;
+      &:hover:not(:disabled) { border-color: $c-accent; background: $c-primary-bg; color: $c-accent; }
+      &.active { background: $c-accent; color: $c-surface; border-color: $c-accent; }
+      &:disabled { opacity: 0.4; cursor: not-allowed; background: $c-background; }
+    }
+  }
+}
+
+// --- Feedback de Sistema ---
+.loader-container { display: flex; flex-direction: column; align-items: center; padding: 40px; color: $c-text-muted; font-size: 0.875rem; gap: 10px; }
+.spinner { border: 2px solid $c-border; border-top: 2px solid $c-accent; border-radius: 50%; width: 18px; height: 18px; animation: spin 0.6s linear infinite; }
+.empty-state { text-align: center; padding: 48px 24px; background: $c-surface; border: 1px dashed $c-border-hover; border-radius: $radius-lg; margin-top: 24px; h3 { margin: 0 0 8px; color: $c-text-main; font-size: 1.125rem; font-weight: 500; } p { margin: 0; font-size: 0.875rem; color: $c-text-muted; } }
+.empty-mini { background: $c-warning-bg; border: 1px solid rgba($c-warning, 0.3); border-radius: $radius-sm; padding: 12px 14px; font-size: 0.875rem; color: $c-warning; font-family: $font-mono; }
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes slideInRight { from { transform: translateX(12px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }

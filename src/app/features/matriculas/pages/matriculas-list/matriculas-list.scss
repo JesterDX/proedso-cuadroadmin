@@ -1,0 +1,699 @@
+// ==========================================================================
+// SCSS ARCHITECTURE - EDITORIAL & TECHNICAL MINIMALISM
+// ==========================================================================
+
+// --- 1. Variables & Design Tokens ---
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+
+$c-surface: #ffffff;
+$c-background: #fcfcfc;
+$c-text-main: #102544; // <-- Actualizado a tu azul institucional
+$c-text-muted: #525252;
+$c-border: #e5e5e5;
+$c-border-hover: #a3a3a3;
+
+$c-accent: #102544; // <-- Actualizado
+$c-accent-hover: #1a3966; // <-- Azul ligeramente más claro para el hover
+$c-primary: #0055ff;
+$c-primary-bg: #f0f4ff;
+
+$c-danger: #dc2626;
+$c-danger-bg: #fef2f2;
+$c-success: #16a34a;
+$c-success-bg: #f0fdf4;
+$c-warning: #d97706;
+$c-warning-bg: #fffbeb;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+
+$shadow-crisp: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-float: 0 8px 24px rgba(16, 37, 68, 0.12); // <-- Sombra ajustada al tono azul
+$shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
+
+// --- 2. Mixins ---
+@mixin mono-label {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow-focus;
+  }
+}
+
+// ==========================================================================
+// COMPONENT STYLES
+// ==========================================================================
+
+.matriculas-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: $font-sans;
+  background-color: $c-background;
+  color: $c-text-main;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 3px solid $c-text-main;
+  padding-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    color: $c-text-main;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: $c-text-muted;
+    font-size: 0.875rem;
+  }
+}
+
+// --- Summaries & Layout ---
+.catalog-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.summary-card,
+.table-card,
+.state-card,
+.section-card {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-crisp;
+}
+
+.summary-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  strong {
+    font-family: $font-mono;
+    font-size: 2rem;
+    font-weight: 400;
+    color: $c-text-main;
+    letter-spacing: -0.02em;
+  }
+}
+
+.summary-label {
+  color: $c-text-muted;
+  @include mono-label;
+}
+
+// --- Tables ---
+.table-card {
+  overflow: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 980px;
+  }
+
+  th,
+  td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid $c-border;
+    vertical-align: middle;
+    font-size: 0.875rem;
+  }
+
+  th {
+    background: $c-background;
+    color: $c-text-muted;
+    @include mono-label;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: $c-background; }
+}
+
+.state-card {
+  padding: 32px;
+  color: $c-text-muted;
+  text-align: center;
+}
+
+.error-state {
+  color: $c-danger;
+  background: $c-surface;
+  border: 1px solid $c-danger;
+  border-left: 4px solid $c-danger;
+}
+
+.empty-cell {
+  text-align: center;
+  color: $c-border-hover;
+  font-family: $font-mono;
+}
+
+// --- Buttons (Solid, Sharp) ---
+.btn-primary,
+.btn-light,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: $radius-md;
+  font-family: $font-sans;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0 16px;
+  height: 40px;
+  transition: all 0.15s ease;
+  @include focus-ring;
+}
+
+.btn-primary {
+  background: $c-accent;
+  color: $c-surface;
+  
+  &:hover {
+    background: $c-accent-hover;
+  }
+}
+
+.btn-light, 
+.btn-secondary {
+  background: $c-surface;
+  color: $c-text-main;
+  border-color: $c-border;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: $c-border-hover;
+  }
+}
+
+// --- Modal System (Technical Dark/Light split) ---
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 37, 68, 0.7); // <-- Overlay ajustado al azul
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 999;
+}
+
+.modal-card {
+  background: $c-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-float;
+  overflow: hidden;
+  border: 1px solid $c-border;
+}
+
+.modal-card--split {
+  width: min(1120px, 100%);
+  height: min(88vh, 860px);
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.modal-side {
+  background: $c-text-main; // Ahora será Azul #102544
+  color: $c-surface;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 0;
+}
+
+.modal-side__top {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #a3a3a3; // Se mantiene bien sobre el azul
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+.side-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.side-summary__item {
+  padding: 16px;
+  border-radius: $radius-md;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    font-family: $font-mono;
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: $c-surface;
+  }
+}
+
+.side-summary__label {
+  color: #e2e8f0; // <-- Aclarado ligeramente para contrastar mejor con el azul
+  @include mono-label;
+}
+
+.side-note {
+  padding: 16px;
+  border-radius: $radius-md;
+  background: transparent;
+  border: 1px dashed rgba(242, 211, 125, 0.5); // <-- Tono ajustado hacia el dorado corporativo
+  color: #f2d37d; // <-- Dorado corporativo
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.modal-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 32px;
+  border-bottom: 1px solid $c-border;
+  background: $c-surface;
+
+  h2 {
+    margin: 0;
+    color: $c-text-main;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: $c-text-muted;
+    font-size: 0.875rem;
+  }
+}
+
+.modal-header--main {
+  flex-shrink: 0;
+}
+
+.btn-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $c-text-muted;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $c-background;
+    border-color: $c-border;
+    color: $c-text-main;
+  }
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  min-height: 0;
+}
+
+// --- Forms ---
+.section-card {
+  padding: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+
+  label {
+    @include mono-label;
+    color: $c-text-main;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 1px solid $c-border;
+    border-radius: $radius-sm;
+    padding: 0 12px;
+    height: 40px;
+    outline: none;
+    font-family: $font-sans;
+    font-size: 0.875rem;
+    background: $c-surface;
+    color: $c-text-main;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $c-text-main;
+      box-shadow: 0 0 0 1px $c-text-main;
+    }
+  }
+
+  textarea {
+    height: auto;
+    resize: vertical;
+    min-height: 100px;
+    padding: 12px;
+    line-height: 1.5;
+  }
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.field-help {
+  font-size: 0.75rem;
+  color: $c-text-muted;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+// --- Custom Selectors ---
+.machine-selector {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $c-border;
+  border-radius: $radius-md;
+  background: $c-background;
+}
+
+.machine-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: $c-text-main;
+  }
+
+  input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: $c-text-main;
+  }
+
+  span {
+    color: $c-text-main;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+.machine-empty {
+  padding: 16px;
+  border: 1px dashed $c-border-hover;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $c-text-muted;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px 32px;
+  border-top: 1px solid $c-border;
+  background: $c-surface;
+  flex-shrink: 0;
+}
+
+// --- Table Actions (Mini buttons) ---
+.table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-table {
+  min-width: 64px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: $font-sans;
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: $c-text-main;
+    background: $c-background;
+  }
+}
+
+.btn-view--pro {
+  min-width: 90px;
+  background: $c-surface;
+  color: $c-text-main;
+  border-color: $c-text-main;
+  gap: 8px;
+  font-weight: 600;
+
+  &:hover {
+    background: $c-text-main;
+    color: $c-surface;
+  }
+}
+
+.btn-view__icon,
+.btn-view__text {
+  line-height: 1;
+}
+
+.btn-view { color: $c-primary; border-color: $c-border; }
+.btn-view:hover { border-color: $c-primary; background: $c-primary-bg; }
+
+.btn-edit { color: $c-text-main; }
+.btn-retire { color: $c-danger; }
+.btn-retire:hover { border-color: $c-danger; background: $c-danger-bg; }
+
+.btn-success { color: $c-success; }
+.btn-success:hover { border-color: $c-success; background: $c-success-bg; }
+
+.btn-warning { color: $c-warning; }
+.btn-warning:hover { border-color: $c-warning; background: $c-warning-bg; }
+
+.btn-activate { color: $c-primary; }
+.btn-activate:hover { border-color: $c-primary; background: $c-primary-bg; }
+
+// --- Badges ---
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  @include mono-label;
+  border: 1px solid currentColor;
+
+  &--matriculado { background: $c-surface; color: $c-primary; }
+  &--egresado { background: $c-surface; color: $c-success; }
+  &--retirado { background: $c-surface; color: $c-danger; }
+  &--reserva { background: $c-surface; color: $c-warning; }
+}
+
+// --- Toolbar ---
+.toolbar--filters {
+  display: grid;
+  grid-template-columns: 2fr 160px 180px auto auto;
+  gap: 16px;
+  align-items: center;
+
+  input,
+  select {
+    height: 40px;
+    border: 1px solid $c-border;
+    border-radius: $radius-sm;
+    padding: 0 12px;
+    background: $c-surface;
+    font-family: $font-sans;
+    font-size: 0.875rem;
+    color: $c-text-main;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $c-text-main;
+      box-shadow: 0 0 0 1px $c-text-main;
+    }
+  }
+}
+
+// --- Pagination (Sharp & Flat) ---
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 0 16px;
+}
+
+.page-btn,
+.page-number {
+  min-width: 36px;
+  height: 36px;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  background: $c-surface;
+  color: $c-text-main;
+  cursor: pointer;
+  font-family: $font-mono;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+
+  &:hover:not(:disabled) {
+    border-color: $c-text-main;
+    background: $c-background;
+  }
+}
+
+.page-number.active {
+  background: $c-text-main;
+  color: $c-surface;
+  border-color: $c-text-main;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: $c-background;
+}
+
+// ==========================================================================
+// RESPONSIVE MEDIA QUERIES
+// ==========================================================================
+
+@media (max-width: 980px) {
+  .modal-card--split {
+    grid-template-columns: 1fr;
+    height: min(92vh, 920px);
+  }
+
+  .modal-side {
+    padding: 24px;
+    
+    .side-summary {
+      flex-direction: row;
+      flex-wrap: wrap;
+      
+      &__item {
+        flex: 1;
+        min-width: 140px;
+      }
+    }
+  }
+
+  .catalog-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar--filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .machine-selector,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-backdrop {
+    padding: 16px;
+  }
+  
+  .toolbar--filters {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

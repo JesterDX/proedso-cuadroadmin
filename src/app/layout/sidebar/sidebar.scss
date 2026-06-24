@@ -1,0 +1,304 @@
+/* * ==========================================================================
+ * SIDEBAR - FINANCIAL MINIMALISM THEME
+ * ==========================================================================
+ */
+
+.sidebar {
+  width: 100%;
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+  background: #020617;
+  color: #f8fafc;
+  border-right: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-sizing: border-box;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px dashed #1e293b;
+  /* Línea separadora formal */
+  position: relative;
+  z-index: 1;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  /* Bordes más cuadrados y serios */
+  display: grid;
+  place-items: center;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  /* Sombra sutil, no brillante */
+}
+
+.brand-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-copy strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.brand-copy span {
+  margin-top: 4px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  /* Tipografía técnica */
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Más compacto */
+}
+
+.nav-link,
+.nav-sublink {
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  font: inherit;
+}
+
+.nav-link {
+  min-height: 40px;
+  /* Ligeramente más delgado */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  /* Consistencia en bordes cuadrados */
+  border: 1px solid transparent;
+  background: transparent;
+  color: #94a3b8;
+  /* Gris tenue por defecto */
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  /* Transición más rápida y directa */
+  position: relative;
+}
+
+button.nav-link {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  text-align: left;
+  outline: none;
+}
+
+.nav-link:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #1e293b;
+  /* Eliminamos el translateY para un look más "plano" y estable */
+}
+
+.nav-link--group {
+  justify-content: space-between;
+}
+
+.nav-link__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-icon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.nav-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.nav-chevron {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.nav-link:hover .nav-chevron {
+  opacity: 1;
+}
+
+/* ESTADO ACTIVO - Bloque sólido, sin degradados */
+.active-link {
+  background: #1e293b;
+  color: #ffffff;
+  font-weight: 600;
+  border-color: transparent;
+}
+
+a.nav-link.active-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: #2563eb;
+  /* Acento azul institucional */
+}
+
+.active-link .nav-icon {
+  color: #3b82f6;
+  /* Icono azul al estar activo */
+  opacity: 1;
+}
+
+/* SUB-MENÚS */
+.nav-children {
+  margin-top: 2px;
+  margin-left: 19px;
+  /* Alineado al centro del icono padre */
+  padding: 4px 0 4px 16px;
+  border-left: 1px solid #1e293b;
+  /* Línea de árbol discreta */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-sublink {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  position: relative;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.nav-sublink:hover {
+  background: transparent;
+  color: #e2e8f0;
+  transform: translateX(4px);
+  /* Pequeño salto a la derecha tipo terminal */
+}
+
+.nav-sublink__dot {
+  width: 4px;
+  height: 4px;
+  min-width: 4px;
+  background: #475569;
+  border-radius: 1px;
+  /* Cuadrado minimalista en lugar de círculo brillante */
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.active-sublink {
+  color: #ffffff;
+  font-weight: 600;
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.active-sublink .nav-sublink__dot {
+  background: #3b82f6;
+  /* Cuadro azul activo */
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+  /* Resplandor extremadamente sutil */
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  app-sidebar {
+    width: 250px;
+    min-width: 250px;
+    display: block;
+  }
+
+  .sidebar {
+    padding: 20px 12px;
+  }
+
+  .sidebar-brand {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .brand-copy strong {
+    font-size: 1.05rem;
+  }
+
+  .nav-link {
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  .nav-sublink {
+    min-height: 38px;
+    padding: 10px;
+  }
+}

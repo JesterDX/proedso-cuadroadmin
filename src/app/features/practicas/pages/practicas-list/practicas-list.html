@@ -1,0 +1,247 @@
+<section class="pagos-container">
+
+  <header class="main-header">
+    <div class="header-info">
+      <h1>Gestión de Prácticas</h1>
+      <p>Gestión de alumnos, expedientes técnicos y sesiones de maquinaria</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="filter-box">
+      <label>Mes</label>
+      <input type="number" placeholder="Ej. 5" [(ngModel)]="filtroMes" />
+    </div>
+
+    <div class="filter-box">
+      <label>Año</label>
+      <input type="number" placeholder="2026" [(ngModel)]="filtroAnio" />
+    </div>
+
+    <div class="filter-box">
+      <label>Tipo de Curso</label>
+      <select [(ngModel)]="filtroTipoCurso">
+        <option [ngValue]="null">Todos</option>
+        <option value="INDIVIDUAL">Individual</option>
+        <option value="MULTIPLE">Múltiple</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" (click)="cargarPracticas()" [disabled]="loadingLista">
+      <span *ngIf="!loadingLista">🔍 Filtrar Alumnos</span>
+      <span *ngIf="loadingLista">Cargando...</span>
+    </button>
+  </div>
+
+  <div class="split-layout" [class.panel-open]="panelVisible">
+
+    <div class="list-section">
+      <div class="loader-container" *ngIf="loadingLista">
+        <div class="spinner"></div>
+        <p>Cargando lista de alumnos...</p>
+      </div>
+
+      <div class="error-banner" *ngIf="error">
+        ⚠️ {{ error }}
+      </div>
+
+      <div *ngIf="!loadingLista && alumnosAgrupados.length > 0">
+        <div class="card table-wrapper" *ngFor="let grupo of alumnosAgrupados">
+
+          <div class="grupo-header">
+            <h3>📅 {{ grupo.periodo | titlecase }}</h3>
+            <span>{{ grupo.alumnos.length }} alumnos en total</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Alumno</th>
+                <th>DNI</th>
+                <th>Programa / Curso</th>
+                <th>Matrícula</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let alumno of obtenerAlumnosPaginados(grupo)" class="fade-in"
+                [class.row-selected]="alumnoSeleccionado?.matricula_id === alumno.matricula_id" [ngClass]="{
+                  'estado-moroso': alumno.estado_financiero === 'MOROSO',
+                  'estado-por-vencer': alumno.estado_financiero === 'POR_VENCER',
+                  'estado-al-dia': alumno.estado_financiero === 'AL_DIA'
+                }">
+
+                <td class="td-alumno">
+                  <div class="avatar">
+                    {{ alumno.alumno_nombre_completo.charAt(0) }}
+                  </div>
+                  <span class="nombre">
+                    {{ alumno.alumno_nombre_completo }}
+                  </span>
+                </td>
+
+                <td><strong>{{ alumno.alumno_dni }}</strong></td>
+                <td><span class="curso-tag">{{ alumno.plan_nombre }}</span></td>
+                <td>{{ alumno.fecha_matricula | date:'dd/MM/yyyy' }}</td>
+                <td class="text-center">
+                  <button class="btn-detail" (click)="seleccionarAlumno(alumno)">
+                    Ver Expediente →
+                  </button>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination-bar" *ngIf="grupo.alumnos.length > itemsPorPagina">
+            <span class="pagination-info">
+              Mostrando {{ obtenerRangoPaginacion(grupo) }} de {{ grupo.alumnos.length }}
+            </span>
+            <div class="pagination-buttons">
+              <button 
+                class="btn-page" 
+                [disabled]="paginasPorGrupo[grupo.periodo] === 1" 
+                (click)="cambiarPagina(grupo.periodo, -1)">
+                Anterior
+              </button>
+              <span class="page-indicator">
+                Pág. {{ paginasPorGrupo[grupo.periodo] || 1 }} de {{ calcularTotalPaginas(grupo.alumnos.length) }}
+              </span>
+              <button 
+                class="btn-page" 
+                [disabled]="paginasPorGrupo[grupo.periodo] === calcularTotalPaginas(grupo.alumnos.length)" 
+                (click)="cambiarPagina(grupo.periodo, 1)">
+                Siguiente
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="!loadingLista && alumnosAgrupados.length === 0">
+        <div class="empty-icon">📁</div>
+        <h3>No se encontraron alumnos</h3>
+        <p>Intenta ajustar los filtros de mes, año o tipo de curso.</p>
+      </div>
+    </div>
+
+    <aside class="detail-sidebar" *ngIf="panelVisible">
+      <header class="sidebar-header">
+        <div class="header-title-area">
+          <h3>🚜 Expediente Técnico</h3>
+          <p>{{ detalleAlumno?.alumno?.alumno || alumnoSeleccionado?.alumno_nombre_completo }}</p>
+        </div>
+        <button class="btn-close" (click)="cerrarPanel()" title="Cerrar detalle">✕</button>
+      </header>
+
+      <div class="sidebar-body">
+        <div *ngIf="loadingDetalle" class="loader-container">
+          <div class="spinner"></div>
+          <p>Cargando expediente...</p>
+        </div>
+
+        <div class="details-container" *ngIf="!loadingDetalle && detalleAlumno">
+
+          <section class="info-general-grid">
+            <div class="summary-card info">
+              <span class="label">Documento</span>
+              <span class="amount">{{ detalleAlumno.alumno?.dni }}</span>
+            </div>
+            <div class="summary-card info">
+              <span class="label">Teléfono</span>
+              <span class="amount">{{ detalleAlumno.alumno?.telefono || '—' }}</span>
+            </div>
+            <div class="summary-card info full-width">
+              <span class="label">Curso Matriculado</span>
+              <span class="amount">{{ detalleAlumno.alumno?.curso }}</span>
+            </div>
+          </section>
+
+          <section class="dashboard-section" *ngIf="maquinas.length">
+            <h4 class="sidebar-title">Máquinas Asignadas en Plan</h4>
+            <div class="maquinas-badges-grid">
+              <div class="curso-tag" *ngFor="let m of maquinas">
+                <strong>{{ m.maquina }}</strong> - {{ m.horas_practica ? m.horas_practica + ' hrs' : 'Sin horas' }}
+              </div>
+            </div>
+          </section>
+
+          <section class="dashboard-section">
+            <div class="section-header-row">
+              <h4 class="sidebar-title">📊 Progreso de Prácticas</h4>
+              <button class="btn-primary btn-sm" (click)="crearAsignacion()" [disabled]="creandoAsignacion">
+                {{ creandoAsignacion ? '...' : '+ Nueva Asignación' }}
+              </button>
+            </div>
+
+            <div *ngIf="!loadingAsignaciones && asignaciones.length === 0" class="empty-mini">
+              💡 El alumno cuenta con las máquinas aprobadas pero aún no tiene un despliegue de prácticas iniciado.
+            </div>
+
+            <div class="etiquetas-grid" *ngIf="asignaciones.length > 0">
+              <table class="inner-table">
+                <thead>
+                  <tr>
+                    <th>Máquina</th>
+                    <th>Estado</th>
+                    <th>Progreso</th>
+                    <th class="text-right">Sesiones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of asignaciones">
+                    <td><strong>{{ a.maquina }}</strong></td>
+                    <td>
+                      <span class="status-pill"
+                        [ngClass]="a.estado.toLowerCase() === 'completado' ? 'paid' : 'pending'">
+                        {{ a.estado }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="progress-bar-container">
+                        <div class="progress-bar-fill" [style.width.%]="a.progreso || 0"></div>
+                        <span class="progress-text">{{ a.progreso || 0 }}%</span>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <strong>{{ a.sesiones_completadas }}</strong>/{{ a.sesiones_totales }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="dashboard-section" *ngIf="detalleAlumno?.sesiones?.length">
+            <h4 class="sidebar-title">📅 Registro de Asistencia</h4>
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Máquina</th>
+                  <th>Fecha</th>
+                  <th class="text-center">Asistencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of detalleAlumno.sesiones">
+                  <td><strong>#{{ s.numero_sesion }}</strong></td>
+                  <td><span class="curso-tag">{{ s.maquina }}</span></td>
+                  <td>{{ s.fecha_programada | date:'dd/MM/yyyy' }}</td>
+                  <td class="text-center">
+                    <span class="status-pill" [class.paid]="s.asistio" [class.warning]="!s.asistio">
+                      {{ s.asistio ? '✅ S' : '⏳ P' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</section>

@@ -1,0 +1,66 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">P</div>
+    <div class="brand-copy">
+      <strong>PROEDSO</strong>
+      <span>Panel administrativo</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    @for (item of menu; track item.label) {
+      <div class="nav-group">
+        @if (!item.children?.length) {
+          <a
+            class="nav-link"
+            [routerLink]="item.route!"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+          >
+            <span class="nav-icon">
+              <lucide-icon [img]="item.icon" size="18"></lucide-icon>
+            </span>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        } @else {
+          <button
+            type="button"
+            class="nav-link nav-link--group"
+            [class.active-link]="isGroupActive(item)"
+            (click)="toggleGroup(item)"
+          >
+            <span class="nav-link__main">
+              <span class="nav-icon">
+                <lucide-icon [img]="item.icon" size="18"></lucide-icon>
+              </span>
+              <span class="nav-label">{{ item.label }}</span>
+            </span>
+
+            <span class="nav-chevron">
+              <lucide-icon
+                [img]="item.expanded ? icons.chevronDown : icons.chevronRight"
+                size="17"
+              ></lucide-icon>
+            </span>
+          </button>
+
+          @if (item.expanded) {
+            <div class="nav-children">
+              @for (child of item.children; track child.label) {
+                <a
+                  class="nav-sublink"
+                  [routerLink]="child.route!"
+                  routerLinkActive="active-sublink"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <span class="nav-sublink__dot"></span>
+                  <span>{{ child.label }}</span>
+                </a>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+  </nav>
+</aside>

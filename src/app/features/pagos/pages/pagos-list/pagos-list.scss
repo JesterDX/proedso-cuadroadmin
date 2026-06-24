@@ -1,0 +1,735 @@
+// ==========================================================================
+// PROEDSO INTERFACE SYSTEM - PLATFORM MINIMALISM
+// ==========================================================================
+
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+
+// Brand Palette (High Contrast & Solid Colors)
+$c-brand: #002e6e;
+$c-accent: #0274be;
+$c-warning-alt: #ffcc00;
+$c-bg: #f8fafc;
+$c-surface: #ffffff;
+
+// Interface Neutrals
+$c-txt: #0f172a;
+$c-txt-muted: #64748b;
+$c-border: #e2e8f0;
+$c-border-dark: #cbd5e1;
+
+// System Alerts (Desaturated Backgrounds)
+$c-success: #0d9488;
+$c-success-bg: #f0fdfa;
+$c-danger: #e11d48;
+$c-danger-bg: #fff1f2;
+$c-warning: #d97706;
+$c-warning-bg: #fef3c7;
+
+// Technical Geometry (Sharp Borders)
+$r-base: 4px;
+$r-tight: 2px;
+$wire-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+.pagos-container {
+  padding: 24px;
+  background-color: $c-bg;
+  min-height: 100vh;
+  font-family: $font-sans;
+  color: $c-txt;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box; }
+}
+
+// Global Clean Utilities
+.w-100 { width: 100% !important; }
+.mt-2 { margin-top: 8px !important; }
+.mt-3 { margin-top: 16px !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.font-bold { font-weight: 600 !important; }
+.text-danger { color: $c-danger !important; }
+.text-success { color: $c-success !important; }
+
+.fade-in, .animate-in {
+  animation: ui-fade 0.15s linear forwards;
+}
+
+@keyframes ui-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// ==========================================================================
+// CORE LAYOUT COMPONENTS
+// ==========================================================================
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: $c-surface;
+  padding: 16px 20px;
+  border: 1px solid $c-border;
+  border-radius: $r-base;
+  box-shadow: $wire-shadow;
+
+  .header-info {
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: $c-brand;
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 2px 0 0 0;
+      font-size: 12px;
+      color: $c-txt-muted;
+    }
+  }
+
+  .mini-stat {
+    text-align: right;
+    .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: $c-txt-muted;
+      letter-spacing: 0.05em;
+      display: block;
+    }
+    .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: $c-brand;
+      line-height: 1;
+    }
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  background: $c-surface;
+  padding: 16px;
+  border: 1px solid $c-border;
+  border-radius: $r-base;
+  margin-bottom: 24px;
+  box-shadow: $wire-shadow;
+  flex-wrap: wrap;
+
+  .search-box {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+
+    .icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      opacity: 0.5;
+    }
+
+    input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      border: 1px solid $c-border-dark;
+      border-radius: $r-tight;
+      font-size: 13px;
+      color: $c-txt;
+
+      &:focus {
+        outline: none;
+        border-color: $c-brand;
+      }
+    }
+  }
+
+  .filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      font-size: 10px;
+      font-weight: 600;
+      color: $c-brand;
+      text-transform: uppercase;
+    }
+
+    select {
+      height: 36px;
+      min-width: 140px;
+      padding: 0 8px;
+      border: 1px solid $c-border-dark;
+      border-radius: $r-tight;
+      background-color: $c-surface;
+      font-size: 12.5px;
+      color: $c-txt;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: $c-brand;
+      }
+    }
+  }
+}
+
+// ==========================================================================
+// GRID MANAGEMENT & DATA VIEWS
+// ==========================================================================
+
+.table-wrapper {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $r-base;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: $wire-shadow;
+
+  .grupo-header {
+    background: #f1f5f9;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $c-border;
+
+    h3 {
+      margin: 0;
+      color: $c-brand;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    span {
+      font-size: 11px;
+      color: $c-txt-muted;
+      font-weight: 600;
+    }
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: $c-surface;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $c-txt-muted;
+    text-transform: uppercase;
+    border-bottom: 1px solid $c-border-dark;
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: $c-txt;
+    border-bottom: 1px solid $c-border;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    &:hover { background-color: #f8fafc; }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.td-alumno {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .avatar, .avatar-img {
+    width: 28px;
+    height: 28px;
+    border-radius: $r-tight;
+    object-fit: cover;
+  }
+
+  .avatar {
+    background: #e2e8f0;
+    color: $c-brand;
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $c-border-dark;
+  }
+
+  .nombre {
+    font-weight: 500;
+  }
+}
+
+// ==========================================================================
+// SYSTEM MICRO-COMPONENTS (TAGS & ACTION CONTROLS)
+// ==========================================================================
+
+.curso-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: #f1f5f9;
+  border: 1px solid $c-border;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: $r-tight;
+}
+
+.status-pill, .mini-status {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: $r-tight;
+
+  &.paid, &.pagado, &.PAGADO, &.AL_DIA {
+    background-color: $c-success-bg;
+    color: $c-success;
+  }
+  &.warning, &.POR_VENCER {
+    background-color: $c-warning-bg;
+    color: $c-warning;
+  }
+  &.pending, &.PENDIENTE, &.MOROSO {
+    background-color: $c-danger-bg;
+    color: $c-danger;
+  }
+}
+
+.tag-concepto {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: $r-tight;
+  background: #edf2f7;
+  color: #4a5568;
+
+  &.matricula, &.MATRICULA { background: #fee2e2; color: #b91c1c; }
+  &.cuota, &.mensualidad { background: #e0f2fe; color: #0369a1; }
+  &.certificacion { background: #fef9c3; color: #a16207; }
+}
+
+// Flat Technical Buttons
+.btn-primary, .btn-save-payment, .btn-success, .btn-recalcular {
+  background-color: $c-accent;
+  color: $c-surface;
+  border: 1px solid transparent;
+  padding: 0 14px;
+  height: 36px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: $r-tight;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &:hover { background-color: mix(#000, $c-accent, 8%); }
+  &:disabled { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+}
+
+.btn-primary {
+  background-color: $c-brand;
+  &:hover { background-color: mix(#000, $c-brand, 8%); }
+}
+
+.btn-success {
+  background-color: $c-success;
+  &:hover { background-color: mix(#000, $c-success, 8%); }
+}
+
+.btn-secondary, .btn-detail, .page-btn {
+  background-color: $c-surface;
+  color: $c-txt;
+  border: 1px solid $c-border-dark;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: $r-tight;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: $c-bg;
+    border-color: #94a3b8;
+  }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: $c-txt-muted;
+  cursor: pointer;
+  &:hover { color: $c-txt; }
+}
+
+.btn-danger-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  border-radius: $r-tight;
+  &:hover { background: #fee2e2; }
+}
+
+// ==========================================================================
+// SYSTEM MODALS (CLEAN FLAT LAYOUT)
+// ==========================================================================
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.3); // Solid tint alpha without artificial blur
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: $c-surface;
+  border: 1px solid $c-border-dark;
+  border-radius: $r-base;
+  width: 100%;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &.wide-modal { max-width: 800px; }
+
+  .modal-header {
+    background: #f8fafc;
+    padding: 16px 20px;
+    border-bottom: 1px solid $c-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 { margin: 0; font-size: 15px; color: $c-brand; font-weight: 700; }
+  }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .modal-footer {
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-top: 1px solid $c-border;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.user-meta-extended {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .avatar-lg-img, .avatar-lg {
+    width: 44px;
+    height: 44px;
+    border-radius: $r-tight;
+    object-fit: cover;
+  }
+  .avatar-lg {
+    background: $c-brand;
+    color: $c-surface;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .info {
+    h3 { margin: 0; font-size: 16px; color: $c-brand; font-weight: 700; }
+    .subtext { font-size: 11px; color: $c-accent; font-weight: 600; text-transform: uppercase; }
+    .extra-data {
+      display: flex;
+      gap: 10px;
+      font-size: 11px;
+      color: $c-txt-muted;
+      margin-top: 2px;
+    }
+  }
+}
+
+.modal-layout {
+  display: flex;
+  gap: 20px;
+  overflow: hidden;
+  height: 100%;
+
+  .modal-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .modal-sidebar { width: 250px; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid $c-border; padding-left: 20px; }
+}
+
+// Flat Finance Status Info
+.summary-grid {
+  display: flex;
+  gap: 8px;
+
+  .summary-card {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid $c-border;
+    padding: 10px 12px;
+    border-radius: $r-tight;
+    
+    .label { font-size: 10px; font-weight: 600; color: $c-txt-muted; text-transform: uppercase; }
+    .amount { font-size: 15px; font-weight: 700; color: $c-brand; display: block; margin-top: 2px; }
+
+    &.danger { border-top: 2px solid $c-danger; }
+    &.info { border-top: 2px solid $c-accent; }
+    &.success { border-top: 2px solid $c-success; }
+    &.warning { border-top: 2px solid $c-warning; }
+  }
+}
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid $c-border;
+  gap: 4px;
+
+  button {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $c-txt-muted;
+    cursor: pointer;
+    position: relative;
+    bottom: -1px;
+
+    &.active {
+      color: $c-accent;
+      border-bottom: 2px solid $c-accent;
+    }
+    &.tab-highlight {
+      color: $c-success;
+      &.active { border-bottom-color: $c-success; }
+    }
+  }
+}
+
+// ==========================================================================
+// FORMS & TECHNICAL BUILDER ELEMENTS
+// ==========================================================================
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+
+  label { font-size: 11px; font-weight: 600; color: $c-brand; }
+  input, select {
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid $c-border-dark;
+    border-radius: $r-tight;
+    font-size: 12.5px;
+    background-color: $c-surface;
+    &:focus { outline: none; border-color: $c-brand; }
+  }
+}
+
+.form-row { display: flex; gap: 10px; .form-group { flex: 1; } }
+
+.sidebar-section {
+  .sidebar-title { margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: $c-brand; text-transform: uppercase; }
+  
+  .detail-card {
+    background: #f8fafc;
+    padding: 6px 10px;
+    border-radius: $r-tight;
+    margin-bottom: 4px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid $c-border;
+
+    .label { color: $c-txt-muted; }
+    strong { color: $c-brand; font-weight: 600; }
+  }
+}
+
+.recalculo-box {
+  background: $c-surface;
+  border: 1px solid $c-border-dark;
+  padding: 10px;
+  border-radius: $r-tight;
+}
+
+.payment-card {
+  max-width: 460px;
+  background: #f8fafc;
+  border: 1px solid $c-border;
+  border-radius: $r-tight;
+  padding: 16px;
+
+  .payment-header {
+    margin-bottom: 12px;
+    h3 { margin: 0; font-size: 14px; color: $c-brand; font-weight: 600; }
+    p { margin: 2px 0 0 0; font-size: 11px; color: $c-txt-muted; }
+  }
+}
+
+.payment-summary {
+  background: $c-surface;
+  padding: 10px;
+  border-radius: $r-tight;
+  border: 1px solid $c-border;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  
+  div {
+    display: flex;
+    flex-direction: column;
+    span { font-size: 10px; color: $c-txt-muted; }
+    strong { font-size: 13px; color: $c-brand; }
+  }
+}
+
+// Flat Manual Plan Matrix Construction
+.search-section {
+  position: relative;
+  input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid $c-border-dark; border-radius: $r-tight; }
+  
+  .search-results {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: $c-surface;
+    border: 1px solid $c-border-dark;
+    border-radius: $r-tight;
+    margin-top: 2px; padding: 0;
+    list-style: none;
+    max-height: 180px; overflow-y: auto;
+    z-index: 10;
+
+    li {
+      padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 12.5px;
+      border-bottom: 1px solid $c-border;
+      &:hover { background: #f8fafc; }
+      &.selected { background: #f0fdf4; }
+      img { border-radius: $r-tight; object-fit: cover; }
+      .badge { margin-left: auto; font-size: 9.5px; background: $c-brand; color: white; padding: 1px 4px; border-radius: $r-tight; }
+    }
+  }
+}
+
+.builder-section {
+  .grid-layout { display: flex; gap: 20px; .config-panel { width: 45%; } .preview-panel { width: 55%; border-left: 1px solid $c-border; padding-left: 20px; } }
+  h4 { margin: 0 0 12px 0; font-size: 12px; color: $c-brand; font-weight: 700; text-transform: uppercase; }
+}
+
+.add-cuota-grid {
+  display: grid;
+  grid-template-columns: 46px 1fr 80px auto;
+  gap: 6px;
+  align-items: center;
+  input { height: 34px; border: 1px solid $c-border-dark; border-radius: $r-tight; padding: 0 6px; font-size: 12px; }
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .history-item {
+    background: $c-surface;
+    border: 1px solid $c-border;
+    border-radius: $r-tight;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .h-info {
+      strong { font-size: 13px; color: $c-brand; font-weight: 600; }
+      .h-meta { display: flex; gap: 10px; font-size: 11px; color: $c-txt-muted; margin-top: 2px; }
+    }
+    .h-actions {
+      text-align: right;
+      .h-amount { font-weight: 600; font-size: 13px; }
+      .btn-voucher { display: block; font-size: 10.5px; color: $c-accent; text-decoration: none; margin-top: 1px; }
+    }
+  }
+}
+
+// ==========================================================================
+// SYSTEM PAGINATION & CONTEXT STATUS
+// ==========================================================================
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+
+  .page-btn {
+    height: 30px; min-width: 30px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 11.5px;
+    &.active { background: $c-brand; color: white; border-color: $c-brand; }
+  }
+}
+
+.mini-modal {
+  position: absolute;
+  inset: 0; background: rgba(15, 23, 42, 0.15); display: flex; align-items: center; justify-content: center; z-index: 1100;
+  
+  .mini-content {
+    background: white; border-radius: $r-base; width: 320px; border: 1px solid $c-border-dark; padding: 16px;
+    .mini-header { display: flex; justify-content: space-between; h3 { margin: 0; font-size: 13px; color: $c-brand; } button { background: none; border: none; cursor: pointer; } }
+    .mini-body { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .mini-footer { display: flex; justify-content: flex-end; gap: 6px; button { height: 30px; padding: 0 10px; font-size: 11.5px; border-radius: $r-tight; cursor: pointer; } }
+  }
+
+  .mini-user { display: flex; align-items: center; gap: 8px; .avatar { width: 26px; height: 26px; border-radius: $r-tight; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; } div { display: flex; flex-direction: column; strong { font-size: 12px; } span { font-size: 10px; color: $c-txt-muted; } } }
+  .mini-field { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; label { color: $c-txt-muted; } input, select { height: 28px; border: 1px solid $c-border-dark; border-radius: $r-tight; padding: 0 6px; width: 130px; } &.danger strong { color: $c-danger; } }
+  .btn-cancel { background: #f1f5f9; border: 1px solid $c-border; color: #475569; }
+  .btn-pay { background: $c-success; border: none; color: white; }
+}
+
+.loader-container, .empty-state, .empty-mini {
+  text-align: center; padding: 32px; color: $c-txt-muted; font-size: 13px;
+  .spinner { border: 2px solid $c-border; border-top: 2px solid $c-accent; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.7s linear infinite; margin: 0 auto 12px auto; }
+  h3 { margin: 8px 0 4px 0; color: $c-brand; font-size: 14px; font-weight: 600; }
+}
+.empty-mini { padding: 16px; font-style: normal; opacity: 0.7; }
+.empty-icon { font-size: 24px; }
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.table-input {
+  height: 26px; padding: 0 6px; border: 1px solid $c-border-dark; border-radius: $r-tight; font-size: 12px; font-family: $font-mono;
+  &:focus { outline: none; border-color: $c-brand; }
+}

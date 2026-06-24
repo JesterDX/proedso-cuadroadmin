@@ -1,0 +1,60 @@
+<div class="login-container">
+  
+  <section class="login-form-section">
+    <div class="form-wrapper">
+      
+      <header class="brand-header">
+        <div class="brand-logo-text">PROEDSO<span>.</span></div>
+        <p>Portal de Gestión Institucional</p>
+      </header>
+
+      <form (ngSubmit)="onLogin()" autocomplete="off" style="width: 100%;">
+        
+        <div class="form-group">
+          <label>Correo Electrónico</label>
+          <div class="input-wrapper">
+            <input 
+              type="email" 
+              [(ngModel)]="email" 
+              name="email" 
+              placeholder="ejemplo@proedso.com" 
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              [(ngModel)]="password" 
+              name="password" 
+              placeholder="••••••••••••" 
+              required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="loading">
+          {{ loading ? 'Verificando Credenciales...' : 'Iniciar Sesión' }}
+        </button>
+
+      </form>
+
+      <footer class="form-footer">
+        <p>&copy; 2026 PROEDSO. Todos los derechos reservados.</p>
+      </footer>
+
+    </div>
+  </section>
+
+  <section class="login-visual-section">
+    <div class="visual-content">
+      
+      <div class="main-school-logo">
+        <img src="logo-proedso.png" alt="PROEDSO Escuela de Operadores">
+      </div>
+      <h1 class="visual-title">Gestión Académica</h1>
+    </div>
+  </section>
+
+</div>

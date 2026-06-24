@@ -1,0 +1,305 @@
+<section class="matriculas-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ tituloVista }}</h1>
+      <p>Gestión y consulta de matrículas registradas.</p>
+    </div>
+
+    <button *ngIf="esVistaActiva()" type="button" class="btn-primary" (click)="abrirModalCrear()">
+      + Nueva matrícula
+    </button>
+  </div>
+  <div class="toolbar toolbar--filters">
+    <input type="text" [(ngModel)]="search" (ngModelChange)="onSearchChange()"
+      placeholder="Buscar por DNI, nombre o apellido" />
+
+    <select [(ngModel)]="anioFiltro" (ngModelChange)="buscar()">
+      <option [ngValue]="null">Todos los años</option>
+      <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+        {{ anio }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="mesFiltro" (ngModelChange)="buscar()">
+      <option [ngValue]="null">Todos los meses</option>
+      <option *ngFor="let mes of mesesDisponibles" [ngValue]="mes.value">
+        {{ mes.label }}
+      </option>
+    </select>
+
+    <button type="button" class="btn-light" (click)="limpiarFiltros()">
+      Limpiar
+    </button>
+  </div>
+  <div *ngIf="loading" class="state-card">
+    Cargando información de matrículas...
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="state-card error-state">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && !errorMsg" class="catalog-summary">
+    <div class="summary-card">
+      <span class="summary-label">Alumnos activos</span>
+      <strong>{{ alumnos.length }}</strong>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Planes de curso</span>
+      <strong>{{ planesCurso.length }}</strong>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !errorMsg" class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Alumno</th>
+          <th>Plan de curso</th>
+          <th>Estado</th>
+          <th>Fecha matrícula</th>
+          <th>Fecha inicio</th>
+          <th>Fecha fin estimada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let matricula of matriculasPaginadas; trackBy: trackByMatriculaId">
+          <td>{{ matricula.id }}</td>
+          <td>{{ getNombreAlumno(matricula.alumno_id) }}</td>
+          <td>{{ getNombrePlan(matricula.plan_curso_id) }}</td>
+          <td>
+            <span [class]="getClaseEstado(matricula.estado_alumno_id)">
+              {{ getNombreEstado(matricula.estado_alumno_id) }}
+            </span>
+          </td>
+          <td>{{ formatFechaVista(matricula.fecha_matricula) }}</td>
+          <td>{{ formatFechaVista(matricula.fecha_inicio) }}</td>
+          <td>{{ formatFechaVista(matricula.fecha_fin_estimada) }}</td>
+          <td>
+            <div class="table-actions">
+              <a [routerLink]="['/matriculas', matricula.id]" class="btn-table btn-view btn-view--pro">
+                <span class="btn-view__icon">👁</span>
+                <span class="btn-view__text">Ver ficha</span>
+              </a>
+
+              <button *ngIf="puedeEditar()" type="button" class="btn-table btn-edit"
+                (click)="abrirModalEditar(matricula)">
+                Editar
+              </button>
+              <!-- <button type="button" class="btn-table btn-pdf" (click)="descargarCronograma(matricula)">
+                PDF
+              </button> -->
+
+              <button *ngIf="puedeMostrarAccionesDeActiva() && puedeRetirar(matricula.estado_alumno_id)" type="button"
+                class="btn-table btn-retire" (click)="cambiarEstadoMatricula(matricula, 'RETIRADO')">
+                Retirar
+              </button>
+
+              <button *ngIf="puedeMostrarAccionesDeActiva() && puedeEgresar(matricula.estado_alumno_id)" type="button"
+                class="btn-table btn-success" (click)="cambiarEstadoMatricula(matricula, 'EGRESADO')">
+                Egresar
+              </button>
+
+              <button *ngIf="puedeMostrarAccionesDeActiva() && puedeReservar(matricula.estado_alumno_id)" type="button"
+                class="btn-table btn-warning" (click)="cambiarEstadoMatricula(matricula, 'RESERVA')">
+                Reserva
+              </button>
+
+              <button *ngIf="puedeMostrarActivar()" type="button" class="btn-table btn-activate"
+                (click)="cambiarEstadoMatricula(matricula, 'MATRICULADO')">
+                Activar matrícula
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="matriculas.length === 0">
+          <td colspan="9" class="empty-cell">
+            Aún no hay matrículas registradas.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination" *ngIf="totalPaginas > 1">
+
+      <button class="page-btn" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1">
+        ←
+      </button>
+
+      <button *ngFor="let pagina of paginas" class="page-number" [class.active]="pagina === paginaActual"
+        (click)="cambiarPagina(pagina)">
+        {{ pagina }}
+      </button>
+
+      <button class="page-btn" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">
+        →
+      </button>
+
+    </div>
+  </div>
+
+  <div *ngIf="modalOpen" class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal-card modal-card--split" (click)="$event.stopPropagation()">
+      <div class="modal-side">
+        <div class="modal-side__top">
+          <h2>Nueva matrícula</h2>
+          <p>Completa la información académica del alumno.</p>
+        </div>
+        <div class="side-summary">
+          <div class="side-summary__item">
+            <span class="side-summary__label">Plan seleccionado</span>
+            <strong>{{ getNombrePlan(form.plan_curso_id || 0) || 'Sin seleccionar' }}</strong>
+          </div>
+
+          <div class="side-summary__item" *ngIf="cantidadMaquinasRequeridas > 0">
+            <span class="side-summary__label">Máquinas requeridas</span>
+            <strong>{{ cantidadMaquinasRequeridas }}</strong>
+          </div>
+
+          <div class="side-summary__item" *ngIf="form.fecha_fin_estimada">
+            <span class="side-summary__label">Fin estimado</span>
+            <strong>{{ formatFechaVista(form.fecha_fin_estimada) }}</strong>
+          </div>
+
+          <div class="side-note" *ngIf="esPlanMultipleConRegalo()">
+            Este plan incluye <strong>Camioneta</strong> como regalo.
+          </div>
+
+          <div class="side-note" *ngIf="mostrarSelectorMaquinas">
+            Selecciona exactamente {{ cantidadMaquinasRequeridas }} máquina(s).
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-main">
+        <div class="modal-header modal-header--main">
+          <div>
+            <h2>Datos principales</h2>
+            <p>Configura la matrícula del alumno y el plan de curso.</p>
+          </div>
+
+          <button type="button" class="btn-close" (click)="cerrarModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="section-card">
+            <div class="form-grid">
+              <div class="form-field full-width">
+                <label>Alumno *</label>
+
+                <div class="search-select-container" style="margin-bottom: 8px;">
+                  <input type="text" [(ngModel)]="txtBusquedaAlumno" placeholder="Escribe nombre o DNI para filtrar..."
+                    class="form-control-search"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+                </div>
+
+                <select [(ngModel)]="form.alumno_id">
+                  <option [ngValue]="null">
+                    {{ alumnosFiltrados.length === 0 ? 'No se encontraron coincidencias' : 'Seleccionar alumno' }}
+                  </option>
+                  <option *ngFor="let alumno of alumnosFiltrados" [ngValue]="alumno.id">
+                    {{ alumno.nombres }} {{ alumno.apellidos }} - {{ alumno.dni }}
+                  </option>
+                </select>
+
+                <small class="field-help" *ngIf="txtBusquedaAlumno">
+                  Mostrando {{ alumnosFiltrados.length }} de {{ alumnos.length }} alumnos.
+                </small>
+              </div>
+
+              <div class="form-field">
+                <label>Plan de curso *</label>
+                <select [(ngModel)]="form.plan_curso_id" (ngModelChange)="onPlanChange()">
+                  <option [ngValue]="null">Seleccionar plan</option>
+                  <option *ngFor="let plan of planesCurso" [ngValue]="plan.id">
+                    {{ plan.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Estado del alumno *</label>
+                <select [(ngModel)]="form.estado_alumno_id">
+                  <option [ngValue]="null">Seleccionar estado</option>
+                  <option *ngFor="let estado of estadosMatriculaDisponibles" [ngValue]="estado.id">
+                    {{ estado.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field full-width" *ngIf="mostrarSelectorMaquinas">
+                <label>Máquinas seleccionadas *</label>
+
+                <div class="machine-selector" *ngIf="maquinasDisponibles.length > 0; else sinMaquinas">
+                  <label *ngFor="let maquina of maquinasDisponibles" class="machine-option">
+                    <input type="checkbox" [checked]="isMaquinaSeleccionada(maquina.id)"
+                      (change)="toggleMaquina(maquina.id, $event)" />
+                    <span>{{ maquina.nombre }}</span>
+                  </label>
+                </div>
+
+                <ng-template #sinMaquinas>
+                  <div class="machine-empty">
+                    No hay máquinas disponibles para este plan.
+                  </div>
+                </ng-template>
+
+                <small class="field-help">
+                  Debes seleccionar exactamente {{ cantidadMaquinasRequeridas }} máquina(s).
+                </small>
+
+                <small class="field-help" *ngIf="esPlanMultipleConRegalo()">
+                  La <strong>Camioneta</strong> se agregará automáticamente como regalo.
+                </small>
+              </div>
+
+              <div class="form-field">
+                <label>Fecha de matrícula *</label>
+                <input type="date" [(ngModel)]="form.fecha_matricula" />
+              </div>
+              <div class="form-field">
+                <label>Modalidad de pago *</label>
+                <select [(ngModel)]="form.modalidad_pago">
+                  <option value="MENSUAL">Mensual</option>
+                  <option value="QUINCENAL">Quincenal</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Fecha de inicio</label>
+                <input type="date" [(ngModel)]="form.fecha_inicio" (ngModelChange)="onFechaInicioChange()" />
+              </div>
+
+              <div class="form-field">
+                <label>Fecha fin estimada</label>
+                <input type="date" [(ngModel)]="form.fecha_fin_estimada" readonly />
+                <small class="field-help">
+                  Se calcula automáticamente según el tipo de curso y la fecha de inicio.
+                </small>
+              </div>
+
+              <div class="form-field full-width">
+                <label>Notas</label>
+                <textarea rows="4" [(ngModel)]="form.notas"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-light" (click)="cerrarModal()" [disabled]="saving">
+            Cancelar
+          </button>
+
+          <button type="button" class="btn-primary" (click)="guardarMatricula()" [disabled]="saving">
+            {{ saving ? 'Guardando...' : 'Guardar matrícula' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,464 @@
+<section class="matricula-detail-page">
+    <div class="page-topbar">
+        <button type="button" class="btn-back" (click)="volver()">
+            ← Volver a matrículas
+        </button>
+    </div>
+
+    <div *ngIf="loading" class="state-card">
+        Cargando ficha de matrícula...
+    </div>
+
+    <div *ngIf="!loading && errorMsg" class="state-card error-state">
+        {{ errorMsg }}
+    </div>
+
+    <div *ngIf="!loading && detalle" class="detail-layout">
+        <aside class="detail-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <img *ngIf="detalle.alumno_foto_url; else sinFoto" [src]="getFotoUrl(detalle.alumno_foto_url)"
+                        [alt]="detalle.alumno_nombres" />
+
+                    <ng-template #sinFoto>
+                        <div class="profile-avatar__fallback">
+                            {{ getIniciales() }}
+                        </div>
+                    </ng-template>
+                </div>
+
+                <div class="profile-meta">
+                    <h2>{{ detalle.alumno_nombres }} {{ detalle.alumno_apellidos }}</h2>
+                    <p>{{ detalle.alumno_dni }}</p>
+
+                    <span [class]="getClaseEstado()">
+                        {{ detalle.estado_nombre }}
+                    </span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="detail-content">
+            <div class="header-card">
+                <div>
+                    <h1>Ficha de matrícula</h1>
+                    <p>{{ detalle.plan_nombre }}</p>
+                </div>
+
+                <div class="header-actions">
+                    <button type="button" class="btn-primary" (click)="generarCronograma()">
+
+                        Generar Cronograma PDF
+
+                    </button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Información del alumno</h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>DNI</label>
+                        <p>{{ detalle.alumno_dni }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Fecha de nacimiento</label>
+                        <p>{{ formatFechaVista(detalle.alumno_fecha_nacimiento) }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Edad</label>
+                        <p>{{ getEdad(detalle.alumno_fecha_nacimiento) }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Teléfono</label>
+                        <p>{{ detalle.alumno_telefono || '-' }}</p>
+                    </div>
+
+                    <div class="info-item ">
+                        <label>Correo</label>
+                        <p>{{ detalle.alumno_correo || '-' }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Seguro médico</label>
+                        <p>
+                            <span [class]="getSeguroClass(detalle.alumno_seguro_alumno)">
+                                {{ getSeguroLabel(detalle.alumno_seguro_alumno) }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="info-item full-width">
+                        <label>Dirección</label>
+                        <p>{{ detalle.alumno_direccion || '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Información de matrícula</h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Plan</label>
+                        <p>{{ detalle.plan_nombre }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Estado</label>
+                        <p>{{ detalle.estado_nombre }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Fecha de matrícula</label>
+                        <p>{{ formatFechaVista(detalle.fecha_matricula) }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Fecha de inicio</label>
+                        <p>{{ formatFechaVista(detalle.fecha_inicio) }}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Fecha fin estimada</label>
+                        <p>{{ formatFechaVista(detalle.fecha_fin_estimada) }}</p>
+                    </div>
+
+                    <div class="info-item full-width">
+                        <label>Notas</label>
+                        <p>{{ detalle.notas || '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs-card">
+                <div class="tabs-nav">
+                    <button type="button" [class.active]="activeTab === 'matriculas'"
+                        (click)="cambiarTab('matriculas')">
+                        Matrículas
+                    </button>
+                    <button type="button" [class.active]="activeTab === 'practicas'" (click)="cambiarTab('practicas')">
+                        Prácticas
+                    </button>
+                    <button type="button" [class.active]="activeTab === 'finanzas'" (click)="cambiarTab('finanzas')">
+                        Finanzas
+                    </button>
+                    <button type="button" [class.active]="activeTab === 'archivos'" (click)="cambiarTab('archivos')">
+                        Archivos
+                    </button>
+                    <button type="button" [class.active]="activeTab === 'historial'" (click)="cambiarTab('historial')">
+                        Historial
+                    </button>
+                </div>
+
+                <div class="tab-panel" *ngIf="activeTab === 'matriculas'">
+                    <div class="tab-panel__header">
+                        <h4>Máquinas matriculadas</h4>
+                    </div>
+
+                    <div class="mini-table" *ngIf="maquinas.length > 0; else sinMaquinasMatricula">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Orden</th>
+                                    <th>Máquina</th>
+                                    <th>Horas</th>
+                                    <th>Sesiones</th>
+                                    <th>Completadas</th>
+                                    <th>Estado</th>
+                                    <th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let maquina of maquinas">
+                                    <td>{{ maquina.orden }}</td>
+                                    <td>{{ maquina.maquina_nombre }}</td>
+                                    <td>{{ maquina.horas_asignadas }}</td>
+                                    <td>{{ maquina.sesiones_totales }}</td>
+                                    <td>{{ maquina.sesiones_completadas }}</td>
+                                    <td>{{ maquina.estado }}</td>
+                                    <td>{{ maquina.es_regalo ? 'Regalo' : 'Principal' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ng-template #sinMaquinasMatricula>
+                        <p>No hay máquinas registradas para esta matrícula.</p>
+                    </ng-template>
+                </div>
+
+                <div class="tab-panel" *ngIf="activeTab === 'practicas'">
+                    <h4>Prácticas</h4>
+                    <p>Aquí mostraremos el horario y avance de prácticas.</p>
+                </div>
+
+                <div class="tab-panel" *ngIf="activeTab === 'finanzas'">
+                    <div class="tab-panel__header">
+                        <h4>Resumen financiero</h4>
+                    </div>
+
+                    <div *ngIf="loadingFinanzas" class="finance-state">
+                        Cargando información financiera...
+                    </div>
+
+                    <ng-container *ngIf="!loadingFinanzas">
+                        <div *ngIf="finanzasResumen; else sinFinanzas" class="finance-layout">
+                            <div class="finance-summary-grid">
+                                <div class="finance-card">
+                                    <span>Total del plan</span>
+                                    <strong>{{ formatMonto(finanzasResumen.monto_total) }}</strong>
+                                </div>
+
+                                <div class="finance-card">
+                                    <span>Matrícula</span>
+                                    <strong>{{ formatMonto(finanzasResumen.monto_matricula) }}</strong>
+                                </div>
+
+                                <div class="finance-card">
+                                    <span>Certificación</span>
+                                    <strong>{{ formatMonto(finanzasResumen.monto_certificacion) }}</strong>
+                                </div>
+
+                                <div class="finance-card">
+                                    <span>Cantidad de cuotas</span>
+                                    <strong>{{ finanzasResumen.cantidad_cuotas }}</strong>
+                                </div>
+
+                                <div class="finance-card">
+                                    <span>Monto por cuota</span>
+                                    <strong>{{ formatMonto(finanzasResumen.monto_cuota) }}</strong>
+                                </div>
+
+                                <div class="finance-card">
+                                    <span>Fecha de creación</span>
+                                    <strong>{{ formatFechaVista(finanzasResumen.fecha_creacion) }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="finance-note-card">
+                                <label>Nota de pago</label>
+                                <p>{{ finanzasResumen.nota_pago || '-' }}</p>
+                            </div>
+
+                            <div class="mini-table" *ngIf="cuotas.length > 0; else sinCuotas">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Concepto</th>
+                                            <th>Fecha vencimiento</th>
+                                            <th>Monto programado</th>
+                                            <th>Monto pagado</th>
+                                            <th>Saldo</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let cuota of cuotas">
+                                            <td>{{ cuota.numero_cuota || '-' }}</td>
+                                            <td>
+                                                <span [class]="getConceptoClase(cuota.concepto_codigo)">
+                                                    {{ getConceptoLabel(cuota.concepto_codigo) }}
+                                                </span>
+                                            </td>
+                                            <td>{{ formatFechaVista(cuota.fecha_vencimiento) }}</td>
+                                            <td>{{ formatMonto(cuota.monto_programado) }}</td>
+                                            <td>{{ formatMonto(cuota.monto_pagado) }}</td>
+                                            <td>{{ formatMonto(cuota.saldo_pendiente) }}</td>
+                                            <td>
+                                                <span [class]="getClaseEstadoCuota(cuota.estado)">
+                                                    {{ cuota.estado }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <ng-template #sinCuotas>
+                                <p>No hay cuotas registradas para esta matrícula.</p>
+                            </ng-template>
+                        </div>
+
+                        <ng-template #sinFinanzas>
+                            <div class="finance-empty">
+                                <h5>No hay plan financiero registrado</h5>
+                                <p>
+                                    Esta matrícula todavía no tiene configurado un plan de pago ni cuotas asociadas.
+                                </p>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </div>
+                <div class="tab-panel tab-panel--files" *ngIf="activeTab === 'archivos'">
+                    <div class="files-topbar">
+                        <div>
+                            <h4>Archivos de la matrícula</h4>
+                            <p>Administra cronogramas, cartas de compromiso, comprobantes y otros documentos.</p>
+                        </div>
+
+                        <div class="files-stats">
+                            <div class="files-stat">
+                                <span>Total archivos</span>
+                                <strong>{{ adjuntos.length }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="files-layout">
+                        <section class="upload-panel">
+                            <div class="upload-panel__header">
+                                <h5>Subir nuevo archivo</h5>
+                                <p>Adjunta documentos relacionados a esta matrícula.</p>
+                            </div>
+
+                            <div class="upload-form upload-form--pro">
+                                <div class="form-field">
+                                    <label>Tipo de archivo</label>
+                                    <select class="input-pro" [(ngModel)]="tipoArchivo">
+                                        <option value="PLAN_ESTUDIOS">Plan de Estudios</option>
+                                        <option value="CARTA_COMPROMISO">Carta de compromiso</option>
+                                        <option value="COMPROBANTE">Comprobante</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-field">
+                                    <label>Archivo</label>
+
+                                    <label class="file-dropzone" [class.file-dropzone--dragging]="dragOverArchivo"
+                                        (dragover)="onDragOverArchivo($event)" (dragleave)="onDragLeaveArchivo($event)"
+                                        (drop)="onDropArchivo($event)">
+                                        <input type="file" (change)="onArchivoSeleccionado($event)" />
+
+                                        <div class="file-dropzone__content">
+                                            <div class="file-dropzone__icon"></div>
+
+                                            <span class="file-dropzone__title">
+                                                Arrastra tu archivo aquí
+                                            </span>
+
+                                            <span class="file-dropzone__text">
+                                                o haz clic para seleccionarlo desde tu equipo
+                                            </span>
+
+                                            <span class="file-dropzone__button">Seleccionar archivo</span>
+
+                                            <span class="file-dropzone__name" *ngIf="archivoSeleccionado">
+                                                {{ archivoSeleccionado.name }}
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="form-field">
+                                    <label>Observación</label>
+                                    <textarea class="input-pro textarea-pro" rows="4" [(ngModel)]="observacionArchivo"
+                                        placeholder="Ej. Cronograma inicial del alumno, carta firmada, documento actualizado..."></textarea>
+                                </div>
+
+                                <div class="upload-actions upload-actions--full">
+                                    <button type="button" class="btn-primary btn-primary--wide" (click)="subirArchivo()"
+                                        [disabled]="subiendoArchivo">
+                                        {{ subiendoArchivo ? 'Subiendo archivo...' : 'Subir archivo' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="files-list-panel">
+                            <div class="files-list-panel__header">
+                                <h5>Documentos registrados</h5>
+                                <p>Consulta y administra los archivos vinculados a la matrícula.</p>
+                            </div>
+
+                            <div class="files-empty" *ngIf="adjuntos.length === 0; else listaArchivos">
+                                <div class="files-empty__icon"></div>
+                                <h6>No hay archivos registrados</h6>
+                                <p>Sube el primer documento de esta matrícula para comenzar.</p>
+                            </div>
+
+                            <ng-template #listaArchivos>
+                                <div class="files-list">
+                                    <article class="file-card" *ngFor="let adjunto of adjuntos">
+                                        <div class="file-card__left">
+                                            <div class="file-icon">
+                                                📄
+                                            </div>
+
+                                            <div class="file-info">
+                                                <div class="file-info__top">
+                                                    <span class="file-badge">
+                                                        {{ adjunto.tipo_archivo || 'OTRO' }}
+                                                    </span>
+
+                                                    <span class="file-date">
+                                                        {{ formatFechaVista(adjunto.fecha_subida) }}
+                                                    </span>
+                                                </div>
+
+                                                <h6 class="file-name" [title]="adjunto.nombre_archivo || 'Archivo'">
+                                                    {{ adjunto.nombre_archivo || 'Archivo' }}
+                                                </h6>
+                                                <p>{{ adjunto.observaciones || 'Sin observación registrada.' }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="file-card__actions">
+                                            <a [href]="getArchivoUrl(adjunto.url_archivo)" target="_blank"
+                                                class="btn-mini-link">
+                                                Ver
+                                            </a>
+
+                                            <button type="button" class="btn-mini-delete"
+                                                (click)="eliminarAdjunto(adjunto.id)">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </article>
+                                </div>
+                            </ng-template>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="tab-panel" *ngIf="activeTab === 'historial'">
+                    <div class="tab-panel__header">
+                        <h4>Historial de cambios</h4>
+                        <p>Registro de todas las modificaciones realizadas en la matrícula.</p>
+                    </div>
+
+                    <div *ngIf="loadingHistorial" class="state-card">
+                        Cargando historial...
+                    </div>
+
+                    <div *ngIf="!loadingHistorial && historial.length === 0" class="state-card">
+                        No hay registros de historial.
+                    </div>
+
+                    <div class="timeline" *ngIf="historial.length > 0">
+                        <div class="timeline-item" *ngFor="let item of historial">
+                            <div class="timeline-dot"></div>
+
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <strong>{{ item.accion }}</strong>
+                                    <span>{{ formatFechaVista(item.fecha) }}</span>
+                                </div>
+
+                                <p>{{ item.descripcion }}</p>
+
+                                <small *ngIf="item.usuario">
+                                    Por: {{ item.usuario }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>

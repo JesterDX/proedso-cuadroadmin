@@ -1,0 +1,541 @@
+<section class="pagos-container">
+  <header class="main-header">
+    <div class="header-info">
+      <h1>Gestión de Pagos</h1>
+      <p>Panel de control y seguimiento financiero de alumnos</p>
+    </div>
+    <div class="header-actions" *ngIf="!loading">
+      <div class="mini-stat">
+        <span class="label">Total Alumnos</span>
+        <span class="value">{{ alumnosFiltrados.length }}</span>
+      </div>
+    </div>
+  </header>
+  <div class="toolbar">
+    <!-- 1. Buscador (Ocupará el espacio disponible a la izquierda) -->
+    <div class="search-box">
+      <span class="icon">🔍</span> <!-- Reemplaza por tu tag de icono si usas alguna librería -->
+      <input type="text" placeholder="Buscar alumno..." [(ngModel)]="search" (ngModelChange)="filtrar()" />
+    </div>
+
+    <!-- 2. Filtro: Mes -->
+    <div class="filter-box">
+      <label>Mes</label>
+      <select [(ngModel)]="mesMatricula" (ngModelChange)="filtrar()">
+        <option value="">Todos</option>
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
+      </select>
+    </div>
+
+    <!-- 3. Filtro: Año -->
+    <div class="filter-box">
+      <label>Año</label>
+      <select [(ngModel)]="anioMatricula" (ngModelChange)="filtrar()">
+        <option value="">Todos</option>
+        <option *ngFor="let anio of aniosDisponibles" [value]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
+
+    <!-- 4. Filtro: Estado -->
+    <div class="filter-box">
+      <label>Estado</label>
+      <select [(ngModel)]="estado" (ngModelChange)="filtrar()">
+        <option value="">Todos los registros</option>
+        <option value="PENDIENTE">🔴 Solo Pendientes</option>
+        <option value="PAGADO">🟢 Solo Pagados</option>
+      </select>
+    </div>
+
+    <!-- 5. Acción Principal (Se alineará automáticamente al extremo derecho) -->
+    <button class="btn-primary" (click)="abrirModalPlanManual()">
+      + Asignar plan de pagos
+    </button>
+  </div>
+
+  <div class="loader-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Sincronizando datos...</p>
+  </div>
+
+  <div *ngIf="gruposPaginados.length && !loading">
+
+    <div class="card table-wrapper" *ngFor="let grupo of gruposPaginados">
+
+      <div class="grupo-header">
+        <h3>{{ grupo.mes }}</h3>
+        <span>{{ grupo.alumnos.length }} alumnos</span>
+      </div>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Alumno</th>
+            <th>Programa / Curso</th>
+            <th class="text-right">Deuda Total</th>
+            <th>Estado de Cuenta</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let a of grupo.alumnos; trackBy: trackByAlumno" class="fade-in">
+
+            <td class="td-alumno">
+
+              <img *ngIf="a.foto_url; else avatarDefault" [src]="a.foto_url" (error)="a.foto_url=null"
+                class="avatar-img" />
+
+              <ng-template #avatarDefault>
+                <div class="avatar">
+                  {{ a.alumno.charAt(0) }}
+                </div>
+              </ng-template>
+
+              <span class="nombre">
+                {{ a.alumno }}
+              </span>
+
+            </td>
+
+            <td>
+              <span class="curso-tag">
+                {{ a.plan_nombre }}
+              </span>
+            </td>
+
+            <td class="text-right font-bold" [class.text-danger]="a.tiene_deuda">
+
+              {{ formatMonto(a.total_deuda) }}
+
+            </td>
+
+            <td>
+
+              <span [class]="
+                a.estado_financiero === 'AL_DIA'
+                  ? 'status-pill paid'
+                  : a.estado_financiero === 'POR_VENCER'
+                    ? 'status-pill warning'
+                    : 'status-pill pending'
+              ">
+
+                {{
+                a.estado_financiero === 'AL_DIA'
+                ? 'Al día'
+                : a.estado_financiero === 'POR_VENCER'
+                ? 'Por vencer'
+                : 'Moroso'
+                }}
+
+              </span>
+
+            </td>
+
+            <td class="text-center">
+
+              <button class="btn-detail" (click)="verDetalle(a.matricula_id)">
+
+                Ver Detalles
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+  <!-- PAGINACIÓN -->
+  <div class="pagination-container" *ngIf="totalPaginas > 1">
+
+    <button class="page-btn" (click)="paginaAnterior()" [disabled]="paginaActual === 1">
+      ←
+    </button>
+
+    <button *ngFor="let p of paginas" class="page-btn" [class.active]="p === paginaActual" (click)="cambiarPagina(p)">
+      {{ p }}
+    </button>
+
+    <button class="page-btn" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas">
+      →
+    </button>
+
+  </div>
+  <div class="empty-state" *ngIf="!gruposPaginados.length && !loading">
+    <div class="empty-icon">📂</div>
+    <h3>No se encontraron resultados</h3>
+    <p>Intenta ajustar los filtros o el término de búsqueda.</p>
+  </div>
+
+  <div class="modal-overlay" *ngIf="modalOpen" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+        <div class="user-meta-extended">
+          <img *ngIf="alumnoSeleccionado?.foto_url; else avatarDefaultLg" [src]="alumnoSeleccionado.foto_url"
+            (error)="alumnoSeleccionado.foto_url=null" class="avatar-lg-img" />
+          <ng-template #avatarDefaultLg>
+            <div class="avatar-lg">{{ alumnoSeleccionado?.alumno?.charAt(0) }}</div>
+          </ng-template>
+
+          <div class="info">
+            <h3>{{ alumnoSeleccionado?.alumno }}</h3>
+            <span class="subtext">{{ alumnoSeleccionado?.plan_nombre }}</span>
+            <div class="extra-data">
+              <span>📱 {{ alumnoSeleccionado?.telefono || 'Sin teléfono' }}</span>
+              <span>🆔 Matrícula #{{ alumnoSeleccionado?.matricula_id }}</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </header>
+
+      <div class="modal-layout">
+
+        <div class="modal-main">
+
+          <div class="summary-grid">
+            <div class="summary-card danger">
+              <span class="label">Deuda Pendiente</span>
+              <span class="amount">{{ formatMonto(getTotalDeuda()) }}</span>
+            </div>
+            <div class="summary-card info">
+              <span class="label">Total Cuotas</span>
+              <span class="amount">{{ getTotalCuotas() }}</span>
+            </div>
+            <div class="summary-card" [class.success]="getTotalDeuda() === 0" [class.warning]="getTotalDeuda() > 0">
+              <span class="label">Estado Global</span>
+              <span class="amount status">{{ getTotalDeuda() > 0 ? 'Con Mora' : 'Al Día' }}</span>
+            </div>
+          </div>
+
+          <nav class="modal-tabs">
+            <button (click)="cambiarTab('cuotas')" [class.active]="tab==='cuotas'">Estado de Cuenta</button>
+            <button (click)="cambiarTab('historial')" [class.active]="tab==='historial'">Historial de Pagos</button>
+            <button (click)="cambiarTab('pago')" [class.active]="tab==='pago'" class="tab-highlight">Registrar
+              Pago</button>
+          </nav>
+
+          <main class="modal-body">
+            <div *ngIf="tab==='cuotas'" class="tab-content animate-in">
+              <table class="inner-table">
+                <thead>
+                  <tr>
+                    <th>Concepto</th>
+                    <th>Vencimiento</th>
+                    <th class="text-right">Programado</th>
+                    <th class="text-right">Saldo</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let c of cuotasOrdenadas" (click)="abrirMiniPago(c)" style="cursor:pointer;">
+                    <td><span class="tag-concepto {{ getClaseConcepto(c.concepto_codigo) }}">{{ c.concepto_nombre
+                        }}</span></td>
+                    <td (click)="$event.stopPropagation()">
+                      <span *ngIf="!editandoFechas || c.saldo_pendiente <= 0">
+                        {{ formatFecha(c.fecha_vencimiento) }}
+                      </span>
+
+                      <input *ngIf="editandoFechas && c.saldo_pendiente > 0" type="date"
+                        [(ngModel)]="c.fecha_vencimiento" class="table-input" (click)="$event.stopPropagation()" />
+                    </td>
+                    <td class="text-right">{{ formatMonto(c.monto_programado) }}</td>
+                    <td class="text-right text-danger font-bold">{{ formatMonto(c.saldo_pendiente) }}</td>
+                    <td><span class="mini-status {{ getClaseEstado(c.estado) }}">{{ c.estado }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="tab==='historial'" class="tab-content animate-in">
+              <div class="history-list" *ngIf="historial.length">
+                <div class="history-item" *ngFor="let h of historial">
+                  <div class="h-info">
+                    <strong>{{ h.concepto_nombre }}</strong>
+                    <div class="h-meta">
+                      <span>📅 {{ formatFecha(h.fecha_pago) }}</span>
+                      <span>💳 {{ h.metodo_pago }}</span>
+                      <span>👤 {{ h.usuario || 'Admin' }}</span>
+                    </div>
+                  </div>
+                  <div class="h-actions">
+                    <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
+                    <a *ngIf="h.comprobante_url" [href]="h.comprobante_url" target="_blank" class="btn-voucher">📎 Ver
+                      comprobante</a>
+                  </div>
+                </div>
+              </div>
+              <div class="empty-mini" *ngIf="!historial.length">Sin movimientos registrados</div>
+            </div>
+
+            <div *ngIf="tab === 'pago'" class="tab-content animate-in">
+              <div class="payment-card">
+                <div class="payment-header">
+                  <h3>Registrar Pago</h3>
+                  <p>Selecciona una cuota pendiente</p>
+                </div>
+                <div class="form-group">
+                  <label>Cuota</label>
+                  <select [(ngModel)]="formPago.cuota_id" (change)="onSelectCuota()">
+                    <option [ngValue]="null">Seleccionar...</option>
+                    <option *ngFor="let c of cuotasPendientes" [ngValue]="c.id">
+                      {{ c.concepto_nombre }} - {{ formatMonto(c.saldo_pendiente) }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="payment-summary" *ngIf="formPago.cuota_id">
+                  <div>
+                    <span>Saldo actual</span>
+                    <strong>{{ formatMonto(getCuotaSeleccionada()?.saldo_pendiente || 0) }}</strong>
+                  </div>
+                  <div>
+                    <span>Después del pago</span>
+                    <strong class="text-success">
+                      {{ formatMonto((getCuotaSeleccionada()?.saldo_pendiente || 0) - (formPago.monto || 0)) }}
+                    </strong>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Método</label>
+                    <select [(ngModel)]="formPago.metodo_pago">
+                      <option value="EFECTIVO">💵 Efectivo</option>
+                      <option value="YAPE">📱 Yape</option>
+                      <option value="PLIN">💳 Plin</option>
+                      <option value="TRANSFERENCIA">🏦 Transferencia</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Voucher (PDF)</label>
+                    <input type="file" accept=".pdf" (change)="onFileSelected($event)" />
+                  </div>
+                </div>
+                <button class="btn-save-payment" (click)="registrarPago()">💾 Registrar Pago</button>
+              </div>
+            </div>
+
+            <div class="mini-modal" *ngIf="miniModalOpen">
+              <div class="mini-content">
+                <div class="mini-header">
+                  <h3>Pago rápido</h3>
+                  <button (click)="miniModalOpen=false">✕</button>
+                </div>
+                <div class="mini-body">
+                  <div class="mini-user">
+                    <div class="avatar">{{ miniPago?.alumno?.charAt(0) }}</div>
+                    <div>
+                      <strong>{{ miniPago?.alumno }}</strong>
+                      <span>{{ miniPago?.concepto_nombre }}</span>
+                    </div>
+                  </div>
+                  <div class="mini-field danger">
+                    <label>Saldo pendiente</label>
+                    <strong>{{ formatMonto(miniPago?.saldo_pendiente) }}</strong>
+                  </div>
+                  <div class="mini-field">
+                    <label>Monto</label>
+                    <input type="number" [(ngModel)]="miniPagoForm.monto" />
+                  </div>
+                  <div class="mini-field">
+                    <label>Comprobante</label>
+                    <input type="file" (change)="onMiniFileSelected($event)" />
+                  </div>
+                  <div class="mini-field">
+                    <label>Método</label>
+                    <select [(ngModel)]="miniPagoForm.metodo_pago">
+                      <option value="EFECTIVO">💵 Efectivo</option>
+                      <option value="YAPE">📱 Yape</option>
+                      <option value="PLIN">💳 Plin</option>
+                      <option value="TRANSFERENCIA">🏦 Transferencia</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mini-footer">
+                  <button class="btn-cancel" (click)="miniModalOpen=false">Cancelar</button>
+                  <button class="btn-pay" (click)="pagarMini()">Pagar</button>
+                </div>
+              </div>
+            </div>
+
+          </main>
+        </div>
+
+        <aside class="modal-sidebar">
+
+          <div class="sidebar-section">
+
+            <h4 class="sidebar-title">Detalles</h4>
+
+            <div class="detail-card">
+              <span class="label">Alumno</span>
+              <strong>{{ alumnoSeleccionado?.alumno }}</strong>
+            </div>
+
+            <div class="detail-card">
+              <span class="label">Programa</span>
+              <strong>{{ alumnoSeleccionado?.plan_nombre }}</strong>
+            </div>
+
+            <div class="detail-card">
+              <span class="label">Máquinas</span>
+              <strong>{{ alumnoSeleccionado?.maquinas || '-' }}</strong>
+            </div>
+
+          </div>
+
+          <div class="sidebar-section recalculo-box">
+
+            <h4 class="sidebar-title">Reprogramar Cuotas</h4>
+            <div class="recalculo-grid">
+              <div class="form-group">
+                <label>Tipo</label>
+                <select [(ngModel)]="formRecalculo.tipo">
+                  <option value="MENSUAL">Mensual</option>
+                  <option value="QUINCENAL">Quincenal</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Fecha Inicio</label>
+                <input type="date" [(ngModel)]="formRecalculo.fecha_inicio" />
+              </div>
+              <div class="form-group">
+                <label>Cantidad Cuotas</label>
+                <input type="number" min="1" [(ngModel)]="formRecalculo.cantidad_cuotas" />
+              </div>
+            </div>
+            <button class="btn-recalcular" (click)="recalcularPlan()">🔄 Recalcular Plan</button>
+          </div>
+
+          <div class="sidebar-section acciones-fechas">
+            <h4 class="sidebar-title">Gestión de Fechas</h4>
+            <button class="btn-secondary w-100" (click)="toggleEditarFechas()">
+              {{ editandoFechas ? 'Cancelar edición' : ' Editar fechas' }}
+            </button>
+            <button *ngIf="editandoFechas" class="btn-primary w-100 mt-2" (click)="guardarFechas()">
+              Guardar fechas
+            </button>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+  </div>
+</section>
+<div class="modal-overlay" *ngIf="modalManualAbierto">
+  <div class="modal-content wide-modal">
+    <header class="modal-header">
+      <h3>🛠️ Constructor de Plan Manual</h3>
+      <button class="btn-close" (click)="cerrarModalPlanManual()">✕</button>
+    </header>
+
+    <div class="modal-body">
+      <div class="search-section">
+        <label>Buscar Alumno (DNI o Nombre):</label>
+        <input type="text" placeholder="Ej. Juan Perez..." (input)="buscarMatricula($event)">
+
+        <ul class="search-results" *ngIf="resultadosBusqueda.length > 0">
+          <li *ngFor="let res of resultadosBusqueda" (click)="seleccionarMatricula(res)"
+            [class.selected]="matriculaSeleccionada?.matricula_id === res.matricula_id">
+            <img [src]="res.foto_url || 'assets/default-avatar.png'" width="30">
+            <span><strong>{{ res.nombres }} {{ res.apellidos }}</strong> - DNI: {{ res.dni }}</span>
+            <span class="badge">{{ res.plan_nombre }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <hr>
+
+      <div class="builder-section" *ngIf="matriculaSeleccionada">
+        <div class="grid-layout">
+
+          <div class="config-panel">
+            <h4>Datos del Plan</h4>
+            <div class="form-group">
+              <label>Modalidad de Pago</label>
+              <select [(ngModel)]="formularioPlan.modalidad_pago">
+                <option value="MENSUAL">Mensual</option>
+                <option value="QUINCENAL">Quincenal</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monto Matrícula (Opcional S/)</label>
+              <input type="number" [(ngModel)]="formularioPlan.monto_matricula">
+            </div>
+            <div class="form-group">
+              <label>Monto Certificación (Opcional S/)</label>
+              <input type="number" [(ngModel)]="formularioPlan.monto_certificacion">
+            </div>
+            <div class="form-group">
+              <label>Monto Total del Curso (S/)</label>
+              <input type="number" [(ngModel)]="formularioPlan.monto_total">
+            </div>
+
+            <h4 class="mt-3">Añadir Cuota</h4>
+            <div class="add-cuota-grid">
+              <input type="number" [(ngModel)]="cuotaTemporal.numero_cuota" placeholder="N°">
+              <input type="date" [(ngModel)]="cuotaTemporal.fecha_vencimiento">
+              <input type="number" [(ngModel)]="cuotaTemporal.monto" placeholder="S/">
+              <button class="btn-secondary" (click)="agregarCuota()">Añadir</button>
+            </div>
+          </div>
+
+          <div class="preview-panel">
+            <h4>Cuotas del Alumno</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Vencimiento</th>
+                  <th>Monto</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let c of formularioPlan.cuotas; let i = index">
+                  <td>{{ c.numero_cuota }}</td>
+                  <td>{{ c.fecha_vencimiento }}</td>
+                  <td>S/ {{ c.monto }}</td>
+                  <td><button class="btn-danger-icon" (click)="eliminarCuota(i)">🗑️</button></td>
+                </tr>
+                <tr *ngIf="formularioPlan.cuotas.length === 0">
+                  <td colspan="4" class="text-center text-muted">No hay cuotas añadidas</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="modal-footer" *ngIf="matriculaSeleccionada">
+      <button class="btn-success" [disabled]="formularioPlan.cuotas.length === 0 || !formularioPlan.monto_total"
+        (click)="guardarPlanManual()">
+        💾 Guardar Plan Manual
+      </button>
+    </footer>
+  </div>
+</div>

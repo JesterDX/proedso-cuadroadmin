@@ -1,0 +1,457 @@
+<section class="alumnos-page">
+  <div class="page-header">
+    <div>
+      <h1>Alumnos</h1>
+      <p>Gestión y consulta de alumnos registrados.</p>
+    </div>
+
+    <button type="button" class="btn-primary" (click)="abrirModalCrear()">
+      + Nuevo alumno
+    </button>
+  </div>
+
+  <div class="toolbar toolbar--filters">
+    <div class="toolbar-field toolbar-field--search">
+      <label for="search">Buscar</label>
+      <input
+        id="search"
+        type="text"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="DNI, nombres, apellidos, correo o teléfono"
+      />
+    </div>
+
+    <div class="toolbar-field">
+      <label for="anio">Año</label>
+      <select id="anio" [(ngModel)]="filtroAnio" (change)="onFiltrosChange()">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
+
+    <div class="toolbar-field">
+      <label for="mes">Mes</label>
+      <select id="mes" [(ngModel)]="filtroMes" (change)="onFiltrosChange()">
+        <option value="">Todos</option>
+        <option *ngFor="let mes of meses" [value]="mes">
+          {{ mes }}
+        </option>
+      </select>
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" class="btn-secondary" (click)="buscar()">
+        Buscar
+      </button>
+      <button type="button" class="btn-light" (click)="limpiarFiltros()">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state-card">
+    Cargando alumnos...
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="state-card error-state">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && alumnos.length === 0" class="state-card empty-state">
+    <h3>No hay alumnos registrados</h3>
+    <p>No se encontraron alumnos con los filtros seleccionados.</p>
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && alumnos.length > 0" class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Foto</th>
+          <th>DNI</th>
+          <th>Alumno</th>
+          <th>Ingreso</th>
+          <th>Seguro</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>Activo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let alumno of alumnosPaginados; trackBy: trackByAlumnoId">
+          <td>{{ alumno.id }}</td>
+
+          <td>
+            <div class="avatar-cell">
+              <img
+                *ngIf="alumno.foto_url; else sinFoto"
+                class="avatar-img"
+                [src]="getFotoUrl(alumno.foto_url)"
+                [alt]="alumno.nombres"
+              />
+
+              <ng-template #sinFoto>
+                <div class="avatar-fallback">
+                  {{ getIniciales(alumno.nombres, alumno.apellidos) }}
+                </div>
+              </ng-template>
+            </div>
+          </td>
+
+          <td>{{ alumno.dni }}</td>
+          <td>{{ alumno.nombres }} {{ alumno.apellidos }}</td>
+          <td>{{ getIngresoLabel(alumno) }}</td>
+
+          <td>
+            <span [class]="getSeguroClass(alumno.seguro_alumno)">
+              {{ getSeguroLabel(alumno.seguro_alumno) }}
+            </span>
+          </td>
+
+          <td>{{ alumno.telefono || '-' }}</td>
+          <td>{{ alumno.correo || '-' }}</td>
+
+          <td>
+            <span [class]="getEstadoClass(alumno.activo)">
+              {{ getEstadoLabel(alumno.activo) }}
+            </span>
+          </td>
+
+          <td>
+            <div class="table-actions">
+              <button type="button" class="btn-table btn-view" (click)="verAlumno(alumno)" title="Ver datos">
+                Ver
+              </button>
+
+              <button type="button" class="btn-table btn-edit" (click)="abrirModalEditar(alumno)" title="Editar alumno">
+                Editar
+              </button>
+
+              <button type="button" class="btn-table btn-retire" (click)="retirarAlumno(alumno)" title="Retirar alumno">
+                Retirar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="table-pagination" *ngIf="totalPaginas > 1">
+      <div class="pagination-info">
+        Visualizando <strong>{{ inicioRegistro }}</strong> a <strong>{{ finRegistro }}</strong>
+        de <strong>{{ totalRegistros }}</strong> alumnos
+      </div>
+
+      <div class="pagination-controls">
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina - 1)" [disabled]="actualPagina === 1">
+          Anterior
+        </button>
+
+        <button
+          type="button"
+          class="btn-page"
+          *ngFor="let pagina of paginasVisibles"
+          [class.active]="pagina === actualPagina"
+          (click)="irAPagina(pagina)"
+        >
+          {{ pagina }}
+        </button>
+
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina + 1)" [disabled]="actualPagina === totalPaginas">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="modalOpen" class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal-card modal-card--split" (click)="$event.stopPropagation()">
+      <div class="modal-side">
+        <div class="modal-side__top">
+          <h2>{{ modoModal === 'crear' ? 'Registro de alumno' : 'Edición de alumno' }}</h2>
+          <p>
+            {{
+              modoModal === 'crear'
+                ? 'Completa la información del alumno de forma clara y ordenada.'
+                : 'Actualiza la información del alumno de forma clara y ordenada.'
+            }}
+          </p>
+        </div>
+
+        <div class="photo-panel">
+          <h3>Foto del alumno</h3>
+
+          <div
+            class="upload-box"
+            [class.dragging]="dragOver"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <div *ngIf="!previewUrl" class="upload-placeholder">
+              <div class="upload-icon">🖼️</div>
+              <h4>Arrastra una imagen aquí</h4>
+              <p>o selecciónala desde tu equipo</p>
+
+              <label class="btn-light upload-btn">
+                Seleccionar imagen
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+              </label>
+            </div>
+
+            <div *ngIf="previewUrl" class="upload-preview">
+              <img [src]="previewUrl" alt="Vista previa de foto" />
+
+              <div class="upload-preview__actions">
+                <label class="btn-light upload-btn">
+                  Cambiar imagen
+                  <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+                </label>
+
+                <button type="button" class="btn-danger" (click)="quitarFoto()">
+                  Quitar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="photo-panel__note">
+            Formatos permitidos: JPG, PNG, WEBP. Tamaño máximo: 3 MB.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-main">
+        <div class="modal-header modal-header--main">
+          <div>
+            <h2>{{ modoModal === 'crear' ? 'Datos del alumno' : 'Editar alumno' }}</h2>
+            <p>
+              {{
+                modoModal === 'crear'
+                  ? 'Información personal, académica, de contacto y observaciones.'
+                  : 'Actualiza la información personal, académica, de contacto y observaciones.'
+              }}
+            </p>
+          </div>
+
+          <button type="button" class="btn-close" (click)="cerrarModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="section-card">
+            <h3>Datos personales</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="dni">DNI *</label>
+                <input id="dni" type="text" [(ngModel)]="form.dni" />
+              </div>
+
+              <div class="form-field">
+                <label for="fecha_nacimiento">Fecha de nacimiento</label>
+                <input id="fecha_nacimiento" type="date" [(ngModel)]="form.fecha_nacimiento" />
+              </div>
+
+              <div class="form-field">
+                <label for="nombres">Nombres *</label>
+                <input id="nombres" type="text" [(ngModel)]="form.nombres" />
+              </div>
+
+              <div class="form-field">
+                <label for="apellidos">Apellidos *</label>
+                <input id="apellidos" type="text" [(ngModel)]="form.apellidos" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h3>Ingreso y seguro</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="seguro_alumno">Seguro</label>
+                <select id="seguro_alumno" [(ngModel)]="form.seguro_alumno">
+                  <option value="">Seleccionar</option>
+                  <option *ngFor="let opcion of opcionesSeguro" [value]="opcion">
+                    {{ opcion }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="anio_ingreso">Año de ingreso *</label>
+                <select id="anio_ingreso" [(ngModel)]="form.anio_ingreso">
+                  <option [ngValue]="null">Seleccionar</option>
+                  <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+                    {{ anio }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="mes_ingreso">Mes de ingreso *</label>
+                <select id="mes_ingreso" [(ngModel)]="form.mes_ingreso">
+                  <option value="">Seleccionar</option>
+                  <option *ngFor="let mes of meses" [value]="mes">
+                    {{ mes }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h3>Contacto</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" type="text" [(ngModel)]="form.telefono" />
+              </div>
+
+              <div class="form-field">
+                <label for="correo">Correo electrónico</label>
+                <input id="correo" type="email" [(ngModel)]="form.correo" />
+              </div>
+
+              <div class="form-field full-width">
+                <label for="direccion">Dirección</label>
+                <input id="direccion" type="text" [(ngModel)]="form.direccion" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h3>Observaciones</h3>
+
+            <div class="form-grid">
+              <div class="form-field full-width">
+                <label for="observaciones">Notas adicionales</label>
+                <textarea id="observaciones" rows="5" [(ngModel)]="form.observaciones"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-light" (click)="cerrarModal()" [disabled]="saving">
+            Cancelar
+          </button>
+
+          <button type="button" class="btn-primary" (click)="guardarAlumno()" [disabled]="saving">
+            {{
+              saving
+                ? (modoModal === 'crear' ? 'Guardando...' : 'Actualizando...')
+                : (modoModal === 'crear' ? 'Guardar alumno' : 'Actualizar alumno')
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="viewModalOpen && alumnoSeleccionado" class="modal-backdrop" (click)="cerrarVistaAlumno()">
+  <div class="detail-modal" (click)="$event.stopPropagation()">
+    <div class="detail-modal__header">
+      <div>
+        <h2>Ficha del alumno</h2>
+        <p>Consulta rápida de la información registrada.</p>
+      </div>
+
+      <button type="button" class="btn-close" (click)="cerrarVistaAlumno()">×</button>
+    </div>
+
+    <div class="detail-modal__body">
+      <div class="detail-top">
+        <div class="detail-avatar">
+          <img
+            *ngIf="alumnoSeleccionado.foto_url; else sinFotoDetalle"
+            [src]="getFotoUrl(alumnoSeleccionado.foto_url)"
+            [alt]="alumnoSeleccionado.nombres"
+          />
+
+          <ng-template #sinFotoDetalle>
+            <div class="detail-avatar__fallback">
+              {{ getIniciales(alumnoSeleccionado.nombres, alumnoSeleccionado.apellidos) }}
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="detail-summary">
+          <h3>{{ alumnoSeleccionado.nombres }} {{ alumnoSeleccionado.apellidos }}</h3>
+          <span [class]="getEstadoClass(alumnoSeleccionado.activo)">
+            {{ getEstadoLabel(alumnoSeleccionado.activo) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>DNI</label>
+          <p>{{ alumnoSeleccionado.dni || '-' }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Fecha de nacimiento</label>
+          <p>
+            {{
+              alumnoSeleccionado.fecha_nacimiento
+                ? (alumnoSeleccionado.fecha_nacimiento | date:'dd/MM/yyyy')
+                : '-'
+            }}
+          </p>
+        </div>
+
+        <div class="detail-item">
+          <label>Seguro</label>
+          <p>
+            <span [class]="getSeguroClass(alumnoSeleccionado.seguro_alumno)">
+              {{ getSeguroLabel(alumnoSeleccionado.seguro_alumno) }}
+            </span>
+          </p>
+        </div>
+
+        <div class="detail-item">
+          <label>Ingreso</label>
+          <p>{{ getIngresoLabel(alumnoSeleccionado) }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Teléfono</label>
+          <p>{{ alumnoSeleccionado.telefono || '-' }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Correo</label>
+          <p>{{ alumnoSeleccionado.correo || '-' }}</p>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Dirección</label>
+          <p>{{ alumnoSeleccionado.direccion || '-' }}</p>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Observaciones</label>
+          <p>{{ alumnoSeleccionado.observaciones || '-' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-modal__actions">
+      <button type="button" class="btn-light" (click)="cerrarVistaAlumno()">
+        Cerrar
+      </button>
+
+      <button type="button" class="btn-primary" (click)="cerrarVistaAlumno(); abrirModalEditar(alumnoSeleccionado)">
+        Editar alumno
+      </button>
+    </div>
+  </div>
+</div>

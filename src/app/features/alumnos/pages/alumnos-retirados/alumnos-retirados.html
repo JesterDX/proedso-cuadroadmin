@@ -1,0 +1,254 @@
+<section class="alumnos-page">
+  <div class="page-header">
+    <div>
+      <h1>Alumnos retirados</h1>
+      <p>Consulta y reactivación de alumnos inactivos.</p>
+    </div>
+  </div>
+
+  <div class="toolbar toolbar--filters">
+    <div class="toolbar-field toolbar-field--search">
+      <label for="searchRetirados">Buscar</label>
+      <input
+        id="searchRetirados"
+        type="text"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="DNI, nombres, apellidos, correo o teléfono"
+      />
+    </div>
+
+    <div class="toolbar-field">
+      <label for="anioRetirados">Año</label>
+      <select id="anioRetirados" [(ngModel)]="filtroAnio" (change)="onFiltrosChange()">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
+
+    <div class="toolbar-field">
+      <label for="mesRetirados">Mes</label>
+      <select id="mesRetirados" [(ngModel)]="filtroMes" (change)="onFiltrosChange()">
+        <option value="">Todos</option>
+        <option *ngFor="let mes of meses" [value]="mes">
+          {{ mes }}
+        </option>
+      </select>
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" class="btn-secondary" (click)="buscar()">
+        Buscar
+      </button>
+      <button type="button" class="btn-light" (click)="limpiarFiltros()">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state-card">
+    Cargando alumnos retirados...
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="state-card error-state">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && alumnos.length === 0" class="state-card empty-state">
+    <h3>No hay alumnos retirados</h3>
+    <p>No se encontraron registros inactivos.</p>
+  </div>
+
+  <div *ngIf="!loading && !errorMsg && alumnos.length > 0" class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Foto</th>
+          <th>DNI</th>
+          <th>Alumno</th>
+          <th>Ingreso</th>
+          <th>Seguro</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let alumno of alumnosPaginados; trackBy: trackByAlumnoId">
+          <td>{{ alumno.id }}</td>
+
+          <td>
+            <div class="avatar-cell">
+              <div class="avatar-wrapper">
+                <img *ngIf="alumno.foto_url; else sinFoto" class="avatar-img" [src]="getFotoUrl(alumno.foto_url)" [alt]="alumno.nombres" />
+                <ng-template #sinFoto>
+                  <div class="avatar-fallback">
+                    {{ getIniciales(alumno.nombres, alumno.apellidos) }}
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </td>
+
+          <td>{{ alumno.dni }}</td>
+          <td>{{ alumno.nombres }} {{ alumno.apellidos }}</td>
+          <td>{{ getIngresoLabel(alumno) }}</td>
+
+          <td>
+            <span [class]="getSeguroClass(alumno.seguro_alumno)">
+              {{ getSeguroLabel(alumno.seguro_alumno) }}
+            </span>
+          </td>
+
+          <td>{{ alumno.telefono || '-' }}</td>
+          <td>{{ alumno.correo || '-' }}</td>
+
+          <td>
+            <span [class]="getEstadoClass(alumno.activo)">
+              {{ getEstadoLabel(alumno.activo) }}
+            </span>
+          </td>
+
+          <td>
+            <div class="table-actions">
+              <button type="button" class="btn-table btn-view" (click)="verAlumno(alumno)">
+                Ver
+              </button>
+
+              <button type="button" class="btn-table btn-activate" (click)="reactivarAlumno(alumno)">
+                Activar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="table-pagination" *ngIf="totalPaginas > 1">
+      <div class="pagination-info">
+        Visualizando <strong>{{ inicioRegistro }}</strong> a <strong>{{ finRegistro }}</strong>
+        de <strong>{{ totalRegistros }}</strong> alumnos
+      </div>
+
+      <div class="pagination-controls">
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina - 1)" [disabled]="actualPagina === 1">
+          Anterior
+        </button>
+
+        <button
+          type="button"
+          class="btn-page"
+          *ngFor="let pagina of paginasVisibles"
+          [class.active]="pagina === actualPagina"
+          (click)="irAPagina(pagina)"
+        >
+          {{ pagina }}
+        </button>
+
+        <button type="button" class="btn-page nav-btn" (click)="irAPagina(actualPagina + 1)" [disabled]="actualPagina === totalPaginas">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="viewModalOpen && alumnoSeleccionado" class="modal-backdrop" (click)="cerrarVistaAlumno()">
+  <div class="detail-modal" (click)="$event.stopPropagation()">
+    <div class="detail-modal__header">
+      <div>
+        <h2>Ficha del alumno</h2>
+        <p>Consulta rápida de la información registrada.</p>
+      </div>
+
+      <button type="button" class="btn-close" (click)="cerrarVistaAlumno()">×</button>
+    </div>
+
+    <div class="detail-modal__body">
+      <div class="detail-top">
+        <div class="detail-avatar">
+          <img *ngIf="alumnoSeleccionado.foto_url; else sinFotoDetalle" [src]="getFotoUrl(alumnoSeleccionado.foto_url)" [alt]="alumnoSeleccionado.nombres" />
+          <ng-template #sinFotoDetalle>
+            <div class="detail-avatar__fallback">
+              {{ getIniciales(alumnoSeleccionado.nombres, alumnoSeleccionado.apellidos) }}
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="detail-summary">
+          <h3>{{ alumnoSeleccionado.nombres }} {{ alumnoSeleccionado.apellidos }}</h3>
+          <span [class]="getEstadoClass(alumnoSeleccionado.activo)">
+            {{ getEstadoLabel(alumnoSeleccionado.activo) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>DNI</label>
+          <p>{{ alumnoSeleccionado.dni || '-' }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Fecha de nacimiento</label>
+          <p>
+            {{
+              alumnoSeleccionado.fecha_nacimiento
+                ? (alumnoSeleccionado.fecha_nacimiento | date:'dd/MM/yyyy')
+                : '-'
+            }}
+          </p>
+        </div>
+
+        <div class="detail-item">
+          <label>Seguro</label>
+          <p>
+            <span [class]="getSeguroClass(alumnoSeleccionado.seguro_alumno)">
+              {{ getSeguroLabel(alumnoSeleccionado.seguro_alumno) }}
+            </span>
+          </p>
+        </div>
+
+        <div class="detail-item">
+          <label>Ingreso</label>
+          <p>{{ getIngresoLabel(alumnoSeleccionado) }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Teléfono</label>
+          <p>{{ alumnoSeleccionado.telefono || '-' }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label>Correo</label>
+          <p>{{ alumnoSeleccionado.correo || '-' }}</p>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Dirección</label>
+          <p>{{ alumnoSeleccionado.direccion || '-' }}</p>
+        </div>
+
+        <div class="detail-item full-width">
+          <label>Observaciones</label>
+          <p>{{ alumnoSeleccionado.observaciones || '-' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-modal__actions">
+      <button type="button" class="btn-light" (click)="cerrarVistaAlumno()">
+        Cerrar
+      </button>
+
+      <button type="button" class="btn-primary" (click)="reactivarAlumno(alumnoSeleccionado)">
+        Activar alumno
+      </button>
+    </div>
+  </div>
+</div>

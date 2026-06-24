@@ -1,0 +1,997 @@
+// ==========================================================================
+// SCSS ARCHITECTURE - EDITORIAL & TECHNICAL MINIMALISM
+// ==========================================================================
+
+// --- 1. Variables & Design Tokens ---
+// Typography (Swiss/Editorial feel)
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+
+// Brutalist/Minimal Palette
+$c-surface: #ffffff;
+$c-background: #fcfcfc;
+$c-text-main: #0a0a0a;
+$c-text-muted: #525252;
+$c-border: #e5e5e5;
+$c-border-hover: #a3a3a3;
+
+// Sharp Accents
+$c-accent: #000000;
+$c-accent-hover: #333333;
+$c-primary: #0055ff; // Sharp, technical blue
+$c-primary-bg: #f0f4ff;
+
+// Status
+$c-danger: #dc2626;
+$c-danger-bg: #fef2f2;
+$c-success: #16a34a;
+$c-success-bg: #f0fdf4;
+$c-warning: #d97706;
+$c-warning-bg: #fffbeb;
+
+// Geometry (Sharp, not bubbly)
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+
+// Architectural Shadows (Crisp, minimal blur)
+$shadow-crisp: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-float: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
+
+// --- 2. Mixins ---
+@mixin mono-label {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow-focus;
+  }
+}
+
+// ==========================================================================
+// COMPONENT STYLES
+// ==========================================================================
+
+.matricula-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: $font-sans;
+  background-color: $c-background;
+  color: $c-text-main;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-topbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// --- Buttons (Solid, flat, sharp) ---
+.btn-back,
+.btn-light,
+.btn-primary,
+.btn-mini-link,
+.btn-mini-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-sans;
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  @include focus-ring;
+}
+
+.btn-back {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: $radius-md;
+  background: $c-surface;
+  color: $c-text-main;
+  font-weight: 500;
+  border-color: $c-border;
+  box-shadow: $shadow-crisp;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: $c-border-hover;
+  }
+}
+
+.btn-light {
+  height: 40px;
+  border-radius: $radius-md;
+  background: $c-surface;
+  color: $c-text-main;
+  border-color: $c-border;
+  font-weight: 500;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.btn-primary {
+  height: 40px;
+  border-radius: $radius-md;
+  background: #102544;
+  color: $c-surface;
+  font-weight: 500;
+
+  &:hover {
+    background: $c-accent-hover;
+  }
+
+  &:disabled {
+    background: #a3a3a3;
+    cursor: not-allowed;
+  }
+
+  &--wide {
+    width: 100%;
+    height: 44px;
+  }
+}
+
+// --- Layouts ---
+.detail-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-sidebar,
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.detail-sidebar {
+  position: sticky;
+  top: 24px;
+}
+
+// --- High-End Editorial Cards ---
+.state-card,
+.profile-card,
+.header-card,
+.info-card,
+.tabs-card,
+.upload-panel,
+.files-list-panel,
+.finance-card,
+.finance-note-card {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-crisp;
+}
+
+.state-card {
+  padding: 24px;
+}
+
+.error-state {
+  color: $c-danger;
+  background: $c-surface;
+  border: 1px solid $c-danger;
+  border-left: 4px solid $c-danger;
+}
+
+// --- Profile Sub-components ---
+.profile-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-avatar {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: #f0f0f0;
+  margin-bottom: 20px;
+  border: 1px solid $c-border;
+
+  img,
+  &__fallback {
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    object-fit: cover;
+    display: block;
+    filter: grayscale(20%); // Slight desaturation for editorial feel
+    transition: filter 0.3s ease;
+
+    &:hover {
+      filter: grayscale(0%);
+    }
+  }
+
+  &__fallback {
+    display: grid;
+    place-items: center;
+    background: $c-background;
+    color: $c-text-muted;
+    font-family: $font-mono;
+    font-size: 2rem;
+  }
+}
+
+.profile-meta {
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0 0 4px;
+    color: $c-text-main;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-muted;
+    @include mono-label;
+  }
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+// --- Headers & Grids ---
+.header-card,
+.info-card,
+.tabs-card {
+  padding: 32px;
+}
+
+.header-card {
+  border-bottom: 3px solid $c-text-main; // Strong structural accent
+
+  h1 {
+    margin: 0 0 12px;
+    color: $c-text-main;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-muted;
+    font-size: 0.875rem;
+  }
+}
+
+.info-card h3,
+.tab-panel h4 {
+  margin: 0 0 24px;
+  color: $c-text-main;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $c-border;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.info-item {
+  // Removed the box around info items for a cleaner, form-like aesthetic
+  padding: 0;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $c-text-muted;
+    @include mono-label;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-main;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+// --- Technical Tabs Navigation ---
+.tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid $c-border;
+
+  button {
+    height: 40px;
+    padding: 0 20px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: $c-text-muted;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    border-radius: 0; // Flat tabs
+    
+    &:hover {
+      color: $c-text-main;
+    }
+
+    &.active {
+      color: $c-text-main;
+      border-bottom-color: $c-text-main;
+    }
+  }
+}
+
+.tab-panel {
+  background: transparent;
+  color: $c-text-main;
+
+  p { margin: 0; }
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+}
+
+// --- Technical Badges (Sharp) ---
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  @include mono-label;
+  border: 1px solid currentColor;
+
+  &--matriculado { background: $c-surface; color: $c-primary; }
+  &--egresado { background: $c-surface; color: $c-success; }
+  &--retirado { background: $c-surface; color: $c-danger; }
+  &--reserva { background: $c-surface; color: $c-warning; }
+}
+
+// --- Editorial Tables ---
+.mini-table {
+  overflow-x: auto;
+  border: 1px solid $c-border;
+  border-radius: $radius-md;
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+  }
+
+  th, td {
+    padding: 12px 16px;
+    border-bottom: 1px solid $c-border;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 0.875rem;
+  }
+
+  th {
+    background: $c-background;
+    color: $c-text-muted;
+    @include mono-label;
+  }
+  
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: $c-background; }
+}
+
+// --- Files Section ---
+.files-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+
+  h4 {
+    margin: 0;
+    color: $c-text-main;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: $c-text-muted;
+    font-size: 0.875rem;
+  }
+}
+
+.files-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.files-stat {
+  min-width: 120px;
+  padding: 16px;
+  border-radius: $radius-md;
+  border: 1px solid $c-border;
+  background: $c-surface;
+
+  span {
+    display: block;
+    color: $c-text-muted;
+    margin-bottom: 8px;
+    @include mono-label;
+  }
+
+  strong {
+    font-family: $font-mono;
+    font-size: 1.5rem;
+    color: $c-text-main;
+    font-weight: 400;
+  }
+}
+
+.files-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+// --- Upload Panel (Utilitarian) ---
+.upload-panel {
+  position: sticky;
+  top: 24px;
+  
+  &__header,
+  .files-list-panel__header {
+    padding: 20px 24px;
+    border-bottom: 1px solid $c-border;
+    background: $c-background;
+    border-radius: $radius-lg $radius-lg 0 0;
+
+    h5 {
+      margin: 0;
+      color: $c-text-main;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: $c-text-muted;
+      font-size: 0.8125rem;
+    }
+  }
+}
+
+.upload-form {
+  padding: 24px;
+  &--pro {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    @include mono-label;
+    color: $c-text-main;
+  }
+}
+
+// Sharp inputs
+.input-pro,
+.textarea-pro {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  padding: 0 12px;
+  background: $c-surface;
+  color: $c-text-main;
+  font-family: $font-sans;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $c-text-main;
+    box-shadow: 0 0 0 1px $c-text-main;
+  }
+}
+
+.input-pro { height: 40px; }
+.textarea-pro {
+  min-height: 100px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+// Dropzone (Dashed, stark)
+.file-dropzone {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+
+  input[type='file'] { display: none; }
+
+  &__content {
+    min-height: 160px;
+    border: 1px dashed $c-border-hover;
+    border-radius: $radius-sm;
+    background: $c-background;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &:hover {
+      border-color: $c-text-main;
+      background: $c-surface;
+    }
+  }
+
+  &--dragging .file-dropzone__content {
+    border-color: $c-primary;
+    background: $c-primary-bg;
+    border-style: solid;
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+    color: $c-text-main;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    color: $c-text-main;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  &__text {
+    color: $c-text-muted;
+    font-size: 0.8125rem;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: $radius-sm;
+    border: 1px solid $c-border;
+    background: $c-surface;
+    color: $c-text-main;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 8px;
+    
+    &:hover { border-color: $c-text-main; }
+  }
+
+  &__name {
+    color: $c-text-main;
+    font-family: $font-mono;
+    font-size: 0.75rem;
+    word-break: break-word;
+    margin-top: 8px;
+  }
+}
+
+.upload-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  &--full { justify-content: stretch; }
+}
+
+// --- Files List ---
+.files-empty {
+  padding: 64px 24px;
+  text-align: center;
+
+  &__icon {
+    font-size: 2rem;
+    color: $c-border-hover;
+    margin-bottom: 16px;
+  }
+
+  h6 {
+    margin: 0 0 8px;
+    color: $c-text-main;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-muted;
+    font-size: 0.875rem;
+  }
+}
+
+.files-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $c-border;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid $c-border;
+  background: $c-surface;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: $c-background;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+.file-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  background: $c-surface;
+  color: $c-text-main;
+  font-size: 1.2rem;
+}
+
+.file-info {
+  min-width: 0;
+  flex: 1;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-muted;
+    font-size: 0.8125rem;
+  }
+}
+
+.file-name {
+  margin: 0;
+  color: $c-text-main;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.file-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  color: $c-text-muted;
+  @include mono-label;
+  font-size: 0.65rem;
+}
+
+.file-date {
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  color: $c-text-muted;
+}
+
+.file-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-mini-link {
+  background: transparent;
+  color: $c-text-main;
+  border: 1px solid $c-border;
+  &:hover { border-color: $c-text-main; }
+}
+
+.btn-mini-delete {
+  background: transparent;
+  color: $c-danger;
+  border: 1px solid $c-border;
+  &:hover { border-color: $c-danger; background: $c-danger-bg; }
+}
+
+// --- Status Chips (Mono & Sharp) ---
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: $radius-sm;
+  @include mono-label;
+  border: 1px solid $c-border;
+  background: $c-surface;
+  white-space: nowrap;
+  
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+  }
+
+  &--sis { color: $c-primary; border-color: rgba($c-primary, 0.3); }
+  &--essalud { color: #7c3aed; border-color: rgba(124, 58, 237, 0.3); }
+  &--particular { color: $c-warning; border-color: rgba($c-warning, 0.3); }
+  &--sin-seguro { color: $c-danger; border-color: rgba($c-danger, 0.3); }
+  &--neutral { color: $c-text-muted; }
+}
+
+// --- Finances & Timeline ---
+.finance-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.finance-state,
+.finance-empty {
+  padding: 32px;
+  border: 1px dashed $c-border-hover;
+  border-radius: $radius-md;
+  background: $c-background;
+  text-align: center;
+}
+
+.finance-empty {
+  h5 {
+    margin: 0 0 8px;
+    color: $c-text-main;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+  p { margin: 0; font-size: 0.875rem; color: $c-text-muted; }
+}
+
+.finance-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.finance-card {
+  padding: 20px;
+  
+  span {
+    display: block;
+    color: $c-text-muted;
+    margin-bottom: 8px;
+    @include mono-label;
+  }
+
+  strong {
+    font-family: $font-mono;
+    color: $c-text-main;
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+}
+
+.finance-note-card {
+  padding: 20px;
+  border-left: 3px solid $c-text-main; // Editorial marker
+  border-radius: 0 $radius-md $radius-md 0;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $c-text-muted;
+    @include mono-label;
+  }
+
+  p {
+    margin: 0;
+    color: $c-text-main;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+// Timeline (Wireframe/Technical style)
+.timeline {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 0;
+    left: 4px;
+    width: 1px;
+    background: $c-border-hover;
+    z-index: 0;
+  }
+}
+
+.timeline-item {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 24px;
+
+  &:last-child { padding-bottom: 0; }
+}
+
+.timeline-dot {
+  width: 9px;
+  height: 9px;
+  background: $c-surface;
+  border: 2px solid $c-text-main;
+  border-radius: 0; // Square dots for brutalist feel
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.timeline-content {
+  width: 100%;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: $c-text-main;
+}
+
+.badge {
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  border-radius: $radius-sm;
+  @include mono-label;
+  font-size: 0.65rem;
+  
+  &--matricula { color: $c-success; }
+  &--cuota { color: $c-primary; }
+  &--certificacion { color: #7c3aed; }
+}
+
+// ==========================================================================
+// RESPONSIVE MEDIA QUERIES
+// ==========================================================================
+
+@media (max-width: 1100px) {
+  .files-layout {
+    grid-template-columns: 1fr;
+  }
+  .upload-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 980px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-sidebar {
+    position: static;
+    
+    .profile-card {
+      flex-direction: row;
+      align-items: center;
+      gap: 24px;
+      
+      .profile-avatar {
+        width: 100px;
+        margin-bottom: 0;
+      }
+      
+      .profile-meta { margin-bottom: 0; }
+      
+      .profile-actions {
+        flex-direction: row;
+        margin-top: 0;
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .files-topbar { flex-direction: column; gap: 16px; }
+  
+  .file-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+  
+  .file-card__left { flex-direction: column; align-items: flex-start; }
+  
+  .file-card__actions {
+    width: 100%;
+    margin-top: 16px;
+    
+    .btn-mini-link,
+    .btn-mini-delete { flex: 1; height: 36px; }
+  }
+  
+  .detail-sidebar .profile-card {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .profile-avatar { width: 120px; }
+    .profile-actions { flex-direction: column; margin-left: 0; width: 100%; }
+  }
+}

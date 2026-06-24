@@ -1,0 +1,12 @@
+{
+  "/api": {
+    "target": "http://192.168.18.143:4000",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/uploads": {
+    "target": "http://192.168.18.143:4000",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
