@@ -14,8 +14,8 @@ interface ApiResponse<T> {
 })
 export class AlumnosService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/alumnos';
-
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/alumnos';
+  
   listar(
     search: string = '',
     activos: boolean = true,
