@@ -9,7 +9,7 @@ import { Adjunto } from '../models/adjunto.model';
 })
 export class AdjuntosService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/adjuntos';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/adjuntos';
 
   listar(modulo: string, registroId: number): Observable<ApiResponse<Adjunto[]>> {
     const params = new HttpParams()
