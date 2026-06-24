@@ -8,8 +8,8 @@ import { ApiResponse } from '../../core/models/api-response.model';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/auth';
-
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/auth';
+  
   usuarioActual = signal<any | null>(null);
 
   constructor() {
