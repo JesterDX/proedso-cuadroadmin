@@ -415,9 +415,28 @@ getFotoUrl(foto_url?: string | null): string {
                 return codigo || '-';
         }
     }
-    getArchivoUrl(url?: string | null): string {
+getArchivoUrl(url?: string | null): string {
         if (!url) return '#';
-        return url;
+
+        // 1. Si ya es una URL limpia de internet, devuélvela intacta
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+
+        // 2. Si contiene la estructura de carpetas de Cloudinary (ej: proedso/documentos/...)
+        if (url.includes('proedso/')) {
+            const index = url.indexOf('proedso/');
+            const pathLimpio = url.substring(index);
+            
+            return `https://res.cloudinary.com/dfx6p5sjd/image/upload/${pathLimpio}`;
+        }
+
+        // 3. Para archivos antiguos que apuntaban a la carpeta local de subidas
+        if (url.startsWith('/uploads/')) {
+            return url;
+        }
+
+        return `/uploads/matriculas/${url}`;
     }
     eliminarAdjunto(id: number): void {
         Swal.fire({
