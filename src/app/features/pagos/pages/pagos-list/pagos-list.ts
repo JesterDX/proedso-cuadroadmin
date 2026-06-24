@@ -89,7 +89,6 @@ export class PagosList implements OnInit {
     cantidad_cuotas: 4
   };
 
-  // 👇 FIX: Tipado estricto para evitar el error de 'never[]'
   formularioPlan: {
     matricula_id: number | null;
     modalidad_pago: 'MENSUAL' | 'QUINCENAL' | 'PERSONALIZADO';
@@ -127,8 +126,6 @@ export class PagosList implements OnInit {
     tipo: 'success' as 'success' | 'error' | 'warning'
   };
 
-
-
   ngOnInit() {
     this.cargar();
   }
@@ -150,17 +147,14 @@ export class PagosList implements OnInit {
         this.loading = false;
         this.cd.detectChanges();
       },
-
       error: () => this.loading = false
-
     });
   }
 
   // ======================
-  // FILTRO + PAGINACIÓNS
+  // FILTRO + PAGINACIÓN
   // ======================
   filtrar(reset = true) {
-
     if (reset) {
       this.paginaActual = 1;
     }
@@ -168,7 +162,6 @@ export class PagosList implements OnInit {
     const search = this.search.toLowerCase().trim();
 
     const filtrados = this.alumnos.filter(a => {
-
       const cumpleBusqueda =
         !search ||
         a.alumno?.toLowerCase().includes(search) ||
@@ -182,107 +175,49 @@ export class PagosList implements OnInit {
       let cumpleFecha = true;
 
       if (a.fecha_matricula) {
-
         const fecha = new Date(a.fecha_matricula);
-
         const mes = fecha.getMonth() + 1;
         const anio = fecha.getFullYear();
 
-        if (
-          this.mesMatricula &&
-          mes !== Number(this.mesMatricula)
-        ) {
+        if (this.mesMatricula && mes !== Number(this.mesMatricula)) {
           cumpleFecha = false;
         }
-
-        if (
-          this.anioMatricula &&
-          anio !== Number(this.anioMatricula)
-        ) {
+        if (this.anioMatricula && anio !== Number(this.anioMatricula)) {
           cumpleFecha = false;
         }
       }
 
-      return (
-        cumpleBusqueda &&
-        cumpleEstado &&
-        cumpleFecha
-      );
+      return cumpleBusqueda && cumpleEstado && cumpleFecha;
     });
 
-    // ===========================
-    // ORDEN ALFABÉTICO
-    // ===========================
-
     filtrados.sort((a, b) =>
-      a.alumno.localeCompare(
-        b.alumno,
-        'es',
-        { sensitivity: 'base' }
-      )
+      a.alumno.localeCompare(b.alumno, 'es', { sensitivity: 'base' })
     );
 
-    // ===========================
-    // PAGINACIÓN
-    // ===========================
+    this.totalPaginas = Math.ceil(filtrados.length / this.itemsPorPagina);
 
-    this.totalPaginas =
-      Math.ceil(
-        filtrados.length /
-        this.itemsPorPagina
-      );
-
-    const inicio =
-      (this.paginaActual - 1) *
-      this.itemsPorPagina;
-
-    const fin =
-      inicio +
-      this.itemsPorPagina;
-
-    const paginaActualData =
-      filtrados.slice(inicio, fin);
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    const paginaActualData = filtrados.slice(inicio, fin);
 
     this.alumnosFiltrados = filtrados;
 
-    this.paginas =
-      Array.from(
-        { length: this.totalPaginas },
-        (_, i) => i + 1
-      );
-
-    // ===========================
-    // AGRUPAR POR AÑO Y MES
-    // ===========================
+    this.paginas = Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
 
     const meses = [
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre'
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
 
     const grupos: any = {};
 
     paginaActualData.forEach(alumno => {
-
       const fecha = new Date(alumno.fecha_matricula);
-
       const anio = fecha.getFullYear();
       const mes = fecha.getMonth();
-
       const key = `${anio}-${mes}`;
 
       if (!grupos[key]) {
-
         grupos[key] = {
           anio,
           mesNumero: mes,
@@ -290,20 +225,15 @@ export class PagosList implements OnInit {
           alumnos: []
         };
       }
-
       grupos[key].alumnos.push(alumno);
     });
 
-    this.gruposPaginados =
-      Object.values(grupos)
-        .sort((a: any, b: any) => {
-
-          if (a.anio !== b.anio) {
-            return b.anio - a.anio;
-          }
-
-          return b.mesNumero - a.mesNumero;
-        });
+    this.gruposPaginados = Object.values(grupos).sort((a: any, b: any) => {
+      if (a.anio !== b.anio) {
+        return b.anio - a.anio;
+      }
+      return b.mesNumero - a.mesNumero;
+    });
 
     this.cd.detectChanges();
   }
@@ -329,7 +259,7 @@ export class PagosList implements OnInit {
   }
 
   // ======================
-  // MODAL PLAN MANUAL (ACTUALIZADO)
+  // MODAL PLAN MANUAL
   // ======================
   abrirModalPlanManual() {
     this.modalManualAbierto = true;
@@ -352,9 +282,7 @@ export class PagosList implements OnInit {
   }
 
   buscarMatricula(event: Event) {
-
-    const termino =
-      (event.target as HTMLInputElement).value;
+    const termino = (event.target as HTMLInputElement).value;
     if (termino.length < 3) {
       this.resultadosBusqueda = [];
       return;
@@ -377,12 +305,11 @@ export class PagosList implements OnInit {
 
   agregarCuota() {
     if (!this.cuotaTemporal.fecha_vencimiento || !this.cuotaTemporal.monto) {
-      this.mostrarNotificacion('Llena la fecha y el monto', 'warning');
+      this.mostrarNotificacion('Llena la fecha y el monto de la cuota', 'warning');
       return;
     }
 
     this.formularioPlan.cuotas.push({ ...this.cuotaTemporal });
-
     this.cuotaTemporal.numero_cuota++;
     this.cuotaTemporal.monto = null;
     this.cuotaTemporal.observaciones = '';
@@ -395,23 +322,12 @@ export class PagosList implements OnInit {
   }
 
   guardarPlanManual() {
-    const totalCuotas =
-      this.formularioPlan.cuotas.reduce(
-        (sum, cuota) =>
-          sum + Number(cuota.monto || 0),
-        0
-      );
+    const totalCuotas = this.formularioPlan.cuotas.reduce(
+      (sum, cuota) => sum + Number(cuota.monto || 0), 0
+    );
 
-    if (
-      totalCuotas !==
-      Number(this.formularioPlan.monto_total)
-    ) {
-
-      this.mostrarNotificacion(
-        'La suma de cuotas no coincide con el monto total',
-        'warning'
-      );
-
+    if (totalCuotas !== Number(this.formularioPlan.monto_total)) {
+      this.mostrarNotificacion('La suma de las cuotas no coincide con el monto total', 'warning');
       return;
     }
     if (this.formularioPlan.cuotas.length === 0) {
@@ -420,12 +336,11 @@ export class PagosList implements OnInit {
     }
 
     this.loading = true;
-    // FIX: Se usa la función centralizada de servicio
     this.pagosService.crearPlanManual(this.formularioPlan).subscribe({
-      next: (res) => {
+      next: () => {
         this.mostrarNotificacion('Plan manual creado con éxito', 'success');
         this.cerrarModalPlanManual();
-        this.cargar(); // FIX: Función correcta de recarga
+        this.cargar();
       },
       error: (err) => {
         this.loading = false;
@@ -505,7 +420,10 @@ export class PagosList implements OnInit {
     return this.cuotasDetalle.find(c => c.id == this.formPago.cuota_id);
   }
 
-recalcularPlan() {
+  // ======================
+  // OPERACIONES CON ALERTAS ASÍNCRONAS FIJADAS
+  // ======================
+  recalcularPlan() {
     if (!this.alumnoSeleccionado?.plan_pago_alumno_id) {
       this.mostrarNotificacion('No hay plan de pago disponible', 'error');
       return;
@@ -518,11 +436,8 @@ recalcularPlan() {
       cantidad_cuotas: this.formRecalculo.cantidad_cuotas
     }).subscribe({
       next: () => {
-        // Corrección del texto del aviso informativo
         this.mostrarNotificacion('Plan de pagos recalculado con éxito', 'success');
         this.miniModalOpen = false;
-        
-        // Primero recargamos los datos del detalle, el aviso persistirá si está fuera del contenedor loading
         this.verDetalle(this.alumnoSeleccionado.matricula_id);
       },
       error: (err) => {
@@ -545,7 +460,7 @@ recalcularPlan() {
 
     this.pagosService.actualizarFechas(data).subscribe({
       next: () => {
-        this.mostrarNotificacion('Fechas actualizadas', 'success');
+        this.mostrarNotificacion('Fechas de vencimiento actualizadas', 'success');
         this.editandoFechas = false;
         this.verDetalle(this.alumnoSeleccionado.matricula_id);
       },
@@ -556,8 +471,7 @@ recalcularPlan() {
     });
   }
 
-
-registrarPago() {
+  registrarPago() {
     if (!this.formPago.cuota_id || !this.formPago.monto) {
       this.mostrarNotificacion('Por favor, complete todos los campos obligatorios.', 'warning');
       return;
@@ -605,14 +519,18 @@ registrarPago() {
 
     this.pagosService.registrarPago(formData).subscribe({
       next: () => {
-        this.mostrarNotificacion('Pago rápido realizado', 'success');
+        this.mostrarNotificacion('Pago rápido registrado correctamente', 'success');
         this.miniModalOpen = false;
+        this.miniFile = null;
         this.verDetalle(this.alumnoSeleccionado.matricula_id);
       },
-      error: () => this.mostrarNotificacion('Error en pago', 'error')
+      error: (err) => this.mostrarNotificacion(err?.error?.message || 'Error en pago rápido', 'error')
     });
   }
 
+  // ======================
+  // FORMATOS Y UTILIDADES
+  // ======================
   formatMonto(v: number) {
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',
@@ -644,34 +562,27 @@ registrarPago() {
   onMiniFileSelected(e: any) {
     this.miniFile = e.target.files[0];
   }
+
   getComprobanteUrl(url?: string | null): string {
     if (!url) return '#';
-
-    // 1. Si ya es una URL limpia de internet, devuélvela intacta
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-
-    // 2. Si el backend guardó el path con duplicados o prefijos mezclados de Cloudinary
     if (url.includes('proedso/')) {
       const index = url.indexOf('proedso/');
       const pathLimpio = url.substring(index);
-      
-      // Retorna la URL directa al recurso en tu Cloudinary
       return `https://res.cloudinary.com/dfx6p5sjd/image/upload/${pathLimpio}`;
     }
-
-    // 3. Para los archivos antiguos locales (que empiezan con /uploads/)
     if (url.startsWith('/uploads/')) {
       return url;
     }
-    
-    // Fallback local general
     return `/uploads/pagos/${url}`;
   }
 
-mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
-    // Forzamos el reinicio por si había otra notificación activa
+  // ======================
+  // MANEJO DE NOTIFICACIONES
+  // ======================
+  mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
     this.notificacion.visible = false;
     this.cd.detectChanges();
 
@@ -681,7 +592,7 @@ mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'succes
     setTimeout(() => {
       this.notificacion.visible = false;
       this.cd.detectChanges();
-    }, 4000); // 4 segundos para dar tiempo a leer tras los loadeers
+    }, 4000); 
   }
 
   trackByAlumno(i: number, a: any) {
