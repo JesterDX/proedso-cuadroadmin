@@ -1,67 +1,99 @@
 <section class="dashboard">
+
   <div class="welcome-card">
-    <h1>Bienvenidos a PROEDSO</h1>
-    <p>Resumen general del sistema administrativo.</p>
+    <div>
+      <h1>Panel de Administración</h1>
+      <p>Control general de PROEDSO</p>
+    </div>
+
+    <div class="admin-badge">
+      ADMINISTRADOR
+    </div>
   </div>
 
+  <!-- KPIs -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <h3>250</h3>
-      <p>Alumnos activos</p>
+
+    <div class="stat-card blue">
+      <span class="label">Alumnos</span>
+      <h3>{{ stats.totalAlumnos }}</h3>
     </div>
 
-    <div class="stat-card">
-      <h3>200</h3>
-      <p>Graduados</p>
+    <div class="stat-card green">
+      <span class="label">Matrículas Activas</span>
+      <h3>{{ stats.matriculasActivas }}</h3>
     </div>
 
-    <div class="stat-card">
-      <h3>164</h3>
-      <p>Certificaciones emitidas</p>
+    <div class="stat-card orange">
+      <span class="label">Cuotas al Día</span>
+      <h3>{{ stats.cuotasAlDia }}%</h3>
     </div>
 
-    <div class="stat-card">
-      <h3>S/ 28,500</h3>
-      <p>Ingresos</p>
+    <div class="stat-card purple">
+      <span class="label">Ingresos del Mes</span>
+      <h3>S/ {{ stats.ingresosMes }}</h3>
     </div>
+
   </div>
 
+  <!-- Gestión rápida -->
   <div class="panel-grid">
+
     <div class="panel-card">
-      <h2>Gestión Académica</h2>
+      <h2>⚡ Acciones rápidas</h2>
+
+      <div class="quick-actions">
+
+        <button>
+          ➕ Crear Curso
+        </button>
+
+        <button>
+          🚜 Crear Máquina
+        </button>
+
+        <button>
+          👤 Crear Usuario
+        </button>
+
+        <button>
+          📚 Crear Plan
+        </button>
+
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h2>📊 Estado General</h2>
+
       <ul>
-        <li>Programas académicos</li>
-        <li>Cursos</li>
-        <li>Equipos</li>
-        <li>Calendario de prácticas</li>
+        <li>Certificaciones emitidas: {{ stats.certificaciones }}</li>
+        <li>Prácticas activas: {{ stats.practicas }}</li>
+        <li>Usuarios registrados: {{ stats.usuarios }}</li>
+        <li>Cursos activos: {{ stats.cursos }}</li>
       </ul>
     </div>
 
     <div class="panel-card">
-      <h2>Gestión de Alumnos</h2>
-      <ul>
-        <li>Alumnos</li>
-        <li>Matriculados</li>
-        <li>Activos</li>
-        <li>Egresados</li>
+      <h2>🚨 Alertas</h2>
+
+      <ul class="alerts">
+        <li>Cuotas vencidas: {{ stats.cuotasVencidas }}</li>
+        <li>Matrículas en reserva: {{ stats.reservas }}</li>
+        <li>Certificados pendientes: {{ stats.certificadosPendientes }}</li>
       </ul>
     </div>
 
     <div class="panel-card">
-      <h2>Certificaciones</h2>
+      <h2>📈 Resumen Financiero</h2>
+
       <ul>
-        <li>Certificados de cursos</li>
-        <li>Certificaciones homologadas</li>
+        <li>Total ingresos: S/ {{ stats.ingresosTotal }}</li>
+        <li>Pagos registrados: {{ stats.totalPagos }}</li>
+        <li>Pendientes de cobro: {{ stats.pendientesCobro }}</li>
       </ul>
     </div>
 
-    <div class="panel-card">
-      <h2>Finanzas</h2>
-      <ul>
-        <li>Cuotas</li>
-        <li>Pagos</li>
-        <li>Reportes de ingresos</li>
-      </ul>
-    </div>
   </div>
+
 </section>
