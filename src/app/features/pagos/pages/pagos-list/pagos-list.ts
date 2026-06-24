@@ -505,9 +505,9 @@ export class PagosList implements OnInit {
     return this.cuotasDetalle.find(c => c.id == this.formPago.cuota_id);
   }
 
-  recalcularPlan() {
+recalcularPlan() {
     if (!this.alumnoSeleccionado?.plan_pago_alumno_id) {
-      this.mostrarNotificacion('No hay plan de pago', 'error');
+      this.mostrarNotificacion('No hay plan de pago disponible', 'error');
       return;
     }
 
@@ -518,22 +518,15 @@ export class PagosList implements OnInit {
       cantidad_cuotas: this.formRecalculo.cantidad_cuotas
     }).subscribe({
       next: () => {
-
-        this.mostrarNotificacion(
-          'Pago rápido realizado',
-          'success'
-        );
-
+        // Corrección del texto del aviso informativo
+        this.mostrarNotificacion('Plan de pagos recalculado con éxito', 'success');
         this.miniModalOpen = false;
-        this.miniPago = null;
-        this.miniFile = null;
-
-        this.verDetalle(
-          this.alumnoSeleccionado.matricula_id
-        );
+        
+        // Primero recargamos los datos del detalle, el aviso persistirá si está fuera del contenedor loading
+        this.verDetalle(this.alumnoSeleccionado.matricula_id);
       },
       error: (err) => {
-        this.mostrarNotificacion(err?.error?.error || 'Error al recalcular', 'error');
+        this.mostrarNotificacion(err?.error?.error || 'Error al recalcular el plan', 'error');
       }
     });
   }
@@ -564,9 +557,9 @@ export class PagosList implements OnInit {
   }
 
 
-  registrarPago() {
+registrarPago() {
     if (!this.formPago.cuota_id || !this.formPago.monto) {
-      this.mostrarNotificacion('Datos incompletos', 'warning');
+      this.mostrarNotificacion('Por favor, complete todos los campos obligatorios.', 'warning');
       return;
     }
 
@@ -581,12 +574,12 @@ export class PagosList implements OnInit {
 
     this.pagosService.registrarPago(formData).subscribe({
       next: () => {
-        this.mostrarNotificacion('Pago registrado', 'success');
-        this.verDetalle(this.alumnoSeleccionado.matricula_id);
+        this.mostrarNotificacion('¡Pago registrado correctamente!', 'success');
         this.formPago = { cuota_id: null, monto: null, metodo_pago: 'EFECTIVO' };
         this.selectedFile = null;
+        this.verDetalle(this.alumnoSeleccionado.matricula_id);
       },
-      error: () => this.mostrarNotificacion('Error al pagar', 'error')
+      error: (err) => this.mostrarNotificacion(err?.error?.message || 'Error al procesar el pago', 'error')
     });
   }
 
@@ -677,12 +670,18 @@ export class PagosList implements OnInit {
     return `/uploads/pagos/${url}`;
   }
 
-  mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
+mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
+    // Forzamos el reinicio por si había otra notificación activa
+    this.notificacion.visible = false;
+    this.cd.detectChanges();
+
     this.notificacion = { visible: true, mensaje: msg, tipo };
+    this.cd.detectChanges();
+
     setTimeout(() => {
       this.notificacion.visible = false;
       this.cd.detectChanges();
-    }, 3000);
+    }, 4000); // 4 segundos para dar tiempo a leer tras los loadeers
   }
 
   trackByAlumno(i: number, a: any) {
