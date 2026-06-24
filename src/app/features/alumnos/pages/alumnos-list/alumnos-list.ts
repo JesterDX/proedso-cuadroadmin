@@ -412,22 +412,32 @@ export class AlumnosList implements OnInit {
   }
 
 getFotoUrl(foto_url?: string | null): string {
-    if (!foto_url) return '';
+  if (!foto_url) return '';
 
-    // 1. Si ya es una URL completa de internet (Cloudinary), la devolvemos idéntica
-    if (foto_url.startsWith('http://') || foto_url.startsWith('https://')) {
-      return foto_url;
-    }
-
-    // 2. Si el backend guardó el path completo de Cloudinary pero sin el dominio (ej: 'proedso/alumnos/...')
-    if (foto_url.startsWith('proedso/')) {
-      // Reemplaza 'tu_cloud_name' por el nombre real de tu cuenta en Cloudinary
-      return `https://res.cloudinary.com/tu_cloud_name/image/upload/${foto_url}`;
-    }
-
-    // 3. Para los alumnos antiguos guardados de forma local en tu servidor antiguo
-    return `/uploads/alumnos/${foto_url}`;
+  // 1. Si ya es una URL limpia de internet (Cloudinary), devuélvela intacta
+  if (foto_url.startsWith('http://') || foto_url.startsWith('https://')) {
+    return foto_url;
   }
+
+  // 2. Si el backend guardó el path con el prefijo duplicado o local de Cloudinary
+  //    Ejemplo: /uploads/alumnos/proedso/alumnos/... o proedso/alumnos/...
+  if (foto_url.includes('proedso/alumnos/')) {
+    // Extraemos solo la parte limpia de Cloudinary (proedso/alumnos/nombre_archivo)
+    const index = foto_url.indexOf('proedso/alumnos/');
+    const pathLimpio = foto_url.substring(index);
+    
+    // ⚠️ IMPORTANTE: Pon aquí tu Cloud Name real de Cloudinary en lugar de 'tu_cloud_name'
+    return `https://res.cloudinary.com/tu_cloud_name/image/upload/${pathLimpio}`;
+  }
+
+  // 3. Para los alumnos antiguos del servidor local (que no tienen "proedso/" en su ruta)
+  //    Si ya trae "/uploads/alumnos/", lo dejamos pasar; si no, se lo agregamos.
+  if (foto_url.startsWith('/uploads/')) {
+    return foto_url;
+  }
+  
+  return `/uploads/alumnos/${foto_url}`;
+}
 
   getIniciales(nombres: string, apellidos: string): string {
     const n = nombres?.trim()?.charAt(0) || '';
