@@ -79,11 +79,6 @@ export class Sidebar {
     } else {
       this.menu = [
         {
-          label: 'Dashboard',
-          route: '/',
-          icon: this.icons.dashboard
-        },
-        {
           label: 'Gestión Académica',
           icon: this.icons.academic,
           expanded: true,
