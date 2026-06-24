@@ -427,7 +427,7 @@ getFotoUrl(foto_url?: string | null): string {
     const pathLimpio = foto_url.substring(index);
     
     // ⚠️ IMPORTANTE: Pon aquí tu Cloud Name real de Cloudinary en lugar de 'tu_cloud_name'
-    return `https://res.cloudinary.com/tu_cloud_name/image/upload/${pathLimpio}`;
+    return `https://res.cloudinary.com/dfx6p5sjd/image/upload/${pathLimpio}`;
   }
 
   // 3. Para los alumnos antiguos del servidor local (que no tienen "proedso/" en su ruta)
