@@ -1,194 +1,155 @@
-@use 'sass:color';
-
 // ==========================================================================
-// SYSTEM DESIGN: EDITORIAL & HUMAN INTERFACE (DASHBOARD SIMPLE Y CÓMODO)
+// SCSS: MINIMALIST DASHBOARD
 // ==========================================================================
 
-$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$c-bg: #f9fafb;
+$c-surface: #ffffff;
+$c-text-main: #111827;
+$c-text-muted: #6b7280;
+$c-border: #e5e7eb;
+$c-border-hover: #d1d5db;
 
-// Paleta Neutral Orgánica (Lectura cómoda, contraste natural)
-$c-brand: #0f172a;       // Texto principal jerárquico
-$c-txt: #334155;         // Texto general
-$c-txt-muted: #64748b;   // Metadatos y subtítulos
-$c-bg: #f8fafc;          // Fondo limpio del sistema
-$c-surface: #ffffff;     // Tarjetas puras
-
-// Acentos Orgánicos (Finos y amigables)
-$c-accent: #2563eb;      // Azul principal
-$c-accent-hover: #1d4ed8;
-$c-border: #e2e8f0;      
-
-$c-success: #0d9488;     // Teal sofisticado (Verde)
-$c-warning: #ea580c;     // Naranja quemado
-$c-danger: #e11d48;      // Carmesí fino
-$c-purple: #7c3aed;      // Morado suave
-
-// Esquinas más suaves y amigables (Recuperando tu estilo original)
-$r-card: 16px;           
-$r-btn: 10px;
-$soft-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
-$wire-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-
-// ==========================================================================
-// ESTILOS DEL DASHBOARD
-// ==========================================================================
+$radius: 8px;
 
 .dashboard {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  font-family: $font-sans;
-  background: $c-bg;
-  color: $c-txt;
-  padding: 32px;
-  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: $c-bg;
+  color: $c-text-main;
+  padding: 24px;
   box-sizing: border-box;
 
   * { box-sizing: border-box; }
 }
 
-// Tarjetas Base
+// --- Cards Base ---
 .welcome-card,
 .stat-card,
 .panel-card {
   background: $c-surface;
-  border-radius: $r-card;
   border: 1px solid $c-border;
-  box-shadow: $soft-shadow;
+  border-radius: $radius;
+  padding: 24px;
 }
 
-// --- Encabezado de Bienvenida ---
+// --- Welcome Header ---
 .welcome-card {
-  padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
 
   h1 {
-    margin: 0 0 6px 0;
-    color: $c-brand;
-    font-size: 24px;
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
   }
 
   p {
     margin: 0;
-    color: $c-txt-muted;
-    font-size: 14.5px;
+    color: $c-text-muted;
+    font-size: 0.875rem;
   }
 }
 
-// Etiqueta Píldora (Simple y clásica)
 .admin-badge {
-  background: rgba($c-danger, 0.1);
-  color: $c-danger;
-  padding: 8px 16px;
-  border-radius: 99px;
-  font-size: 13px;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-// --- Grilla de Estadísticas (KPIs) ---
+// --- KPIs Stats ---
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
 }
 
 .stat-card {
-  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 
   .label {
-    font-size: 13px;
-    font-weight: 500;
-    color: $c-txt-muted;
+    font-size: 0.875rem;
+    color: $c-text-muted;
   }
 
   h3 {
     margin: 0;
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 1.75rem;
+    font-weight: 500;
   }
 
-  // Colores limpios aplicados directamente al texto
-  &.blue h3 { color: $c-accent; }
-  &.green h3 { color: $c-success; }
-  &.orange h3 { color: $c-warning; }
-  &.purple h3 { color: $c-purple; }
+  // Toques de color directos al número, sin bordes ni fondos extra
+  &.blue h3 { color: #2563eb; }
+  &.green h3 { color: #16a34a; }
+  &.orange h3 { color: #ea580c; }
+  &.purple h3 { color: #7c3aed; }
 }
 
-// --- Grilla de Paneles Inferiores ---
+// --- Panel Layout ---
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
 }
 
 .panel-card {
-  padding: 28px;
-
   h2 {
-    margin: 0 0 20px 0;
-    font-size: 16px;
+    margin: 0 0 16px 0;
+    font-size: 1rem;
     font-weight: 600;
-    color: $c-brand;
+    border-bottom: 1px solid $c-border;
+    padding-bottom: 12px;
   }
 }
 
-// --- Acciones Rápidas (Botones amigables) ---
+// --- Quick Actions ---
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 
   button {
-    border: none;
     background: $c-surface;
-    color: $c-txt;
     border: 1px solid $c-border;
-    padding: 12px 16px;
-    border-radius: $r-btn;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.875rem;
+    color: $c-text-main;
     cursor: pointer;
-    font-family: $font-sans;
-    font-weight: 500;
-    font-size: 14px;
-    box-shadow: $wire-shadow;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 
     &:hover {
-      background: $c-bg;
-      color: $c-accent;
-      border-color: #cbd5e1;
+      background: #f9fafb;
+      border-color: $c-border-hover;
     }
   }
 }
 
-// --- Listas Simples (Sin cajas raras) ---
+// --- Lists ---
 ul {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 
   li {
-    font-size: 14px;
-    color: $c-txt;
+    padding: 10px 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f3f4f6;
     display: flex;
     justify-content: space-between;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f1f5f9;
 
     &:last-child {
       border-bottom: none;
@@ -197,32 +158,20 @@ ul {
   }
 }
 
-// Lista de Alertas
+// Alerts (Solo el texto en rojo)
 .alerts li {
-  color: $c-danger;
-  font-weight: 500;
+  color: #dc2626;
 }
 
-// ==========================================================================
-// RESPONSIVO
-// ==========================================================================
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+// --- Responsive ---
 @media (max-width: 768px) {
-  .dashboard { padding: 16px; }
+  .dashboard {
+    padding: 16px;
+  }
   
   .welcome-card {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .stats-grid,
-  .panel-grid,
-  .quick-actions {
-    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
