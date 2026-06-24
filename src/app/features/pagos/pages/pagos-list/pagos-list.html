@@ -268,27 +268,25 @@
               </table>
             </div>
 
-            <div *ngIf="tab==='historial'" class="tab-content animate-in">
-              <div class="history-list" *ngIf="historial.length">
-                <div class="history-item" *ngFor="let h of historial">
-                  <div class="h-info">
-                    <strong>{{ h.concepto_nombre }}</strong>
-                    <div class="h-meta">
-                      <span>📅 {{ formatFecha(h.fecha_pago) }}</span>
-                      <span>💳 {{ h.metodo_pago }}</span>
-                      <span>👤 {{ h.usuario || 'Admin' }}</span>
-                    </div>
+          <div *ngIf="tab==='historial'" class="tab-content animate-in">
+            <div class="history-list" *ngIf="historial.length">
+              <div class="history-item" *ngFor="let h of historial">
+                <div class="h-info">
+                  <strong>{{ h.concepto_nombre }}</strong>
+                  <div class="h-meta">
+                    <span>📅 {{ formatFecha(h.fecha_pago) }}</span>
+                    <span>💳 {{ h.metodo_pago }}</span>
+                    <span>👤 {{ h.usuario || 'Admin' }}</span>
                   </div>
-                  <div class="h-actions">
-                    <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
-                    <a *ngIf="h.comprobante_url" [href]="getComprobanteUrl(h.comprobante_url)" target="_blank" class="btn-voucher">
-                      📎 Ver comprobante
-                    </a>
-                  </div>
-              </div>
-              <div class="empty-mini" *ngIf="!historial.length">Sin movimientos registrados</div>
-            </div>
-
+                </div>
+                <div class="h-actions">
+                  <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
+                  <a *ngIf="h.comprobante_url" [href]="getComprobanteUrl(h.comprobante_url)" target="_blank" class="btn-voucher">
+                    📎 Ver comprobante
+                  </a>
+                </div>
+              </div> </div> <div class="empty-mini" *ngIf="!historial.length">Sin movimientos registrados</div>
+          </div>
             <div *ngIf="tab === 'pago'" class="tab-content animate-in">
               <div class="payment-card">
                 <div class="payment-header">
@@ -379,7 +377,6 @@
                 </div>
               </div>
             </div>
-
           </main>
         </div>
 
