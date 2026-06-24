@@ -9,7 +9,7 @@ import { PagoResumen } from '../models/pago.model';
 export class PagosService {
 
   private http = inject(HttpClient);
-  private apiUrl = '/api/pagos';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/pagos';
 
   resumen(): Observable<PagoResumen[]> {
     return this.http.get<PagoResumen[]>(`${this.apiUrl}/resumen`);
