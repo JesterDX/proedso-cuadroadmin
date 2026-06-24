@@ -651,6 +651,31 @@ export class PagosList implements OnInit {
   onMiniFileSelected(e: any) {
     this.miniFile = e.target.files[0];
   }
+  getComprobanteUrl(url?: string | null): string {
+    if (!url) return '#';
+
+    // 1. Si ya es una URL limpia de internet, devuélvela intacta
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    // 2. Si el backend guardó el path con duplicados o prefijos mezclados de Cloudinary
+    if (url.includes('proedso/')) {
+      const index = url.indexOf('proedso/');
+      const pathLimpio = url.substring(index);
+      
+      // Retorna la URL directa al recurso en tu Cloudinary
+      return `https://res.cloudinary.com/dfx6p5sjd/image/upload/${pathLimpio}`;
+    }
+
+    // 3. Para los archivos antiguos locales (que empiezan con /uploads/)
+    if (url.startsWith('/uploads/')) {
+      return url;
+    }
+    
+    // Fallback local general
+    return `/uploads/pagos/${url}`;
+  }
 
   mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
     this.notificacion = { visible: true, mensaje: msg, tipo };
