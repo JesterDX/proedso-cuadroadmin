@@ -1,16 +1,39 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { DashboardService } from '../../services/dashboard.service';
 
-@Injectable({
-  providedIn: 'root'
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.scss']
 })
-export class DashboardService {
+export class Dashboard implements OnInit {
 
-  private http = inject(HttpClient);
+  private dashboardService = inject(DashboardService);
+  private cd = inject(ChangeDetectorRef);
 
-  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
+  dashboard: any = {};
+  loading = false;
 
-  getDashboard() {
-    return this.http.get<any>(this.apiUrl);
+  ngOnInit(): void {
+    this.cargarDashboard();
+  }
+
+  cargarDashboard(): void {
+    this.loading = true;
+
+    this.dashboardService.getDashboard().subscribe({
+      next: (resp: any) => {
+        console.log('DASHBOARD API:', resp);
+
+        this.dashboard = resp.data ?? {};
+
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+      error: (err: any) => {
+        console.error(err);
+        this.loading = false;
+      }
+    });
   }
 }
