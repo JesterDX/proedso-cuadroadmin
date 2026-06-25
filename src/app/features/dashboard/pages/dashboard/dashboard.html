@@ -1,23 +1,19 @@
-<div class="stats-grid">
+<div class="stat-card">
+  <h3>{{ dashboard?.alumnos ?? 0 }}</h3>
+  <p>Alumnos registrados</p>
+</div>
 
-  <div class="stat-card">
-    <h3>{{ dashboard.alumnos || 0 }}</h3>
-    <p>Alumnos registrados</p>
-  </div>
+<div class="stat-card">
+  <h3>{{ dashboard?.alumnosActivos ?? 0 }}</h3>
+  <p>Alumnos activos</p>
+</div>
 
-  <div class="stat-card">
-    <h3>{{ dashboard.alumnosActivos || 0 }}</h3>
-    <p>Alumnos activos</p>
-  </div>
+<div class="stat-card">
+  <h3>{{ dashboard?.matriculasActivas ?? 0 }}</h3>
+  <p>Matrículas activas</p>
+</div>
 
-  <div class="stat-card">
-    <h3>{{ dashboard.matriculasActivas || 0 }}</h3>
-    <p>Matrículas activas</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>S/ {{ dashboard.ingresos || 0 }}</h3>
-    <p>Ingresos acumulados</p>
-  </div>
-
+<div class="stat-card">
+  <h3>S/ {{ dashboard?.ingresos ?? 0 }}</h3>
+  <p>Ingresos acumulados</p>
 </div>
