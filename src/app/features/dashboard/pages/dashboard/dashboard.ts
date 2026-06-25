@@ -1,28 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-@Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+@Injectable({
+  providedIn: 'root'
 })
-export class Dashboard implements OnInit {
+export class DashboardService {
 
-  private dashboardService = inject(DashboardService);
+  private http = inject(HttpClient);
 
-  dashboard: any = {};
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
 
-  ngOnInit(): void {
-    this.cargarDashboard();
-  }
-
-  cargarDashboard(): void {
-    this.dashboardService.getDashboard().subscribe({
-      next: (resp: any) => {
-        this.dashboard = resp.data;
-      },
-      error: (err: any) => {
-        console.error(err);
-      }
-    });
+  getDashboard() {
+    return this.http.get<any>(this.apiUrl);
   }
 }
