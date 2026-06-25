@@ -1,39 +1,17 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { DashboardService } from '../../services/dashboard.service';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-@Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+@Injectable({
+  providedIn: 'root'
 })
-export class Dashboard implements OnInit {
+export class DashboardService {
 
-  private dashboardService = inject(DashboardService);
-  private cd = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
 
-  dashboard: any = null;
-  loading = false;
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
 
-  ngOnInit(): void {
-    this.cargarDashboard();
-  }
-
-  cargarDashboard() {
-    this.loading = true;
-
-    this.dashboardService.getDashboard().subscribe({
-      next: (resp) => {
-        console.log('DASHBOARD API:', resp);
-
-        this.dashboard = { ...resp.data }; // 👈 clave PRO
-        this.loading = false;
-
-        this.cd.detectChanges(); // 👈 igual que matrículas
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-      }
-    });
+  getDashboard(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 }
