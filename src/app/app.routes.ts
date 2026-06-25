@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminLayout } from './layout/admin-layout/admin-layout';
+import { authGuard, publicGuard } from './core/guards/auth.guard';
 import { DummyRedirectComponent } from './core/components/dummy-redirect.component';
 import { roleRedirectGuard } from './core/guards/role-redirect.guard';
 import { LoginComponent } from './auth/login/login.component';
