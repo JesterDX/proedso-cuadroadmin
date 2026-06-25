@@ -20,17 +20,17 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/alumnos-list').then(m => m.Dashboard)
       },
       {
         path: 'cursos',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/alumnos-list').then(m => m.Dashboard)
       },
       {
         path: 'maquinas',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/alumnos-list').then(m => m.Dashboard)
       },
       {
         path: 'alumnos',
