@@ -20,12 +20,20 @@ export const routes: Routes = [
   canActivate: [authGuard],
   children: [
 
-    // 🔥 ESTE ES EL CAMBIO CLAVE
+    // 🔥 REDIRECCIÓN POR ROL (PRIMERO SIEMPRE)
     {
       path: '',
-      loadComponent: () =>
-        import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+      component: DummyRedirectComponent
     },
+
+    // ADMIN / DASHBOARD SOLO ACCESO DIRECTO (opcional)
+    {
+      path: 'dashboard',
+      loadComponent: () =>
+        import('./features/dashboard/pages/dashboard/dashboard')
+        .then(m => m.Dashboard)
+    },
+
       {
         path: 'cursos',
         loadComponent: () =>
