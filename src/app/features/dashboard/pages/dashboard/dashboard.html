@@ -1,99 +1,23 @@
-<section class="dashboard">
+<div class="stats-grid">
 
-  <div class="welcome-card">
-    <div>
-      <h1>Panel de Administración</h1>
-      <p>Control general de PROEDSO</p>
-    </div>
-
-    <div class="admin-badge">
-      ADMINISTRADOR
-    </div>
+  <div class="stat-card">
+    <h3>{{ dashboard.alumnos || 0 }}</h3>
+    <p>Alumnos registrados</p>
   </div>
 
-  <!-- KPIs -->
-  <div class="stats-grid">
-
-    <div class="stat-card blue">
-      <span class="label">Alumnos</span>
-      <h3>{{ stats.totalAlumnos }}</h3>
-    </div>
-
-    <div class="stat-card green">
-      <span class="label">Matrículas Activas</span>
-      <h3>{{ stats.matriculasActivas }}</h3>
-    </div>
-
-    <div class="stat-card orange">
-      <span class="label">Cuotas al Día</span>
-      <h3>{{ stats.cuotasAlDia }}%</h3>
-    </div>
-
-    <div class="stat-card purple">
-      <span class="label">Ingresos del Mes</span>
-      <h3>S/ {{ stats.ingresosMes }}</h3>
-    </div>
-
+  <div class="stat-card">
+    <h3>{{ dashboard.alumnosActivos || 0 }}</h3>
+    <p>Alumnos activos</p>
   </div>
 
-  <!-- Gestión rápida -->
-  <div class="panel-grid">
-
-    <div class="panel-card">
-      <h2>Acciones rápidas</h2>
-
-      <div class="quick-actions">
-
-        <button>
-          Crear Curso
-        </button>
-
-        <button>
-          Crear Máquina
-        </button>
-
-        <button>
-          Crear Usuario
-        </button>
-
-        <button>
-          Crear Plan
-        </button>
-
-      </div>
-    </div>
-
-    <div class="panel-card">
-      <h2>Estado General</h2>
-
-      <ul>
-        <li>Certificaciones emitidas: {{ stats.certificaciones }}</li>
-        <li>Prácticas activas: {{ stats.practicas }}</li>
-        <li>Usuarios registrados: {{ stats.usuarios }}</li>
-        <li>Cursos activos: {{ stats.cursos }}</li>
-      </ul>
-    </div>
-
-    <div class="panel-card">
-      <h2>Alertas</h2>
-
-      <ul class="alerts">
-        <li>Cuotas vencidas: {{ stats.cuotasVencidas }}</li>
-        <li>Matrículas en reserva: {{ stats.reservas }}</li>
-        <li>Certificados pendientes: {{ stats.certificadosPendientes }}</li>
-      </ul>
-    </div>
-
-    <div class="panel-card">
-      <h2>Resumen Financiero</h2>
-
-      <ul>
-        <li>Total ingresos: S/ {{ stats.ingresosTotal }}</li>
-        <li>Pagos registrados: {{ stats.totalPagos }}</li>
-        <li>Pendientes de cobro: {{ stats.pendientesCobro }}</li>
-      </ul>
-    </div>
-
+  <div class="stat-card">
+    <h3>{{ dashboard.matriculasActivas || 0 }}</h3>
+    <p>Matrículas activas</p>
   </div>
 
-</section>
+  <div class="stat-card">
+    <h3>S/ {{ dashboard.ingresos || 0 }}</h3>
+    <p>Ingresos acumulados</p>
+  </div>
+
+</div>
