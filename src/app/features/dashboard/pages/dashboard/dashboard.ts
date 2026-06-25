@@ -10,8 +10,7 @@ export class Dashboard implements OnInit {
 
   private dashboardService = inject(DashboardService);
 
-  dashboard: any = {};
-
+  dashboard: any = null;
   ngOnInit(): void {
     this.cargarDashboard();
   }
