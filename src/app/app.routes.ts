@@ -1,17 +1,14 @@
 import { Routes } from '@angular/router';
 import { AdminLayout } from './layout/admin-layout/admin-layout';
-import { authGuard, publicGuard } from './core/guards/auth.guard'; // 🔐 Importamos ambos guards
+import { authGuard, publicGuard } from './core/guards/auth.guard'; 
 import { LoginComponent } from './auth/login/login.component';
 
 export const routes: Routes = [
-  // 🚪 RUTA PÚBLICA CON CANDADO DE RETORNO:
   { 
     path: 'login', 
     component: LoginComponent,
-    canActivate: [publicGuard] // 👈 Si está logueada, el guard impide que vea el Login
+    canActivate: [publicGuard] 
   },
-
-  // 🛡️ EN TODOS: Contenedor protegido
   {
     path: '',
     component: AdminLayout,
