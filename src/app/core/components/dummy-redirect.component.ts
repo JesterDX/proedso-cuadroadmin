@@ -11,15 +11,14 @@ export class DummyRedirectComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  ngOnInit(): void {
-    const user = this.authService.usuarioActual();
+ngOnInit(): void {
+  const user = this.authService.usuarioActual();
+  const rol = user?.rol?.toUpperCase();
 
-    const rol = user?.rol?.toUpperCase();
-
-    if (rol === 'ADMINISTRADOR') {
-      this.router.navigateByUrl('/'); // dashboard
-    } else {
-      this.router.navigateByUrl('/alumnos'); // 👈 primera pestaña asesor
-    }
+  if (rol === 'ADMINISTRADOR') {
+    this.router.navigateByUrl('/dashboard'); // ✅ NO '/'
+  } else {
+    this.router.navigateByUrl('/alumnos'); // asesor
   }
+}
 }
