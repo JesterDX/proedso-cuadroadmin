@@ -8,8 +8,9 @@ export class DashboardService {
 
   private http = inject(HttpClient);
 
-  getDashboard() {
-    return this.http.get<any>('/api/dashboard');
-  }
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
 
+  getDashboard() {
+    return this.http.get<any>(this.apiUrl);
+  }
 }
