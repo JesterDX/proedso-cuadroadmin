@@ -115,21 +115,6 @@ export class Sidebar {
             { label: 'Pagos', route: '/pagos' }
           ]
         },
-        {
-          label: 'Certificaciones',
-          icon: this.icons.certificacion,
-          expanded: false,
-          children: [
-            { label: 'Certificación', route: '/certificacion' },
-            { label: 'Homologaciones', route: '/homologaciones' },
-            { label: 'EPT', route: '/ept' }
-          ]
-        },
-        {
-          label: 'Configuración',
-          route: '/configuracion',
-          icon: this.icons.configuracion
-        }
       ];
     }
   }
