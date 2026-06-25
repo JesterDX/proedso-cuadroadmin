@@ -12,16 +12,19 @@ export const routes: Routes = [
   },
 
   // 🛡️ EN TODOS: Contenedor protegido
-  {
-    path: '',
-    component: AdminLayout,
-    canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
-      },
+{
+  path: '',
+  component: AdminLayout,
+  canActivate: [authGuard],
+  children: [
+
+    // 🔥 ESTE ES EL CAMBIO CLAVE
+    {
+      path: '',
+      canActivate: [roleRedirectGuard],
+      component: DummyRedirectComponent
+    },
+
       {
         path: 'cursos',
         loadComponent: () =>
