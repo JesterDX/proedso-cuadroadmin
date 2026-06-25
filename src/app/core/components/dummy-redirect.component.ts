@@ -8,24 +8,18 @@ import { AuthService } from '../../auth/services/auth.service';
 })
 export class DummyRedirectComponent implements OnInit {
 
-  private router = inject(Router);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit(): void {
-    const usuario = this.authService.usuarioActual();
+    const user = this.authService.usuarioActual();
 
-    if (!usuario) {
-      this.router.navigateByUrl('/login');
-      return;
-    }
+    const rol = user?.rol?.toUpperCase();
 
-    const rol = usuario.rol?.toUpperCase();
-
-    // 👇 lógica que pediste
     if (rol === 'ADMINISTRADOR') {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/'); // dashboard
     } else {
-      this.router.navigateByUrl('/alumnos');
+      this.router.navigateByUrl('/alumnos'); // 👈 primera pestaña asesor
     }
   }
 }
