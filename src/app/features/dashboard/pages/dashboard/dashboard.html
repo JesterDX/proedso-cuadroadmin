@@ -1,19 +1,81 @@
-<div class="stat-card">
-  <h3>{{ dashboard?.alumnos ?? 0 }}</h3>
-  <p>Alumnos registrados</p>
-</div>
+<div class="dashboard">
 
-<div class="stat-card">
-  <h3>{{ dashboard?.alumnosActivos ?? 0 }}</h3>
-  <p>Alumnos activos</p>
-</div>
+  <header class="welcome-card">
+    <div class="welcome-text">
+      <h1>Panel de Control</h1>
+      <p>Bienvenido de vuelta. Esto es lo que está pasando hoy en la plataforma.</p>
+    </div>
+    <span class="admin-badge">Administrador</span>
+  </header>
 
-<div class="stat-card">
-  <h3>{{ dashboard?.matriculasActivas ?? 0 }}</h3>
-  <p>Matrículas activas</p>
-</div>
+  <section class="stats-grid">
+    
+    <div class="stat-card blue">
+      <div class="stat-content">
+        <span class="label">Alumnos registrados</span>
+        <h3>{{ dashboard?.alumnos ?? 0 }}</h3>
+      </div>
+      <div class="stat-icon-wrapper">
+        👥 
+      </div>
+    </div>
 
-<div class="stat-card">
-  <h3>S/ {{ dashboard?.ingresos ?? 0 }}</h3>
-  <p>Ingresos acumulados</p>
+    <div class="stat-card green">
+      <div class="stat-content">
+        <span class="label">Alumnos activos</span>
+        <h3>{{ dashboard?.alumnosActivos ?? 0 }}</h3>
+      </div>
+      <div class="stat-icon-wrapper">
+        ⚡
+      </div>
+    </div>
+
+    <div class="stat-card orange">
+      <div class="stat-content">
+        <span class="label">Matrículas activas</span>
+        <h3>{{ dashboard?.matriculasActivas ?? 0 }}</h3>
+      </div>
+      <div class="stat-icon-wrapper">
+        📄
+      </div>
+    </div>
+
+    <div class="stat-card purple">
+      <div class="stat-content">
+        <span class="label">Ingresos acumulados</span>
+        <h3>S/ {{ dashboard?.ingresos ?? 0 }}</h3>
+      </div>
+      <div class="stat-icon-wrapper">
+        💰
+      </div>
+    </div>
+
+  </section>
+
+  <section class="panel-grid">
+    
+    <div class="panel-card">
+      <h2>Acciones del Sistema</h2>
+      <div class="quick-actions">
+        <button><span class="btn-icon"></span> Nueva Matrícula</button>
+        <button><span class="btn-icon"></span> Registrar Pago</button>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h2>Alertas Críticas</h2>
+      <ul class="alerts">
+        <li>
+          <span>Matrículas por vencer este mes</span>
+          <strong>4 alertas</strong>
+        </li>
+        <li>
+          <span>Pagos pendientes de revisión</span>
+          <strong>2 alertas</strong>
+        </li>
+      </ul>
+    </div>
+
+  </section>
+
 </div>
