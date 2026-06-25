@@ -6,24 +6,13 @@ import { DashboardService } from '../../services/dashboard.service';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class Dashboard implements OnInit {
+export class DashboardService {
 
-  private dashboardService = inject(DashboardService);
+  private http = inject(HttpClient);
 
-  dashboard: any = null;
-  ngOnInit(): void {
-    this.cargarDashboard();
-  }
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
 
-  cargarDashboard() {
-    this.dashboardService.getDashboard().subscribe({
-      next: (resp) => {
-        console.log('DASHBOARD API:', resp);
-        this.dashboard = resp?.data ?? {};
-      },
-      error: (err) => {
-        console.error('ERROR DASHBOARD:', err);
-      }
-    });
+  getDashboard() {
+    return this.http.get<any>(this.apiUrl);
   }
 }
