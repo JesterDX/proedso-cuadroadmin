@@ -10,16 +10,20 @@ export class Dashboard implements OnInit {
 
   private dashboardService = inject(DashboardService);
 
-  dashboard: any = null;
-  
+  dashboard: any = {};
+
+  ngOnInit(): void {
+    this.cargarDashboard();
+  }
+
   cargarDashboard() {
     this.dashboardService.getDashboard().subscribe({
       next: (resp) => {
-        console.log('RESP API:', resp); // 🔥 IMPORTANTE
-        this.dashboard = resp.data;
+        console.log('DASHBOARD API:', resp);
+        this.dashboard = resp?.data ?? {};
       },
       error: (err) => {
-        console.error('ERROR API:', err);
+        console.error('ERROR DASHBOARD:', err);
       }
     });
   }
