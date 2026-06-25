@@ -4,15 +4,26 @@ import { DashboardService } from '../../services/dashboard.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrls: ['./dashboard.scss']
 })
-export class DashboardService {
+export class Dashboard implements OnInit {
 
-  private http = inject(HttpClient);
+  private dashboardService = inject(DashboardService);
 
-  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/dashboard';
+  dashboard: any = {};
 
-  getDashboard() {
-    return this.http.get<any>(this.apiUrl);
+  ngOnInit(): void {
+    this.cargarDashboard();
+  }
+
+  cargarDashboard(): void {
+    this.dashboardService.getDashboard().subscribe({
+      next: (resp: any) => {
+        this.dashboard = resp.data;
+      },
+      error: (err: any) => {
+        console.error(err);
+      }
+    });
   }
 }
