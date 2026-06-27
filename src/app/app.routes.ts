@@ -42,6 +42,36 @@ export const routes: Routes = [
           import('./features/dashboard/pages/dashboard/dashboard')
             .then(m => m.Dashboard)
       },
+      {
+        path: 'admin/tipos-curso',
+        loadComponent: () =>
+          import('./admin/tipos-curso/pages/tipos-curso/tipos-curso')
+            .then(m => m.TiposCursoComponent)
+      },
+      
+      // Las agregaremos cuando existan
+      /*
+      {
+        path: 'admin/planes-curso',
+        loadComponent: () =>
+          import('./admin/planes-curso/pages/planes-curso/planes-curso')
+            .then(m => m.PlanesCursoComponent)
+      },
+      
+      {
+        path: 'admin/maquinas',
+        loadComponent: () =>
+          import('./admin/maquinas/pages/maquinas/maquinas')
+            .then(m => m.MaquinasComponent)
+      },
+      
+      {
+        path: 'admin/usuarios',
+        loadComponent: () =>
+          import('./admin/usuarios/pages/usuarios/usuarios')
+            .then(m => m.UsuariosComponent)
+      },
+      */
 
       {
         path: 'cursos',
