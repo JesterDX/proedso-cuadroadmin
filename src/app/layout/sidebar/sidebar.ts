@@ -68,20 +68,20 @@ export class Sidebar {
     this.esAdministrador =
       usuario?.rol?.toUpperCase() === 'ADMINISTRADOR';
 
-      if (this.esAdministrador) {
-        this.menu = [
-          {
-            label: 'Dashboard',
-            route: '/',
-            icon: this.icons.dashboard
-          },
-          {
-            label: 'Tipo de curso',
-            route: '/tipo-curso',
-            icon: this.icons.cursos
-          }
-        ];
-      } else {
+    if (this.esAdministrador) {
+      this.menu = [
+        {
+          label: 'Dashboard',
+          route: '/',
+          icon: this.icons.dashboard
+        },
+        {
+          label: 'Tipo de curso',
+          route: '/tipo-curso',
+          icon: this.icons.cursos
+        }
+      ];
+    }else {
       this.menu = [
         {
           label: 'Gestión Académica',
