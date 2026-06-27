@@ -1,0 +1,85 @@
+<div class="page">
+
+  <div class="page-header">
+
+    <div>
+      <h2>Tipos de Curso</h2>
+      <span>Administración de tipos de curso.</span>
+    </div>
+
+    <button class="btn-primary">
+      + Nuevo Tipo
+    </button>
+
+  </div>
+
+  <div class="table-card">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>Código</th>
+
+          <th>Nombre</th>
+
+          <th>Duración</th>
+
+          <th>Máquinas</th>
+
+          <th>Estado</th>
+
+          <th>Acciones</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        @for(tipo of tiposCurso; track tipo.id){
+
+        <tr>
+
+          <td>{{tipo.codigo}}</td>
+
+          <td>{{tipo.nombre}}</td>
+
+          <td>{{tipo.duracion_meses}} meses</td>
+
+          <td>{{tipo.cantidad_maquinas}}</td>
+
+          <td>
+
+            <span
+              class="estado"
+              [class.activo]="tipo.activo"
+              [class.inactivo]="!tipo.activo">
+
+              {{tipo.activo ? 'Activo' : 'Inactivo'}}
+
+            </span>
+
+          </td>
+
+          <td>
+
+            <button class="btn-table">
+              Editar
+            </button>
+
+          </td>
+
+        </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
