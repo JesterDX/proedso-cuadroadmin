@@ -26,14 +26,19 @@ export const routes: Routes = [
       component: DummyRedirectComponent
     },
 
-    // ADMIN / DASHBOARD SOLO ACCESO DIRECTO (opcional)
-    {
-      path: 'dashboard',
-      loadComponent: () =>
-        import('./features/dashboard/pages/dashboard/dashboard')
-        .then(m => m.Dashboard)
-    },
-
+      {
+        path: 'admin/dashboard',
+        loadComponent: () =>
+          import('./admin/dashboard/pages/dashboard/dashboard')
+            .then(m => m.DashboardComponent)
+      },
+      
+      {
+        path: 'admin/tipos-curso',
+        loadComponent: () =>
+          import('./admin/tipos-curso/pages/tipos-curso/tipos-curso')
+            .then(m => m.TiposCursoComponent)
+      },
       {
         path: 'cursos',
         loadComponent: () =>
