@@ -1,127 +1,169 @@
 import { Routes } from '@angular/router';
+
 import { AdminLayout } from './layout/admin-layout/admin-layout';
-import { authGuard, publicGuard } from './core/guards/auth.guard';
-import { DummyRedirectComponent } from './core/components/dummy-redirect.component';
-import { roleRedirectGuard } from './core/guards/role-redirect.guard';
 import { LoginComponent } from './auth/login/login.component';
+import { DummyRedirectComponent } from './core/components/dummy-redirect.component';
+
+import { authGuard, publicGuard } from './core/guards/auth.guard';
+import { roleRedirectGuard } from './core/guards/role-redirect.guard';
 
 export const routes: Routes = [
-  // 🚪 RUTA PÚBLICA CON CANDADO DE RETORNO:
+
+  // =========================
+  // 🚪 RUTAS PÚBLICAS
+  // =========================
   {
     path: 'login',
     component: LoginComponent,
     canActivate: [publicGuard]
   },
 
-  // 🛡️ EN TODOS: Contenedor protegido
-{
-  path: '',
-  component: AdminLayout,
-  canActivate: [authGuard],
-  children: [
+  // =========================
+  // 🛡️ LAYOUT PROTEGIDO
+  // =========================
+  {
+    path: '',
+    component: AdminLayout,
+    canActivate: [authGuard],
+    children: [
 
-    // 🔥 REDIRECCIÓN POR ROL (PRIMERO SIEMPRE)
-    {
-      path: '',
-      component: DummyRedirectComponent
-    },
+      // 🔥 REDIRECCIÓN POR ROL
+      {
+        path: '',
+        component: DummyRedirectComponent
+      },
 
+      // =========================
+      // 📊 DASHBOARD / PRINCIPAL
+      // =========================
       {
-        path: 'admin/dashboard',
+        path: 'dashboard',
         loadComponent: () =>
-          import('./admin/dashboard/pages/dashboard/dashboard')
-            .then(m => m.DashboardComponent)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
-      
-      {
-        path: 'admin/tipos-curso',
-        loadComponent: () =>
-          import('./admin/tipos-curso/pages/tipos-curso/tipos-curso')
-            .then(m => m.TiposCursoComponent)
-      },
+
       {
         path: 'cursos',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
+
       {
         path: 'maquinas',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
+
+      // =========================
+      // 👨‍🎓 ALUMNOS
+      // =========================
       {
         path: 'alumnos',
         loadComponent: () =>
-          import('./features/alumnos/pages/alumnos-list/alumnos-list').then(m => m.AlumnosList)
+          import('./features/alumnos/pages/alumnos-list/alumnos-list')
+            .then(m => m.AlumnosList)
       },
       {
         path: 'alumnos-retirados',
         loadComponent: () =>
-          import('./features/alumnos/pages/alumnos-retirados/alumnos-retirados').then(m => m.AlumnosRetirados)
+          import('./features/alumnos/pages/alumnos-retirados/alumnos-retirados')
+            .then(m => m.AlumnosRetirados)
       },
+
+      // =========================
+      // 🎓 MATRÍCULAS
+      // =========================
       {
         path: 'matriculas',
         loadComponent: () =>
-          import('./features/matriculas/pages/matriculas-list/matriculas-list').then(m => m.MatriculasList),
+          import('./features/matriculas/pages/matriculas-list/matriculas-list')
+            .then(m => m.MatriculasList),
         data: { vista: 'MATRICULADO', titulo: 'Matrículas activas' }
       },
       {
         path: 'matriculas-retiradas',
         loadComponent: () =>
-          import('./features/matriculas/pages/matriculas-list/matriculas-list').then(m => m.MatriculasList),
+          import('./features/matriculas/pages/matriculas-list/matriculas-list')
+            .then(m => m.MatriculasList),
         data: { vista: 'RETIRADO', titulo: 'Matrículas retiradas' }
       },
       {
         path: 'matriculas-reserva',
         loadComponent: () =>
-          import('./features/matriculas/pages/matriculas-list/matriculas-list').then(m => m.MatriculasList),
+          import('./features/matriculas/pages/matriculas-list/matriculas-list')
+            .then(m => m.MatriculasList),
         data: { vista: 'RESERVA', titulo: 'Matrículas en reserva' }
       },
       {
         path: 'matriculas-egresadas',
         loadComponent: () =>
-          import('./features/matriculas/pages/matriculas-list/matriculas-list').then(m => m.MatriculasList),
+          import('./features/matriculas/pages/matriculas-list/matriculas-list')
+            .then(m => m.MatriculasList),
         data: { vista: 'EGRESADO', titulo: 'Matrículas egresadas' }
       },
       {
         path: 'matriculas/:id',
         loadComponent: () =>
-          import('./features/matriculas/pages/matricula-detail/matricula-detail').then(m => m.MatriculaDetail)
+          import('./features/matriculas/pages/matricula-detail/matricula-detail')
+            .then(m => m.MatriculaDetail)
       },
+
+      // =========================
+      // 💰 PAGOS
+      // =========================
       {
         path: 'pagos',
         loadComponent: () =>
-          import('./features/pagos/pages/pagos-list/pagos-list').then(m => m.PagosList)
+          import('./features/pagos/pages/pagos-list/pagos-list')
+            .then(m => m.PagosList)
       },
+
+      // =========================
+      // 🚜 PRÁCTICAS
+      // =========================
       {
         path: 'practicas',
         loadComponent: () =>
-          import('./features/practicas/pages/practicas-list/practicas-list').then(m => m.PracticasListComponent)
+          import('./features/practicas/pages/practicas-list/practicas-list')
+            .then(m => m.PracticasListComponent)
       },
+
+      // =========================
+      // 📄 OTROS MÓDULOS (PLACEHOLDER)
+      // =========================
       {
         path: 'certificacion',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
       {
         path: 'homologaciones',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
       {
         path: 'ept',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
       {
         path: 'configuracion',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/pages/dashboard/dashboard')
+            .then(m => m.Dashboard)
       }
     ]
   },
 
-  // 🔄 COMODÍN / REDIRECCIÓN:
+  // =========================
+  // 🔄 FALLBACK
+  // =========================
   {
     path: '**',
     redirectTo: 'login',
