@@ -1,34 +1,37 @@
 // ==========================================================================
-// PROFESSIONAL PREMIUM DASHBOARD
+// PROFESSIONAL PREMIUM DASHBOARD - BESPOKE EDITION
 // ==========================================================================
 
-// Paleta Refinada (Adiós al gris aburrido, hola a los matices pizarra)
+// Paleta Refinada
 $c-bg: #f8fafc;
 $c-surface: #ffffff;
 $c-text-main: #0f172a;
 $c-text-muted: #64748b;
 $c-border: #e2e8f0;
+$c-focus-ring: rgba(37, 99, 235, 0.3); // Anillo de enfoque profesional
 
-// Colores de Acento (Identidad de marca premium)
+// Colores de Acento
 $brand-primary: #2563eb;
 $brand-success: #10b981;
 $brand-warning: #f59e0b;
 $brand-danger: #ef4444;
+$brand-purple: #7c3aed;
 
-$radius-lg: 12px;
-$radius-md: 8px;
-$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-$transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+$radius-lg: 16px; // Ligeramente más curvo para un look más moderno
+$radius-md: 10px;
+// Sombras multicapa (mucho más orgánicas que una sombra simple)
+$shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+$shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.05);
+$transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  gap: 32px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: $c-bg;
   color: $c-text-main;
-  padding: 32px;
+  padding: 40px;
   min-height: 100vh;
   box-sizing: border-box;
 
@@ -39,9 +42,9 @@ $transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 .welcome-card,
 .panel-card {
   background: $c-surface;
-  border: 1px solid $c-border;
+  border: 1px solid rgba($c-border, 0.6); // Borde más sutil
   border-radius: $radius-lg;
-  padding: 28px;
+  padding: 32px;
   box-shadow: $shadow-sm;
 }
 
@@ -53,44 +56,46 @@ $transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 
-  // Un sutil toque de diseño en el fondo para romper la monotonía
   &::before {
     content: '';
     position: absolute;
-    top: 0; right: 0; width: 150px; height: 100%;
-    background: radial-gradient(circle at top right, rgba($brand-primary, 0.04), transparent 70%);
+    top: -50%; right: -5%; width: 300px; height: 200%;
+    background: radial-gradient(circle, rgba($brand-primary, 0.03) 0%, transparent 60%);
+    pointer-events: none;
   }
 
   .welcome-text {
     h1 {
-      margin: 0 0 6px 0;
-      font-size: 1.75rem;
+      margin: 0 0 8px 0;
+      font-size: 1.875rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
     }
     p {
       margin: 0;
       color: $c-text-muted;
-      font-size: 0.925rem;
+      font-size: 1rem;
+      line-height: 1.5;
     }
   }
 }
 
 .admin-badge {
   background: rgba($brand-primary, 0.08);
-  color: $brand-primary;
-  padding: 6px 14px;
-  border-radius: 9999px; // Pill shape, más moderno
-  font-size: 0.75rem;
+  color: darken($brand-primary, 10%);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-// --- KPIs Stats Grid (El cambio fuerte) ---
+// --- KPIs Stats Grid ---
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
 }
 
 .stat-card {
@@ -104,17 +109,18 @@ $transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: $shadow-sm;
   transition: $transition;
   position: relative;
+  cursor: default;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: $shadow-md;
-    border-color: darken($c-border, 5%);
+    border-color: rgba($brand-primary, 0.2);
   }
 
   .stat-content {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 
     .label {
       font-size: 0.875rem;
@@ -124,67 +130,71 @@ $transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     h3 {
       margin: 0;
-      font-size: 2rem;
+      font-size: 2.25rem;
       font-weight: 700;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       color: $c-text-main;
+      line-height: 1;
     }
   }
 
-  // Iconos en contenedores geométricos estilizados
   .stat-icon-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: $radius-md;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    
+    // Preparando para SVGs reales
+    svg {
+      width: 28px;
+      height: 28px;
+      stroke-width: 2px;
+    }
   }
 
-  // Variaciones cromáticas por bloques funcionales
+  // Variaciones
   &.blue {
-    .stat-icon-wrapper { background: rgba($brand-primary, 0.1); color: $brand-primary; }
-    border-left: 4px solid $brand-primary;
+    .stat-icon-wrapper { background: rgba($brand-primary, 0.08); color: $brand-primary; }
+    border-bottom: 3px solid $brand-primary;
   }
   &.green {
-    .stat-icon-wrapper { background: rgba($brand-success, 0.1); color: $brand-success; }
-    border-left: 4px solid $brand-success;
+    .stat-icon-wrapper { background: rgba($brand-success, 0.08); color: $brand-success; }
+    border-bottom: 3px solid $brand-success;
   }
   &.orange {
-    .stat-icon-wrapper { background: rgba($brand-warning, 0.1); color: $brand-warning; }
-    border-left: 4px solid $brand-warning;
+    .stat-icon-wrapper { background: rgba($brand-warning, 0.08); color: $brand-warning; }
+    border-bottom: 3px solid $brand-warning;
   }
   &.purple {
-    // Usado para ingresos
-    .stat-icon-wrapper { background: rgba(#7c3aed, 0.1); color: #7c3aed; }
-    border-left: 4px solid #7c3aed;
+    .stat-icon-wrapper { background: rgba($brand-purple, 0.08); color: $brand-purple; }
+    border-bottom: 3px solid $brand-purple;
   }
 }
 
 // --- Panel Layout ---
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 24px;
 }
 
 .panel-card {
   h2 {
-    margin: 0 0 20px 0;
-    font-size: 1.1rem;
+    margin: 0 0 24px 0;
+    font-size: 1.125rem;
     font-weight: 600;
     color: $c-text-main;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     
     &::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: $c-border;
-      margin-left: 12px;
+      background: linear-gradient(to right, $c-border, transparent);
     }
   }
 }
@@ -193,71 +203,83 @@ $transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 .quick-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 
   button {
     background: $c-surface;
     border: 1px solid $c-border;
     border-radius: $radius-md;
-    padding: 12px 16px;
-    font-size: 0.875rem;
+    padding: 14px 16px;
+    font-size: 0.9375rem;
     font-weight: 500;
     color: $c-text-main;
     cursor: pointer;
     transition: $transition;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
+    justify-content: center;
+    gap: 8px;
 
     &:hover {
       background: rgba($brand-primary, 0.02);
-      border-color: rgba($brand-primary, 0.3);
+      border-color: $brand-primary;
       color: $brand-primary;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px $c-focus-ring;
+      border-color: $brand-primary;
+    }
+    
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 }
 
-// --- Listas Profesionales (Estilo Datatable/List) ---
-ul {
+// --- Listas Profesionales ---
+.alerts {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   li {
-    padding: 12px 8px;
-    font-size: 0.875rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 14px 16px;
+    font-size: 0.9375rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: $radius-md;
     transition: $transition;
-
-    &:hover {
-      background: #f8fafc;
-      border-radius: 4px;
+    
+    color: darken($brand-danger, 10%);
+    background: rgba($brand-danger, 0.04);
+    border: 1px solid rgba($brand-danger, 0.1);
+    
+    &:hover { 
+      background: rgba($brand-danger, 0.08); 
+      transform: translateX(4px);
     }
 
-    &:last-child {
-      border-bottom: none;
+    strong {
+      background: $c-surface;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      border: 1px solid rgba($brand-danger, 0.2);
     }
   }
-}
-
-.alerts li {
-  color: $brand-danger;
-  background: rgba($brand-danger, 0.02);
-  border-left: 2px solid $brand-danger;
-  padding-left: 12px;
-  margin-bottom: 4px;
-  border-radius: 4px;
-  
-  &:hover { background: rgba($brand-danger, 0.05); }
 }
 
 // --- Responsive Quirks ---
 @media (max-width: 768px) {
-  .dashboard { padding: 16px; gap: 16px; }
-  .welcome-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .dashboard { padding: 20px; gap: 20px; }
+  .welcome-card { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .stats-grid { grid-template-columns: 1fr; }
   .panel-grid { grid-template-columns: 1fr; }
 }
