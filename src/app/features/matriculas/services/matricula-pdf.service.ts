@@ -277,8 +277,8 @@ export class MatriculaPdfService {
       
       <div style="position: absolute; bottom: 0; left: 0; right: 0; background: ${cAzul}; border-top: 3px solid ${cAmarillo}; color: #ffffff; padding: 14px 45px; display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; letter-spacing: 0.2px;">
         <div style="opacity: 0.95;">📞 944 123 456</div>
-        <div style="opacity: 0.95;">📍 Av. Los Constructores 123, Lima - Perú</div>
-        <div style="opacity: 0.95; font-weight: 700;">🌐 www.proedso.com.pe</div>
+        <div style="opacity: 0.95;">📍 VXFC+48V, Av. La Perla, Víctor Larco Herrera 13008, Trujillo Perú</div>
+        <div style="opacity: 0.95; font-weight: 700;">🌐 www.proedsoeduca.com.pe</div>
       </div>
     `;
 
