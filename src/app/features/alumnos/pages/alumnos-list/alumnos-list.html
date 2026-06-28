@@ -269,41 +269,47 @@
             </div>
           </div>
 
-          <div class="section-card">
-            <h3>Ingreso y seguro</h3>
+<div class="section-card">
+  <h3>Seguro</h3>
 
-            <div class="form-grid">
-              <div class="form-field">
-                <label for="seguro_alumno">Seguro</label>
-                <select id="seguro_alumno" [(ngModel)]="form.seguro_alumno">
-                  <option value="">Seleccionar</option>
-                  <option *ngFor="let opcion of opcionesSeguro" [value]="opcion">
-                    {{ opcion }}
-                  </option>
-                </select>
-              </div>
+  <div class="form-grid">
+    <div class="form-field">
+      <label for="seguro_alumno">Seguro</label>
+      <select id="seguro_alumno" [(ngModel)]="form.seguro_alumno">
+        <option value="">Seleccionar</option>
+        <option *ngFor="let opcion of opcionesSeguro" [value]="opcion">
+          {{ opcion }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>
 
-              <div class="form-field">
-                <label for="anio_ingreso">Año de ingreso *</label>
-                <select id="anio_ingreso" [(ngModel)]="form.anio_ingreso">
-                  <option [ngValue]="null">Seleccionar</option>
-                  <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
-                    {{ anio }}
-                  </option>
-                </select>
-              </div>
+<div class="section-card">
+  <h3>Fecha de ingreso</h3>
 
-              <div class="form-field">
-                <label for="mes_ingreso">Mes de ingreso *</label>
-                <select id="mes_ingreso" [(ngModel)]="form.mes_ingreso">
-                  <option value="">Seleccionar</option>
-                  <option *ngFor="let mes of meses" [value]="mes">
-                    {{ mes }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
+  <div class="form-grid">
+    <div class="form-field">
+      <label for="anio_ingreso">Año de ingreso *</label>
+      <select id="anio_ingreso" [(ngModel)]="form.anio_ingreso">
+        <option [ngValue]="null">Seleccionar</option>
+        <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="mes_ingreso">Mes de ingreso *</label>
+      <select id="mes_ingreso" [(ngModel)]="form.mes_ingreso">
+        <option value="">Seleccionar</option>
+        <option *ngFor="let mes of meses" [value]="mes">
+          {{ mes }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>
 
           <div class="section-card">
             <h3>Contacto</h3>
