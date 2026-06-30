@@ -104,7 +104,66 @@ export class TiposCursoComponent implements OnInit {
   };
 
 }
-      
+  nuevo(): void {
+
+  this.modoEdicion = false;
+
+  this.idEditando = null;
+
+  this.nuevoTipo = {
+    codigo: '',
+    nombre: '',
+    duracion_meses: 1,
+    cantidad_maquinas: 1,
+    activo: true
+  };
+
+  this.mostrarFormulario = true;
+
+}
+
+  desactivar(tipo: TipoCurso): void {
+
+  Swal.fire({
+    title: '¿Desactivar tipo de curso?',
+    text: `Se desactivará "${tipo.nombre}".`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+
+    if (!result.isConfirmed) return;
+
+    this.service.desactivar(tipo.id).subscribe({
+
+      next: () => {
+
+        Swal.fire(
+          'Correcto',
+          'Tipo de curso desactivado.',
+          'success'
+        );
+
+        this.cargarTipos();
+
+      },
+
+      error: () => {
+
+        Swal.fire(
+          'Error',
+          'No se pudo desactivar.',
+          'error'
+        );
+
+      }
+
+    });
+
+  });
+
+}
 guardarTipo(): void {
 
   if (this.modoEdicion) {
