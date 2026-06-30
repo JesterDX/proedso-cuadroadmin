@@ -1,47 +1,142 @@
-<div class="page">
-  <div class="page-header">
-    <div>
-      <h2>Tipos de Curso</h2>
-      <span>Administración de tipos de curso.</span>
-    </div>
-    <button class="btn-primary">
-      + Nuevo Tipo
-    </button>
-  </div>
+// ==========================================================================
+// SCSS: DATA TABLE MINIMALISTA
+// ==========================================================================
 
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>Duración</th>
-          <th>Máquinas</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for(tipo of tiposCurso; track tipo.id) {
-          <tr>
-            <td>{{ tipo.codigo }}</td>
-            <td>{{ tipo.nombre }}</td>
-            <td>{{ tipo.duracion_meses }} meses</td>
-            <td>{{ tipo.cantidad_maquinas }}</td>
-            <td>
-              <span 
-                class="estado" 
-                [class.activo]="tipo.activo" 
-                [class.inactivo]="!tipo.activo">
-                {{ tipo.activo ? 'Activo' : 'Inactivo' }}
-              </span>
-            </td>
-            <td>
-              <button class="btn-table">Editar</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
+$c-bg: #f9fafb;
+$c-surface: #ffffff;
+$c-text-main: #111827;
+$c-text-muted: #6b7280;
+$c-border: #e5e7eb;
+
+$radius-card: 8px;
+$radius-btn: 6px;
+$radius-sm: 4px;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: $c-text-main;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box; }
+}
+
+// --- Encabezado ---
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  span {
+    font-size: 0.875rem;
+    color: $c-text-muted;
+  }
+}
+
+// --- Botón Principal ---
+// Cambiado de amarillo chillón a un botón sólido oscuro (estilo interfaz moderna)
+.btn-primary {
+  background: $c-text-main;
+  color: $c-surface;
+  border: 1px solid $c-text-main;
+  padding: 8px 16px;
+  border-radius: $radius-btn;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #374151; // Gris oscuro al pasar el mouse
+  }
+}
+
+// --- Contenedor de Tabla ---
+.table-card {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-card;
+  overflow-x: auto; // Previene que la tabla rompa el diseño en pantallas pequeñas
+}
+
+// --- Tabla ---
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+thead {
+  background: #f9fafb;
+  border-bottom: 1px solid $c-border;
+}
+
+th {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $c-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  color: $c-text-main;
+  border-bottom: 1px solid #f3f4f6; // Borde más suave para las filas
+}
+
+// Quitar el borde de la última fila para que no choque con la tarjeta
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+// --- Badges de Estado ---
+// Reducidos en tamaño y forma. Ya no son píldoras gigantes.
+.estado {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.activo {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.inactivo {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+// --- Botones de Acción (Tabla) ---
+// En lugar de un bloque azul gigante, usamos un estilo sutil
+.btn-table {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #eff6ff; // Subrayado o fondo sutil en hover
+    color: #1d4ed8;
+  }
+}
