@@ -135,8 +135,7 @@ export class TiposCursoComponent implements OnInit {
 
     if (!result.isConfirmed) return;
 
-    this.service.desactivar(tipo.id).subscribe({
-
+    this.service.cambiarEstado(tipo.id, !tipo.activo).subscribe({
       next: () => {
 
         Swal.fire(
