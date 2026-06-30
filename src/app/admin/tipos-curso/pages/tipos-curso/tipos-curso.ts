@@ -1,4 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 
 import { TiposCursoService } from '../../services/tipos-curso.service';
@@ -15,25 +21,31 @@ export class TiposCursoComponent implements OnInit {
 
   private service = inject(TiposCursoService);
 
+  private cd = inject(ChangeDetectorRef);
+
   tiposCurso: TipoCurso[] = [];
 
   ngOnInit(): void {
     this.cargarTipos();
   }
 
-  cargarTipos() {
+  cargarTipos(): void {
 
     this.service.listar().subscribe({
 
       next: (resp) => {
 
-        this.tiposCurso = resp.data;
+        this.tiposCurso = resp.data || [];
+
+        this.cd.detectChanges();
 
       },
 
-      error: err => {
+      error: (err) => {
 
         console.error(err);
+
+        this.cd.detectChanges();
 
       }
 
