@@ -31,7 +31,9 @@ export class TiposCursoComponent implements OnInit {
   tiposCurso: TipoCurso[] = [];
 
   mostrarFormulario = false;
-
+  modoEdicion = false;
+  
+  idEditando: number | null = null;
   nuevoTipo = {
     codigo: '',
     nombre: '',
@@ -67,47 +69,106 @@ export class TiposCursoComponent implements OnInit {
     });
 
   }
+      editar(tipo: TipoCurso): void {
+    
+      this.modoEdicion = true;
+    
+      this.idEditando = tipo.id;
+    
+      this.mostrarFormulario = true;
+    
+      this.nuevoTipo = {
+        codigo: tipo.codigo,
+        nombre: tipo.nombre,
+        duracion_meses: tipo.duracion_meses,
+        cantidad_maquinas: tipo.cantidad_maquinas,
+        activo: tipo.activo
+      };
+    
+    }
 
-  guardarTipo(): void {
+  cerrarFormulario(): void {
 
-    this.service.crear(this.nuevoTipo).subscribe({
+  this.mostrarFormulario = false;
+
+  this.modoEdicion = false;
+
+  this.idEditando = null;
+
+  this.nuevoTipo = {
+    codigo: '',
+    nombre: '',
+    duracion_meses: 1,
+    cantidad_maquinas: 1,
+    activo: true
+  };
+
+}
+      
+guardarTipo(): void {
+
+  if (this.modoEdicion) {
+
+    this.service.actualizar(
+      this.idEditando!,
+      this.nuevoTipo
+    ).subscribe({
 
       next: () => {
 
         Swal.fire({
           icon: 'success',
-          title: 'Correcto',
-          text: 'Tipo de curso creado correctamente.'
+          title: 'Actualizado',
+          text: 'Tipo de curso actualizado correctamente.'
         });
 
-        this.mostrarFormulario = false;
-
-        this.nuevoTipo = {
-          codigo: '',
-          nombre: '',
-          duracion_meses: 1,
-          cantidad_maquinas: 1,
-          activo: true
-        };
+        this.cerrarFormulario();
 
         this.cargarTipos();
 
       },
 
-      error: (err) => {
-
-        console.error(err);
+      error: () => {
 
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo crear el tipo de curso.'
+          text: 'No se pudo actualizar.'
         });
 
       }
 
     });
 
+    return;
   }
+
+  this.service.crear(this.nuevoTipo).subscribe({
+
+    next: () => {
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Correcto',
+        text: 'Tipo de curso creado correctamente.'
+      });
+
+      this.cerrarFormulario();
+
+      this.cargarTipos();
+
+    },
+
+    error: () => {
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo crear.'
+      });
+
+    }
+
+  });
 
 }
