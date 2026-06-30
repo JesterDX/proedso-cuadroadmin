@@ -1,16 +1,25 @@
+
 <div class="page">
+
   <div class="page-header">
+
     <div>
       <h2>Tipos de Curso</h2>
       <span>Administración de tipos de curso.</span>
     </div>
-    <button class="btn-primary" (click)="mostrarFormulario = true">
+
+    <button
+      class="btn-primary"
+      (click)="nuevo()">
       + Nuevo Tipo
     </button>
+
   </div>
 
   <div class="table-card">
+
     <table>
+
       <thead>
         <tr>
           <th>Código</th>
@@ -21,74 +30,175 @@
           <th>Acciones</th>
         </tr>
       </thead>
+
       <tbody>
-        @for(tipo of tiposCurso; track tipo.id) {
-          <tr>
-            <td>{{ tipo.codigo }}</td>
-            <td>{{ tipo.nombre }}</td>
-            <td>{{ tipo.duracion_meses }} meses</td>
-            <td>{{ tipo.cantidad_maquinas }}</td>
-            <td>
-              <span 
-                class="estado" 
-                [class.activo]="tipo.activo" 
-                [class.inactivo]="!tipo.activo">
-                {{ tipo.activo ? 'Activo' : 'Inactivo' }}
-              </span>
-            </td>
-            <td>
-              <button class="btn-table">Editar</button>
-            </td>
-          </tr>
+
+        @for (tipo of tiposCurso; track tipo.id) {
+
+        <tr>
+
+          <td>{{ tipo.codigo }}</td>
+
+          <td>{{ tipo.nombre }}</td>
+
+          <td>{{ tipo.duracion_meses }} meses</td>
+
+          <td>{{ tipo.cantidad_maquinas }}</td>
+
+          <td>
+            <span
+              class="estado"
+              [class.activo]="tipo.activo"
+              [class.inactivo]="!tipo.activo">
+
+              {{ tipo.activo ? 'Activo' : 'Inactivo' }}
+
+            </span>
+          </td>
+
+          <td>
+
+            <button
+              class="btn-table"
+              (click)="editar(tipo)">
+              Editar
+            </button>
+
+            <button
+              class="btn-table btn-danger"
+              (click)="desactivar(tipo)">
+              {{ tipo.activo ? 'Desactivar' : 'Activar' }}
+            </button>
+
+          </td>
+
+        </tr>
+
         }
+
       </tbody>
+
     </table>
+
   </div>
+
 </div>
 
+
 @if (mostrarFormulario) {
-  <div class="modal-overlay">
-    <div class="modal-content">
-      
-      <div class="modal-header">
-        <h3>Nuevo Tipo de Curso</h3>
-        <button class="btn-close" (click)="mostrarFormulario = false">×</button>
+
+<div class="modal-overlay">
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+
+      <h3>
+
+        {{ modoEdicion ? 'Editar Tipo de Curso' : 'Nuevo Tipo de Curso' }}
+
+      </h3>
+
+      <button
+        class="btn-close"
+        (click)="cerrarFormulario()">
+
+        ×
+
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+
+        <label>Código</label>
+
+        <input
+          type="text"
+          [(ngModel)]="nuevoTipo.codigo"
+          placeholder="Ej. MAQ-01">
+
       </div>
 
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Código</label>
-          <input type="text" [(ngModel)]="nuevoTipo.codigo" placeholder="Ej. MAQ-01">
-        </div>
+      <div class="form-group">
 
-        <div class="form-group">
-          <label>Nombre del Curso</label>
-          <input type="text" [(ngModel)]="nuevoTipo.nombre" placeholder="Ej. Operador de Montacargas">
-        </div>
+        <label>Nombre del Curso</label>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Duración (meses)</label>
-            <input type="number" [(ngModel)]="nuevoTipo.duracion_meses" min="1">
-          </div>
-          
-          <div class="form-group">
-            <label>Máquinas</label>
-            <input type="number" [(ngModel)]="nuevoTipo.cantidad_maquinas" min="1">
-          </div>
-        </div>
+        <input
+          type="text"
+          [(ngModel)]="nuevoTipo.nombre"
+          placeholder="Ej. Operador de Montacargas">
 
-        <div class="form-checkbox">
-          <input type="checkbox" id="estadoActivo" [(ngModel)]="nuevoTipo.activo">
-          <label for="estadoActivo">Curso Activo</label>
-        </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-secondary" (click)="mostrarFormulario = false">Cancelar</button>
-        <button class="btn-primary" (click)="guardarTipo()">Guardar</button>
+      <div class="form-row">
+
+        <div class="form-group">
+
+          <label>Duración (meses)</label>
+
+          <input
+            type="number"
+            [(ngModel)]="nuevoTipo.duracion_meses"
+            min="1">
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Máquinas</label>
+
+          <input
+            type="number"
+            [(ngModel)]="nuevoTipo.cantidad_maquinas"
+            min="1">
+
+        </div>
+
+      </div>
+
+      <div class="form-checkbox">
+
+        <input
+          id="estadoActivo"
+          type="checkbox"
+          [(ngModel)]="nuevoTipo.activo">
+
+        <label for="estadoActivo">
+
+          Curso Activo
+
+        </label>
+
       </div>
 
     </div>
+
+    <div class="modal-footer">
+
+      <button
+        class="btn-secondary"
+        (click)="cerrarFormulario()">
+
+        Cancelar
+
+      </button>
+
+      <button
+        class="btn-primary"
+        (click)="guardarTipo()">
+
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+
+      </button>
+
+    </div>
+
   </div>
+
+</div>
+
 }
+
