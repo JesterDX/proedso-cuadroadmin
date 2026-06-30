@@ -26,4 +26,14 @@ export class TiposCursoService {
     return this.http.post(this.apiUrl, data);
   }
 
+  actualizar(id: number, data: any) {
+  return this.http.put(`${this.apiUrl}/${id}`, data);
+}
+
+cambiarEstado(id: number, activo: boolean) {
+  return this.http.patch(`${this.apiUrl}/${id}/estado`, {
+    activo
+  });
+}
+
 }
