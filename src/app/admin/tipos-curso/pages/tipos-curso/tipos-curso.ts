@@ -171,4 +171,4 @@ guardarTipo(): void {
 
   });
 }
-  
+}
