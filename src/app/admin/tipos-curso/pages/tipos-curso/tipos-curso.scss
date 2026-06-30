@@ -1,111 +1,47 @@
-.page{
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-}
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h2>Tipos de Curso</h2>
+      <span>Administración de tipos de curso.</span>
+    </div>
+    <button class="btn-primary">
+      + Nuevo Tipo
+    </button>
+  </div>
 
-.page-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    h2{
-        margin:0;
-        color:#1f2937;
-        font-size:28px;
-        font-weight:700;
-    }
-
-    span{
-        color:#6b7280;
-    }
-}
-
-.btn-primary{
-
-    background:#f5b700;
-    color:#111827;
-    border:none;
-    padding:12px 22px;
-    border-radius:12px;
-    font-weight:700;
-    cursor:pointer;
-    transition:.2s;
-
-    &:hover{
-        transform:translateY(-2px);
-    }
-
-}
-
-.table-card{
-
-    background:white;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 10px 30px rgba(0,0,0,.05);
-
-}
-
-table{
-
-    width:100%;
-    border-collapse:collapse;
-
-}
-
-thead{
-
-    background:#f9fafb;
-
-}
-
-th{
-
-    text-align:left;
-    padding:16px;
-    font-size:14px;
-    color:#374151;
-
-}
-
-td{
-
-    padding:16px;
-    border-top:1px solid #ececec;
-
-}
-
-.estado{
-
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:13px;
-    font-weight:600;
-
-}
-
-.activo{
-
-    background:#dcfce7;
-    color:#15803d;
-
-}
-
-.inactivo{
-
-    background:#fee2e2;
-    color:#b91c1c;
-
-}
-
-.btn-table{
-
-    background:#2563eb;
-    color:white;
-    border:none;
-    padding:8px 16px;
-    border-radius:10px;
-    cursor:pointer;
-
-}
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Duración</th>
+          <th>Máquinas</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(tipo of tiposCurso; track tipo.id) {
+          <tr>
+            <td>{{ tipo.codigo }}</td>
+            <td>{{ tipo.nombre }}</td>
+            <td>{{ tipo.duracion_meses }} meses</td>
+            <td>{{ tipo.cantidad_maquinas }}</td>
+            <td>
+              <span 
+                class="estado" 
+                [class.activo]="tipo.activo" 
+                [class.inactivo]="!tipo.activo">
+                {{ tipo.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-table">Editar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
