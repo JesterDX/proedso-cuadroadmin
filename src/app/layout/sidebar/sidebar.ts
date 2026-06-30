@@ -77,7 +77,7 @@ export class Sidebar {
         },
         {
           label: 'Tipo de curso',
-          route: '/tipo-curso',
+          route: '/admin/tipos-curso',
           icon: this.icons.cursos
         }
       ];
