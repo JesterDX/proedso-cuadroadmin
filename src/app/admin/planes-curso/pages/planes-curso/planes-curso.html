@@ -1,1 +1,60 @@
-<p>planes-curso works!</p>
+<div class="container">
+
+  <h2>Planes de Curso</h2>
+
+  <!-- FORMULARIO -->
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+
+    <input type="text" placeholder="Código" formControlName="codigo">
+
+    <input type="text" placeholder="Nombre" formControlName="nombre">
+
+    <input type="text" placeholder="Versión" formControlName="version">
+
+    <input type="number" placeholder="Tipo Curso ID" formControlName="tipo_curso_id">
+
+    <label>
+      <input type="checkbox" formControlName="permite_eleccion_personalizada">
+      Permite elección personalizada
+    </label>
+
+    <input type="date" formControlName="vigente_desde">
+    <input type="date" formControlName="vigente_hasta">
+
+    <textarea placeholder="Observaciones" formControlName="observaciones"></textarea>
+
+    <button type="submit">Guardar</button>
+  </form>
+
+  <hr>
+
+  <!-- LISTADO -->
+  <div *ngIf="loading">Cargando...</div>
+
+  <table *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Versión</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of planes">
+        <td>{{ p.id }}</td>
+        <td>{{ p.codigo }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.version }}</td>
+        <td>{{ p.activo ? 'Sí' : 'No' }}</td>
+        <td>
+          <button (click)="eliminar(p.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
