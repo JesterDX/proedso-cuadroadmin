@@ -1,5 +1,5 @@
 // ==========================================================================
-// SCSS: DATA TABLE MINIMALISTA
+// SCSS: DATA TABLE & MODAL MINIMALISTA
 // ==========================================================================
 
 $c-bg: #f9fafb;
@@ -41,8 +41,7 @@ $radius-sm: 4px;
   }
 }
 
-// --- Botón Principal ---
-// Cambiado de amarillo chillón a un botón sólido oscuro (estilo interfaz moderna)
+// --- Botones Generales ---
 .btn-primary {
   background: $c-text-main;
   color: $c-surface;
@@ -54,9 +53,21 @@ $radius-sm: 4px;
   cursor: pointer;
   transition: background 0.15s ease;
 
-  &:hover {
-    background: #374151; // Gris oscuro al pasar el mouse
-  }
+  &:hover { background: #374151; }
+}
+
+.btn-secondary {
+  background: $c-surface;
+  color: $c-text-main;
+  border: 1px solid $c-border;
+  padding: 8px 16px;
+  border-radius: $radius-btn;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover { background: #f3f4f6; }
 }
 
 // --- Contenedor de Tabla ---
@@ -64,7 +75,7 @@ $radius-sm: 4px;
   background: $c-surface;
   border: 1px solid $c-border;
   border-radius: $radius-card;
-  overflow-x: auto; // Previene que la tabla rompa el diseño en pantallas pequeñas
+  overflow-x: auto;
 }
 
 // --- Tabla ---
@@ -92,16 +103,14 @@ td {
   padding: 14px 16px;
   font-size: 0.875rem;
   color: $c-text-main;
-  border-bottom: 1px solid #f3f4f6; // Borde más suave para las filas
+  border-bottom: 1px solid #f3f4f6; 
 }
 
-// Quitar el borde de la última fila para que no choque con la tarjeta
 tbody tr:last-child td {
   border-bottom: none;
 }
 
 // --- Badges de Estado ---
-// Reducidos en tamaño y forma. Ya no son píldoras gigantes.
 .estado {
   display: inline-flex;
   padding: 2px 8px;
@@ -110,20 +119,9 @@ tbody tr:last-child td {
   font-weight: 500;
 }
 
-.activo {
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-}
+.activo { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.inactivo { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-.inactivo {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-// --- Botones de Acción (Tabla) ---
-// En lugar de un bloque azul gigante, usamos un estilo sutil
 .btn-table {
   background: transparent;
   color: #2563eb;
@@ -135,8 +133,127 @@ tbody tr:last-child td {
   cursor: pointer;
   transition: all 0.15s ease;
 
-  &:hover {
-    background: #eff6ff; // Subrayado o fondo sutil en hover
-    color: #1d4ed8;
+  &:hover { background: #eff6ff; color: #1d4ed8; }
+}
+
+// ==========================================================================
+// SCSS: MODAL FORMULARIO
+// ==========================================================================
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 24, 39, 0.4); // Fondo oscuro semi-transparente
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: $c-surface;
+  width: 100%;
+  max-width: 480px;
+  border-radius: $radius-card;
+  border: 1px solid $c-border;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid $c-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
   }
+
+  .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: $c-text-muted;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    
+    &:hover { color: $c-text-main; }
+  }
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $c-text-main;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    padding: 10px 12px;
+    border: 1px solid $c-border;
+    border-radius: $radius-btn;
+    font-size: 0.875rem;
+    color: $c-text-main;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: #2563eb; }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+
+  label {
+    font-size: 0.875rem;
+    color: $c-text-main;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid $c-border;
+  background: #f9fafb;
+  border-radius: 0 0 $radius-card $radius-card;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
