@@ -7,11 +7,89 @@
       <span>Administración de tipos de curso.</span>
     </div>
 
-    <button class="btn-primary">
+    <button
+      class="btn-primary"
+      (click)="mostrarFormulario = true">
+
       + Nuevo Tipo
+
     </button>
 
   </div>
+
+  @if (mostrarFormulario) {
+
+  <div class="form-card">
+
+    <h3>Nuevo Tipo de Curso</h3>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Código</label>
+
+        <input
+          type="text"
+          [(ngModel)]="nuevoTipo.codigo">
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Nombre</label>
+
+        <input
+          type="text"
+          [(ngModel)]="nuevoTipo.nombre">
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Duración (meses)</label>
+
+        <input
+          type="number"
+          [(ngModel)]="nuevoTipo.duracion_meses">
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Cantidad de máquinas</label>
+
+        <input
+          type="number"
+          [(ngModel)]="nuevoTipo.cantidad_maquinas">
+
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+
+      <button
+        class="btn-primary"
+        (click)="guardarTipo()">
+
+        Guardar
+
+      </button>
+
+      <button
+        class="btn-secondary"
+        (click)="mostrarFormulario = false">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  }
 
   <div class="table-card">
 
@@ -22,15 +100,10 @@
         <tr>
 
           <th>Código</th>
-
           <th>Nombre</th>
-
           <th>Duración</th>
-
           <th>Máquinas</th>
-
           <th>Estado</th>
-
           <th>Acciones</th>
 
         </tr>
@@ -58,7 +131,7 @@
               [class.activo]="tipo.activo"
               [class.inactivo]="!tipo.activo">
 
-              {{tipo.activo ? 'Activo' : 'Inactivo'}}
+              {{ tipo.activo ? 'Activo' : 'Inactivo' }}
 
             </span>
 
@@ -67,7 +140,9 @@
           <td>
 
             <button class="btn-table">
+
               Editar
+
             </button>
 
           </td>
