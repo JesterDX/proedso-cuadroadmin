@@ -30,8 +30,10 @@ export class TiposCursoService {
   return this.http.put(`${this.apiUrl}/${id}`, data);
 }
 
-desactivar(id: number) {
-  return this.http.patch(`${this.apiUrl}/${id}/desactivar`, {});
+cambiarEstado(id: number, activo: boolean) {
+  return this.http.patch(`${this.apiUrl}/${id}/estado`, {
+    activo
+  });
 }
 
 }
