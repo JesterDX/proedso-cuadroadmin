@@ -122,43 +122,33 @@ export class TiposCursoComponent implements OnInit {
 
 }
 
-  desactivar(tipo: TipoCurso): void {
+desactivar(tipo: TipoCurso): void {
 
-  Swal.fire({
-    title: '¿Desactivar tipo de curso?',
-    text: `Se desactivará "${tipo.nombre}".`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí',
-    cancelButtonText: 'Cancelar'
-  }).then(result => {
+  this.service.cambiarEstado(tipo.id, !tipo.activo).subscribe({
 
-    if (!result.isConfirmed) return;
+    next: () => {
 
-    this.service.cambiarEstado(tipo.id, !tipo.activo).subscribe({
-      next: () => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Correcto',
+        text: tipo.activo
+          ? 'Tipo de curso desactivado.'
+          : 'Tipo de curso activado.'
+      });
 
-        Swal.fire(
-          'Correcto',
-          'Tipo de curso desactivado.',
-          'success'
-        );
+      this.cargarTipos();
 
-        this.cargarTipos();
+    },
 
-      },
+    error: () => {
 
-      error: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo cambiar el estado.'
+      });
 
-        Swal.fire(
-          'Error',
-          'No se pudo desactivar.',
-          'error'
-        );
-
-      }
-
-    });
+    }
 
   });
 
