@@ -2,10 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 
-import {
-  NgChartsModule
-} from 'ng2-charts';
-
+import { BaseChartDirective } from 'ng2-charts';
 import {
   Chart as ChartJS,
   registerables,
@@ -17,13 +14,13 @@ ChartJS.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    NgChartsModule   // 🔥 ESTE ES EL IMPORT CLAVE
-  ]
+    BaseChartDirective
+  ],
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
 
