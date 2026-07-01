@@ -125,12 +125,11 @@
       <div class="chart-container">
         <canvas
           baseChart
-          [type]="'bar'"
-          [data]="pagosChartData"
-          [options]="pagosOptions">
+          [type]="'doughnut'"
+          [data]="donutChartData"
+          [options]="donutOptions">
         </canvas>
       </div>
-
     </div>
 
     <!-- LINE -->
@@ -138,12 +137,12 @@
 
       <h2>Evolución del sistema (Matrículas)</h2>
 
-      <div class="chart-container large">
+      <div class="chart-container">
         <canvas
           baseChart
-          [type]="'line'"
-          [data]="lineChartData"
-          [options]="lineOptions">
+          [type]="'doughnut'"
+          [data]="donutChartData"
+          [options]="donutOptions">
         </canvas>
       </div>
 
