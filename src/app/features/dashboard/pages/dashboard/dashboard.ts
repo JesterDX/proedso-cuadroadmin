@@ -1,21 +1,8 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectorRef,
-  inject
-} from '@angular/core';
-
-import {
-  ChartConfiguration,
-  ChartData,
-  ChartOptions
-} from 'chart.js';
-
+import { Component, OnInit, inject } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
-import {
-  Dashboard as DashboardModel,
-  EstadoAlumno
-} from '../../models/dashboard.model';
+
+// CHARTS
+import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,318 +12,112 @@ import {
 export class Dashboard implements OnInit {
 
   private dashboardService = inject(DashboardService);
-  private cd = inject(ChangeDetectorRef);
 
+  dashboard: any = {};
   loading = false;
 
-  dashboard!: DashboardModel;
+  // =========================
+  // CHARTS DATA
+  // =========================
 
-  // ==========================
-  // KPI
-  // ==========================
-
-  get resumen() {
-    return this.dashboard?.resumen;
-  }
-
-  // ==========================
-  // DONUT
-  // ==========================
-
-  donutChartData: ChartData<'doughnut'> = {
-    labels: [],
+  donutChartData: ChartConfiguration<'doughnut'>['data'] = {
+    labels: ['Matriculados', 'Egresados', 'Retirados'],
     datasets: [
       {
-        data: [],
-        backgroundColor: [
-          '#2563eb',
-          '#10b981',
-          '#f59e0b',
-          '#ef4444',
-          '#8b5cf6',
-          '#06b6d4'
-        ],
-        borderWidth: 0,
-        hoverOffset: 12
+        data: [0, 0, 0],
+        backgroundColor: ['#10b981', '#7c3aed', '#ef4444']
       }
     ]
   };
+
+  pagosChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: ['Al día', 'Con deuda'],
+    datasets: [
+      {
+        data: [0, 0],
+        backgroundColor: ['#10b981', '#ef4444']
+      }
+    ]
+  };
+
+  lineChartData: ChartConfiguration<'line'>['data'] = {
+    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+    datasets: [
+      {
+        data: [10, 20, 30, 40, 50, 60],
+        label: 'Matrículas',
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37,99,235,0.1)',
+        fill: true
+      }
+    ]
+  };
+
+  // =========================
+  // OPTIONS
+  // =========================
 
   donutOptions: ChartOptions<'doughnut'> = {
     responsive: true,
-    maintainAspectRatio: false,
-
     plugins: {
-
       legend: {
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          padding: 18,
-          font: {
-            size: 13
-          }
-        }
+        position: 'bottom'
       }
-
-    },
-
-    cutout: '70%'
-  };
-
-  // ==========================
-  // BARRAS PAGOS
-  // ==========================
-
-  pagosChartData: ChartData<'bar'> = {
-
-    labels: ['Al día', 'Con deuda'],
-
-    datasets: [
-      {
-        label: 'Alumnos',
-
-        data: [],
-
-        borderRadius: 8,
-
-        backgroundColor: [
-          '#10b981',
-          '#ef4444'
-        ]
-      }
-    ]
-
+    }
   };
 
   pagosOptions: ChartOptions<'bar'> = {
-
     responsive: true,
-
-    maintainAspectRatio: false,
-
     plugins: {
-
-      legend: {
-        display: false
-      }
-
-    },
-
-    scales: {
-
-      y: {
-
-        beginAtZero: true,
-
-        ticks: {
-          precision: 0
-        }
-
-      }
-
+      legend: { display: false }
     }
-
-  };
-
-  // ==========================
-  // LINEA
-  // (temporal)
-  // ==========================
-
-  lineChartData: ChartData<'line'> = {
-
-    labels: [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun'
-    ],
-
-    datasets: [
-
-      {
-
-        label: 'Matrículas',
-
-        data: [0,0,0,0,0,0],
-
-        tension: .4,
-
-        fill: true,
-
-        borderWidth: 3,
-
-        backgroundColor: 'rgba(37,99,235,.15)',
-
-        borderColor: '#2563eb',
-
-        pointRadius: 5
-
-      }
-
-    ]
-
   };
 
   lineOptions: ChartOptions<'line'> = {
-
     responsive: true,
-
-    maintainAspectRatio: false,
-
     plugins: {
-
-      legend: {
-
-        display: false
-
-      }
-
+      legend: { position: 'bottom' }
     }
-
   };
 
-  // ==========================
+  // =========================
   // INIT
-  // ==========================
+  // =========================
 
   ngOnInit(): void {
-
     this.cargarDashboard();
-
   }
 
-  // ==========================
-  // API
-  // ==========================
-
   cargarDashboard(): void {
-
     this.loading = true;
 
     this.dashboardService.getDashboard().subscribe({
+      next: (resp: any) => {
 
-      next: (resp) => {
+        console.log('DASHBOARD API:', resp);
 
-        console.log(resp);
+        this.dashboard = resp.data ?? {};
 
-        this.dashboard = resp.data;
+        const r = this.dashboard.resumen;
 
-        this.cargarGraficoEstados(
-          this.dashboard.graficos.estadosAlumno
-        );
+        // 🔥 ACTUALIZAR CHARTS CON API
+        this.donutChartData.datasets[0].data = [
+          r.matriculados,
+          r.egresados,
+          r.retirados
+        ];
 
-        this.cargarGraficoPagos();
+        this.pagosChartData.datasets[0].data = [
+          r.alumnosAlDia,
+          r.alumnosConDeuda
+        ];
 
         this.loading = false;
-
-        this.cd.detectChanges();
-
       },
-
-      error: (error) => {
-
-        console.error(error);
-
+      error: (err: any) => {
+        console.error(err);
         this.loading = false;
-
       }
-
     });
-
   }
-
-  // ==========================
-  // GRAFICO DONA
-  // ==========================
-
-  cargarGraficoEstados(estados: EstadoAlumno[]): void {
-
-    this.donutChartData = {
-
-      labels: estados.map(e => e.nombre),
-
-      datasets: [
-
-        {
-
-          data: estados.map(e => e.cantidad),
-
-          backgroundColor: [
-
-            '#2563eb',
-
-            '#10b981',
-
-            '#f59e0b',
-
-            '#ef4444',
-
-            '#7c3aed'
-
-          ],
-
-          borderWidth: 0,
-
-          hoverOffset: 12
-
-        }
-
-      ]
-
-    };
-
-  }
-
-  // ==========================
-  // PAGOS
-  // ==========================
-
-  cargarGraficoPagos(): void {
-
-    if (!this.resumen) return;
-
-    this.pagosChartData = {
-
-      labels: [
-
-        'Al día',
-
-        'Con deuda'
-
-      ],
-
-      datasets: [
-
-        {
-
-          data: [
-
-            this.resumen.alumnosAlDia,
-
-            this.resumen.alumnosConDeuda
-
-          ],
-
-          backgroundColor: [
-
-            '#10b981',
-
-            '#ef4444'
-
-          ],
-
-          borderRadius: 8
-
-        }
-
-      ]
-
-    };
-
-  }
-
 }
