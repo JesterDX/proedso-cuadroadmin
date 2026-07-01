@@ -59,11 +59,17 @@ export class PlanesCursoComponent implements OnInit {
     });
   }
 
-  eliminar(id: number) {
-    if (!confirm('¿Seguro que deseas eliminar este plan?')) return;
+cambiarEstado(id: number) {
 
-    this.service.eliminar(id).subscribe({
-      next: () => this.listarActivos()
-    });
-  }
+  if (!confirm('¿Deseas cambiar el estado del plan?')) return;
+
+  this.service.cambiarEstado(id).subscribe({
+
+    next: () => {
+      this.listarActivos();
+    }
+
+  });
+
+}
 }
