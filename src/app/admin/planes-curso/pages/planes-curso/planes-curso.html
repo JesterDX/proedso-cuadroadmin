@@ -51,7 +51,9 @@
         <td>{{ p.version }}</td>
         <td>{{ p.activo ? 'Sí' : 'No' }}</td>
         <td>
-          <button (click)="eliminar(p.id)">Eliminar</button>
+          <button (click)="cambiarEstado(p.id)">
+            {{ p.activo ? 'Desactivar' : 'Activar' }}
+          </button>
         </td>
       </tr>
     </tbody>
