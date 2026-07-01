@@ -13,13 +13,13 @@ export class PlanesCursoService {
 
   private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/planes-curso';
 
-  listar(): Observable<PlanCurso[]> {
-    return this.http
-      .get<{ ok: boolean; data: PlanCurso[] }>(this.apiUrl)
-      .pipe(
-        map(res => res.data)
-      );
-  }
+listarActivos(): Observable<PlanCurso[]> {
+  return this.http
+    .get<{ ok: boolean; data: PlanCurso[] }>(
+      `${this.apiUrl}/activos`
+    )
+    .pipe(map(res => res.data));
+}
 
   crear(data: any) {
     return this.http.post(this.apiUrl, data);
