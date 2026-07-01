@@ -8,8 +8,8 @@ import { PlanCurso } from '../../models/plan-curso.model';
   selector: 'app-planes-curso',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './planes-curso.component.html',
-  styleUrl: './planes-curso.component.scss'
+  templateUrl: './planes-curso.html',
+  styleUrl: './planes-curso.scss'
 })
 export class PlanesCursoComponent implements OnInit {
 
