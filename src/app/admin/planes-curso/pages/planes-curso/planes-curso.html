@@ -6,12 +6,18 @@
   <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
 
     <input type="text" placeholder="Código" formControlName="codigo">
-
     <input type="text" placeholder="Nombre" formControlName="nombre">
-
     <input type="text" placeholder="Versión" formControlName="version">
 
-    <input type="number" placeholder="Tipo Curso ID" formControlName="tipo_curso_id">
+    <select formControlName="tipo_curso_id">
+      <option value="">Seleccione tipo de curso</option>
+
+      @for (t of tiposCurso; track t.id) {
+        <option [value]="t.id">
+          {{ t.nombre }}
+        </option>
+      }
+    </select>
 
     <label>
       <input type="checkbox" formControlName="permite_eleccion_personalizada">
@@ -21,16 +27,20 @@
     <input type="date" formControlName="vigente_desde">
     <input type="date" formControlName="vigente_hasta">
 
-    <textarea placeholder="Observaciones" formControlName="observaciones"></textarea>
+    <textarea formControlName="observaciones"></textarea>
 
-    <button type="submit">Guardar</button>
+    <button type="submit">
+      {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+    </button>
+
   </form>
 
   <hr>
 
-  <!-- LISTADO -->
+  <!-- LOADING -->
   <div *ngIf="loading">Cargando...</div>
 
+  <!-- LISTADO -->
   <table *ngIf="!loading">
     <thead>
       <tr>
@@ -50,7 +60,12 @@
         <td>{{ p.nombre }}</td>
         <td>{{ p.version }}</td>
         <td>{{ p.activo ? 'Sí' : 'No' }}</td>
+
         <td>
+          <button (click)="editar(p)">
+            Editar
+          </button>
+
           <button (click)="cambiarEstado(p.id)">
             {{ p.activo ? 'Desactivar' : 'Activar' }}
           </button>
