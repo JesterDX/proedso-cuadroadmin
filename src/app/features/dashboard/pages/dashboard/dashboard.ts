@@ -103,16 +103,32 @@ export class Dashboard implements OnInit {
         const r = this.dashboard.resumen;
 
         // 🔥 ACTUALIZAR CHARTS CON API
-        this.donutChartData.datasets[0].data = [
-          r.matriculados,
-          r.egresados,
-          r.retirados
-        ];
+        this.donutChartData = {
+          ...this.donutChartData,
+          datasets: [
+            {
+              ...this.donutChartData.datasets[0],
+              data: [
+                r.matriculados ?? 0,
+                r.egresados ?? 0,
+                r.retirados ?? 0
+              ]
+            }
+          ]
+        };
 
-        this.pagosChartData.datasets[0].data = [
-          r.alumnosAlDia,
-          r.alumnosConDeuda
-        ];
+        this.pagosChartData = {
+          ...this.pagosChartData,
+          datasets: [
+            {
+              ...this.pagosChartData.datasets[0],
+              data: [
+                r.alumnosAlDia ?? 0,
+                r.alumnosConDeuda ?? 0
+              ]
+            }
+          ]
+        };
 
         this.loading = false;
       },
