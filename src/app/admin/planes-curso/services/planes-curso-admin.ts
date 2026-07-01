@@ -29,7 +29,12 @@ listarActivos(): Observable<PlanCurso[]> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 
-  eliminar(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
+cambiarEstado(id:number){
+
+   return this.http.patch(
+      `${this.apiUrl}/${id}/estado`,
+      {}
+   );
+
+}
 }
