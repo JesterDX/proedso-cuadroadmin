@@ -1,18 +1,16 @@
 @use "sass:color";
 
 // ==========================================================================
-// PROFESSIONAL PREMIUM DASHBOARD - FIXED EDITION
+// DASHBOARD PRO FIXED
 // ==========================================================================
 
-// Paleta
+// COLORS
 $c-bg: #f8fafc;
 $c-surface: #ffffff;
 $c-text-main: #0f172a;
 $c-text-muted: #64748b;
 $c-border: #e2e8f0;
-$c-focus-ring: rgba(37, 99, 235, 0.3);
 
-// Branding
 $brand-primary: #2563eb;
 $brand-success: #10b981;
 $brand-warning: #f59e0b;
@@ -22,10 +20,10 @@ $brand-purple: #7c3aed;
 $radius-lg: 16px;
 $radius-md: 10px;
 
-$shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
-$shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.05);
+$shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+$shadow-md: 0 8px 20px rgba(0,0,0,0.08);
 
-$transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+$transition: all 0.25s ease;
 
 // ==========================================================================
 // BASE
@@ -34,29 +32,16 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  gap: 24px;
+  padding: 32px;
+  min-height: 100vh;
   background: $c-bg;
   color: $c-text-main;
-  padding: 40px;
-  min-height: 100vh;
+  font-family: Inter, system-ui, sans-serif;
 
   * {
     box-sizing: border-box;
   }
-}
-
-// ==========================================================================
-// CARDS BASE
-// ==========================================================================
-
-.welcome-card,
-.panel-card {
-  background: $c-surface;
-  border: 1px solid rgba($c-border, 0.7);
-  border-radius: $radius-lg;
-  padding: 32px;
-  box-shadow: $shadow-sm;
 }
 
 // ==========================================================================
@@ -67,45 +52,41 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 320px;
-    height: 200%;
-    background: radial-gradient(
-      circle,
-      rgba($brand-primary, 0.04) 0%,
-      transparent 60%
-    );
-  }
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+  padding: 24px;
+  box-shadow: $shadow-sm;
 
   h1 {
-    margin: 0 0 6px 0;
-    font-size: 1.9rem;
+    margin: 0;
+    font-size: 1.6rem;
     font-weight: 700;
   }
 
   p {
-    margin: 0;
+    margin: 4px 0 0;
     color: $c-text-muted;
   }
 }
 
 .admin-badge {
   background: rgba($brand-primary, 0.08);
-
-  // FIX: darken deprecated
-  color: color.adjust($brand-primary, $lightness: -12%);
-
-  padding: 6px 14px;
+  color: color.adjust($brand-primary, $lightness: -10%);
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
+}
+
+// ==========================================================================
+// LOADING
+// ==========================================================================
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: $c-text-muted;
 }
 
 // ==========================================================================
@@ -114,97 +95,42 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
 }
 
 .stat-card {
   background: $c-surface;
   border: 1px solid $c-border;
   border-radius: $radius-lg;
-  padding: 22px;
+  padding: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: $transition;
   box-shadow: $shadow-sm;
+  transition: $transition;
 
   &:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: $shadow-md;
   }
 
-  .stat-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    .label {
-      color: $c-text-muted;
-      font-size: 0.85rem;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-    }
+  .label {
+    font-size: 13px;
+    color: $c-text-muted;
   }
 
-  .stat-icon-wrapper {
-    width: 52px;
-    height: 52px;
-    border-radius: $radius-md;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    svg {
-      width: 24px;
-      height: 24px;
-      stroke-width: 2;
-    }
+  h3 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
   }
 
-  &.blue {
-    border-bottom: 3px solid $brand-primary;
-    .stat-icon-wrapper {
-      background: rgba($brand-primary, 0.1);
-      color: $brand-primary;
-    }
-  }
-
-  &.green {
-    border-bottom: 3px solid $brand-success;
-    .stat-icon-wrapper {
-      background: rgba($brand-success, 0.1);
-      color: $brand-success;
-    }
-  }
-
-  &.orange {
-    border-bottom: 3px solid $brand-warning;
-    .stat-icon-wrapper {
-      background: rgba($brand-warning, 0.1);
-      color: $brand-warning;
-    }
-  }
-
-  &.purple {
-    border-bottom: 3px solid $brand-purple;
-    .stat-icon-wrapper {
-      background: rgba($brand-purple, 0.1);
-      color: $brand-purple;
-    }
-  }
-
-  &.danger {
-    border-bottom: 3px solid $brand-danger;
-    .stat-icon-wrapper {
-      background: rgba($brand-danger, 0.1);
-      color: $brand-danger;
-    }
-  }
+  &.blue { border-bottom: 3px solid $brand-primary; }
+  &.green { border-bottom: 3px solid $brand-success; }
+  &.orange { border-bottom: 3px solid $brand-warning; }
+  &.purple { border-bottom: 3px solid $brand-purple; }
+  &.danger { border-bottom: 3px solid $brand-danger; }
 }
 
 // ==========================================================================
@@ -214,15 +140,19 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 18px;
 }
 
 .chart-card {
-  padding: 24px;
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+  padding: 20px;
+  box-shadow: $shadow-sm;
 
   h2 {
-    margin-bottom: 18px;
-    font-size: 1rem;
+    margin: 0 0 12px;
+    font-size: 14px;
     font-weight: 600;
   }
 }
@@ -232,12 +162,19 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .chart-container {
-  width: 100%;
   height: 280px;
+  width: 100%;
 }
 
 .chart-container.large {
   height: 320px;
+}
+
+// IMPORTANT FOR CHART RESIZE
+canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 // ==========================================================================
@@ -246,13 +183,13 @@ $transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 @media (max-width: 768px) {
   .dashboard {
-    padding: 20px;
+    padding: 16px;
   }
 
   .welcome-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
 
   .charts-grid {
