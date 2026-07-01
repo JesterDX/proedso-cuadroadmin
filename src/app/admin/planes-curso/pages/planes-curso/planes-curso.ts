@@ -26,8 +26,8 @@ export class PlanesCursoComponent implements OnInit {
   form = this.fb.group({
     codigo: ['', Validators.required],
     nombre: ['', Validators.required],
-    version: ['', Validators.required],
-    tipo_curso_id: ['', Validators.required],
+    version: ['', Validators.required], // string para input
+    tipo_curso_id: [null as number | null, Validators.required],
     permite_eleccion_personalizada: [false],
     vigente_desde: ['', Validators.required],
     vigente_hasta: ['', Validators.required],
@@ -60,22 +60,25 @@ export class PlanesCursoComponent implements OnInit {
   }
 
   guardar() {
-
     if (this.form.invalid) return;
 
-    if (this.modoEdicion) {
+    const payload = {
+      ...this.form.value,
+      version: this.form.value.version ?? '',
+      tipo_curso_id: this.form.value.tipo_curso_id ?? null
+    };
 
-      this.service.editar(this.idEditando!, this.form.value).subscribe({
+    if (this.modoEdicion) {
+      this.service.editar(this.idEditando!, payload).subscribe({
         next: () => {
           this.reset();
           this.listarActivos();
         }
       });
-
       return;
     }
 
-    this.service.crear(this.form.value).subscribe({
+    this.service.crear(payload).subscribe({
       next: () => {
         this.reset();
         this.listarActivos();
@@ -84,22 +87,25 @@ export class PlanesCursoComponent implements OnInit {
   }
 
   editar(plan: PlanCurso) {
-
     this.modoEdicion = true;
     this.idEditando = plan.id;
 
     this.form.patchValue({
-      ...plan,
-      version: plan.version?.toString()
-    });  
-    }
+      codigo: plan.codigo,
+      nombre: plan.nombre,
+      version: plan.version?.toString(),
+      tipo_curso_id: plan.tipo_curso_id,
+      permite_eleccion_personalizada: plan.permite_eleccion_personalizada,
+      vigente_desde: plan.vigente_desde,
+      vigente_hasta: plan.vigente_hasta,
+      observaciones: plan.observaciones
+    });
+  }
 
   cambiarEstado(id: number) {
-
     this.service.cambiarEstado(id).subscribe({
       next: () => this.listarActivos()
     });
-
   }
 
   reset() {
