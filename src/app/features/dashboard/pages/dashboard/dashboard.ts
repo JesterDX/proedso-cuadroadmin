@@ -1,13 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
-
+import { BaseChartDirective } from 'ng2-charts';
 // CHARTS
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrls: ['./dashboard.scss'],
+  standalone: true,
+  imports: [BaseChartDirective]
 })
 export class Dashboard implements OnInit {
 
