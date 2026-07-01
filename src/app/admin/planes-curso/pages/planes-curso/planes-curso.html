@@ -37,33 +37,6 @@
 
   <hr>
 
-  <div class="filters">
-
-  <input
-    type="text"
-    placeholder="Buscar por código o nombre"
-    [(ngModel)]="filtroTexto"
-    (input)="filtrar()"
-  >
-
-  <select [(ngModel)]="filtroTipo" (change)="filtrar()">
-    <option [ngValue]="null">Todos los tipos</option>
-
-    @for (t of tiposCurso; track t.id) {
-      <option [ngValue]="t.id">
-        {{ t.nombre }}
-      </option>
-    }
-  </select>
-
-  <select [(ngModel)]="filtroActivo" (change)="filtrar()">
-    <option [ngValue]="null">Todos</option>
-    <option [ngValue]="true">Activos</option>
-    <option [ngValue]="false">Inactivos</option>
-  </select>
-
-</div>
-
   <!-- LOADING -->
   <div *ngIf="loading">Cargando...</div>
 
