@@ -17,7 +17,11 @@ export class PlanesCursoComponent implements OnInit {
   private service = inject(PlanesCursoService);
 
   planes: PlanCurso[] = [];
+  tiposCurso: any[] = [];
+
   loading = false;
+  modoEdicion = false;
+  idEditando: number | null = null;
 
   form = this.fb.group({
     codigo: ['', Validators.required],
@@ -32,6 +36,15 @@ export class PlanesCursoComponent implements OnInit {
 
   ngOnInit(): void {
     this.listarActivos();
+    this.cargarTipos();
+  }
+
+  cargarTipos() {
+    this.service.listarTiposCurso().subscribe({
+      next: (res) => {
+        this.tiposCurso = res.data;
+      }
+    });
   }
 
   listarActivos() {
@@ -42,34 +55,53 @@ export class PlanesCursoComponent implements OnInit {
         this.planes = data;
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
-      }
+      error: () => this.loading = false
     });
   }
 
   guardar() {
+
     if (this.form.invalid) return;
+
+    if (this.modoEdicion) {
+
+      this.service.editar(this.idEditando!, this.form.value).subscribe({
+        next: () => {
+          this.reset();
+          this.listarActivos();
+        }
+      });
+
+      return;
+    }
 
     this.service.crear(this.form.value).subscribe({
       next: () => {
-        this.form.reset();
+        this.reset();
         this.listarActivos();
       }
     });
   }
 
-cambiarEstado(id: number) {
+  editar(plan: PlanCurso) {
 
-  if (!confirm('¿Deseas cambiar el estado del plan?')) return;
+    this.modoEdicion = true;
+    this.idEditando = plan.id;
 
-  this.service.cambiarEstado(id).subscribe({
+    this.form.patchValue(plan);
+  }
 
-    next: () => {
-      this.listarActivos();
-    }
+  cambiarEstado(id: number) {
 
-  });
+    this.service.cambiarEstado(id).subscribe({
+      next: () => this.listarActivos()
+    });
 
-}
+  }
+
+  reset() {
+    this.form.reset();
+    this.modoEdicion = false;
+    this.idEditando = null;
+  }
 }
