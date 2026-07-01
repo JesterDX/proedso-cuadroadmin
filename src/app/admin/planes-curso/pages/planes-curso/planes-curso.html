@@ -10,10 +10,10 @@
     <input type="text" placeholder="Versión" formControlName="version">
 
     <select formControlName="tipo_curso_id">
-      <option value="">Seleccione tipo de curso</option>
+      <option [ngValue]="null">Seleccione tipo de curso</option>
 
       @for (t of tiposCurso; track t.id) {
-        <option [value]="t.id">
+        <option [ngValue]="t.id">
           {{ t.nombre }}
         </option>
       }
@@ -48,6 +48,7 @@
         <th>Código</th>
         <th>Nombre</th>
         <th>Versión</th>
+        <th>Tipo Curso</th>
         <th>Activo</th>
         <th>Acciones</th>
       </tr>
@@ -59,6 +60,7 @@
         <td>{{ p.codigo }}</td>
         <td>{{ p.nombre }}</td>
         <td>{{ p.version }}</td>
+        <td>{{ p.tipo_curso_nombre }}</td>
         <td>{{ p.activo ? 'Sí' : 'No' }}</td>
 
         <td>
