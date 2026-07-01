@@ -49,15 +49,14 @@ export const routes: Routes = [
             .then(m => m.TiposCursoComponent)
       },
       
-      // Las agregaremos cuando existan
-      /*
       {
         path: 'admin/planes-curso',
         loadComponent: () =>
           import('./admin/planes-curso/pages/planes-curso/planes-curso')
             .then(m => m.PlanesCursoComponent)
       },
-      
+            // Las agregaremos cuando existan
+      /*
       {
         path: 'admin/maquinas',
         loadComponent: () =>
