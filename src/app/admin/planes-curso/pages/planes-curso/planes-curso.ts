@@ -31,13 +31,13 @@ export class PlanesCursoComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.listar();
+    this.listarActivos();
   }
 
-  listar() {
+  listarActivos() {
     this.loading = true;
 
-    this.service.listar().subscribe({
+    this.service.listarActivos().subscribe({
       next: (data) => {
         this.planes = data;
         this.loading = false;
@@ -54,7 +54,7 @@ export class PlanesCursoComponent implements OnInit {
     this.service.crear(this.form.value).subscribe({
       next: () => {
         this.form.reset();
-        this.listar();
+        this.listarActivos();
       }
     });
   }
@@ -63,7 +63,7 @@ export class PlanesCursoComponent implements OnInit {
     if (!confirm('¿Seguro que deseas eliminar este plan?')) return;
 
     this.service.eliminar(id).subscribe({
-      next: () => this.listar()
+      next: () => this.listarActivos()
     });
   }
 }
