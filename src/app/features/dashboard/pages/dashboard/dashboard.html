@@ -147,4 +147,59 @@
 
   </section>
 
+  <!-- =========================
+     GRÁFICOS PRINCIPALES
+========================== -->
+<section class="charts-grid">
+
+  <!-- ================= PIE CHART ================= -->
+  <div class="panel-card chart-card">
+
+    <h2>Estados de alumnos</h2>
+
+    <div class="chart-container">
+      <canvas
+        baseChart
+        [type]="'doughnut'"
+        [data]="donutChartData"
+        [options]="donutOptions">
+      </canvas>
+    </div>
+
+  </div>
+
+  <!-- ================= BAR CHART ================= -->
+  <div class="panel-card chart-card">
+
+    <h2>Estado de pagos</h2>
+
+    <div class="chart-container">
+      <canvas
+        baseChart
+        [type]="'bar'"
+        [data]="pagosChartData"
+        [options]="pagosOptions">
+      </canvas>
+    </div>
+
+  </div>
+
+  <!-- ================= LINE CHART ================= -->
+  <div class="panel-card chart-card full-width">
+
+    <h2>Evolución del sistema (Matrículas)</h2>
+
+    <div class="chart-container large">
+      <canvas
+        baseChart
+        [type]="'line'"
+        [data]="lineChartData"
+        [options]="lineOptions">
+      </canvas>
+    </div>
+
+  </div>
+
+</section>
+
 </main>
