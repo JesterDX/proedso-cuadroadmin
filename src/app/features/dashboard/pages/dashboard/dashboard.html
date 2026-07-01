@@ -19,22 +19,22 @@
   </header>
 
   <!-- =========================
+       LOADING STATE (IMPORTANTE)
+  ========================== -->
+  <section *ngIf="loading" class="loading-state">
+    <p>Cargando dashboard...</p>
+  </section>
+
+  <!-- =========================
        KPI GRID
   ========================== -->
-  <section class="stats-grid" aria-label="Métricas principales">
+  <section class="stats-grid" aria-label="Métricas principales" *ngIf="!loading">
 
     <!-- TOTAL ALUMNOS -->
     <article class="stat-card blue">
       <div class="stat-content">
         <span class="label">Total de alumnos</span>
         <h3>{{ dashboard?.resumen?.totalAlumnos ?? 0 }}</h3>
-      </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-6a4 4 0 10-8 0 4 4 0 008 0z"/>
-        </svg>
       </div>
     </article>
 
@@ -44,13 +44,6 @@
         <span class="label">Matriculados</span>
         <h3>{{ dashboard?.resumen?.matriculados ?? 0 }}</h3>
       </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
     </article>
 
     <!-- EGRESADOS -->
@@ -58,15 +51,6 @@
       <div class="stat-content">
         <span class="label">Egresados</span>
         <h3>{{ dashboard?.resumen?.egresados ?? 0 }}</h3>
-      </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 14l9-5-9-5-9 5 9 5z"/>
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479L12 14z"/>
-        </svg>
       </div>
     </article>
 
@@ -76,13 +60,6 @@
         <span class="label">Retirados</span>
         <h3>{{ dashboard?.resumen?.retirados ?? 0 }}</h3>
       </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M18.364 5.636l-12.728 12.728M6.343 6.343l11.314 11.314"/>
-        </svg>
-      </div>
     </article>
 
     <!-- AL DÍA -->
@@ -90,13 +67,6 @@
       <div class="stat-content">
         <span class="label">Alumnos al día</span>
         <h3>{{ dashboard?.resumen?.alumnosAlDia ?? 0 }}</h3>
-      </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M5 13l4 4L19 7"/>
-        </svg>
       </div>
     </article>
 
@@ -106,13 +76,6 @@
         <span class="label">Con deuda</span>
         <h3>{{ dashboard?.resumen?.alumnosConDeuda ?? 0 }}</h3>
       </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 8v4m0 4h.01M4.93 4.93l14.14 14.14"/>
-        </svg>
-      </div>
     </article>
 
     <!-- MAQUINAS -->
@@ -120,13 +83,6 @@
       <div class="stat-content">
         <span class="label">Máquinas</span>
         <h3>{{ dashboard?.resumen?.maquinas ?? 0 }}</h3>
-      </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9 17v-6h13v6M9 5v6h13V5H9zM4 5h5v16H4z"/>
-        </svg>
       </div>
     </article>
 
@@ -136,70 +92,63 @@
         <span class="label">Cursos activos</span>
         <h3>{{ dashboard?.resumen?.cursos ?? 0 }}</h3>
       </div>
-
-      <div class="stat-icon-wrapper">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 6.253v11.494m0 0A8.014 8.014 0 0112 21m0-3.253A8.014 8.014 0 0012 21m0-3.253V6.253"/>
-        </svg>
-      </div>
     </article>
 
   </section>
 
   <!-- =========================
-     GRÁFICOS PRINCIPALES
-========================== -->
-<section class="charts-grid">
+       GRÁFICOS
+  ========================== -->
+  <section class="charts-grid" *ngIf="!loading">
 
-  <!-- ================= PIE CHART ================= -->
-  <div class="panel-card chart-card">
+    <!-- PIE / DOUGHNUT -->
+    <div class="panel-card chart-card">
 
-    <h2>Estados de alumnos</h2>
+      <h2>Estados de alumnos</h2>
 
-    <div class="chart-container">
-      <canvas
-        baseChart
-        [type]="'doughnut'"
-        [data]="donutChartData"
-        [options]="donutOptions">
-      </canvas>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [type]="'doughnut'"
+          [data]="donutChartData"
+          [options]="donutOptions">
+        </canvas>
+      </div>
+
     </div>
 
-  </div>
+    <!-- BAR -->
+    <div class="panel-card chart-card">
 
-  <!-- ================= BAR CHART ================= -->
-  <div class="panel-card chart-card">
+      <h2>Estado de pagos</h2>
 
-    <h2>Estado de pagos</h2>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [type]="'bar'"
+          [data]="pagosChartData"
+          [options]="pagosOptions">
+        </canvas>
+      </div>
 
-    <div class="chart-container">
-      <canvas
-        baseChart
-        [type]="'bar'"
-        [data]="pagosChartData"
-        [options]="pagosOptions">
-      </canvas>
     </div>
 
-  </div>
+    <!-- LINE -->
+    <div class="panel-card chart-card full-width">
 
-  <!-- ================= LINE CHART ================= -->
-  <div class="panel-card chart-card full-width">
+      <h2>Evolución del sistema (Matrículas)</h2>
 
-    <h2>Evolución del sistema (Matrículas)</h2>
+      <div class="chart-container large">
+        <canvas
+          baseChart
+          [type]="'line'"
+          [data]="lineChartData"
+          [options]="lineOptions">
+        </canvas>
+      </div>
 
-    <div class="chart-container large">
-      <canvas
-        baseChart
-        [type]="'line'"
-        [data]="lineChartData"
-        [options]="lineOptions">
-      </canvas>
     </div>
 
-  </div>
-
-</section>
+  </section>
 
 </main>
