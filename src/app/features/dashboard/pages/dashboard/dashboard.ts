@@ -107,52 +107,51 @@ export class Dashboard implements OnInit {
     this.loading = true;
 
     this.dashboardService.getDashboard().subscribe({
-      next: (resp: any) => {
+next: (resp: any) => {
 
-        console.log('DASHBOARD API:', resp);
+  console.log('DASHBOARD API:', resp);
 
-        this.dashboard = resp.data ?? {};
-        const r = this.dashboard.resumen ?? {};
+  this.dashboard = resp.data ?? {};
+  const r = this.dashboard.resumen ?? {};
 
-        // 🔥 UPDATE DONUT
-        this.donutChartData = {
-          ...this.donutChartData,
-          datasets: [
-            {
-              ...this.donutChartData.datasets[0],
-              data: [
-                r.matriculados ?? 0,
-                r.egresados ?? 0,
-                r.retirados ?? 0
-              ]
-            }
-          ]
-        };
-
-        // 🔥 UPDATE BAR
-        this.pagosChartData = {
-          ...this.pagosChartData,
-          datasets: [
-            {
-              ...this.pagosChartData.datasets[0],
-              data: [
-                r.alumnosAlDia ?? 0,
-                r.alumnosConDeuda ?? 0
-              ]
-            }
-          ]
-        };
-
-        this.loading = false;
-
-        // 🔥 fuerza detección Angular
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.loading = false;
-        this.cdr.detectChanges();
+  // UPDATE DONUT
+  this.donutChartData = {
+    ...this.donutChartData,
+    datasets: [
+      {
+        ...this.donutChartData.datasets[0],
+        data: [
+          r.matriculados ?? 0,
+          r.egresados ?? 0,
+          r.retirados ?? 0
+        ]
       }
+    ]
+  };
+
+  // UPDATE BAR
+  this.pagosChartData = {
+    ...this.pagosChartData,
+    datasets: [
+      {
+        ...this.pagosChartData.datasets[0],
+        data: [
+          r.alumnosAlDia ?? 0,
+          r.alumnosConDeuda ?? 0
+        ]
+      }
+    ]
+  };
+
+  this.loading = false;
+
+  this.cdr.detectChanges();
+
+  // 🔥 AQUÍ VA EL IMPORTANTE
+  setTimeout(() => {
+    this.cdr.detectChanges();
+  });
+}
     });
   }
 }
