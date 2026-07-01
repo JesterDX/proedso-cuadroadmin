@@ -88,8 +88,11 @@ export class PlanesCursoComponent implements OnInit {
     this.modoEdicion = true;
     this.idEditando = plan.id;
 
-    this.form.patchValue(plan);
-  }
+    this.form.patchValue({
+      ...plan,
+      version: plan.version?.toString()
+    });  
+    }
 
   cambiarEstado(id: number) {
 
