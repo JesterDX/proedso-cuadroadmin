@@ -1,8 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
-import { BaseChartDirective } from 'ng2-charts';
 
-// CHARTS
+import {
+  NgChartsModule
+} from 'ng2-charts';
+
 import {
   Chart as ChartJS,
   registerables,
@@ -10,7 +13,6 @@ import {
   ChartOptions
 } from 'chart.js';
 
-// 🔥 REGISTRO GLOBAL OBLIGATORIO
 ChartJS.register(...registerables);
 
 @Component({
@@ -18,7 +20,10 @@ ChartJS.register(...registerables);
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   standalone: true,
-  imports: [BaseChartDirective]
+  imports: [
+    CommonModule,
+    NgChartsModule   // 🔥 ESTE ES EL IMPORT CLAVE
+  ]
 })
 export class Dashboard implements OnInit {
 
