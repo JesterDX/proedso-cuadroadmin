@@ -1,94 +1,149 @@
 <main class="dashboard" aria-label="Panel de Control Principal">
 
+  <!-- =========================
+       HEADER
+  ========================== -->
   <header class="welcome-card">
+
     <div class="welcome-text">
-      <h1>Panel de Control</h1>
-      <p>Bienvenido de vuelta. Esto es lo que está pasando hoy en la plataforma.</p>
+      <h1>Panel de Control PROEDSO</h1>
+      <p>
+        Resumen general del sistema: alumnos, matrículas, pagos y estados en tiempo real.
+      </p>
     </div>
-    <span class="admin-badge" role="status">Administrador</span>
+
+    <span class="admin-badge" role="status">
+      Sistema ERP
+    </span>
+
   </header>
 
+  <!-- =========================
+       KPI GRID
+  ========================== -->
   <section class="stats-grid" aria-label="Métricas principales">
-    
-    <!-- Stat Card: Alumnos -->
+
+    <!-- TOTAL ALUMNOS -->
     <article class="stat-card blue">
       <div class="stat-content">
-        <span class="label">Alumnos registrados</span>
-        <h3>{{ dashboard?.alumnos ?? 0 }}</h3>
+        <span class="label">Total de alumnos</span>
+        <h3>{{ dashboard?.resumen?.totalAlumnos ?? 0 }}</h3>
       </div>
-      <div class="stat-icon-wrapper" aria-hidden="true">
-        <!-- Reemplaza con un SVG real (Ej: Users) -->
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-6a4 4 0 10-8 0 4 4 0 008 0z"/>
+        </svg>
       </div>
     </article>
 
-    <!-- Stat Card: Activos -->
+    <!-- MATRICULADOS -->
     <article class="stat-card green">
       <div class="stat-content">
-        <span class="label">Alumnos activos</span>
-        <h3>{{ dashboard?.alumnosActivos ?? 0 }}</h3>
+        <span class="label">Matriculados</span>
+        <h3>{{ dashboard?.resumen?.matriculados ?? 0 }}</h3>
       </div>
-      <div class="stat-icon-wrapper" aria-hidden="true">
-        <!-- Reemplaza con un SVG real (Ej: Activity) -->
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
     </article>
 
-    <!-- Stat Card: Matrículas -->
-    <article class="stat-card orange">
-      <div class="stat-content">
-        <span class="label">Matrículas activas</span>
-        <h3>{{ dashboard?.matriculasActivas ?? 0 }}</h3>
-      </div>
-      <div class="stat-icon-wrapper" aria-hidden="true">
-        <!-- Reemplaza con un SVG real (Ej: File-text) -->
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-      </div>
-    </article>
-
-    <!-- Stat Card: Ingresos -->
+    <!-- EGRESADOS -->
     <article class="stat-card purple">
       <div class="stat-content">
-        <span class="label">Ingresos acumulados</span>
-        <h3>S/ {{ dashboard?.ingresos ?? 0 }}</h3>
+        <span class="label">Egresados</span>
+        <h3>{{ dashboard?.resumen?.egresados ?? 0 }}</h3>
       </div>
-      <div class="stat-icon-wrapper" aria-hidden="true">
-        <!-- Reemplaza con un SVG real (Ej: Credit Card o Dollar) -->
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 14l9-5-9-5-9 5 9 5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479L12 14z"/>
+        </svg>
       </div>
     </article>
 
-  </section>
-
-  <section class="panel-grid">
-    
-    <div class="panel-card">
-      <h2>Acciones del Sistema</h2>
-      <div class="quick-actions">
-        <button aria-label="Crear nueva matrícula">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-          Nueva Matrícula
-        </button>
-        <button aria-label="Registrar nuevo pago">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-          Registrar Pago
-        </button>
+    <!-- RETIRADOS -->
+    <article class="stat-card orange">
+      <div class="stat-content">
+        <span class="label">Retirados</span>
+        <h3>{{ dashboard?.resumen?.retirados ?? 0 }}</h3>
       </div>
-    </div>
 
-    <div class="panel-card">
-      <h2>Alertas Críticas</h2>
-      <ul class="alerts" aria-label="Lista de alertas del sistema">
-        <li>
-          <span>Matrículas por vencer este mes</span>
-          <strong>4 alertas</strong>
-        </li>
-        <li>
-          <span>Pagos pendientes de revisión</span>
-          <strong>2 alertas</strong>
-        </li>
-      </ul>
-    </div>
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M18.364 5.636l-12.728 12.728M6.343 6.343l11.314 11.314"/>
+        </svg>
+      </div>
+    </article>
+
+    <!-- AL DÍA -->
+    <article class="stat-card green">
+      <div class="stat-content">
+        <span class="label">Alumnos al día</span>
+        <h3>{{ dashboard?.resumen?.alumnosAlDia ?? 0 }}</h3>
+      </div>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+    </article>
+
+    <!-- CON DEUDA -->
+    <article class="stat-card danger">
+      <div class="stat-content">
+        <span class="label">Con deuda</span>
+        <h3>{{ dashboard?.resumen?.alumnosConDeuda ?? 0 }}</h3>
+      </div>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 8v4m0 4h.01M4.93 4.93l14.14 14.14"/>
+        </svg>
+      </div>
+    </article>
+
+    <!-- MAQUINAS -->
+    <article class="stat-card blue">
+      <div class="stat-content">
+        <span class="label">Máquinas</span>
+        <h3>{{ dashboard?.resumen?.maquinas ?? 0 }}</h3>
+      </div>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 17v-6h13v6M9 5v6h13V5H9zM4 5h5v16H4z"/>
+        </svg>
+      </div>
+    </article>
+
+    <!-- CURSOS -->
+    <article class="stat-card purple">
+      <div class="stat-content">
+        <span class="label">Cursos activos</span>
+        <h3>{{ dashboard?.resumen?.cursos ?? 0 }}</h3>
+      </div>
+
+      <div class="stat-icon-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6.253v11.494m0 0A8.014 8.014 0 0112 21m0-3.253A8.014 8.014 0 0012 21m0-3.253V6.253"/>
+        </svg>
+      </div>
+    </article>
 
   </section>
 
