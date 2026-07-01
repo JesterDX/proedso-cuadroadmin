@@ -3,7 +3,15 @@ import { DashboardService } from '../../services/dashboard.service';
 import { BaseChartDirective } from 'ng2-charts';
 
 // CHARTS
-import { ChartConfiguration, ChartOptions } from 'chart.js';
+import {
+  Chart as ChartJS,
+  registerables,
+  ChartConfiguration,
+  ChartOptions
+} from 'chart.js';
+
+// 🔥 REGISTRO GLOBAL OBLIGATORIO
+ChartJS.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
@@ -15,13 +23,13 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 export class Dashboard implements OnInit {
 
   private dashboardService = inject(DashboardService);
-  private cd = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef);
 
   dashboard: any = {};
   loading = false;
 
   // =========================
-  // CHART DATA
+  // CHARTS DATA
   // =========================
 
   donutChartData: ChartConfiguration<'doughnut'>['data'] = {
@@ -29,8 +37,7 @@ export class Dashboard implements OnInit {
     datasets: [
       {
         data: [0, 0, 0],
-        backgroundColor: ['#10b981', '#7c3aed', '#ef4444'],
-        borderWidth: 0
+        backgroundColor: ['#10b981', '#7c3aed', '#ef4444']
       }
     ]
   };
@@ -49,12 +56,11 @@ export class Dashboard implements OnInit {
     labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
     datasets: [
       {
-        data: [0, 0, 0, 0, 0, 0],
+        data: [10, 20, 30, 40, 50, 60],
         label: 'Matrículas',
         borderColor: '#2563eb',
         backgroundColor: 'rgba(37,99,235,0.1)',
-        fill: true,
-        tension: 0.4
+        fill: true
       }
     ]
   };
@@ -66,9 +72,7 @@ export class Dashboard implements OnInit {
   donutOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'bottom'
-      }
+      legend: { position: 'bottom' }
     }
   };
 
@@ -94,10 +98,6 @@ export class Dashboard implements OnInit {
     this.cargarDashboard();
   }
 
-  // =========================
-  // LOAD DATA
-  // =========================
-
   cargarDashboard(): void {
     this.loading = true;
 
@@ -106,14 +106,10 @@ export class Dashboard implements OnInit {
 
         console.log('DASHBOARD API:', resp);
 
-        const data = resp?.data ?? {};
-        const r = data.resumen ?? {};
+        this.dashboard = resp.data ?? {};
+        const r = this.dashboard.resumen ?? {};
 
-        this.dashboard = data;
-
-        // =========================
-        // DONUT CHART
-        // =========================
+        // 🔥 UPDATE DONUT
         this.donutChartData = {
           ...this.donutChartData,
           datasets: [
@@ -128,9 +124,7 @@ export class Dashboard implements OnInit {
           ]
         };
 
-        // =========================
-        // PAGOS CHART
-        // =========================
+        // 🔥 UPDATE BAR
         this.pagosChartData = {
           ...this.pagosChartData,
           datasets: [
@@ -144,22 +138,15 @@ export class Dashboard implements OnInit {
           ]
         };
 
-        // =========================
-        // FORCE REFRESH (IMPORTANTE NG2-CHARTS)
-        // =========================
-        this.donutChartData = { ...this.donutChartData };
-        this.pagosChartData = { ...this.pagosChartData };
-
         this.loading = false;
 
-        // 🔥 Angular change detection fix
-        this.cd.detectChanges();
+        // 🔥 fuerza detección Angular
+        this.cdr.detectChanges();
       },
-
       error: (err: any) => {
         console.error(err);
         this.loading = false;
-        this.cd.detectChanges();
+        this.cdr.detectChanges();
       }
     });
   }
