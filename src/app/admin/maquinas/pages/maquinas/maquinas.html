@@ -1,0 +1,70 @@
+<div class="container">
+
+  <h2>Máquinas</h2>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+
+    <input
+      type="text"
+      placeholder="Nombre de la máquina"
+      formControlName="nombre">
+
+    <input
+      type="number"
+      placeholder="Orden visual"
+      formControlName="orden_visual">
+
+    <button type="submit">
+      {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+    </button>
+
+  </form>
+
+  <hr>
+
+  <div *ngIf="loading">
+    Cargando...
+  </div>
+
+  <table *ngIf="!loading">
+
+    <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Máquina</th>
+        <th>Orden</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let m of maquinas">
+
+        <td>{{ m.id }}</td>
+        <td>{{ m.nombre }}</td>
+        <td>{{ m.orden_visual }}</td>
+        <td>{{ m.activo ? 'Activo' : 'Inactivo' }}</td>
+
+        <td>
+
+          <button (click)="editar(m)">
+            Editar
+          </button>
+
+          <button (click)="cambiarEstado(m.id)">
+            {{ m.activo ? 'Desactivar' : 'Activar' }}
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
