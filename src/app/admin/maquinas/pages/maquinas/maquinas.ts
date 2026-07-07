@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Maquina } from '../../models/maquina.model';
+import { Maquina } from '../../model/maquina.model';
 import { MaquinasAdminService } from '../../services/maquinas-admin.service';
 
 @Component({
