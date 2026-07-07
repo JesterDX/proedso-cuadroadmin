@@ -55,14 +55,15 @@ export const routes: Routes = [
           import('./admin/planes-curso/pages/planes-curso/planes-curso')
             .then(m => m.PlanesCursoComponent)
       },
-            // Las agregaremos cuando existan
-      /*
       {
         path: 'admin/maquinas',
         loadComponent: () =>
           import('./admin/maquinas/pages/maquinas/maquinas')
             .then(m => m.MaquinasComponent)
       },
+
+   // Las agregaremos cuando existan
+      /*
       
       {
         path: 'admin/usuarios',
