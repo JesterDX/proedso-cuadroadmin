@@ -76,14 +76,19 @@ export class Sidebar {
           icon: this.icons.dashboard
         },
         {
-          label: 'Tipo de curso',
+          label: 'Tipos de Curso',
           route: '/admin/tipos-curso',
           icon: this.icons.cursos
         },
         {
-          label: 'Tipo de Plan de Cursos',
+          label: 'Planes de Curso',
           route: '/admin/planes-curso',
           icon: this.icons.cursos
+        },
+        {
+          label: 'Máquinas',
+          route: '/admin/maquinas',
+          icon: this.icons.equipos
         }
       ];
     }else {
