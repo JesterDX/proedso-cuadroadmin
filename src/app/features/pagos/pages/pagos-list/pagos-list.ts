@@ -41,7 +41,13 @@ export class PagosList implements OnInit {
   alumnosAgrupados: any[] = [];
   cuotasDetalle: any[] = [];
   historial: any[] = [];
-
+  pagoEditando: any = null;
+  modalEditarPago = false;
+  formEditarPago = {
+    monto: null as number | null,
+    metodo_pago: 'EFECTIVO'
+  };
+  fileEditarPago: File | null = null;
   alumnoSeleccionado: any = null;
   miniPago: any = null;
 
@@ -257,6 +263,127 @@ export class PagosList implements OnInit {
       this.filtrar(false);
     }
   }
+
+  editarPago(pago:any){
+
+  this.pagoEditando = pago;
+
+  this.formEditarPago = {
+    monto: pago.monto,
+    metodo_pago: pago.metodo_pago || 'EFECTIVO'
+  };
+
+  this.modalEditarPago = true;
+
+}
+
+  guardarEditarPago(){
+
+  if(!this.pagoEditando) return;
+
+
+  const formData = new FormData();
+
+  formData.append(
+    'monto',
+    String(this.formEditarPago.monto)
+  );
+
+  formData.append(
+    'metodo_pago',
+    this.formEditarPago.metodo_pago
+  );
+
+
+  if(this.fileEditarPago){
+
+    formData.append(
+      'comprobante',
+      this.fileEditarPago
+    );
+
+  }
+
+
+  this.pagosService.editarPago(
+    this.pagoEditando.id,
+    formData
+  )
+  .subscribe({
+
+    next:()=>{
+
+      this.mostrarNotificacion(
+        'Pago actualizado correctamente',
+        'success'
+      );
+
+
+      this.modalEditarPago=false;
+
+
+      this.cargarHistorial(
+        this.alumnoSeleccionado.matricula_id
+      );
+
+      this.verDetalle(
+        this.alumnoSeleccionado.matricula_id
+      );
+
+    },
+
+    error:(err)=>{
+
+      this.mostrarNotificacion(
+        err.error?.message || 'Error al editar pago',
+        'error'
+      );
+
+    }
+
+  });
+
+}
+
+  eliminarPago(id:number){
+
+ if(!confirm('¿Eliminar este pago?')) return;
+
+
+ this.pagosService.eliminarPago(id)
+ .subscribe({
+
+  next:()=>{
+
+    this.mostrarNotificacion(
+      'Pago eliminado correctamente',
+      'success'
+    );
+
+
+    this.cargarHistorial(
+      this.alumnoSeleccionado.matricula_id
+    );
+
+    this.verDetalle(
+      this.alumnoSeleccionado.matricula_id
+    );
+
+  },
+
+  error:(err)=>{
+
+    this.mostrarNotificacion(
+      err.error?.message || 'Error al eliminar pago',
+      'error'
+    );
+
+  }
+
+ });
+
+
+}
 
   // ======================
   // MODAL PLAN MANUAL
