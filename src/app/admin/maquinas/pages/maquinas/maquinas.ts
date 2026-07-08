@@ -27,85 +27,119 @@ export class MaquinasComponent implements OnInit {
   modoEdicion = false;
   idEditando: number | null = null;
 
+
   form = this.fb.group({
-    nombre: ['', Validators.required],
-    orden_visual: [1, Validators.required]
+    nombre: ['', Validators.required]
   });
+
 
   ngOnInit(): void {
     this.listar();
   }
 
+
   listar() {
+
     this.loading = true;
 
     this.service.listarTodas().subscribe({
+
       next: (data) => {
         this.maquinas = data;
         this.loading = false;
       },
+
       error: () => {
         this.loading = false;
       }
+
     });
+
   }
+
 
   guardar() {
 
     if (this.form.invalid) return;
+
 
     if (this.modoEdicion) {
 
       this.service.editar(
         this.idEditando!,
         this.form.value
-      ).subscribe({
+      )
+      .subscribe({
+
         next: () => {
           this.reset();
           this.listar();
         }
+
       });
+
 
       return;
     }
 
-    this.service.crear(this.form.value).subscribe({
+
+    this.service.crear(
+      this.form.value
+    )
+    .subscribe({
+
       next: () => {
         this.reset();
         this.listar();
       }
+
     });
 
   }
+
+
 
   editar(maquina: Maquina) {
 
     this.modoEdicion = true;
+
     this.idEditando = maquina.id;
 
+
     this.form.patchValue({
-      nombre: maquina.nombre,
-      orden_visual: maquina.orden_visual
+
+      nombre: maquina.nombre
+
     });
 
   }
 
-  cambiarEstado(id: number) {
 
-    this.service.cambiarEstado(id).subscribe({
-      next: () => this.listar()
-    });
+
+  cambiarEstado(id:number) {
+
+    this.service.cambiarEstado(id)
+      .subscribe({
+
+        next:()=> this.listar()
+
+      });
 
   }
 
-  reset() {
+
+
+  reset(){
 
     this.form.reset({
-      nombre: '',
-      orden_visual: 1
+
+      nombre:''
+
     });
 
+
     this.modoEdicion = false;
+
     this.idEditando = null;
 
   }
