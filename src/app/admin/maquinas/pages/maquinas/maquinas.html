@@ -8,12 +8,7 @@
       type="text"
       placeholder="Nombre de la máquina"
       formControlName="nombre">
-
-    <input
-      type="number"
-      placeholder="Orden visual"
-      formControlName="orden_visual">
-
+    
     <button type="submit">
       {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
     </button>
@@ -46,7 +41,6 @@
 
         <td>{{ m.id }}</td>
         <td>{{ m.nombre }}</td>
-        <td>{{ m.orden_visual }}</td>
         <td>{{ m.activo ? 'Activo' : 'Inactivo' }}</td>
 
         <td>
