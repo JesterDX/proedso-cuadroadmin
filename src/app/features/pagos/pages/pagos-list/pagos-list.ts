@@ -157,6 +157,9 @@ export class PagosList implements OnInit {
     });
   }
 
+  onEditarFileSelected(e:any){
+  this.fileEditarPago = e.target.files[0];
+}
   // ======================
   // FILTRO + PAGINACIÓN
   // ======================
