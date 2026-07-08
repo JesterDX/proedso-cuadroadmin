@@ -560,4 +560,96 @@
       </button>
     </footer>
   </div>
+
+  <!-- MODAL EDITAR PAGO -->
+<div class="mini-modal" *ngIf="modalEditarPago">
+
+  <div class="mini-content">
+
+    <div class="mini-header">
+      <h3>✏️ Editar Pago</h3>
+
+      <button (click)="modalEditarPago=false">
+        ✕
+      </button>
+    </div>
+
+
+    <div class="mini-body">
+
+
+      <div class="mini-field">
+        <label>Monto</label>
+
+        <input 
+          type="number"
+          [(ngModel)]="formEditarPago.monto">
+      </div>
+
+
+      <div class="mini-field">
+
+        <label>Método de pago</label>
+
+        <select [(ngModel)]="formEditarPago.metodo_pago">
+
+          <option value="EFECTIVO">
+            💵 Efectivo
+          </option>
+
+          <option value="YAPE">
+            📱 Yape
+          </option>
+
+          <option value="PLIN">
+            💳 Plin
+          </option>
+
+          <option value="TRANSFERENCIA">
+            🏦 Transferencia
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="mini-field">
+
+        <label>
+          Nuevo comprobante (opcional)
+        </label>
+
+        <input 
+          type="file"
+          accept=".pdf,image/*"
+          (change)="onEditarFileSelected($event)">
+
+      </div>
+
+
+    </div>
+
+
+    <div class="mini-footer">
+
+      <button 
+        class="btn-cancel"
+        (click)="modalEditarPago=false">
+        Cancelar
+      </button>
+
+
+      <button 
+        class="btn-pay"
+        (click)="guardarEditarPago()">
+        Guardar cambios
+      </button>
+
+    </div>
+
+
+  </div>
+
+</div>
 </div>
