@@ -61,6 +61,12 @@ export const routes: Routes = [
           import('./admin/maquinas/pages/maquinas/maquinas')
             .then(m => m.MaquinasComponent)
       },
+      {
+        path: 'admin/planes-curso/configurar/:id',
+        loadComponent: () =>
+          import('./admin/planes-curso/pages/configurar-plan/configurar-plan')
+            .then(m => m.ConfigurarPlanComponent)
+      },
 
    // Las agregaremos cuando existan
       /*
