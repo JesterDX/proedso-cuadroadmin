@@ -18,6 +18,12 @@ export class MaquinasAdminService {
       .pipe(map(r => r.data));
   }
 
+  listarTodas() {
+  return this.http
+    .get<any>(`${this.apiUrl}/todas`)
+    .pipe(map(r => r.data));
+}
+
   crear(data: any) {
     return this.http.post(this.apiUrl, data);
   }
