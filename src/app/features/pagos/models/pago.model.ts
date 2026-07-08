@@ -17,10 +17,19 @@ export interface CuotaDetalle {
 }
 
 export interface HistorialPago {
-  concepto_nombre: string;
-  fecha_pago: string;
-  metodo_pago: string;
+
+  id: number;
+
   monto: number;
+
+  fecha_pago: string;
+
+  metodo_pago: string | null;
+
+  comprobante_url: string | null;
+
+  concepto_nombre: string;
+
 }
 export interface CuotaManualPayload {
   numero_cuota: number;
