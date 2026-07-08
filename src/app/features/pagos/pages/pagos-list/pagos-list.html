@@ -279,12 +279,37 @@
                     <span>👤 {{ h.usuario || 'Admin' }}</span>
                   </div>
                 </div>
-                <div class="h-actions">
-                  <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
-                  <a *ngIf="h.comprobante_url" [href]="getComprobanteUrl(h.comprobante_url)" target="_blank" class="btn-voucher">
-                    📎 Ver comprobante
-                  </a>
-                </div>
+                  <div class="h-actions">
+                  
+                    <div class="h-amount text-success">
+                      + {{ formatMonto(h.monto) }}
+                    </div>
+                  
+                    <div class="history-buttons">
+                  
+                      <a 
+                        *ngIf="h.comprobante_url" 
+                        [href]="getComprobanteUrl(h.comprobante_url)" 
+                        target="_blank" 
+                        class="btn-voucher">
+                        📎 Ver comprobante
+                      </a>
+                  
+                      <button 
+                        class="btn-edit-payment"
+                        (click)="editarPago(h)">
+                        ✏️ Editar
+                      </button>
+                  
+                      <button 
+                        class="btn-delete-payment"
+                        (click)="eliminarPago(h.id)">
+                        🗑️ Eliminar
+                      </button>
+                  
+                    </div>
+                  
+                  </div>
               </div> </div> <div class="empty-mini" *ngIf="!historial.length">Sin movimientos registrados</div>
           </div>
             <div *ngIf="tab === 'pago'" class="tab-content animate-in">
