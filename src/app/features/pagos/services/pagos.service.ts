@@ -51,4 +51,18 @@ export class PagosService {
   registrarPago(data: any) {
     return this.http.post(`${this.apiUrl}`, data);
   }
+
+  editarPago(id: number, data: FormData) {
+    return this.http.put(
+      `${this.apiUrl}/${id}`,
+      data
+    );
+  }
+  
+  eliminarPago(id: number) {
+    return this.http.delete(
+      `${this.apiUrl}/${id}`
+    );
+  }
+  
 }
