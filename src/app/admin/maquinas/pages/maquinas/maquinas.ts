@@ -39,7 +39,7 @@ export class MaquinasComponent implements OnInit {
   listar() {
     this.loading = true;
 
-    this.service.listar().subscribe({
+    this.service.listarTodas().subscribe({
       next: (data) => {
         this.maquinas = data;
         this.loading = false;
