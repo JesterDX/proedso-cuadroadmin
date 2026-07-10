@@ -31,7 +31,7 @@ export class ConfigurarPlanComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
 
   idPlan!: number;
-
+  maquinas: PlanMaquina[] = [];
   loading = false;
 
   error = '';
@@ -43,6 +43,7 @@ export class ConfigurarPlanComponent implements OnInit {
     );
 
     this.cargarPlan();
+    this.cargarMaquinas();
 
   }
 
@@ -84,5 +85,20 @@ export class ConfigurarPlanComponent implements OnInit {
       });
 
   }
+
+  cargarMaquinas(){
+
+  this.service.obtenerMaquinas(this.idPlan)
+    .subscribe({
+
+      next:(res)=>{
+
+        this.maquinas = res.data;
+
+      }
+
+    });
+
+}
 
 }
