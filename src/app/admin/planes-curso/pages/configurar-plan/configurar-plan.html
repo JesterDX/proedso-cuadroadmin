@@ -1,45 +1,69 @@
-<div *ngIf="plan">
+<div class="plan-container">
 
-  <h3>
-    {{plan.nombre}}
+  <div class="plan-card">
+
+    <div class="plan-header">
+
+      <div class="plan-title">
+        <h2>{{ plan.nombre }}</h2>
+        <span>{{ plan.codigo }}</span>
+      </div>
+
+      <div class="version">
+        v{{ plan.version }}
+      </div>
+
+    </div>
+
+    <div class="resume-grid">
+
+      <div class="resume-card">
+        <span class="label">Tipo</span>
+        <span class="value">{{ plan.tipo_curso_nombre }}</span>
+      </div>
+
+      <div class="resume-card">
+        <span class="label">Máquinas</span>
+        <span class="value">{{ maquinas.length }}</span>
+      </div>
+
+      <div class="resume-card">
+        <span class="label">Vigencia</span>
+        <span class="value">{{ plan.vigente_desde }}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <h3 class="section-title">
+    Máquinas del plan
   </h3>
 
+  <div class="machine-grid">
 
-  <p>
-    Código:
-    {{plan.codigo}}
-  </p>
+    <div
+      class="machine-card"
+      *ngFor="let m of maquinas">
 
+      <div class="machine-icon">
+        🚜
+      </div>
 
-  <p>
-    Tipo:
-    {{plan.tipo_curso_nombre}}
-  </p>
+      <div class="machine-info">
 
+        <div class="machine-name">
+          {{ m.maquina_nombre }}
+        </div>
 
-  <p>
-    Versión:
-    {{plan.version}}
-  </p>
+        <div class="machine-hours">
+          {{ m.horas }} horas
+        </div>
 
+      </div>
 
-  <hr>
+    </div>
 
-<h3>Máquinas del plan</h3>
-
-<div *ngFor="let maquina of maquinas">
-
-  <label>
-
-    <input
-      type="checkbox"
-      [(ngModel)]="maquina.seleccionada">
-
-    {{ maquina.nombre }}
-
-  </label>
-
-</div>
-
+  </div>
 
 </div>
