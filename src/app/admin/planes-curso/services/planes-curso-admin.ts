@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { PlanCurso } from '../models/plan-curso.model';
-
+import { PlanMaquina } from '../models/plan-maquina.model';
 @Injectable({
   providedIn: 'root'
 })
