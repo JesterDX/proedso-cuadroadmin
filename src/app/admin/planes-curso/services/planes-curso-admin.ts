@@ -35,4 +35,10 @@ export class PlanesCursoService {
       'https://proedso-back-wtdl.onrender.com/api/tipos-curso/activos'
     );
   }
+  obtenerPorId(id:number){
+
+  return this.http.get<any>(
+    `${this.apiUrl}/${id}`
+    );
+  }
 }
