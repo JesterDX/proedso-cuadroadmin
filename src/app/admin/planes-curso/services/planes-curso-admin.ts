@@ -41,4 +41,14 @@ export class PlanesCursoService {
     `${this.apiUrl}/${id}`
     );
   }
+  obtenerMaquinas(id:number){
+
+  return this.http.get<{
+    ok:boolean,
+    data:PlanMaquina[]
+  }>(
+    `${this.apiUrl}/${id}/maquinas`
+  );
+
+}
 }
