@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlanesCursoService } from '../../services/planes-curso-admin';
 import { PlanCurso } from '../../models/plan-curso.model';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-planes-curso',
   standalone: true,
@@ -15,7 +15,7 @@ export class PlanesCursoComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private service = inject(PlanesCursoService);
-
+  private router = inject(Router);
   planes: PlanCurso[] = [];
   tiposCurso: any[] = [];
 
@@ -84,6 +84,16 @@ export class PlanesCursoComponent implements OnInit {
         this.listarActivos();
       }
     });
+  }
+
+    configurar(plan: PlanCurso) {
+  
+    this.router.navigate([
+      '/admin/planes-curso',
+      plan.id,
+      'configurar'
+    ]);
+  
   }
 
   editar(plan: PlanCurso) {
