@@ -64,13 +64,19 @@
         <td>{{ p.activo ? 'Sí' : 'No' }}</td>
 
         <td>
+        
+          <button (click)="configurar(p)">
+            Configurar
+          </button>
+        
           <button (click)="editar(p)">
             Editar
           </button>
-
+        
           <button (click)="cambiarEstado(p.id)">
             {{ p.activo ? 'Desactivar' : 'Activar' }}
           </button>
+        
         </td>
       </tr>
     </tbody>
