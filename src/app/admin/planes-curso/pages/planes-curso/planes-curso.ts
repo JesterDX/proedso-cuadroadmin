@@ -85,15 +85,12 @@ export class PlanesCursoComponent implements OnInit {
       }
     });
   }
-
-    configurar(plan: PlanCurso) {
   
+  configurar(plan: PlanCurso) {
     this.router.navigate([
-      '/admin/planes-curso',
-      plan.id,
-      'configurar'
+      '/admin/planes-curso/configurar',
+      plan.id
     ]);
-  
   }
 
   editar(plan: PlanCurso) {
