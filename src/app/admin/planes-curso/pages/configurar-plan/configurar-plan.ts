@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PlanCurso } from '../../models/plan-curso.model';
-
+import { PlanesCursoService } from '../../services/planes-curso-admin';
 @Component({
   selector: 'app-configurar-plan',
   standalone: true,
