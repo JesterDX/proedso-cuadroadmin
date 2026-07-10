@@ -8,9 +8,11 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { PlanCurso } from '../../models/plan-curso.model';
-import { PlanesCursoService } from '../../services/planes-curso-admin';
 import { PlanMaquina } from '../../models/plan-maquina.model';
+import { PlanesCursoService } from '../../services/planes-curso-admin';
+
 @Component({
   selector: 'app-configurar-plan',
   standalone: true,
@@ -25,6 +27,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
   plan!: PlanCurso;
 
+  maquinas: PlanMaquina[] = [];
+
   private service = inject(PlanesCursoService);
 
   private route = inject(ActivatedRoute);
@@ -32,7 +36,7 @@ export class ConfigurarPlanComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
 
   idPlan!: number;
-  maquinas: PlanMaquina[] = [];
+
   loading = false;
 
   error = '';
@@ -44,6 +48,7 @@ export class ConfigurarPlanComponent implements OnInit {
     );
 
     this.cargarPlan();
+
     this.cargarMaquinas();
 
   }
@@ -87,19 +92,43 @@ export class ConfigurarPlanComponent implements OnInit {
 
   }
 
-  cargarMaquinas(){
+  cargarMaquinas(): void {
 
-  this.service.obtenerMaquinas(this.idPlan)
-    .subscribe({
+    this.loading = true;
 
-      next:(res)=>{
+    this.error = '';
 
-        this.maquinas = res.data;
+    this.cd.detectChanges();
 
-      }
+    this.service
+      .obtenerMaquinas(this.idPlan)
+      .subscribe({
 
-    });
+        next: (res) => {
 
-}
+          this.maquinas = res.data || [];
+
+          this.loading = false;
+
+          this.cd.detectChanges();
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.error =
+            'Error al cargar las máquinas del plan.';
+
+          this.loading = false;
+
+          this.cd.detectChanges();
+
+        }
+
+      });
+
+  }
 
 }
