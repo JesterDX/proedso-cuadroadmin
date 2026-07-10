@@ -1,6 +1,5 @@
 import {
   Component,
-  FormsModule,
   inject,
   OnInit,
   ChangeDetectorRef
@@ -16,7 +15,8 @@ import { PlanMaquina } from '../../models/plan-maquina.model';
   selector: 'app-configurar-plan',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   templateUrl: './configurar-plan.html',
   styleUrl: './configurar-plan.scss'
