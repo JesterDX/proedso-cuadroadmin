@@ -1,5 +1,6 @@
 import {
   Component,
+  FormsModule,
   inject,
   OnInit,
   ChangeDetectorRef
@@ -7,7 +8,7 @@ import {
 
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
+import { FormsModule } from '@angular/forms';
 import { PlanCurso } from '../../models/plan-curso.model';
 import { PlanesCursoService } from '../../services/planes-curso-admin';
 import { PlanMaquina } from '../../models/plan-maquina.model';
