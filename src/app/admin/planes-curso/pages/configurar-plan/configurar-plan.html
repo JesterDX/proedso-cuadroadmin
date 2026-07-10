@@ -1,14 +1,25 @@
+<div *ngIf="plan">
 
-<div class="container">
-
-  <h2>
-    Configurar Plan de Curso
-  </h2>
+  <h3>
+    {{plan.nombre}}
+  </h3>
 
 
   <p>
-    ID del plan:
-    {{ idPlan }}
+    Código:
+    {{plan.codigo}}
+  </p>
+
+
+  <p>
+    Tipo:
+    {{plan.tipo_curso_nombre}}
+  </p>
+
+
+  <p>
+    Versión:
+    {{plan.version}}
   </p>
 
 
