@@ -1,9 +1,16 @@
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
 
-import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 import { PlanCurso } from '../../models/plan-curso.model';
 import { PlanesCursoService } from '../../services/planes-curso-admin';
+
 @Component({
   selector: 'app-configurar-plan',
   standalone: true,
@@ -14,40 +21,68 @@ import { PlanesCursoService } from '../../services/planes-curso-admin';
   styleUrl: './configurar-plan.scss'
 })
 export class ConfigurarPlanComponent implements OnInit {
-plan!: PlanCurso;
+
+  plan!: PlanCurso;
 
   private service = inject(PlanesCursoService);
+
   private route = inject(ActivatedRoute);
 
+  private cd = inject(ChangeDetectorRef);
 
   idPlan!: number;
 
-  
+  loading = false;
+
+  error = '';
+
   ngOnInit(): void {
-  
+
     this.idPlan = Number(
       this.route.snapshot.paramMap.get('id')
     );
-  
-  
+
     this.cargarPlan();
-  
+
   }
-  
-  
-  cargarPlan(){
-  
-    this.service.obtenerPorId(this.idPlan)
+
+  cargarPlan(): void {
+
+    this.loading = true;
+
+    this.error = '';
+
+    this.cd.detectChanges();
+
+    this.service
+      .obtenerPorId(this.idPlan)
       .subscribe({
-  
-        next:(res)=>{
-  
+
+        next: (res) => {
+
           this.plan = res.data;
-  
+
+          this.loading = false;
+
+          this.cd.detectChanges();
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.error =
+            'Error al cargar la información del plan.';
+
+          this.loading = false;
+
+          this.cd.detectChanges();
+
         }
-  
+
       });
 
-}
+  }
 
 }
