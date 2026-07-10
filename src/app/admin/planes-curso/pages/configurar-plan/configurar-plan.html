@@ -23,4 +23,23 @@
   </p>
 
 
+  <hr>
+
+<h3>Máquinas del plan</h3>
+
+<div *ngFor="let maquina of maquinas">
+
+  <label>
+
+    <input
+      type="checkbox"
+      [(ngModel)]="maquina.seleccionada">
+
+    {{ maquina.nombre }}
+
+  </label>
+
+</div>
+
+
 </div>
