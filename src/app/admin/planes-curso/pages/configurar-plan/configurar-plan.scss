@@ -1,1 +1,243 @@
 
+:host {
+  display: block;
+  padding: 24px;
+  background: #f5f7fb;
+  min-height: 100%;
+}
+
+.plan-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ==========================
+   CARD PRINCIPAL
+========================== */
+
+.plan-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  margin-bottom: 28px;
+}
+
+.plan-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+.plan-title h2{
+  margin:0;
+  font-size:28px;
+  color:#1f2937;
+  font-weight:700;
+}
+
+.plan-title span{
+  color:#64748b;
+  font-size:14px;
+}
+
+.version{
+  background:#1d4ed8;
+  color:white;
+  padding:8px 16px;
+  border-radius:30px;
+  font-weight:600;
+}
+
+/* ==========================
+   RESUMEN
+========================== */
+
+.resume-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:18px;
+}
+
+.resume-card{
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:18px;
+  transition:.25s;
+}
+
+.resume-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.resume-card .label{
+  display:block;
+  font-size:13px;
+  color:#64748b;
+  margin-bottom:8px;
+}
+
+.resume-card .value{
+  font-size:18px;
+  font-weight:700;
+  color:#111827;
+}
+
+/* ==========================
+   MAQUINAS
+========================== */
+
+.section-title{
+  margin:35px 0 18px;
+  font-size:22px;
+  font-weight:700;
+  color:#1f2937;
+}
+
+.machine-grid{
+
+  display:grid;
+
+  grid-template-columns:
+      repeat(auto-fill,minmax(220px,1fr));
+
+  gap:18px;
+
+}
+
+.machine-card{
+
+  background:white;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  border:1px solid #e5e7eb;
+
+  transition:.25s;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:16px;
+
+}
+
+.machine-card:hover{
+
+  transform:translateY(-5px);
+
+  box-shadow:0 12px 28px rgba(0,0,0,.10);
+
+}
+
+.machine-icon{
+
+  width:54px;
+
+  height:54px;
+
+  border-radius:14px;
+
+  background:#eff6ff;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:28px;
+
+}
+
+.machine-info{
+
+  flex:1;
+
+}
+
+.machine-name{
+
+  font-weight:700;
+
+  color:#111827;
+
+}
+
+.machine-hours{
+
+  margin-top:4px;
+
+  font-size:13px;
+
+  color:#64748b;
+
+}
+
+/* ==========================
+   BADGES
+========================== */
+
+.badge{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:5px 12px;
+
+  border-radius:30px;
+
+  font-size:12px;
+
+  font-weight:600;
+
+}
+
+.badge.success{
+
+  background:#dcfce7;
+
+  color:#166534;
+
+}
+
+.badge.warning{
+
+  background:#fef3c7;
+
+  color:#92400e;
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:768px){
+
+  .plan-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+  }
+
+  .resume-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+}
