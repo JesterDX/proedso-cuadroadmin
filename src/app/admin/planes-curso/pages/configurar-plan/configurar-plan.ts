@@ -53,37 +53,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
   }
 
-  cargarPlan(): void {
-  
-    this.loading = true;
-  
-    this.service
-      .obtenerPorId(this.idPlan)
-      .subscribe({
-  
-        next: (res) => {
-  
-          console.log("RESPUESTA OBTENER PLAN:", res);
-  
-          this.plan = res.data;
-  
-          this.loading = false;
-  
-        },
-  
-        error: (err) => {
-  
-          console.error("ERROR OBTENER PLAN:", err);
-  
-          this.error = 'Error al cargar la información del plan.';
-  
-          this.loading = false;
-  
-        }
-  
-      });
-  
-  }
 
 cargarPlan(): void {
 
@@ -125,5 +94,6 @@ cargarPlan(): void {
     });
 
 }
+
 
 }
