@@ -4,6 +4,8 @@ export interface PlanMaquina {
 
   nombre: string;
 
+  horas: number;
+
   seleccionada: boolean;
 
   obligatoria: boolean;
