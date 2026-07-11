@@ -141,4 +141,47 @@ export class ConfigurarPlanComponent implements OnInit {
 
   }
 
+  guardar(){
+
+ this.loading=true;
+
+
+ this.service
+ .guardarConfiguracion(
+    this.idPlan,
+    this.maquinas
+ )
+ .subscribe({
+
+ next:(res)=>{
+
+   console.log(res);
+
+   alert(
+    "Configuración guardada correctamente"
+   );
+
+   this.loading=false;
+
+ },
+
+
+ error:(err)=>{
+
+   console.error(err);
+
+   alert(
+    "Error guardando configuración"
+   );
+
+   this.loading=false;
+
+ }
+
+
+ });
+
+
+}
+
 }
