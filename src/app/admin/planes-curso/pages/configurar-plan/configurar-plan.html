@@ -8,13 +8,15 @@
     <div class="plan-header">
 
       <div>
+
         <h1 class="page-title">
           ⚙ Configuración del Plan de Curso
         </h1>
 
         <p class="page-subtitle">
-          Administra la configuración y las máquinas asociadas al plan.
+          Administra las máquinas, horas y sesiones del plan.
         </p>
+
       </div>
 
       <div class="version">
@@ -54,7 +56,7 @@
         </span>
 
         <span class="value">
-          {{ maquinas.length }}
+          {{ maquinas.filter(m => m.seleccionada).length }}
         </span>
 
       </div>
@@ -66,7 +68,7 @@
         </span>
 
         <span class="value">
-          {{ plan.vigente_desde }}
+          {{ plan.vigente_desde | date:'dd/MM/yyyy' }}
         </span>
 
       </div>
@@ -95,21 +97,14 @@
     <div>
 
       <h3 class="section-title">
-        Máquinas del Plan
+        Configuración de Máquinas
       </h3>
 
       <p class="section-subtitle">
-        Máquinas disponibles para este plan de capacitación.
+        Selecciona las máquinas que pertenecen al plan y configura sus prácticas.
       </p>
 
     </div>
-
-    <!-- Botones para el siguiente paso -->
-    <!--
-    <button class="btn-primary">
-      + Agregar máquina
-    </button>
-    -->
 
   </div>
 
@@ -119,42 +114,131 @@
       class="machine-card"
       *ngFor="let m of maquinas">
 
-      <div class="machine-icon">
-        🚜
-      </div>
+      <div class="machine-top">
 
-      <div class="machine-info">
-
-        <div class="machine-name">
-          {{ m.nombre }}
+        <div class="machine-icon">
+          🚜
         </div>
 
-        <div class="machine-hours">
+        <div>
 
-          <span>
-            {{ m.horas }} horas
-          </span>
+          <div class="machine-name">
+            {{ m.nombre }}
+          </div>
+
+          <div class="machine-order">
+            Orden #{{ m.orden || '-' }}
+          </div>
 
         </div>
 
       </div>
 
-      <!-- Acciones para el siguiente paso -->
-      <!--
-      <div class="machine-actions">
+      <div class="machine-body">
 
-        <button class="btn-icon">
-          ✏
-        </button>
+        <div class="form-check">
 
-        <button class="btn-icon danger">
-          🗑
-        </button>
+          <label>
+
+            <input
+              type="checkbox"
+              [(ngModel)]="m.seleccionada">
+
+            Incluir en el plan
+
+          </label>
+
+        </div>
+
+        <div class="form-row">
+
+          <label>
+            Horas prácticas
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="m.horas">
+
+        </div>
+
+        <div class="form-row">
+
+          <label>
+            Sesiones
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="m.sesiones_totales">
+
+        </div>
+
+        <div class="form-row">
+
+          <label>
+            Orden
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="m.orden">
+
+        </div>
+
+        <div class="checks">
+
+          <label>
+
+            <input
+              type="checkbox"
+              [(ngModel)]="m.obligatoria">
+
+            Obligatoria
+
+          </label>
+
+          <label>
+
+            <input
+              type="checkbox"
+              [(ngModel)]="m.es_regalo">
+
+            Es regalo
+
+          </label>
+
+        </div>
 
       </div>
-      -->
 
     </div>
+
+  </div>
+
+  <!-- ===================================== -->
+  <!-- BOTONES -->
+  <!-- ===================================== -->
+  <div class="footer-actions">
+
+    <button
+      class="btn-secondary"
+      type="button">
+
+      Cancelar
+
+    </button>
+
+    <button
+      class="btn-primary"
+      type="button">
+
+      💾 Guardar configuración
+
+    </button>
 
   </div>
 
