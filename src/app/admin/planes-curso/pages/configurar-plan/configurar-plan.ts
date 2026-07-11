@@ -65,15 +65,17 @@ export class ConfigurarPlanComponent implements OnInit {
       .obtenerPorId(this.idPlan)
       .subscribe({
 
-        next: (res) => {
-
-          this.plan = res.data;
-
-          this.loading = false;
-
-          this.cd.detectChanges();
-
-        },
+          next: (res) => {
+          
+            console.log("RESPUESTA PLAN:", res);
+          
+            this.plan = res.data;
+          
+            this.loading = false;
+          
+            this.cd.detectChanges();
+          
+          },
 
         error: (err) => {
 
