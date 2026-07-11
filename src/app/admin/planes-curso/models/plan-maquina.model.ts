@@ -6,6 +6,8 @@ export interface PlanMaquina {
 
   horas: number;
 
+  sesiones_totales: number;
+
   seleccionada: boolean;
 
   obligatoria: boolean;
