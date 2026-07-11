@@ -41,6 +41,23 @@ export class PlanesCursoService {
     `${this.apiUrl}/${id}`
     );
   }
+
+  guardarConfiguracion(
+ id:number,
+ maquinas:any[]
+){
+
+ return this.http.put<any>(
+ 
+ `${this.apiUrl}/planes-curso/${id}/configuracion`,
+
+ {
+   maquinas
+ }
+
+ );
+
+}
   obtenerMaquinas(id:number){
 
   return this.http.get<{
