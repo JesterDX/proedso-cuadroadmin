@@ -54,44 +54,35 @@ export class ConfigurarPlanComponent implements OnInit {
   }
 
   cargarPlan(): void {
-
+  
     this.loading = true;
-
-    this.error = '';
-
-    this.cd.detectChanges();
-
+  
     this.service
       .obtenerPorId(this.idPlan)
       .subscribe({
-
-          next: (res) => {
-          
-            console.log("RESPUESTA PLAN:", res);
-          
-            this.plan = res.data;
-          
-            this.loading = false;
-          
-            this.cd.detectChanges();
-          
-          },
-
-        error: (err) => {
-
-          console.error(err);
-
-          this.error =
-            'Error al cargar la información del plan.';
-
+  
+        next: (res) => {
+  
+          console.log("RESPUESTA OBTENER PLAN:", res);
+  
+          this.plan = res.data;
+  
           this.loading = false;
-
-          this.cd.detectChanges();
-
+  
+        },
+  
+        error: (err) => {
+  
+          console.error("ERROR OBTENER PLAN:", err);
+  
+          this.error = 'Error al cargar la información del plan.';
+  
+          this.loading = false;
+  
         }
-
+  
       });
-
+  
   }
 
   cargarMaquinas(): void {
