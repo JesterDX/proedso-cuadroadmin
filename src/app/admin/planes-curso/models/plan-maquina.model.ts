@@ -16,4 +16,6 @@ export interface PlanMaquina {
 
   orden: number | null;
 
+  editado?: boolean;
+
 }
