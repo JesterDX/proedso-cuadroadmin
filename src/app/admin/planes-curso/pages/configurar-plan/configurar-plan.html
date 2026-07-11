@@ -1,43 +1,117 @@
 <div class="plan-container" *ngIf="plan">
+
+  <!-- ===================================== -->
+  <!-- INFORMACIÓN DEL PLAN -->
+  <!-- ===================================== -->
   <div class="plan-card">
 
     <div class="plan-header">
 
-      <div class="plan-title">
-        <h2>{{ plan.nombre }}</h2>
-        <span>{{ plan.codigo }}</span>
+      <div>
+        <h1 class="page-title">
+          ⚙ Configuración del Plan de Curso
+        </h1>
+
+        <p class="page-subtitle">
+          Administra la configuración y las máquinas asociadas al plan.
+        </p>
       </div>
 
       <div class="version">
-        v{{ plan.version }}
+        Versión {{ plan.version }}
       </div>
+
+    </div>
+
+    <div class="plan-title">
+
+      <h2>{{ plan.nombre }}</h2>
+
+      <span class="codigo">
+        {{ plan.codigo }}
+      </span>
 
     </div>
 
     <div class="resume-grid">
 
       <div class="resume-card">
-        <span class="label">Tipo</span>
-        <span class="value">{{ plan.tipo_curso_nombre }}</span>
+
+        <span class="label">
+          Tipo de curso
+        </span>
+
+        <span class="value">
+          {{ plan.tipo_curso_nombre }}
+        </span>
+
       </div>
 
       <div class="resume-card">
-        <span class="label">Máquinas</span>
-        <span class="value">{{ maquinas.length }}</span>
+
+        <span class="label">
+          Máquinas configuradas
+        </span>
+
+        <span class="value">
+          {{ maquinas.length }}
+        </span>
+
       </div>
 
       <div class="resume-card">
-        <span class="label">Vigencia</span>
-        <span class="value">{{ plan.vigente_desde }}</span>
+
+        <span class="label">
+          Vigente desde
+        </span>
+
+        <span class="value">
+          {{ plan.vigente_desde }}
+        </span>
+
+      </div>
+
+      <div class="resume-card">
+
+        <span class="label">
+          Personalizable
+        </span>
+
+        <span class="value">
+          {{ plan.permite_eleccion_personalizada ? 'Sí' : 'No' }}
+        </span>
+
       </div>
 
     </div>
 
   </div>
 
-  <h3 class="section-title">
-    Máquinas del plan
-  </h3>
+  <!-- ===================================== -->
+  <!-- MÁQUINAS -->
+  <!-- ===================================== -->
+  <div class="section-header">
+
+    <div>
+
+      <h3 class="section-title">
+        Máquinas del Plan
+      </h3>
+
+      <p class="section-subtitle">
+        Máquinas disponibles para este plan de capacitación.
+      </p>
+
+    </div>
+
+    <!-- Botones para el siguiente paso -->
+    <!--
+    <button class="btn-primary">
+      + Agregar máquina
+    </button>
+    -->
+
+  </div>
 
   <div class="machine-grid">
 
@@ -54,14 +128,50 @@
         <div class="machine-name">
           {{ m.nombre }}
         </div>
-        
+
         <div class="machine-hours">
-          {{ m.horas }} horas
+
+          <span>
+            {{ m.horas }} horas
+          </span>
+
         </div>
 
       </div>
 
+      <!-- Acciones para el siguiente paso -->
+      <!--
+      <div class="machine-actions">
+
+        <button class="btn-icon">
+          ✏
+        </button>
+
+        <button class="btn-icon danger">
+          🗑
+        </button>
+
+      </div>
+      -->
+
     </div>
+
+  </div>
+
+  <!-- ===================================== -->
+  <!-- SIN MÁQUINAS -->
+  <!-- ===================================== -->
+  <div
+    class="empty-state"
+    *ngIf="maquinas.length === 0">
+
+    <h3>
+      No hay máquinas configuradas
+    </h3>
+
+    <p>
+      Este plan todavía no tiene máquinas asociadas.
+    </p>
 
   </div>
 
