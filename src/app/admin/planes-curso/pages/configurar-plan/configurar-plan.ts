@@ -7,7 +7,13 @@ import {
 
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators
+} from '@angular/forms';
 
 import { PlanCurso } from '../../models/plan-curso.model';
 import { PlanMaquina } from '../../models/plan-maquina.model';
@@ -18,7 +24,8 @@ import { PlanesCursoService } from '../../services/planes-curso-admin';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './configurar-plan.html',
   styleUrl: './configurar-plan.scss'
@@ -28,6 +35,8 @@ export class ConfigurarPlanComponent implements OnInit {
   plan!: PlanCurso;
 
   maquinas: PlanMaquina[] = [];
+
+  private fb = inject(FormBuilder);
 
   private service = inject(PlanesCursoService);
 
@@ -40,6 +49,29 @@ export class ConfigurarPlanComponent implements OnInit {
   loading = false;
 
   error = '';
+
+  // ==========================================
+  // FORMULARIO DEL PLAN
+  // ==========================================
+  form = this.fb.group({
+
+    codigo: ['', Validators.required],
+
+    nombre: ['', Validators.required],
+
+    version: [1, Validators.required],
+
+    tipo_curso_id: [null as number | null],
+
+    permite_eleccion_personalizada: [false],
+
+    vigente_desde: [''],
+
+    vigente_hasta: [''],
+
+    observaciones: ['']
+
+  });
 
   ngOnInit(): void {
 
@@ -73,6 +105,31 @@ export class ConfigurarPlanComponent implements OnInit {
           console.log('RESPUESTA OBTENER PLAN:', res);
 
           this.plan = res.data;
+
+          // ===============================
+          // CARGAR FORMULARIO
+          // ===============================
+
+          this.form.patchValue({
+
+            codigo: this.plan.codigo,
+
+            nombre: this.plan.nombre,
+
+            version: this.plan.version,
+
+            tipo_curso_id: this.plan.tipo_curso_id,
+
+            permite_eleccion_personalizada:
+              this.plan.permite_eleccion_personalizada,
+
+            vigente_desde: this.plan.vigente_desde,
+
+            vigente_hasta: this.plan.vigente_hasta,
+
+            observaciones: this.plan.observaciones
+
+          });
 
           this.loading = false;
 
@@ -141,47 +198,50 @@ export class ConfigurarPlanComponent implements OnInit {
 
   }
 
-  guardar(){
+  // ==========================================
+  // GUARDAR CONFIGURACIÓN
+  // ==========================================
+  guardar(): void {
 
- this.loading=true;
+    this.loading = true;
 
+    this.service
+      .guardarConfiguracion(
+        this.idPlan,
+        this.maquinas
+      )
+      .subscribe({
 
- this.service
- .guardarConfiguracion(
-    this.idPlan,
-    this.maquinas
- )
- .subscribe({
+        next: (res) => {
 
- next:(res)=>{
+          console.log(res);
 
-   console.log(res);
+          alert(
+            'Configuración guardada correctamente'
+          );
 
-   alert(
-    "Configuración guardada correctamente"
-   );
+          this.loading = false;
 
-   this.loading=false;
+          this.cd.detectChanges();
 
- },
+        },
 
+        error: (err) => {
 
- error:(err)=>{
+          console.error(err);
 
-   console.error(err);
+          alert(
+            'Error guardando configuración'
+          );
 
-   alert(
-    "Error guardando configuración"
-   );
+          this.loading = false;
 
-   this.loading=false;
+          this.cd.detectChanges();
 
- }
+        }
 
+      });
 
- });
-
-
-}
+  }
 
 }
