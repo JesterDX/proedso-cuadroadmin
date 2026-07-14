@@ -45,14 +45,14 @@ export class PlanesCursoService {
 
 
 
-  editar(id:number,data:any){
+actualizar(id:number,data:any){
 
-    return this.http.put(
-      `${this.apiUrl}/${id}`,
-      data
-    );
+  return this.http.put(
+    `${this.apiUrl}/${id}`,
+    data
+  );
 
-  }
+}
 
 
 
