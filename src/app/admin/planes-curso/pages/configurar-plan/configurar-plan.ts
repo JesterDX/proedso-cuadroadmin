@@ -201,46 +201,139 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================
   // GUARDAR CONFIGURACIÓN
   // ==========================================
-guardar(): void {
+guardarTodo(): void {
+
 
   this.loading = true;
 
+
+
+  // ======================================
+  // 1. GUARDAR DATOS DEL PLAN
+  // ======================================
+
+  const datosPlan = {
+
+
+    codigo:
+    this.form.value.codigo,
+
+
+    nombre:
+    this.form.value.nombre,
+
+
+    version:
+    this.form.value.version,
+
+
+    tipo_curso_id:
+    this.form.value.tipo_curso_id,
+
+
+    permite_eleccion_personalizada:
+    this.form.value.permite_eleccion_personalizada,
+
+
+    vigente_desde:
+    this.form.value.vigente_desde,
+
+
+    vigente_hasta:
+    this.form.value.vigente_hasta,
+
+
+    observaciones:
+    this.form.value.observaciones
+
+  };
+
+
+
   this.service
-    .guardarConfiguracion(
+  .actualizar(
       this.idPlan,
-      this.maquinas
-    )
-    .subscribe({
+      datosPlan
+  )
+  .subscribe({
 
-      next: (res) => {
+    next:()=>{
 
-        console.log(res);
 
-        alert(
-          'Configuración guardada correctamente'
-        );
+      // ======================================
+      // 2. GUARDAR MÁQUINAS
+      // ======================================
 
-        this.loading = false;
+      this.service
+      .guardarConfiguracion(
+          this.idPlan,
+          this.maquinas
+      )
+      .subscribe({
 
-        this.cd.detectChanges();
+        next:(res)=>{
 
-      },
 
-      error: (err) => {
+          console.log(res);
 
-        console.error(err);
 
-        alert(
-          'Error guardando configuración'
-        );
+          alert(
+          "Plan actualizado correctamente"
+          );
 
-        this.loading = false;
 
-        this.cd.detectChanges();
+          this.loading=false;
 
-      }
 
-    });
+          this.cargarPlan();
+
+
+          this.cargarMaquinas();
+
+
+        },
+
+
+        error:(err)=>{
+
+
+          console.error(err);
+
+
+          alert(
+          "Error guardando máquinas"
+          );
+
+
+          this.loading=false;
+
+
+        }
+
+      });
+
+
+    },
+
+
+    error:(err)=>{
+
+
+      console.error(err);
+
+
+      alert(
+      "Error actualizando información del plan"
+      );
+
+
+      this.loading=false;
+
+
+    }
+
+  });
+
 
 }
 
