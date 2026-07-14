@@ -1,9 +1,15 @@
-<div class="plan-container" *ngIf="plan">
+<div 
+class="plan-container" 
+*ngIf="plan"
+[formGroup]="form">
+
 
   <!-- ===================================== -->
   <!-- INFORMACIÓN DEL PLAN -->
   <!-- ===================================== -->
+
   <div class="plan-card">
+
 
     <div class="plan-header">
 
@@ -14,28 +20,158 @@
         </h1>
 
         <p class="page-subtitle">
-          Administra las máquinas, horas y sesiones del plan.
+          Administra información, máquinas, horas y sesiones del plan.
         </p>
 
       </div>
 
+
       <div class="version">
-        Versión {{ plan.version }}
+        Versión {{ form.value.version }}
       </div>
 
-    </div>
-
-    <div class="plan-title">
-
-      <h2>{{ plan.nombre }}</h2>
-
-      <span class="codigo">
-        {{ plan.codigo }}
-      </span>
 
     </div>
+
+
+
+    <!-- ===================================== -->
+    <!-- EDITAR DATOS GENERALES -->
+    <!-- ===================================== -->
+
+
+    <div class="edit-plan">
+
+
+      <h3>
+        Información del Plan
+      </h3>
+
+
+
+      <div class="form-grid">
+
+
+        <div class="form-row">
+
+          <label>
+            Código
+          </label>
+
+          <input
+          type="text"
+          formControlName="codigo">
+
+        </div>
+
+
+
+
+        <div class="form-row">
+
+          <label>
+            Nombre
+          </label>
+
+          <input
+          type="text"
+          formControlName="nombre">
+
+        </div>
+
+
+
+
+        <div class="form-row">
+
+          <label>
+            Versión
+          </label>
+
+          <input
+          type="number"
+          formControlName="version">
+
+        </div>
+
+
+
+
+        <div class="form-row">
+
+          <label>
+            Fecha inicio
+          </label>
+
+          <input
+          type="date"
+          formControlName="vigente_desde">
+
+        </div>
+
+
+
+
+        <div class="form-row">
+
+          <label>
+            Fecha fin
+          </label>
+
+          <input
+          type="date"
+          formControlName="vigente_hasta">
+
+        </div>
+
+
+
+      </div>
+
+
+
+
+      <div class="form-row">
+
+
+        <label>
+          Observaciones
+        </label>
+
+
+        <textarea
+        formControlName="observaciones">
+        </textarea>
+
+
+      </div>
+
+
+
+
+      <label>
+
+
+        <input
+        type="checkbox"
+        formControlName="permite_eleccion_personalizada">
+
+
+        Permite elección personalizada
+
+
+      </label>
+
+
+
+    </div>
+
+
+
+
 
     <div class="resume-grid">
+
 
       <div class="resume-card">
 
@@ -43,11 +179,18 @@
           Tipo de curso
         </span>
 
+
         <span class="value">
+
           {{ plan.tipo_curso_nombre }}
+
         </span>
 
+
       </div>
+
+
+
 
       <div class="resume-card">
 
@@ -55,11 +198,18 @@
           Máquinas configuradas
         </span>
 
+
         <span class="value">
+
           {{ maquinas.filter(m => m.seleccionada).length }}
+
         </span>
 
+
       </div>
+
+
+
 
       <div class="resume-card">
 
@@ -67,11 +217,18 @@
           Vigente desde
         </span>
 
+
         <span class="value">
+
           {{ plan.vigente_desde | date:'dd/MM/yyyy' }}
+
         </span>
 
+
       </div>
+
+
+
 
       <div class="resume-card">
 
@@ -79,185 +236,295 @@
           Personalizable
         </span>
 
+
         <span class="value">
-          {{ plan.permite_eleccion_personalizada ? 'Sí' : 'No' }}
+
+          {{
+          plan.permite_eleccion_personalizada
+          ? 'Sí'
+          : 'No'
+          }}
+
         </span>
+
 
       </div>
 
+
+
     </div>
 
+
+
   </div>
+
+
+
+
+
+
 
   <!-- ===================================== -->
   <!-- MÁQUINAS -->
   <!-- ===================================== -->
+
+
   <div class="section-header">
+
 
     <div>
 
+
       <h3 class="section-title">
+
         Configuración de Máquinas
+
       </h3>
 
+
+
       <p class="section-subtitle">
-        Selecciona las máquinas que pertenecen al plan y configura sus prácticas.
+
+        Selecciona máquinas y define sus prácticas.
+
       </p>
+
+
 
     </div>
 
+
   </div>
+
+
+
+
+
 
   <div class="machine-grid">
 
+
     <div
-      class="machine-card"
-      *ngFor="let m of maquinas">
+    class="machine-card"
+    *ngFor="let m of maquinas">
+
+
 
       <div class="machine-top">
 
+
         <div class="machine-icon">
+
           🚜
+
         </div>
+
+
 
         <div>
 
+
           <div class="machine-name">
-            {{ m.nombre }}
+
+            {{m.nombre}}
+
           </div>
+
+
 
           <div class="machine-order">
-            Orden #{{ m.orden || '-' }}
+
+            Orden #{{m.orden || '-'}}
+
           </div>
 
+
+
         </div>
+
 
       </div>
 
+
+
+
+
+
       <div class="machine-body">
 
-        <div class="form-check">
 
-          <label>
 
-            <input
-              type="checkbox"
-              [(ngModel)]="m.seleccionada">
+        <label>
 
-            Incluir en el plan
 
-          </label>
+          <input
+          type="checkbox"
+          [(ngModel)]="m.seleccionada"
+          [ngModelOptions]="{standalone:true}">
 
-        </div>
+
+          Incluir en el plan
+
+
+        </label>
+
+
+
+
+
 
         <div class="form-row">
+
 
           <label>
             Horas prácticas
           </label>
 
+
           <input
-            type="number"
-            min="0"
-            [(ngModel)]="m.horas">
+          type="number"
+          [(ngModel)]="m.horas"
+          [ngModelOptions]="{standalone:true}">
+
 
         </div>
 
+
+
+
+
+
         <div class="form-row">
+
 
           <label>
             Sesiones
           </label>
 
+
           <input
-            type="number"
-            min="0"
-            [(ngModel)]="m.sesiones_totales">
+          type="number"
+          [(ngModel)]="m.sesiones_totales"
+          [ngModelOptions]="{standalone:true}">
+
 
         </div>
 
+
+
+
+
+
+
         <div class="form-row">
+
 
           <label>
             Orden
           </label>
 
+
           <input
-            type="number"
-            min="1"
-            [(ngModel)]="m.orden">
+          type="number"
+          [(ngModel)]="m.orden"
+          [ngModelOptions]="{standalone:true}">
+
 
         </div>
+
+
+
+
+
 
         <div class="checks">
 
+
+
           <label>
 
+
             <input
-              type="checkbox"
-              [(ngModel)]="m.obligatoria">
+            type="checkbox"
+            [(ngModel)]="m.obligatoria"
+            [ngModelOptions]="{standalone:true}">
+
 
             Obligatoria
 
+
           </label>
+
+
+
+
+
 
           <label>
 
+
             <input
-              type="checkbox"
-              [(ngModel)]="m.es_regalo">
+            type="checkbox"
+            [(ngModel)]="m.es_regalo"
+            [ngModelOptions]="{standalone:true}">
+
 
             Es regalo
 
+
           </label>
+
+
 
         </div>
 
+
+
+
       </div>
+
+
 
     </div>
 
+
+
   </div>
+
+
+
+
+
+
+
 
   <!-- ===================================== -->
   <!-- BOTONES -->
   <!-- ===================================== -->
+
+
   <div class="footer-actions">
 
-    <button
-      class="btn-secondary"
-      type="button">
 
-      Cancelar
+    <button
+    class="btn-primary"
+    type="button"
+    (click)="guardar()">
+
+
+
+      💾 Guardar cambios
+
 
     </button>
-      
-      <button
-      class="btn-primary"
-      type="button"
-      (click)="guardar()">
-      
-      💾 Guardar configuración
-      
-      </button>
+
+
 
   </div>
 
-  <!-- ===================================== -->
-  <!-- SIN MÁQUINAS -->
-  <!-- ===================================== -->
-  <div
-    class="empty-state"
-    *ngIf="maquinas.length === 0">
 
-    <h3>
-      No hay máquinas configuradas
-    </h3>
 
-    <p>
-      Este plan todavía no tiene máquinas asociadas.
-    </p>
 
-  </div>
+
 
 </div>
