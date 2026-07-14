@@ -201,47 +201,47 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================
   // GUARDAR CONFIGURACIÓN
   // ==========================================
-  guardar(): void {
+guardar(): void {
 
-    this.loading = true;
+  this.loading = true;
 
-    this.service
-      .guardarConfiguracion(
-        this.idPlan,
-        this.maquinas
-      )
-      .subscribe({
+  this.service
+    .guardarConfiguracion(
+      this.idPlan,
+      this.maquinas
+    )
+    .subscribe({
 
-        next: (res) => {
+      next: (res) => {
 
-          console.log(res);
+        console.log(res);
 
-          alert(
-            'Configuración guardada correctamente'
-          );
+        alert(
+          'Configuración guardada correctamente'
+        );
 
-          this.loading = false;
+        this.loading = false;
 
-          this.cd.detectChanges();
+        this.cd.detectChanges();
 
-        },
+      },
 
-        error: (err) => {
+      error: (err) => {
 
-          console.error(err);
+        console.error(err);
 
-          alert(
-            'Error guardando configuración'
-          );
+        alert(
+          'Error guardando configuración'
+        );
 
-          this.loading = false;
+        this.loading = false;
 
-          this.cd.detectChanges();
+        this.cd.detectChanges();
 
-        }
+      }
 
-      });
+    });
 
-  }
+}
 
 }
