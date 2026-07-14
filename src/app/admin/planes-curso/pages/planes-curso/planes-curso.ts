@@ -108,51 +108,26 @@ export class PlanesCursoComponent implements OnInit {
 
   }
 
-  guardar(): void {
+guardar(): void {
 
-    if (this.form.invalid) return;
+  this.loading = true;
 
-    const payload = {
-      ...this.form.value,
-      version: this.form.value.version ?? '',
-      tipo_curso_id: this.form.value.tipo_curso_id ?? null
-    };
+  this.service
+    .guardarConfiguracion(
+      this.idPlan,
+      this.maquinas
+    )
+    .subscribe({
 
-    if (this.modoEdicion) {
+      next: (res) => {
 
-      this.service.editar(this.idEditando!, payload).subscribe({
+        console.log(res);
 
-        next: () => {
+        alert(
+          'Configuración guardada correctamente'
+        );
 
-          this.reset();
-
-          this.listarActivos();
-
-          this.cd.detectChanges();
-
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          this.cd.detectChanges();
-
-        }
-
-      });
-
-      return;
-
-    }
-
-    this.service.crear(payload).subscribe({
-
-      next: () => {
-
-        this.reset();
-
-        this.listarActivos();
+        this.loading = false;
 
         this.cd.detectChanges();
 
@@ -162,13 +137,19 @@ export class PlanesCursoComponent implements OnInit {
 
         console.error(err);
 
+        alert(
+          'Error guardando configuración'
+        );
+
+        this.loading = false;
+
         this.cd.detectChanges();
 
       }
 
     });
 
-  }
+}
 
   configurar(plan: PlanCurso): void {
 
