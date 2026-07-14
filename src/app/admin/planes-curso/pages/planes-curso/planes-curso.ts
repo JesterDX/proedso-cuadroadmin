@@ -108,48 +108,6 @@ export class PlanesCursoComponent implements OnInit {
 
   }
 
-guardar(): void {
-
-  this.loading = true;
-
-  this.service
-    .guardarConfiguracion(
-      this.idPlan,
-      this.maquinas
-    )
-    .subscribe({
-
-      next: (res) => {
-
-        console.log(res);
-
-        alert(
-          'Configuración guardada correctamente'
-        );
-
-        this.loading = false;
-
-        this.cd.detectChanges();
-
-      },
-
-      error: (err) => {
-
-        console.error(err);
-
-        alert(
-          'Error guardando configuración'
-        );
-
-        this.loading = false;
-
-        this.cd.detectChanges();
-
-      }
-
-    });
-
-}
 
   configurar(plan: PlanCurso): void {
 
