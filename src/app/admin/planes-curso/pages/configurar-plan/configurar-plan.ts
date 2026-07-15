@@ -387,23 +387,6 @@ else {
 }
 
 
-    error:(err)=>{
-
-
-      console.error(err);
-
-
-      alert(
-      "Error actualizando información del plan"
-      );
-
-
-      this.loading=false;
-
-
-    }
-
-  });
 
 
 }
