@@ -44,6 +44,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
   private cd = inject(ChangeDetectorRef);
 
+  modoNuevo = false;
+  
   idPlan!: number;
 
   loading = false;
