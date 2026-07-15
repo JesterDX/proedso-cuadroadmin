@@ -1,24 +1,28 @@
 // ==========================================================================
-// SCSS: CONFIGURACIÓN DE PLAN (MINIMALISTA Y DIRECTO)
+// SCSS: CONFIGURACIÓN DE PLAN (MINIMALISTA Y MAGISTRAL)
 // ==========================================================================
 
-$c-bg: #f9fafb;
+// --- Paleta de Colores (Estilo "Slate" moderno) ---
+$c-bg: #f8fafc;
 $c-surface: #ffffff;
-$c-text-main: #111827;
-$c-text-muted: #6b7280;
-$c-border: #e5e7eb;
-$c-border-hover: #d1d5db;
+$c-text-main: #0f172a;
+$c-text-muted: #64748b;
+$c-border: #e2e8f0;
+$c-border-hover: #cbd5e1;
+$c-accent: #0f172a; // Negro/Azul oscuro elegante para focos y botones
 
-$radius-card: 8px;
-$radius-btn: 6px;
-$radius-sm: 4px;
+// --- Radios y Transiciones ---
+$radius-card: 12px;
+$radius-btn: 8px;
+$radius-sm: 6px;
+$transition: all 0.2s ease-in-out;
 
 :host {
   display: block;
-  padding: 24px;
+  padding: 32px 24px;
   background-color: $c-bg;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
   color: $c-text-main;
   box-sizing: border-box;
 
@@ -26,22 +30,25 @@ $radius-sm: 4px;
 }
 
 .plan-container {
-  max-width: 1100px;
+  max-width: 1024px; // Un poco más estrecho para mejor lectura
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
-// --- Card Principal (Información del Plan) ---
+// =====================================
+// 1. TARJETA PRINCIPAL
+// =====================================
 .plan-card {
   background: $c-surface;
   border: 1px solid $c-border;
   border-radius: $radius-card;
-  padding: 24px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02); // Sombra casi imperceptible
 }
 
 .plan-header {
@@ -49,75 +56,142 @@ $radius-sm: 4px;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid $c-border;
 
   .page-title {
-    margin: 0 0 4px 0;
-    font-size: 1.25rem;
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
     font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   .page-subtitle {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: $c-text-muted;
   }
 
   .version {
-    background: #f3f4f6;
-    color: #374151;
-    border: 1px solid $c-border;
-    padding: 4px 10px;
-    border-radius: $radius-sm;
+    background: #f1f5f9;
+    color: $c-text-main;
+    padding: 6px 12px;
+    border-radius: 20px; // Estilo píldora
     font-size: 0.75rem;
     font-weight: 600;
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
 
-.plan-title {
+// =====================================
+// 2. FORMULARIOS (EDITAR PLAN)
+// =====================================
+.edit-plan {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  flex-direction: column;
+  gap: 24px;
 
-  h2 {
+  h3 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.125rem;
     font-weight: 600;
   }
 
-  .codigo {
-    font-size: 0.875rem;
-    color: $c-text-muted;
-    font-family: monospace;
-    background: #f3f4f6;
-    padding: 2px 6px;
-    border-radius: $radius-sm;
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: $c-text-main;
+    }
+
+    // Estilos globales para inputs y textareas en el plan
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid $c-border;
+      border-radius: $radius-sm;
+      background: #fafafa;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: $c-text-main;
+      transition: $transition;
+      outline: none;
+
+      &:hover {
+        border-color: $c-border-hover;
+      }
+
+      &:focus {
+        background: $c-surface;
+        border-color: $c-accent;
+        box-shadow: 0 0 0 1px $c-accent; // Foco nítido y minimalista
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+  }
+
+  // Checkbox de elección personalizada
+  > label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: $c-accent;
+      cursor: pointer;
+    }
   }
 }
 
-// --- Resumen Grid ---
+// =====================================
+// 3. RESUMEN GRID (TARJETAS INFORMATIVAS)
+// =====================================
 .resume-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding-top: 16px;
 }
 
 .resume-card {
-  background: #f9fafb;
+  background: #f8fafc;
   border: 1px solid $c-border;
   border-radius: $radius-btn;
-  padding: 12px 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 
   .label {
     font-size: 0.75rem;
     color: $c-text-muted;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
+    font-weight: 600;
   }
 
   .value {
@@ -127,68 +201,75 @@ $radius-sm: 4px;
   }
 }
 
-// --- Sección Máquinas ---
+// =====================================
+// 4. MÁQUINAS (SECCIÓN Y TARJETAS)
+// =====================================
 .section-header {
+  padding: 8px 0;
+  
   .section-title {
-    margin: 0 0 4px 0;
-    font-size: 1.125rem;
+    margin: 0 0 6px 0;
+    font-size: 1.25rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .section-subtitle {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: $c-text-muted;
   }
 }
 
 .machine-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .machine-card {
   background: $c-surface;
   border: 1px solid $c-border;
   border-radius: $radius-card;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  transition: border-color 0.15s ease;
+  gap: 20px;
+  transition: $transition;
 
   &:hover {
     border-color: $c-border-hover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
   }
 }
 
 .machine-top {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
 
   .machine-icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: $radius-btn;
-    background: #f3f4f6;
+    background: #f1f5f9;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 
   .machine-name {
     font-weight: 600;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: $c-text-main;
+    margin-bottom: 2px;
   }
 
   .machine-order {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: $c-text-muted;
   }
 }
@@ -196,125 +277,131 @@ $radius-sm: 4px;
 .machine-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 
-  .form-check {
-    label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: $c-text-main;
+  // Checkbox principal y los de checks
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $c-text-main;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: $c-accent;
       cursor: pointer;
     }
   }
 
+  // Inputs horizontales para las máquinas
   .form-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 
     label {
-      font-size: 0.8125rem;
+      font-size: 0.875rem;
       color: $c-text-muted;
+      font-weight: 400;
     }
 
     input[type="number"] {
       width: 80px;
-      padding: 6px 8px;
+      padding: 6px 10px;
       border: 1px solid $c-border;
       border-radius: $radius-sm;
       font-size: 0.875rem;
       text-align: right;
       outline: none;
+      background: #fafafa;
+      transition: $transition;
       
-      &:focus { border-color: #2563eb; }
+      &:focus { 
+        background: $c-surface;
+        border-color: $c-accent; 
+        box-shadow: 0 0 0 1px $c-accent;
+      }
     }
   }
 
   .checks {
     display: flex;
-    gap: 16px;
-    padding-top: 8px;
-    border-top: 1px solid #f3f4f6;
+    gap: 20px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
 
     label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8125rem;
+      font-weight: 400;
       color: $c-text-muted;
-      cursor: pointer;
     }
   }
 }
 
-// --- Botones Footer ---
+// =====================================
+// 5. ACCIONES (FOOTER)
+// =====================================
 .footer-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid $c-border;
+  gap: 16px;
+  margin-top: 16px;
 
   button {
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: $radius-btn;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: $transition;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .btn-secondary {
     background: $c-surface;
     color: $c-text-main;
     border: 1px solid $c-border;
-    &:hover { background: #f3f4f6; }
+    
+    &:hover { 
+      background: #f1f5f9; 
+      border-color: $c-border-hover;
+    }
   }
 
   .btn-primary {
-    background: $c-text-main;
+    background: $c-accent;
     color: $c-surface;
-    border: 1px solid $c-text-main;
-    &:hover { background: #374151; }
+    border: 1px solid $c-accent;
+    
+    &:hover { 
+      background: #1e293b; 
+      border-color: #1e293b;
+    }
   }
 }
 
-// --- Estado Vacío ---
-.empty-state {
-  background: $c-surface;
-  border: 1px dashed $c-border-hover;
-  border-radius: $radius-card;
-  padding: 40px 20px;
-  text-align: center;
-
-  h3 {
-    margin: 0 0 4px 0;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: $c-text-muted;
-  }
-}
-
-// --- Responsive ---
-@media (max-width: 640px) {
+// =====================================
+// 6. RESPONSIVE
+// =====================================
+@media (max-width: 768px) {
   :host { padding: 16px; }
+  
+  .plan-card { padding: 20px; }
   
   .plan-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
 
   .footer-actions {
     flex-direction: column-reverse;
-    button { width: 100%; }
+    button { width: 100%; justify-content: center; }
   }
 }
