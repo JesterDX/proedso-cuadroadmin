@@ -75,6 +75,13 @@ export class PlanesCursoComponent implements OnInit {
     });
 
   }
+  nuevo(): void {
+
+  this.router.navigate([
+    '/admin/planes-curso/nuevo'
+  ]);
+
+}
 
   listarActivos(): void {
 
