@@ -13,49 +13,52 @@
 </div>
 
 <hr>
-  <!-- LOADING -->
-  <div *ngIf="loading">Cargando...</div>
 
-  <!-- LISTADO -->
-  <table *ngIf="!loading">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Código</th>
-        <th>Nombre</th>
-        <th>Versión</th>
-        <th>Tipo Curso</th>
-        <th>Activo</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
+<div *ngIf="loading">Cargando...</div>
 
-    <tbody>
-      <tr *ngFor="let p of planes">
-        <td>{{ p.id }}</td>
-        <td>{{ p.codigo }}</td>
-        <td>{{ p.nombre }}</td>
-        <td>{{ p.version }}</td>
-        <td>{{ p.tipo_curso_nombre }}</td>
-        <td>{{ p.activo ? 'Sí' : 'No' }}</td>
+<table *ngIf="!loading">
 
-        <td>
-        
-          <button (click)="configurar(p)">
-            Configurar
-          </button>
-        
-          <button (click)="editar(p)">
-            Editar
-          </button>
-        
-          <button (click)="cambiarEstado(p.id)">
-            {{ p.activo ? 'Desactivar' : 'Activar' }}
-          </button>
-        
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th>Versión</th>
+      <th>Tipo Curso</th>
+      <th>Activo</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
 
-</div>
+  <tbody>
+
+    <tr *ngFor="let p of planes">
+
+      <td>{{ p.id }}</td>
+      <td>{{ p.codigo }}</td>
+      <td>{{ p.nombre }}</td>
+      <td>{{ p.version }}</td>
+      <td>{{ p.tipo_curso_nombre }}</td>
+      <td>{{ p.activo ? 'Sí' : 'No' }}</td>
+
+      <td>
+
+        <button (click)="configurar(p)">
+          Configurar
+        </button>
+
+        <button (click)="editar(p)">
+          Editar
+        </button>
+
+        <button (click)="cambiarEstado(p.id)">
+          {{ p.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+
+      </td>
+
+    </tr>
+
+  </tbody>
+
+</table>
