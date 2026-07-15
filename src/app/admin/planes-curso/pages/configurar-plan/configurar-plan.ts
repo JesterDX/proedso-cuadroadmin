@@ -75,17 +75,51 @@ export class ConfigurarPlanComponent implements OnInit {
 
   });
 
-  ngOnInit(): void {
+ngOnInit(): void {
 
-    this.idPlan = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+  const id = this.route.snapshot.paramMap.get('id');
+
+  this.modoNuevo = !id;
+
+  if (this.modoNuevo) {
+
+    this.plan = {
+
+      id: 0,
+      codigo: '',
+      nombre: '',
+      version: 1,
+      tipo_curso_id: 0,
+      tipo_curso_nombre: '',
+      vigente_desde: '',
+      vigente_hasta: '',
+      permite_eleccion_personalizada: false,
+      activo: true,
+      observaciones: ''
+
+    };
+
+    this.form.patchValue({
+
+      version: 1,
+      permite_eleccion_personalizada: false
+
+    });
+
+    this.cargarMaquinas();
+
+  }
+  else {
+
+    this.idPlan = Number(id);
 
     this.cargarPlan();
 
     this.cargarMaquinas();
 
   }
+
+}
 
   // ==========================================
   // CARGAR PLAN
@@ -167,36 +201,55 @@ export class ConfigurarPlanComponent implements OnInit {
 
     this.cd.detectChanges();
 
-    this.service
-      .obtenerMaquinas(this.idPlan)
-      .subscribe({
+if (this.modoNuevo) {
 
-        next: (res) => {
+  this.service.obtenerMaquinas(0).subscribe({
 
-          console.log('RESPUESTA OBTENER MAQUINAS:', res);
+    next: (res) => {
 
-          this.maquinas = res.data || [];
+      this.maquinas = res.data || [];
 
-          this.loading = false;
+      this.loading = false;
 
-          this.cd.detectChanges();
+      this.cd.detectChanges();
 
-        },
+    },
 
-        error: (err) => {
+    error: (err:any) => {
 
-          console.error('ERROR OBTENER MAQUINAS:', err);
+      console.error(err);
 
-          this.error =
-            'Error al cargar las máquinas del plan.';
+      this.loading = false;
 
-          this.loading = false;
+    }
 
-          this.cd.detectChanges();
+  });
 
-        }
+  return;
 
-      });
+}
+
+this.service.obtenerMaquinas(this.idPlan).subscribe({
+
+  next:(res)=>{
+
+    this.maquinas = res.data || [];
+
+    this.loading = false;
+
+    this.cd.detectChanges();
+
+  },
+
+  error:(err:any)=>{
+
+    console.error(err);
+
+    this.loading=false;
+
+  }
+
+});
 
   }
 
@@ -252,70 +305,86 @@ guardarTodo(): void {
 
 
 
+if (this.modoNuevo) {
+
   this.service
-  .actualizar(
+    .crearCompleto({
+
+      ...datosPlan,
+
+      maquinas: this.maquinas
+
+    })
+    .subscribe({
+
+      next: () => {
+
+        alert("Plan creado correctamente");
+
+        this.loading = false;
+
+      },
+
+      error: (err:any) => {
+
+        console.error(err);
+
+        this.loading = false;
+
+      }
+
+    });
+
+}
+else {
+
+  this.service
+    .actualizar(
       this.idPlan,
       datosPlan
-  )
-  .subscribe({
+    )
+    .subscribe({
 
-    next:()=>{
+      next: () => {
 
+        this.service
+          .guardarConfiguracion(
+            this.idPlan,
+            this.maquinas
+          )
+          .subscribe({
 
-      // ======================================
-      // 2. GUARDAR MÁQUINAS
-      // ======================================
+            next: () => {
 
-      this.service
-      .guardarConfiguracion(
-          this.idPlan,
-          this.maquinas
-      )
-      .subscribe({
+              alert("Plan actualizado correctamente");
 
-        next:(res)=>{
+              this.loading = false;
 
+            },
 
-          console.log(res);
+            error: (err:any) => {
 
+              console.error(err);
 
-          alert(
-          "Plan actualizado correctamente"
-          );
+              this.loading = false;
 
+            }
 
-          this.loading=false;
+          });
 
+      },
 
-          this.cargarPlan();
+      error: (err:any) => {
 
+        console.error(err);
 
-          this.cargarMaquinas();
+        this.loading = false;
 
+      }
 
-        },
+    });
 
-
-        error:(err)=>{
-
-
-          console.error(err);
-
-
-          alert(
-          "Error guardando máquinas"
-          );
-
-
-          this.loading=false;
-
-
-        }
-
-      });
-
-
-    },
+}
 
 
     error:(err)=>{
