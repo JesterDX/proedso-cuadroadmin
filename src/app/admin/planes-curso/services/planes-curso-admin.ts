@@ -100,6 +100,15 @@ actualizar(id:number,data:any){
 
   }
 
+  crearCompleto(data: any) {
+
+  return this.http.post<any>(
+    `${this.apiUrl}/completo`,
+    data
+  );
+
+}
+
 
 
 
