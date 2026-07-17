@@ -1,0 +1,83 @@
+<header class="main-header">
+
+  <div class="header-info">
+
+    <h1>🚜 Nueva Sesión de Práctica</h1>
+
+    <p>
+      Seleccione los alumnos y registre nuevas sesiones de práctica.
+    </p>
+
+  </div>
+
+</header>
+
+<section class="card filtros-card">
+
+  <div class="card-header">
+
+    <h3>🔎 Buscar alumnos</h3>
+
+    <p>
+      Seleccione el período y tipo de curso para localizar alumnos.
+    </p>
+
+  </div>
+
+  <div class="toolbar">
+
+    <div class="filter-box">
+      <label>Mes</label>
+      <input
+        type="number"
+        placeholder="Ej. 5"
+        [(ngModel)]="filtroMes">
+    </div>
+
+    <div class="filter-box">
+      <label>Año</label>
+      <input
+        type="number"
+        placeholder="2026"
+        [(ngModel)]="filtroAnio">
+    </div>
+
+    <div class="filter-box">
+      <label>Tipo de Curso</label>
+
+      <select [(ngModel)]="filtroTipoCurso">
+
+        <option [ngValue]="null">
+          Todos
+        </option>
+
+        <option value="INDIVIDUAL">
+          Individual
+        </option>
+
+        <option value="MULTIPLE">
+          Múltiple
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      class="btn-primary"
+      (click)="cargarPracticas()"
+      [disabled]="loadingLista">
+
+      <span *ngIf="!loadingLista">
+        🔍 Buscar alumnos
+      </span>
+
+      <span *ngIf="loadingLista">
+        Cargando...
+      </span>
+
+    </button>
+
+  </div>
+
+</section>
