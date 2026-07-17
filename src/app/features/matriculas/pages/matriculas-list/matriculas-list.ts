@@ -255,31 +255,45 @@ export class MatriculasList implements OnInit {
       a.dni?.includes(busqueda)
     );
   }
-  abrirModalEditar(matricula: Matricula): void {
-    this.modoModal = 'editar';
-    this.matriculaEditandoId = matricula.id;
+abrirModalEditar(matricula: Matricula): void {
 
-    this.form = {
-      alumno_id: matricula.alumno_id,
-      plan_curso_id: matricula.plan_curso_id,
-      estado_alumno_id: matricula.estado_alumno_id,
-      fecha_matricula: matricula.fecha_matricula
-        ? matricula.fecha_matricula.split('T')[0]
-        : new Date().toISOString().slice(0, 10),
-      fecha_inicio: matricula.fecha_inicio?.split('T')[0] || null,
-      fecha_fin_estimada: matricula.fecha_fin_estimada?.split('T')[0] || null,
-      notas: matricula.notas || '',
-      maquinas_seleccionadas: [],
-      modalidad_pago: matricula.modalidad_pago || 'MENSUAL'
-    };
+  this.modoModal = 'editar';
+  this.matriculaEditandoId = matricula.id;
 
-    this.modalOpen = true;
+  this.form = {
+    alumno_id: matricula.alumno_id,
+    plan_curso_id: matricula.plan_curso_id,
+    estado_alumno_id: matricula.estado_alumno_id,
+    fecha_matricula: matricula.fecha_matricula
+      ? matricula.fecha_matricula.split('T')[0]
+      : new Date().toISOString().slice(0, 10),
+    fecha_inicio: matricula.fecha_inicio?.split('T')[0] || null,
+    fecha_fin_estimada: matricula.fecha_fin_estimada?.split('T')[0] || null,
+    notas: matricula.notas || '',
+    maquinas_seleccionadas: [],
+    modalidad_pago: matricula.modalidad_pago || 'MENSUAL'
+  };
 
-    this.actualizarSelectorMaquinas();
-    this.recalcularFechaFin();
+  this.modalOpen = true;
 
-    this.cd.detectChanges();
-  }
+  this.actualizarSelectorMaquinas();
+  this.recalcularFechaFin();
+
+  // 👇 AQUÍ CARGAS LAS MÁQUINAS DE LA MATRÍCULA
+  this.matriculasService.listarMaquinas(matricula.id).subscribe({
+    next: (resp) => {
+
+      this.maquinasSeleccionadas = (resp.data ?? [])
+        .filter(m => !m.es_regalo)
+        .map(m => m.maquina_id);
+
+      this.form.maquinas_seleccionadas = [...this.maquinasSeleccionadas];
+
+      this.cd.detectChanges();
+    }
+  });
+
+}
   validarFormulario(): string[] {
     const errores: string[] = [];
 
