@@ -169,8 +169,29 @@ export const routes: Routes = [
       {
         path: 'practicas',
         loadComponent: () =>
+          import('./features/practicas/pages/practicas-home/practicas-home')
+            .then(m => m.PracticasHomeComponent)
+      },
+      
+      {
+        path: 'practicas/nueva-sesion',
+        loadComponent: () =>
           import('./features/practicas/pages/practicas-list/practicas-list')
             .then(m => m.PracticasListComponent)
+      },
+      
+      {
+        path: 'practicas/historial',
+        loadComponent: () =>
+          import('./features/practicas/pages/historial-practicas/historial-practicas')
+            .then(m => m.HistorialPracticasComponent)
+      },
+      
+      {
+        path: 'practicas/expedientes',
+        loadComponent: () =>
+          import('./features/practicas/pages/expedientes/expedientes')
+            .then(m => m.ExpedientesComponent)
       },
 
       // =========================
