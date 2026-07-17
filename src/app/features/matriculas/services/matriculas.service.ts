@@ -30,8 +30,11 @@ export class MatriculasService {
     return this.http.get<ApiResponse<Matricula[]>>(this.apiUrl, { params });
   }
 
-  actualizar(id: number, payload: MatriculaPayload): Observable<ApiResponse<Matricula>> {
-    return this.http.put<ApiResponse<Matricula>>(`/api/matriculas/${id}`, payload);
+  actualizar(id: number, payload: MatriculaPayload) {
+      return this.http.put<ApiResponse<Matricula>>(
+          `${this.apiUrl}/${id}`,
+          payload
+      );
   }
   obtenerPorId(id: number): Observable<ApiResponse<Matricula>> {
     return this.http.get<ApiResponse<Matricula>>(`${this.apiUrl}/${id}`);
@@ -55,7 +58,9 @@ export class MatriculasService {
     });
   }
   obtenerHistorial(id: number) {
-    return this.http.get<ApiResponse<any[]>>(`/api/matriculas/${id}/historial`);
+      return this.http.get<ApiResponse<any[]>>(
+          `${this.apiUrl}/${id}/historial`
+      );
   }
   obtenerFinanzas(id: number): Observable<ApiResponse<MatriculaFinanzasData>> {
     return this.http.get<ApiResponse<MatriculaFinanzasData>>(`${this.apiUrl}/${id}/finanzas`);
