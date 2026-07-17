@@ -5,79 +5,191 @@
     <h1>🚜 Nueva Sesión de Práctica</h1>
 
     <p>
-      Seleccione los alumnos y registre nuevas sesiones de práctica.
+      Seleccione la fecha, curso y máquina para registrar nuevas sesiones.
     </p>
 
   </div>
 
 </header>
 
+
 <section class="card filtros-card">
 
   <div class="card-header">
 
-    <h3>🔎 Buscar alumnos</h3>
+    <h3>📅 Datos de la sesión</h3>
 
     <p>
-      Seleccione el período y tipo de curso para localizar alumnos.
+      Indique cuándo se realizará la práctica y filtre los alumnos.
     </p>
 
   </div>
 
+
   <div class="toolbar">
 
+
+    <!-- FECHA SESIÓN -->
     <div class="filter-box">
-      <label>Mes</label>
+
+      <label>
+        Fecha de práctica
+      </label>
+
       <input
-        type="number"
-        placeholder="Ej. 5"
-        [(ngModel)]="filtroMes">
+        type="date"
+        [(ngModel)]="fechaSesion">
+
     </div>
 
-    <div class="filter-box">
-      <label>Año</label>
-      <input
-        type="number"
-        placeholder="2026"
-        [(ngModel)]="filtroAnio">
-    </div>
 
-    <div class="filter-box">
-      <label>Tipo de Curso</label>
 
-      <select [(ngModel)]="filtroTipoCurso">
+    <!-- MES -->
+    <div class="filter-box">
+
+      <label>
+        Mes
+      </label>
+
+      <select [(ngModel)]="filtroMes">
 
         <option [ngValue]="null">
-          Todos
+          Todos los meses
         </option>
 
-        <option value="INDIVIDUAL">
-          Individual
-        </option>
+        <option
+          *ngFor="let mes of meses"
+          [value]="mes.id">
 
-        <option value="MULTIPLE">
-          Múltiple
+          {{mes.nombre}}
+
         </option>
 
       </select>
 
     </div>
 
+
+
+    <!-- AÑO -->
+    <div class="filter-box">
+
+      <label>
+        Año
+      </label>
+
+      <input
+        type="number"
+        [(ngModel)]="filtroAnio"
+        placeholder="2026">
+
+    </div>
+
+
+
+    <!-- CURSO -->
+    <div class="filter-box">
+
+      <label>
+        Curso
+      </label>
+
+
+      <select [(ngModel)]="filtroCurso">
+
+        <option [ngValue]="null">
+          Todos
+        </option>
+
+
+        <option
+          *ngFor="let curso of cursos"
+          [value]="curso.id">
+
+          {{curso.nombre}}
+
+        </option>
+
+
+      </select>
+
+
+    </div>
+
+
+
+
+    <!-- MAQUINA -->
+    <div class="filter-box">
+
+      <label>
+        Máquina
+      </label>
+
+
+      <select [(ngModel)]="filtroMaquina">
+
+
+        <option [ngValue]="null">
+          Todas
+        </option>
+
+
+        <option
+          *ngFor="let maquina of maquinas"
+          [value]="maquina.id">
+
+          {{maquina.nombre}}
+
+        </option>
+
+
+      </select>
+
+
+    </div>
+
+
+
+
+    <!-- BUSQUEDA NOMBRE -->
+    <div class="filter-box">
+
+      <label>
+        Alumno
+      </label>
+
+
+      <input
+        type="text"
+        placeholder="Buscar alumno..."
+        [(ngModel)]="filtroNombre">
+
+
+    </div>
+
+
+
     <button
       class="btn-primary"
       (click)="cargarPracticas()"
       [disabled]="loadingLista">
 
+
       <span *ngIf="!loadingLista">
         🔍 Buscar alumnos
       </span>
+
 
       <span *ngIf="loadingLista">
         Cargando...
       </span>
 
+
     </button>
 
+
   </div>
+
 
 </section>
