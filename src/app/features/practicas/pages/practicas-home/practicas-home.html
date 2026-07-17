@@ -1,72 +1,59 @@
-<section class="home">
+<section class="home-practicas">
 
-    <div class="header">
+  <div class="titulo">
 
-        <h1>🚜 Gestión de Prácticas</h1>
+    <h1>Gestión de Prácticas</h1>
 
-        <p>
-            Administra sesiones prácticas, consulta historiales
-            y realiza el seguimiento del progreso de los alumnos.
-        </p>
+    <p>
+      Seleccione el módulo que desea administrar.
+    </p>
+
+  </div>
+
+  <div class="cards">
+
+    <div
+      class="card"
+      routerLink="/practicas/nueva">
+
+      <div class="icono">🚜</div>
+
+      <h2>Nueva Sesión</h2>
+
+      <p>
+        Registrar prácticas y asistencia.
+      </p>
+
+    </div>
+
+    <div
+      class="card"
+      routerLink="/practicas/historial">
+
+      <div class="icono">📖</div>
+
+      <h2>Historial</h2>
+
+      <p>
+        Consultar sesiones registradas.
+      </p>
 
     </div>
 
-    <div class="cards">
+    <div
+      class="card"
+      routerLink="/practicas/expedientes">
 
-        <div class="card">
+      <div class="icono">👨‍🎓</div>
 
-            <div class="icon">
-                🚜
-            </div>
+      <h2>Expedientes</h2>
 
-            <h2>Nueva Sesión</h2>
-
-            <p>
-                Registrar una nueva sesión práctica para los alumnos.
-            </p>
-
-            <button (click)="nuevaSesion()">
-                Ingresar
-            </button>
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon">
-                📋
-            </div>
-
-            <h2>Historial</h2>
-
-            <p>
-                Consultar todas las sesiones registradas anteriormente.
-            </p>
-
-            <button (click)="historial()">
-                Ver historial
-            </button>
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon">
-                📁
-            </div>
-
-            <h2>Expedientes Técnicos</h2>
-
-            <p>
-                Consultar el avance de prácticas de cada alumno.
-            </p>
-
-            <button (click)="expedientes()">
-                Abrir expediente
-            </button>
-
-        </div>
+      <p>
+        Revisar avance del alumno.
+      </p>
 
     </div>
+
+  </div>
 
 </section>
