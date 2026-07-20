@@ -322,100 +322,51 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // GENERAR SESIÓN DE PRÁCTICA (PENDIENTE BACKEND)
   // ==========================================
 generarSesionPractica(): void {
-
   if (!this.puedeGenerarSesion) {
-
     return;
-
   }
 
-  const detalle:any[]=[];
+  const detalle: any[] = [];
 
-  this.gruposPorAnio.forEach(grupo=>{
-
-    grupo.meses.forEach(mes=>{
-
-      mes.alumnos.forEach(alumno=>{
-
-        alumno.maquinas.forEach(maquina=>{
-
-          if(this.estaSeleccionada(alumno,maquina)){
-
+  this.gruposPorAnio.forEach(grupo => {
+    grupo.meses.forEach(mes => {
+      mes.alumnos.forEach(alumno => {
+        alumno.maquinas.forEach(maquina => {
+          if (this.estaSeleccionada(alumno, maquina)) {
             detalle.push({
-
-              matriculaId:alumno.matricula_id,
-
-              matriculaMaquinaId:maquina.matricula_maquina_id,
-
-              maquinaId:maquina.maquina_id,
-
-              sesiones:this.sesionesSeleccionadas(
-
-                alumno,
-
-                maquina
-
-              )
-
+              matriculaId: alumno.matricula_id,
+              matriculaMaquinaId: maquina.matricula_maquina_id,
+              maquinaId: maquina.maquina_id,
+              sesiones: this.sesionesSeleccionadas(alumno, maquina)
             });
-
           }
-
         });
-
       });
-
     });
-
   });
 
-  const payload={
-
-    fecha:this.fechaSesion,
-
-    detalle
-
-  };
+  // Se declara una sola vez
   const payload = {
+    fecha: this.fechaSesion,
+    detalle
+  };
 
-  fecha: this.fechaSesion,
+  console.log(payload);
 
-  detalle
-
-};
-
-console.log(payload);
-
-this.practicasService.crearSesionGrupal(payload)
-
+  // Llamada limpia con su respectiva suscripción
   this.practicasService
-
     .crearSesionGrupal(payload)
-
     .subscribe({
-
-      next:(resp:any)=>{
-
+      next: (resp: any) => {
         alert("Sesión creada correctamente.");
-
         console.log(resp);
-
       },
-    
-
-      error:(err)=>{
-
+      error: (err) => {
         alert(
-
           err.error?.error ??
-
           "Error al crear la sesión."
-
         );
-
       }
-
     });
-
 }
 }
