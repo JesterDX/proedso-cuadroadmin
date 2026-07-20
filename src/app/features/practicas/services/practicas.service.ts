@@ -137,4 +137,17 @@ export class PracticasService {
   );
 
 }
+
+  obtenerSesion(id:number){
+  return this.http.get<any>(
+    `${this.api}/sesion-grupal/${id}`
+  );
+}
+
+guardarSesion(id:number,data:any){
+  return this.http.put<any>(
+    `${this.api}/sesion-grupal/${id}`,
+    data
+  );
+}
 }
