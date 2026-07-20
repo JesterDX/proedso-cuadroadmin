@@ -14,7 +14,7 @@ $color-verde-bg: #e8f5e9;
   display: inline-block;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
 
@@ -35,78 +35,165 @@ $color-verde-bg: #e8f5e9;
 }
 
 .mensaje-rojo {
-  margin: 4px 0 0;
-  font-size: 0.72rem;
+  margin: 8px 0 0;
+  font-size: 0.75rem;
   color: $color-rojo;
 }
 
 .mensaje-naranja {
-  margin: 4px 0 0;
-  font-size: 0.72rem;
+  margin: 8px 0 0;
+  font-size: 0.75rem;
   color: $color-naranja;
 }
 
-.fila-bloqueada {
-  background-color: rgba($color-rojo, 0.04);
-  opacity: 0.85;
+// ==========================================
+// TOOLBAR / FILTROS
+// ==========================================
+.loading-indicator {
+  align-self: center;
+  font-size: 0.85rem;
+  color: #888;
 }
 
 // ==========================================
 // AGRUPACIÓN POR AÑO
 // ==========================================
-.grupo-anio-header h3 {
-  margin: 0;
+.grupo-anio {
+  margin-top: 20px;
 }
 
-.tabla-card + .tabla-card {
-  margin-top: 16px;
+.grupo-anio-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 2px solid #333;
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+  }
 }
 
 // ==========================================
-// TABLA
+// AGRUPACIÓN POR MES
 // ==========================================
-.tabla-alumnos {
-  width: 100%;
-  border-collapse: collapse;
+.grupo-mes {
+  margin-bottom: 20px;
+}
 
-  th, td {
-    padding: 10px 12px;
-    text-align: left;
-    vertical-align: top;
-    border-bottom: 1px solid #eee;
+.grupo-mes-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+  margin-bottom: 10px;
+
+  h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+  }
+}
+
+.contador {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+// ==========================================
+// TARJETAS DE ALUMNO
+// ==========================================
+.alumnos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.alumno-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 14px;
+  background: #fff;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
-  th {
-    font-size: 0.8rem;
-    text-transform: uppercase;
+  &.bloqueada {
+    background-color: rgba($color-rojo, 0.03);
+    border-color: rgba($color-rojo, 0.25);
+  }
+}
+
+.alumno-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+
+  .alumno-info {
+    h5 {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .curso {
+      font-size: 0.75rem;
+      color: #888;
+    }
+  }
+}
+
+.maquinas-lista {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.maquina-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px dashed #eee;
+  font-size: 0.82rem;
+
+  .maquina-nombre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .maquina-progreso {
+    white-space: nowrap;
     color: #666;
+
+    .restantes {
+      display: block;
+      font-size: 0.68rem;
+      color: #999;
+    }
   }
-}
 
-.col-sesiones {
-  white-space: nowrap;
-
-  .restantes {
-    display: block;
-    font-size: 0.72rem;
-    color: #888;
-  }
-}
-
-.col-asignar {
-  .asignar-box {
+  .maquina-asignar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .input-sesiones {
-    width: 60px;
-    padding: 4px 6px;
+    width: 52px;
+    padding: 3px 5px;
   }
 
   .sin-sesiones {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #999;
     font-style: italic;
   }
@@ -134,7 +221,7 @@ $color-verde-bg: #e8f5e9;
   justify-content: space-between;
   gap: 16px;
   padding: 14px 20px;
-  margin-top: 16px;
+  margin-top: 20px;
   background: #fff;
   border-top: 1px solid #ddd;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
