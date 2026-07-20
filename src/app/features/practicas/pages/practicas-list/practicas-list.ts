@@ -196,9 +196,14 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   }
 
   private actualizarAniosDisponibles(alumnos: AlumnoDisponible[]): void {
-    const set = new Set(this.aniosDisponibles);
+  
+    const set = new Set<number>();
+  
     alumnos.forEach(a => set.add(a.anio));
-    this.aniosDisponibles = Array.from(set).sort((a, b) => b - a);
+  
+    this.aniosDisponibles = Array.from(set)
+      .sort((a,b)=>b-a);
+  
   }
 
   // ==========================================
