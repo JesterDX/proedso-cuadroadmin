@@ -376,6 +376,17 @@ generarSesionPractica(): void {
     detalle
 
   };
+  const payload = {
+
+  fecha: this.fechaSesion,
+
+  detalle
+
+};
+
+console.log(payload);
+
+this.practicasService.crearSesionGrupal(payload)
 
   this.practicasService
 
@@ -390,6 +401,7 @@ generarSesionPractica(): void {
         console.log(resp);
 
       },
+    
 
       error:(err)=>{
 
