@@ -1,22 +1,42 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, of } from 'rxjs';
+import {
+  debounceTime,
+  switchMap,
+  takeUntil,
+  catchError
+} from 'rxjs/operators';
 import {
   PracticasService,
   AlumnoDisponible,
-  MaquinaAlumno
+  MaquinaAlumno,
+  FiltrosAlumnosDisponibles
 } from '../../services/practicas.service';
 // 👆 ajusta la ruta al service según dónde quede en tu proyecto
 
+interface GrupoMes {
+  mes: number;
+  nombreMes: string;
+  alumnos: AlumnoDisponible[];
+}
+
 interface GrupoAnio {
   anio: number;
-  alumnos: AlumnoDisponible[];
+  totalAlumnos: number;
+  meses: GrupoMes[];
 }
 
 interface SeleccionMaquina {
   seleccionado: boolean;
   sesionesAAsignar: number;
 }
+
+const NOMBRES_MES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
 
 @Component({
   selector: 'app-nueva-sesion-practica',
@@ -28,7 +48,7 @@ interface SeleccionMaquina {
   templateUrl: './practicas-list.html',
   styleUrl: './practicas-list.scss'
 })
-export class PracticasListComponent implements OnInit {
+export class PracticasListComponent implements OnInit, OnDestroy {
 
   private practicasService = inject(PracticasService);
 
@@ -37,57 +57,72 @@ export class PracticasListComponent implements OnInit {
   // ==========================================
   fechaSesion = '';
   filtroMes: number | null = null;
-  filtroAnio: number | null = new Date().getFullYear();
+  filtroAnio: number | null = null;
   filtroCurso: number | null = null;
   filtroMaquina: number | null = null;
   filtroNombre = '';
 
-  meses = [
-    { id: 1, nombre: 'Enero' },
-    { id: 2, nombre: 'Febrero' },
-    { id: 3, nombre: 'Marzo' },
-    { id: 4, nombre: 'Abril' },
-    { id: 5, nombre: 'Mayo' },
-    { id: 6, nombre: 'Junio' },
-    { id: 7, nombre: 'Julio' },
-    { id: 8, nombre: 'Agosto' },
-    { id: 9, nombre: 'Septiembre' },
-    { id: 10, nombre: 'Octubre' },
-    { id: 11, nombre: 'Noviembre' },
-    { id: 12, nombre: 'Diciembre' }
-  ];
+  meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
 
   // TODO: cargar desde catálogo real cuando exista el endpoint
   cursos: any[] = [];
   maquinas: any[] = [];
 
   // ==========================================
-  // ESTADO DE CARGA
+  // ESTADO
   // ==========================================
   loadingLista = false;
   errorCarga = '';
-
-  // ==========================================
-  // DATOS
-  // ==========================================
   gruposPorAnio: GrupoAnio[] = [];
+
+  // se acumula con cada carga para no perder años ya vistos al filtrar
+  aniosDisponibles: number[] = [];
 
   // clave: `${matriculaId}_${maquinaId}`
   private selecciones = new Map<string, SeleccionMaquina>();
 
+  // ==========================================
+  // FILTRADO AUTOMÁTICO (debounced)
+  // ==========================================
+  private filtrosChange$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
+
   ngOnInit(): void {
-    this.cargarPracticas();
+
+    this.filtrosChange$
+      .pipe(
+        debounceTime(350),
+        switchMap(() => this.buscarAlumnos()),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
+
+    this.filtrosChange$.next();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  onFiltroChange(): void {
+    this.filtrosChange$.next();
+  }
+
+  onNombreChange(valor: string): void {
+    this.filtroNombre = valor;
+    this.filtrosChange$.next();
   }
 
   // ==========================================
   // CARGA DE ALUMNOS
   // ==========================================
-  cargarPracticas(): void {
+  private buscarAlumnos() {
 
     this.loadingLista = true;
     this.errorCarga = '';
 
-    const filtros = {
+    const filtros: FiltrosAlumnosDisponibles = {
       anio: this.filtroAnio,
       mes: this.filtroMes,
       cursoId: this.filtroCurso,
@@ -95,36 +130,66 @@ export class PracticasListComponent implements OnInit {
       nombre: this.filtroNombre
     };
 
-    this.practicasService.listarAlumnosDisponibles(filtros).subscribe({
-      next: (resp) => {
+    return this.practicasService.listarAlumnosDisponibles(filtros).pipe(
+      switchMap((resp: any) => {
         const alumnos: AlumnoDisponible[] = resp?.data ?? [];
-        this.agruparPorAnio(alumnos);
+        this.agruparPorAnioYMes(alumnos);
+        this.actualizarAniosDisponibles(alumnos);
         this.selecciones.clear();
         this.loadingLista = false;
-      },
-      error: (err) => {
+        return of(alumnos);
+      }),
+      catchError((err) => {
         console.error('❌ listarAlumnosDisponibles:', err);
         this.errorCarga = 'No se pudo cargar la lista de alumnos.';
         this.gruposPorAnio = [];
         this.loadingLista = false;
-      }
-    });
+        return of([]);
+      })
+    );
   }
 
-  private agruparPorAnio(alumnos: AlumnoDisponible[]): void {
+  private agruparPorAnioYMes(alumnos: AlumnoDisponible[]): void {
 
-    const mapa = new Map<number, AlumnoDisponible[]>();
+    const mapaAnios = new Map<number, Map<number, AlumnoDisponible[]>>();
 
     for (const alumno of alumnos) {
-      if (!mapa.has(alumno.anio)) {
-        mapa.set(alumno.anio, []);
+
+      if (!mapaAnios.has(alumno.anio)) {
+        mapaAnios.set(alumno.anio, new Map());
       }
-      mapa.get(alumno.anio)!.push(alumno);
+
+      const mapaMeses = mapaAnios.get(alumno.anio)!;
+
+      if (!mapaMeses.has(alumno.mes)) {
+        mapaMeses.set(alumno.mes, []);
+      }
+
+      mapaMeses.get(alumno.mes)!.push(alumno);
     }
 
-    this.gruposPorAnio = Array.from(mapa.entries())
+    this.gruposPorAnio = Array.from(mapaAnios.entries())
       .sort((a, b) => b[0] - a[0])
-      .map(([anio, alumnosDelAnio]) => ({ anio, alumnos: alumnosDelAnio }));
+      .map(([anio, mapaMeses]) => {
+
+        const meses: GrupoMes[] = Array.from(mapaMeses.entries())
+          .sort((a, b) => b[0] - a[0])
+          .map(([mes, alumnosDelMes]) => ({
+            mes,
+            nombreMes: NOMBRES_MES[mes - 1] ?? `Mes ${mes}`,
+            alumnos: alumnosDelMes.sort((a, b) => a.alumno.localeCompare(b.alumno))
+          }));
+
+        const totalAlumnos = meses.reduce((acc, m) => acc + m.alumnos.length, 0);
+
+        return { anio, totalAlumnos, meses };
+      });
+  }
+
+  private actualizarAniosDisponibles(alumnos: AlumnoDisponible[]): void {
+    const set = new Set(this.aniosDisponibles);
+    alumnos.forEach(a => set.add(a.anio));
+    this.aniosDisponibles = Array.from(set).sort((a, b) => b - a);
   }
 
   // ==========================================
@@ -210,12 +275,14 @@ export class PracticasListComponent implements OnInit {
   get totalAlumnosSeleccionados(): number {
     const matriculas = new Set<number>();
     this.gruposPorAnio.forEach(grupo =>
-      grupo.alumnos.forEach(alumno =>
-        alumno.maquinas.forEach(maquina => {
-          if (this.estaSeleccionada(alumno, maquina)) {
-            matriculas.add(alumno.matricula_id);
-          }
-        })
+      grupo.meses.forEach(gm =>
+        gm.alumnos.forEach(alumno =>
+          alumno.maquinas.forEach(maquina => {
+            if (this.estaSeleccionada(alumno, maquina)) {
+              matriculas.add(alumno.matricula_id);
+            }
+          })
+        )
       )
     );
     return matriculas.size;
@@ -233,6 +300,10 @@ export class PracticasListComponent implements OnInit {
     return !!this.fechaSesion && this.totalAlumnosSeleccionados > 0;
   }
 
+  get hayResultados(): boolean {
+    return this.gruposPorAnio.length > 0;
+  }
+
   // ==========================================
   // GENERAR SESIÓN DE PRÁCTICA (PENDIENTE BACKEND)
   // ==========================================
@@ -245,16 +316,18 @@ export class PracticasListComponent implements OnInit {
     const detalle: any[] = [];
 
     this.gruposPorAnio.forEach(grupo => {
-      grupo.alumnos.forEach(alumno => {
-        alumno.maquinas.forEach(maquina => {
-          if (this.estaSeleccionada(alumno, maquina)) {
-            detalle.push({
-              matriculaId: alumno.matricula_id,
-              matriculaMaquinaId: maquina.matricula_maquina_id,
-              maquinaId: maquina.maquina_id,
-              sesiones: this.sesionesSeleccionadas(alumno, maquina)
-            });
-          }
+      grupo.meses.forEach(gm => {
+        gm.alumnos.forEach(alumno => {
+          alumno.maquinas.forEach(maquina => {
+            if (this.estaSeleccionada(alumno, maquina)) {
+              detalle.push({
+                matriculaId: alumno.matricula_id,
+                matriculaMaquinaId: maquina.matricula_maquina_id,
+                maquinaId: maquina.maquina_id,
+                sesiones: this.sesionesSeleccionadas(alumno, maquina)
+              });
+            }
+          });
         });
       });
     });
