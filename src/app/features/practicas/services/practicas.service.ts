@@ -138,16 +138,20 @@ export class PracticasService {
 
 }
 
-  obtenerSesion(id:number){
+obtenerSesion(id:number){
+
   return this.http.get<any>(
-    `${this.api}/sesion-grupal/${id}`
+    `${this.apiUrl}/sesion-grupal/${id}`
   );
+
 }
 
 guardarSesion(id:number,data:any){
+
   return this.http.put<any>(
-    `${this.api}/sesion-grupal/${id}`,
+    `${this.apiUrl}/sesion-grupal/${id}`,
     data
   );
+
 }
 }
