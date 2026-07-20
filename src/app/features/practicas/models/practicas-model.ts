@@ -67,3 +67,21 @@ interface AsignacionPractica {
     sesiones?: SesionPractica[];
 
 }
+
+export interface DetalleSesion{
+
+    detalle_id:number;
+
+    alumno:string;
+
+    maquina:string;
+
+    sesiones_asignadas:number;
+
+    asistencia:string;
+
+    observaciones:string;
+
+    evidencia_url:string|null;
+
+}
