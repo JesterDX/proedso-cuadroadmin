@@ -10,16 +10,46 @@ import { FormsModule } from '@angular/forms';
     FormsModule
   ],
   templateUrl: './practicas-list.html',
-  styleUrl: './practicas-list.scss'
+  styleUrl: ''
 })
-export class NuevaSesionComponent {
+export class PracticasListComponent {
 
-  // TODO:
-  // aquí irá toda la lógica que ya tienes actualmente:
-  // - filtros
-  // - cargarPracticas()
-  // - seleccionarAlumno()
-  // - crearAsignacion()
-  // etc.
+  
+    fechaSesion = '';
+  
+    filtroMes: number | null = null;
+  
+    filtroAnio = new Date().getFullYear();
+  
+    filtroCurso: number | null = null;
+  
+    filtroMaquina: number | null = null;
+  
+    filtroNombre = '';
+  
+    loadingLista = false;
+  
+    meses = [
+      { id:1,nombre:'Enero'},
+      { id:2,nombre:'Febrero'},
+      { id:3,nombre:'Marzo'},
+      { id:4,nombre:'Abril'},
+      { id:5,nombre:'Mayo'},
+      { id:6,nombre:'Junio'},
+      { id:7,nombre:'Julio'},
+      { id:8,nombre:'Agosto'},
+      { id:9,nombre:'Septiembre'},
+      { id:10,nombre:'Octubre'},
+      { id:11,nombre:'Noviembre'},
+      { id:12,nombre:'Diciembre'}
+    ];
+  
+    cursos:any[] = [];
+  
+    maquinas:any[] = [];
+  
+    cargarPracticas(){}
+  
+  }
 
 }
