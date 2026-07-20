@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, of } from 'rxjs';
@@ -61,7 +61,7 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   filtroCurso: number | null = null;
   filtroMaquina: number | null = null;
   filtroNombre = '';
-
+  private cdr = inject(ChangeDetectorRef);
   meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
 
   // TODO: cargar desde catálogo real cuando exista el endpoint
@@ -133,17 +133,26 @@ export class PracticasListComponent implements OnInit, OnDestroy {
     return this.practicasService.listarAlumnosDisponibles(filtros).pipe(
       switchMap((resp: any) => {
         const alumnos: AlumnoDisponible[] = resp?.data ?? [];
+      
         this.agruparPorAnioYMes(alumnos);
         this.actualizarAniosDisponibles(alumnos);
         this.selecciones.clear();
+      
         this.loadingLista = false;
+      
+        this.cdr.detectChanges();
+      
         return of(alumnos);
       }),
       catchError((err) => {
         console.error('❌ listarAlumnosDisponibles:', err);
+      
         this.errorCarga = 'No se pudo cargar la lista de alumnos.';
         this.gruposPorAnio = [];
         this.loadingLista = false;
+      
+        this.cdr.detectChanges();
+      
         return of([]);
       })
     );
