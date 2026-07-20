@@ -19,44 +19,122 @@
 
     <div class="filter-box">
       <label>Mes</label>
-      <select [ngModel]="filtroMes" (ngModelChange)="filtroMes = $event; onFiltroChange()">
-        <option [ngValue]="null">Todos los meses</option>
-        <option *ngFor="let mes of meses" [ngValue]="mes.id">{{ mes.nombre }}</option>
-      </select>
+<select 
+ [(ngModel)]="filtroMes"
+ (change)="onFiltroChange()">
+
+<option [ngValue]="null">
+ Todos los meses
+</option>
+
+<option 
+ *ngFor="let mes of meses"
+ [ngValue]="mes.id">
+
+{{mes.nombre}}
+
+</option>
+
+</select>
     </div>
 
     <div class="filter-box">
-      <label>Año</label>
-      <select [ngModel]="filtroAnio" (ngModelChange)="filtroAnio = $event; onFiltroChange()">
-        <option [ngValue]="null">Todos los años</option>
-        <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">{{ anio }}</option>
-      </select>
-    </div>
+  <label>Mes</label>
+  <select 
+    [(ngModel)]="filtroMes"
+    (change)="onFiltroChange()">
 
-    <div class="filter-box">
-      <label>Curso</label>
-      <select [ngModel]="filtroCurso" (ngModelChange)="filtroCurso = $event; onFiltroChange()">
-        <option [ngValue]="null">Todos</option>
-        <option *ngFor="let curso of cursos" [ngValue]="curso.id">{{ curso.nombre }}</option>
-      </select>
-    </div>
+    <option [ngValue]="null">
+      Todos los meses
+    </option>
 
-    <div class="filter-box">
-      <label>Máquina</label>
-      <select [ngModel]="filtroMaquina" (ngModelChange)="filtroMaquina = $event; onFiltroChange()">
-        <option [ngValue]="null">Todas</option>
-        <option *ngFor="let maquina of maquinas" [ngValue]="maquina.id">{{ maquina.nombre }}</option>
-      </select>
-    </div>
+    <option 
+      *ngFor="let mes of meses" 
+      [ngValue]="mes.id">
 
-    <div class="filter-box">
-      <label>Alumno</label>
-      <input 
-        type="text" 
-        placeholder="Buscar alumno..." 
-        [ngModel]="filtroNombre" 
-        (ngModelChange)="onNombreChange($event)">
-    </div>
+      {{ mes.nombre }}
+
+    </option>
+
+  </select>
+</div>
+
+
+<div class="filter-box">
+  <label>Año</label>
+  <select 
+    [(ngModel)]="filtroAnio"
+    (change)="onFiltroChange()">
+
+    <option [ngValue]="null">
+      Todos los años
+    </option>
+
+    <option 
+      *ngFor="let anio of aniosDisponibles" 
+      [ngValue]="anio">
+
+      {{ anio }}
+
+    </option>
+
+  </select>
+</div>
+
+
+<div class="filter-box">
+  <label>Curso</label>
+  <select 
+    [(ngModel)]="filtroCurso"
+    (change)="onFiltroChange()">
+
+    <option [ngValue]="null">
+      Todos
+    </option>
+
+    <option 
+      *ngFor="let curso of cursos" 
+      [ngValue]="curso.id">
+
+      {{ curso.nombre }}
+
+    </option>
+
+  </select>
+</div>
+
+
+<div class="filter-box">
+  <label>Máquina</label>
+  <select 
+    [(ngModel)]="filtroMaquina"
+    (change)="onFiltroChange()">
+
+    <option [ngValue]="null">
+      Todas
+    </option>
+
+    <option 
+      *ngFor="let maquina of maquinas" 
+      [ngValue]="maquina.id">
+
+      {{ maquina.nombre }}
+
+    </option>
+
+  </select>
+</div>
+
+
+<div class="filter-box">
+  <label>Alumno</label>
+
+  <input 
+    type="text"
+    placeholder="Buscar alumno..."
+    [(ngModel)]="filtroNombre"
+    (ngModelChange)="onNombreChange($event)">
+</div>
 
     <span class="loading-indicator" *ngIf="loadingLista">⏳ Buscando...</span>
   </div>
