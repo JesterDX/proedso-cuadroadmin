@@ -1,9 +1,7 @@
 <header class="main-header">
   <div class="header-info">
     <h1>🚜 Nueva Sesión de Práctica</h1>
-    <p>
-      Filtre a los alumnos, indique la fecha y elija cuántas sesiones asignar por máquina.
-    </p>
+    <p>Filtre a los alumnos, indique la fecha y elija cuántas sesiones asignar por máquina.</p>
   </div>
 </header>
 
@@ -14,7 +12,6 @@
   </div>
 
   <div class="toolbar">
-
     <div class="filter-box">
       <label>Fecha de práctica</label>
       <input type="date" [(ngModel)]="fechaSesion">
@@ -22,9 +19,7 @@
 
     <div class="filter-box">
       <label>Mes</label>
-      <select
-        [ngModel]="filtroMes"
-        (ngModelChange)="filtroMes = $event; onFiltroChange()">
+      <select [ngModel]="filtroMes" (ngModelChange)="filtroMes = $event; onFiltroChange()">
         <option [ngValue]="null">Todos los meses</option>
         <option *ngFor="let mes of meses" [ngValue]="mes.id">{{ mes.nombre }}</option>
       </select>
@@ -32,9 +27,7 @@
 
     <div class="filter-box">
       <label>Año</label>
-      <select
-        [ngModel]="filtroAnio"
-        (ngModelChange)="filtroAnio = $event; onFiltroChange()">
+      <select [ngModel]="filtroAnio" (ngModelChange)="filtroAnio = $event; onFiltroChange()">
         <option [ngValue]="null">Todos los años</option>
         <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">{{ anio }}</option>
       </select>
@@ -42,9 +35,7 @@
 
     <div class="filter-box">
       <label>Curso</label>
-      <select
-        [ngModel]="filtroCurso"
-        (ngModelChange)="filtroCurso = $event; onFiltroChange()">
+      <select [ngModel]="filtroCurso" (ngModelChange)="filtroCurso = $event; onFiltroChange()">
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let curso of cursos" [ngValue]="curso.id">{{ curso.nombre }}</option>
       </select>
@@ -52,9 +43,7 @@
 
     <div class="filter-box">
       <label>Máquina</label>
-      <select
-        [ngModel]="filtroMaquina"
-        (ngModelChange)="filtroMaquina = $event; onFiltroChange()">
+      <select [ngModel]="filtroMaquina" (ngModelChange)="filtroMaquina = $event; onFiltroChange()">
         <option [ngValue]="null">Todas</option>
         <option *ngFor="let maquina of maquinas" [ngValue]="maquina.id">{{ maquina.nombre }}</option>
       </select>
@@ -62,99 +51,111 @@
 
     <div class="filter-box">
       <label>Alumno</label>
-      <input
-        type="text"
-        placeholder="Buscar alumno..."
-        [ngModel]="filtroNombre"
+      <input 
+        type="text" 
+        placeholder="Buscar alumno..." 
+        [ngModel]="filtroNombre" 
         (ngModelChange)="onNombreChange($event)">
     </div>
 
     <span class="loading-indicator" *ngIf="loadingLista">⏳ Buscando...</span>
-
   </div>
 </section>
 
 <p class="error-carga" *ngIf="errorCarga">⚠️ {{ errorCarga }}</p>
 
 <section class="grupo-anio" *ngFor="let grupo of gruposPorAnio">
-
   <div class="grupo-anio-header">
-    <h3>📁 {{ grupo.anio }}</h3>
-    <span class="contador">{{ grupo.totalAlumnos }} alumno(s)</span>
+    <h3>📁 Año {{ grupo.anio }}</h3>
+    <span class="contador">{{ grupo.totalAlumnos }} alumno(s) en total</span>
   </div>
 
   <div class="grupo-mes" *ngFor="let gm of grupo.meses">
-
     <div class="grupo-mes-header">
       <h4>🗓️ {{ gm.nombreMes }}</h4>
       <span class="contador">{{ gm.alumnos.length }} alumno(s)</span>
     </div>
 
-    <div class="alumnos-grid">
-      <article
-        class="alumno-card"
-        *ngFor="let alumno of gm.alumnos"
-        [class.bloqueada]="!puedeSeleccionar(alumno)">
+    <!-- ========================================================= -->
+    <!-- TABLA MINIMALISTA DE ALUMNOS -->
+    <!-- ========================================================= -->
+    <div class="table-container">
+      <table class="tabla-alumnos">
+        <thead>
+          <tr>
+            <th class="col-alumno">Alumno / Curso</th>
+            <th class="col-estado">Estado</th>
+            <th class="col-maquinas">Máquinas y Asignación de Sesiones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let alumno of gm.alumnos" 
+            [class.row-bloqueada]="!puedeSeleccionar(alumno)">
+            
+            <!-- Columna: Alumno -->
+            <td class="col-alumno">
+              <div class="nombre-principal">{{ alumno.alumno }}</div>
+              <div class="curso-sub">{{ alumno.curso }}</div>
+              
+              <div class="alerta alerta-roja" *ngIf="alumno.estado_financiero === 'MOROSO'">
+                🚫 {{ mensajeBloqueo(alumno) }}
+              </div>
+              <div class="alerta alerta-naranja" *ngIf="alumno.estado_financiero === 'PENDIENTE'">
+                ⚠️ {{ mensajeAdvertencia(alumno) }}
+              </div>
+            </td>
 
-        <div class="alumno-card-header">
-          <div class="alumno-info">
-            <h5>{{ alumno.alumno }}</h5>
-            <span class="curso">{{ alumno.curso }}</span>
-          </div>
-          <span class="badge-estado" [ngClass]="claseEstado(alumno)">
-            {{ etiquetaEstado(alumno) }}
-          </span>
-        </div>
+            <!-- Columna: Estado -->
+            <td class="col-estado">
+              <span class="badge" [ngClass]="claseEstado(alumno)">
+                {{ etiquetaEstado(alumno) }}
+              </span>
+            </td>
 
-        <p class="mensaje-rojo" *ngIf="alumno.estado_financiero === 'MOROSO'">
-          🚫 {{ mensajeBloqueo(alumno) }}
-        </p>
+            <!-- Columna: Máquinas (Lista limpia en celda) -->
+            <td class="col-maquinas">
+              <div class="maquina-row" *ngFor="let maquina of alumno.maquinas">
+                <div class="maquina-info">
+                  <span class="maquina-nombre">🔧 {{ maquina.maquina }}</span>
+                  <span class="maquina-progreso">
+                    Progreso: <strong>{{ maquina.sesiones_realizadas }}/{{ maquina.sesiones_totales }}</strong> 
+                    <small>({{ maquina.sesiones_restantes }} rest.)</small>
+                  </span>
+                </div>
 
-        <p class="mensaje-naranja" *ngIf="alumno.estado_financiero === 'PENDIENTE'">
-          ⚠️ {{ mensajeAdvertencia(alumno) }}
-        </p>
+                <div class="maquina-controles" *ngIf="maquina.sesiones_restantes > 0; else sinSesiones">
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox"
+                      [checked]="estaSeleccionada(alumno, maquina)"
+                      [disabled]="!puedeSeleccionar(alumno)"
+                      (change)="toggleMaquina(alumno, maquina, $any($event.target).checked)">
+                    <span>Asignar</span>
+                  </label>
 
-        <div class="maquinas-lista">
-          <div class="maquina-row" *ngFor="let maquina of alumno.maquinas">
+                  <input 
+                    type="number" 
+                    class="input-sesiones"
+                    min="1" 
+                    [max]="maquina.sesiones_restantes"
+                    [value]="sesionesSeleccionadas(alumno, maquina)"
+                    [disabled]="!puedeSeleccionar(alumno) || !estaSeleccionada(alumno, maquina)"
+                    (change)="actualizarSesiones(alumno, maquina, $any($event.target).value)">
+                </div>
 
-            <div class="maquina-nombre">
-              🔧 {{ maquina.maquina }}
-            </div>
+                <ng-template #sinSesiones>
+                  <span class="badge-completo">Completo</span>
+                </ng-template>
+              </div>
+            </td>
 
-            <div class="maquina-progreso">
-              {{ maquina.sesiones_realizadas }}/{{ maquina.sesiones_totales }}
-              <span class="restantes">({{ maquina.sesiones_restantes }} rest.)</span>
-            </div>
-
-            <div class="maquina-asignar" *ngIf="maquina.sesiones_restantes > 0; else sinSesiones">
-              <input
-                type="checkbox"
-                [checked]="estaSeleccionada(alumno, maquina)"
-                [disabled]="!puedeSeleccionar(alumno)"
-                (change)="toggleMaquina(alumno, maquina, $any($event.target).checked)">
-
-              <input
-                type="number"
-                class="input-sesiones"
-                min="1"
-                [max]="maquina.sesiones_restantes"
-                [value]="sesionesSeleccionadas(alumno, maquina)"
-                [disabled]="!puedeSeleccionar(alumno) || !estaSeleccionada(alumno, maquina)"
-                (change)="actualizarSesiones(alumno, maquina, $any($event.target).value)">
-            </div>
-
-            <ng-template #sinSesiones>
-              <span class="sin-sesiones">Completo</span>
-            </ng-template>
-
-          </div>
-        </div>
-
-      </article>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
-
 </section>
 
 <p class="sin-resultados" *ngIf="!loadingLista && !errorCarga && !hayResultados">
@@ -167,9 +168,9 @@
     <span><strong>{{ totalSesionesSeleccionadas }}</strong> sesión(es) a asignar</span>
   </div>
 
-  <button
-    class="btn-primary"
-    [disabled]="!puedeGenerarSesion"
+  <button 
+    class="btn-primary" 
+    [disabled]="!puedeGenerarSesion" 
     (click)="generarSesionPractica()">
     🖨️ Generar sesión de práctica
   </button>
