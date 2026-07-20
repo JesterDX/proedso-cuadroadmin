@@ -302,3 +302,4 @@ export class PracticasListComponent implements OnInit {
     this.cd.detectChanges();
   }
 }
+*/
