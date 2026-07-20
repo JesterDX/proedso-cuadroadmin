@@ -9,8 +9,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     FormsModule
   ],
-  templateUrl: './nueva-sesion.html',
-  styleUrl: './nueva-sesion.scss'
+  templateUrl: './practicas-list.html',
+  styleUrl: './practicas-list.scss'
 })
 export class NuevaSesionComponent {
 
