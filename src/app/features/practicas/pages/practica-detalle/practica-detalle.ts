@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { PracticasService } from '../../../services/practicas.service';
-
+import { PracticasService } from '../../services/practicas.service';
 @Component({
   selector: 'app-practica-detalle',
   standalone: true,
