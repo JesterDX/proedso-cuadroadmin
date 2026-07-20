@@ -1,0 +1,149 @@
+// ==========================================
+// SEMÁFORO FINANCIERO
+// ==========================================
+$color-rojo: #e53935;
+$color-rojo-bg: #fdecea;
+
+$color-naranja: #fb8c00;
+$color-naranja-bg: #fff3e0;
+
+$color-verde: #43a047;
+$color-verde-bg: #e8f5e9;
+
+.badge-estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.estado-rojo {
+    color: $color-rojo;
+    background: $color-rojo-bg;
+  }
+
+  &.estado-naranja {
+    color: $color-naranja;
+    background: $color-naranja-bg;
+  }
+
+  &.estado-verde {
+    color: $color-verde;
+    background: $color-verde-bg;
+  }
+}
+
+.mensaje-rojo {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  color: $color-rojo;
+}
+
+.mensaje-naranja {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  color: $color-naranja;
+}
+
+.fila-bloqueada {
+  background-color: rgba($color-rojo, 0.04);
+  opacity: 0.85;
+}
+
+// ==========================================
+// AGRUPACIÓN POR AÑO
+// ==========================================
+.grupo-anio-header h3 {
+  margin: 0;
+}
+
+.tabla-card + .tabla-card {
+  margin-top: 16px;
+}
+
+// ==========================================
+// TABLA
+// ==========================================
+.tabla-alumnos {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #eee;
+  }
+
+  th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #666;
+  }
+}
+
+.col-sesiones {
+  white-space: nowrap;
+
+  .restantes {
+    display: block;
+    font-size: 0.72rem;
+    color: #888;
+  }
+}
+
+.col-asignar {
+  .asignar-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .input-sesiones {
+    width: 60px;
+    padding: 4px 6px;
+  }
+
+  .sin-sesiones {
+    font-size: 0.75rem;
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.error-carga {
+  color: $color-rojo;
+  font-weight: 600;
+}
+
+.sin-resultados {
+  text-align: center;
+  color: #888;
+  padding: 24px 0;
+}
+
+// ==========================================
+// RESUMEN / ACCIÓN FINAL
+// ==========================================
+.resumen-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  margin-top: 16px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px 8px 0 0;
+
+  .resumen-info {
+    display: flex;
+    gap: 24px;
+    font-size: 0.9rem;
+    color: #444;
+  }
+}
