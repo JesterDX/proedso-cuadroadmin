@@ -49,6 +49,25 @@ export class PracticasListComponent {
     maquinas:any[] = [];
   
     cargarPracticas(){}
+    alumnos = [
+    {
+      seleccionado: false,
+      nombre: 'Juan Pérez',
+      curso: 'Excavadora',
+      maquina: 'CAT 320',
+      horas: 12,
+      estado: 'Pendiente'
+    },
+    {
+      seleccionado: false,
+      nombre: 'María López',
+      curso: 'Retroexcavadora',
+      maquina: 'John Deere 310',
+      horas: 8,
+      estado: 'Pendiente'
+    }
+  ];
+    
   
   }
 
