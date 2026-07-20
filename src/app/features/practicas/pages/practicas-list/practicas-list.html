@@ -191,5 +191,71 @@
 
   </div>
 
+  <section class="card tabla-card">
+
+  <div class="card-header">
+
+    <h3>👨‍🎓 Alumnos encontrados</h3>
+
+    <p>
+      Seleccione los alumnos que asistirán a la práctica.
+    </p>
+
+  </div>
+
+  <div class="table-responsive">
+
+    <table class="tabla-alumnos">
+
+      <thead>
+
+        <tr>
+
+          <th></th>
+
+          <th>Alumno</th>
+
+          <th>Curso</th>
+
+          <th>Máquina</th>
+
+          <th>Horas</th>
+
+          <th>Estado</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let alumno of alumnos">
+
+          <td>
+
+            <input
+              type="checkbox"
+              [(ngModel)]="alumno.seleccionado">
+
+          </td>
+
+          <td>{{ alumno.nombre }}</td>
+
+          <td>{{ alumno.curso }}</td>
+
+          <td>{{ alumno.maquina }}</td>
+
+          <td>{{ alumno.horas }}</td>
+
+          <td>{{ alumno.estado }}</td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
 
 </section>
+
