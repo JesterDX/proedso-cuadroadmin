@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { PracticasService } from '../../services/practicas.service';
+
 @Component({
   selector: 'app-practica-detalle',
   standalone: true,
@@ -18,10 +19,12 @@ export class PracticaDetalle implements OnInit {
 
   private route = inject(ActivatedRoute);
   private practicasService = inject(PracticasService);
+  private cd = inject(ChangeDetectorRef);
 
   cargando = false;
 
   sesion: any = null;
+
 
   ngOnInit(): void {
 
@@ -33,6 +36,7 @@ export class PracticaDetalle implements OnInit {
 
   }
 
+
   cargarSesion(id:number){
 
     this.cargando = true;
@@ -40,7 +44,7 @@ export class PracticaDetalle implements OnInit {
     this.practicasService.obtenerSesion(id)
       .subscribe({
 
-        next: (resp)=>{
+        next:(resp)=>{
 
           this.sesion = resp.data;
 
@@ -48,13 +52,20 @@ export class PracticaDetalle implements OnInit {
 
           console.log(this.sesion);
 
+
+          // 🔥 Fuerza actualización de la vista
+          this.cd.detectChanges();
+
         },
+
 
         error:(err)=>{
 
           console.error(err);
 
           this.cargando = false;
+
+          this.cd.detectChanges();
 
         }
 
