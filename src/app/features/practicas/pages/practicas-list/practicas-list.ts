@@ -321,42 +321,89 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // ==========================================
   // GENERAR SESIÓN DE PRÁCTICA (PENDIENTE BACKEND)
   // ==========================================
-  generarSesionPractica(): void {
+generarSesionPractica(): void {
 
-    if (!this.puedeGenerarSesion) {
-      return;
-    }
+  if (!this.puedeGenerarSesion) {
 
-    const detalle: any[] = [];
+    return;
 
-    this.gruposPorAnio.forEach(grupo => {
-      grupo.meses.forEach(gm => {
-        gm.alumnos.forEach(alumno => {
-          alumno.maquinas.forEach(maquina => {
-            if (this.estaSeleccionada(alumno, maquina)) {
-              detalle.push({
-                matriculaId: alumno.matricula_id,
-                matriculaMaquinaId: maquina.matricula_maquina_id,
-                maquinaId: maquina.maquina_id,
-                sesiones: this.sesionesSeleccionadas(alumno, maquina)
-              });
-            }
-          });
+  }
+
+  const detalle:any[]=[];
+
+  this.gruposPorAnio.forEach(grupo=>{
+
+    grupo.meses.forEach(mes=>{
+
+      mes.alumnos.forEach(alumno=>{
+
+        alumno.maquinas.forEach(maquina=>{
+
+          if(this.estaSeleccionada(alumno,maquina)){
+
+            detalle.push({
+
+              matriculaId:alumno.matricula_id,
+
+              matriculaMaquinaId:maquina.matricula_maquina_id,
+
+              maquinaId:maquina.maquina_id,
+
+              sesiones:this.sesionesSeleccionadas(
+
+                alumno,
+
+                maquina
+
+              )
+
+            });
+
+          }
+
         });
+
       });
+
     });
 
-    const payload = {
-      fecha: this.fechaSesion,
-      detalle
-    };
+  });
 
-    // TODO: conectar a POST /practicas/sesiones-grupales cuando exista.
-    // Ese endpoint debe validar:
-    //  - que no haya otra sesión grupal PENDIENTE/EN_CURSO abierta
-    //  - que ningún alumno tenga estado_financiero = MOROSO
-    //  - que "sesiones" no exceda "sesiones_restantes" por máquina
-    // y devolver el id de la sesión grupal + la URL del PDF generado.
-    console.log('Payload sesión de práctica (pendiente conectar backend):', payload);
-  }
+  const payload={
+
+    fecha:this.fechaSesion,
+
+    detalle
+
+  };
+
+  this.practicasService
+
+    .crearSesionGrupal(payload)
+
+    .subscribe({
+
+      next:(resp:any)=>{
+
+        alert("Sesión creada correctamente.");
+
+        console.log(resp);
+
+      },
+
+      error:(err)=>{
+
+        alert(
+
+          err.error?.error ??
+
+          "Error al crear la sesión."
+
+        );
+
+      }
+
+    });
+
+}
 }
