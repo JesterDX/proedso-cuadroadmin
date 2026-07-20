@@ -126,4 +126,15 @@ export class PracticasService {
       payload
     );
   }
+  crearSesionGrupal(payload:any){
+
+  return this.http.post(
+
+    `${this.apiUrl}/sesiones-grupales`,
+
+    payload
+
+  );
+
+}
 }
