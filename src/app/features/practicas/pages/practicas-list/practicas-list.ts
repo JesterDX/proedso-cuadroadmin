@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule
   ],
   templateUrl: './practicas-list.html',
-  styleUrl: ''
+  /*styleUrl: ''*/
 })
 export class PracticasListComponent {
 
@@ -52,4 +52,3 @@ export class PracticasListComponent {
   
   }
 
-}
