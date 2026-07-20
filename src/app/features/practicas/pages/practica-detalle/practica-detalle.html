@@ -1,0 +1,52 @@
+<div *ngIf="cargando">
+
+    Cargando...
+
+</div>
+
+<div *ngIf="!cargando && sesion">
+
+    <h2>
+
+        Sesión #{{sesion.id}}
+
+    </h2>
+
+    <p>
+
+        Fecha:
+
+        {{sesion.fecha}}
+
+    </p>
+
+    <p>
+
+        Estado:
+
+        {{sesion.estado}}
+
+    </p>
+
+    <hr>
+
+    <div
+        *ngFor="let item of sesion.detalle">
+
+        <h4>
+
+            {{item.alumno}}
+
+        </h4>
+
+        <p>
+
+            {{item.maquina}}
+
+        </p>
+
+        <hr>
+
+    </div>
+
+</div>
