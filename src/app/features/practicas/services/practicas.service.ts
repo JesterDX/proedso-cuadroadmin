@@ -130,7 +130,7 @@ export class PracticasService {
 
   return this.http.post(
 
-    `${this.apiUrl}/sesiones-grupales`,
+    `${this.apiUrl}/sesion-grupal`,
 
     payload
 
