@@ -38,28 +38,6 @@
 </select>
     </div>
 
-    <div class="filter-box">
-  <label>Mes</label>
-  <select 
-    [(ngModel)]="filtroMes"
-    (change)="onFiltroChange()">
-
-    <option [ngValue]="null">
-      Todos los meses
-    </option>
-
-    <option 
-      *ngFor="let mes of meses" 
-      [ngValue]="mes.id">
-
-      {{ mes.nombre }}
-
-    </option>
-
-  </select>
-</div>
-
-
 <div class="filter-box">
   <label>Año</label>
   <select 
