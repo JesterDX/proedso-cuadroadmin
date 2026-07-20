@@ -1,348 +1,343 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Subject, of } from 'rxjs';
-import {
-  debounceTime,
-  switchMap,
-  takeUntil,
-  catchError
-} from 'rxjs/operators';
-import {
-  PracticasService,
-  AlumnoDisponible,
-  MaquinaAlumno,
-  FiltrosAlumnosDisponibles
-} from '../../services/practicas.service';
-// 👆 ajusta la ruta al service según dónde quede en tu proyecto
+// ==========================================================================
+// SCSS: LISTA DE PRÁCTICAS CON TABLA MINIMALISTA
+// ==========================================================================
 
-interface GrupoMes {
-  mes: number;
-  nombreMes: string;
-  alumnos: AlumnoDisponible[];
+$c-bg: #f8fafc;
+$c-surface: #ffffff;
+$c-text-main: #0f172a;
+$c-text-muted: #64748b;
+$c-border: #e2e8f0;
+$c-primary: #0f172a;
+
+$radius-card: 8px;
+$radius-sm: 4px;
+
+:host {
+  display: block;
+  padding: 24px;
+  background-color: $c-bg;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: $c-text-main;
+  padding-bottom: 90px; // Espacio para la barra flotante inferior
 }
 
-interface GrupoAnio {
-  anio: number;
-  totalAlumnos: number;
-  meses: GrupoMes[];
+// --- Header y Filtros ---
+.main-header {
+  margin-bottom: 20px;
+  h1 { margin: 0 0 4px 0; font-size: 1.5rem; font-weight: 700; }
+  p { margin: 0; color: $c-text-muted; font-size: 0.875rem; }
 }
 
-interface SeleccionMaquina {
-  seleccionado: boolean;
-  sesionesAAsignar: number;
+.card {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-card;
+  padding: 20px;
+  margin-bottom: 24px;
 }
 
-const NOMBRES_MES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-];
+.filtros-card {
+  .card-header {
+    margin-bottom: 16px;
+    h3 { margin: 0 0 4px 0; font-size: 1rem; font-weight: 600; }
+    p { margin: 0; font-size: 0.8125rem; color: $c-text-muted; }
+  }
+}
 
-@Component({
-  selector: 'app-nueva-sesion-practica',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: './practicas-list.html',
-  styleUrl: './practicas-list.scss'
-})
-export class PracticasListComponent implements OnInit, OnDestroy {
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
 
-  private practicasService = inject(PracticasService);
+  .filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 150px;
 
-  // ==========================================
-  // FILTROS
-  // ==========================================
-  fechaSesion = '';
-  filtroMes: number | null = null;
-  filtroAnio: number | null = null;
-  filtroCurso: number | null = null;
-  filtroMaquina: number | null = null;
-  filtroNombre = '';
-
-  meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
-
-  // TODO: cargar desde catálogo real cuando exista el endpoint
-  cursos: any[] = [];
-  maquinas: any[] = [];
-
-  // ==========================================
-  // ESTADO
-  // ==========================================
-  loadingLista = false;
-  errorCarga = '';
-  gruposPorAnio: GrupoAnio[] = [];
-
-  // se acumula con cada carga para no perder años ya vistos al filtrar
-  aniosDisponibles: number[] = [];
-
-  // clave: `${matriculaId}_${maquinaId}`
-  private selecciones = new Map<string, SeleccionMaquina>();
-
-  // ==========================================
-  // FILTRADO AUTOMÁTICO (debounced)
-  // ==========================================
-  private filtrosChange$ = new Subject<void>();
-  private destroy$ = new Subject<void>();
-
-  ngOnInit(): void {
-
-    this.filtrosChange$
-      .pipe(
-        debounceTime(350),
-        switchMap(() => this.buscarAlumnos()),
-        takeUntil(this.destroy$)
-      )
-      .subscribe();
-
-    this.filtrosChange$.next();
+    label { font-size: 0.75rem; font-weight: 600; color: $c-text-muted; text-transform: uppercase; letter-spacing: 0.02em; }
+    
+    input, select {
+      padding: 8px 12px;
+      border: 1px solid $c-border;
+      border-radius: $radius-sm;
+      font-size: 0.875rem;
+      background: #fff;
+      color: $c-text-main;
+      outline: none;
+      &:focus { border-color: #3b82f6; }
+    }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  .loading-indicator { font-size: 0.875rem; font-weight: 500; color: #3b82f6; padding-bottom: 8px; }
+}
+
+// --- Grupos por Año / Mes ---
+.grupo-anio {
+  margin-top: 32px;
+  
+  .grupo-anio-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 2px solid $c-text-main;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    
+    h3 { margin: 0; font-size: 1.25rem; font-weight: 700; }
+    .contador { font-size: 0.8125rem; color: $c-text-muted; font-weight: 500; }
+  }
+}
+
+.grupo-mes {
+  margin-bottom: 32px;
+
+  .grupo-mes-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+    
+    h4 { margin: 0; font-size: 1rem; font-weight: 600; color: #334155; }
+    .contador { font-size: 0.75rem; color: $c-text-muted; }
+  }
+}
+
+// ==========================================================================
+// TABLA MINIMALISTA
+// ==========================================================================
+.table-container {
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-card;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.tabla-alumnos {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+
+  thead {
+    background: #f8fafc;
+    border-bottom: 1px solid $c-border;
+    
+    th {
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: $c-text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
   }
 
-  onFiltroChange(): void {
-    this.filtrosChange$.next();
+  tbody {
+    tr {
+      border-bottom: 1px solid $c-border;
+      transition: background-color 0.15s ease;
+      
+      &:last-child { border-bottom: none; }
+      &:hover { background-color: #f8fafc; }
+      
+      &.row-bloqueada {
+        background-color: #fef2f2;
+        .nombre-principal { color: #991b1b; }
+      }
+    }
+
+    td {
+      padding: 16px;
+      vertical-align: top;
+    }
   }
 
-  onNombreChange(valor: string): void {
-    this.filtroNombre = valor;
-    this.filtrosChange$.next();
+  // Dimensiones y estilos de columnas
+  .col-alumno {
+    width: 30%;
+    min-width: 200px;
+    
+    .nombre-principal { font-weight: 600; color: $c-text-main; margin-bottom: 2px; }
+    .curso-sub { font-size: 0.75rem; color: $c-text-muted; }
+    
+    .alerta {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      border-radius: $radius-sm;
+      line-height: 1.3;
+      
+      &.alerta-roja { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+      &.alerta-naranja { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    }
   }
 
-  // ==========================================
-  // CARGA DE ALUMNOS
-  // ==========================================
-  private buscarAlumnos() {
-
-    this.loadingLista = true;
-    this.errorCarga = '';
-
-    const filtros: FiltrosAlumnosDisponibles = {
-      anio: this.filtroAnio,
-      mes: this.filtroMes,
-      cursoId: this.filtroCurso,
-      maquinaId: this.filtroMaquina,
-      nombre: this.filtroNombre
-    };
-
-    return this.practicasService.listarAlumnosDisponibles(filtros).pipe(
-      switchMap((resp: any) => {
-        const alumnos: AlumnoDisponible[] = resp?.data ?? [];
-        this.agruparPorAnioYMes(alumnos);
-        this.actualizarAniosDisponibles(alumnos);
-        this.selecciones.clear();
-        this.loadingLista = false;
-        return of(alumnos);
-      }),
-      catchError((err) => {
-        console.error('❌ listarAlumnosDisponibles:', err);
-        this.errorCarga = 'No se pudo cargar la lista de alumnos.';
-        this.gruposPorAnio = [];
-        this.loadingLista = false;
-        return of([]);
-      })
-    );
+  .col-estado {
+    width: 15%;
+    white-space: nowrap;
   }
 
-  private agruparPorAnioYMes(alumnos: AlumnoDisponible[]): void {
+  .col-maquinas {
+    width: 55%;
+    
+    // Lista compacta de máquinas dentro de la celda
+    .maquina-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: $radius-sm;
+      margin-bottom: 8px;
+      gap: 12px;
+      
+      &:last-child { margin-bottom: 0; }
+    }
 
-    const mapaAnios = new Map<number, Map<number, AlumnoDisponible[]>>();
+    .maquina-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
 
-    for (const alumno of alumnos) {
+      .maquina-nombre { font-weight: 600; font-size: 0.8125rem; }
+      .maquina-progreso { 
+        font-size: 0.75rem; color: $c-text-muted; 
+        small { color: #94a3b8; }
+      }
+    }
 
-      if (!mapaAnios.has(alumno.anio)) {
-        mapaAnios.set(alumno.anio, new Map());
+    .maquina-controles {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .checkbox-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        cursor: pointer;
+        
+        input[type="checkbox"] {
+          width: 16px; height: 16px; cursor: pointer;
+        }
       }
 
-      const mapaMeses = mapaAnios.get(alumno.anio)!;
-
-      if (!mapaMeses.has(alumno.mes)) {
-        mapaMeses.set(alumno.mes, []);
+      .input-sesiones {
+        width: 60px;
+        padding: 4px 6px;
+        border: 1px solid $c-border;
+        border-radius: $radius-sm;
+        text-align: right;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        
+        &:disabled { background: #e2e8f0; color: #94a3b8; }
       }
-
-      mapaMeses.get(alumno.mes)!.push(alumno);
-    }
-
-    this.gruposPorAnio = Array.from(mapaAnios.entries())
-      .sort((a, b) => b[0] - a[0])
-      .map(([anio, mapaMeses]) => {
-
-        const meses: GrupoMes[] = Array.from(mapaMeses.entries())
-          .sort((a, b) => b[0] - a[0])
-          .map(([mes, alumnosDelMes]) => ({
-            mes,
-            nombreMes: NOMBRES_MES[mes - 1] ?? `Mes ${mes}`,
-            alumnos: alumnosDelMes.sort((a, b) => a.alumno.localeCompare(b.alumno))
-          }));
-
-        const totalAlumnos = meses.reduce((acc, m) => acc + m.alumnos.length, 0);
-
-        return { anio, totalAlumnos, meses };
-      });
-  }
-
-  private actualizarAniosDisponibles(alumnos: AlumnoDisponible[]): void {
-    const set = new Set(this.aniosDisponibles);
-    alumnos.forEach(a => set.add(a.anio));
-    this.aniosDisponibles = Array.from(set).sort((a, b) => b - a);
-  }
-
-  // ==========================================
-  // SEMÁFORO FINANCIERO
-  // ==========================================
-  claseEstado(alumno: AlumnoDisponible): string {
-    switch (alumno.estado_financiero) {
-      case 'MOROSO': return 'estado-rojo';
-      case 'PENDIENTE': return 'estado-naranja';
-      default: return 'estado-verde';
     }
   }
+}
 
-  etiquetaEstado(alumno: AlumnoDisponible): string {
-    switch (alumno.estado_financiero) {
-      case 'MOROSO': return 'Moroso';
-      case 'PENDIENTE': return 'Pago pendiente';
-      default: return 'Al día';
+// --- Badges ---
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.estado-verde { background: #dcfce7; color: #166534; }
+  &.estado-naranja { background: #fef3c7; color: #92400e; }
+  &.estado-rojo { background: #fee2e2; color: #991b1b; }
+}
+
+.badge-completo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+}
+
+// --- Mensajes de error / sin resultados ---
+.error-carga, .sin-resultados {
+  background: $c-surface;
+  border: 1px dashed $c-border;
+  border-radius: $radius-card;
+  padding: 32px;
+  text-align: center;
+  color: $c-text-muted;
+  font-size: 0.875rem;
+}
+.error-carga { border-color: #fca5a5; color: #ef4444; }
+
+// --- Barra de Resumen Flotante ---
+.resumen-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $c-surface;
+  border-top: 1px solid $c-border;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 50;
+
+  .resumen-info {
+    display: flex;
+    gap: 24px;
+    font-size: 0.875rem;
+    color: $c-text-muted;
+    strong { color: $c-text-main; font-size: 1rem; }
+  }
+
+  .btn-primary {
+    background: $c-primary;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: $radius-sm;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover:not(:disabled) { background: #1e293b; }
+    &:disabled { background: #94a3b8; cursor: not-allowed; }
+  }
+}
+
+// --- Responsive ---
+@media (max-width: 768px) {
+  :host { padding: 16px; padding-bottom: 120px; }
+  
+  .tabla-alumnos {
+    .col-maquinas .maquina-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
     }
   }
 
-  puedeSeleccionar(alumno: AlumnoDisponible): boolean {
-    return alumno.estado_financiero !== 'MOROSO';
-  }
-
-  mensajeBloqueo(alumno: AlumnoDisponible): string {
-    return `${alumno.alumno} tiene cuotas vencidas y no puede asignarse a prácticas hasta regularizar su pago.`;
-  }
-
-  mensajeAdvertencia(alumno: AlumnoDisponible): string {
-    return `${alumno.alumno} tiene una cuota pendiente. Puede asignarse, pero se recomienda avisarle sobre su pago.`;
-  }
-
-  // ==========================================
-  // SELECCIÓN DE SESIONES POR MÁQUINA
-  // ==========================================
-  private clave(matriculaId: number, maquinaId: number): string {
-    return `${matriculaId}_${maquinaId}`;
-  }
-
-  estaSeleccionada(alumno: AlumnoDisponible, maquina: MaquinaAlumno): boolean {
-    return this.selecciones.get(this.clave(alumno.matricula_id, maquina.maquina_id))?.seleccionado ?? false;
-  }
-
-  sesionesSeleccionadas(alumno: AlumnoDisponible, maquina: MaquinaAlumno): number {
-    return this.selecciones.get(this.clave(alumno.matricula_id, maquina.maquina_id))?.sesionesAAsignar ?? 1;
-  }
-
-  toggleMaquina(alumno: AlumnoDisponible, maquina: MaquinaAlumno, checked: boolean): void {
-
-    if (!this.puedeSeleccionar(alumno) || maquina.sesiones_restantes <= 0) {
-      return;
-    }
-
-    const key = this.clave(alumno.matricula_id, maquina.maquina_id);
-    const actual = this.selecciones.get(key) ?? { seleccionado: false, sesionesAAsignar: 1 };
-
-    actual.seleccionado = checked;
-    if (actual.sesionesAAsignar < 1) {
-      actual.sesionesAAsignar = 1;
-    }
-
-    this.selecciones.set(key, actual);
-  }
-
-  actualizarSesiones(alumno: AlumnoDisponible, maquina: MaquinaAlumno, valor: number): void {
-
-    const key = this.clave(alumno.matricula_id, maquina.maquina_id);
-    const actual = this.selecciones.get(key) ?? { seleccionado: true, sesionesAAsignar: 1 };
-
-    // 👇 nunca debe pasarse de las sesiones restantes de esa máquina
-    let sesiones = Math.floor(Number(valor)) || 1;
-    if (sesiones < 1) sesiones = 1;
-    if (sesiones > maquina.sesiones_restantes) sesiones = maquina.sesiones_restantes;
-
-    actual.sesionesAAsignar = sesiones;
-    this.selecciones.set(key, actual);
-  }
-
-  // ==========================================
-  // RESUMEN
-  // ==========================================
-  get totalAlumnosSeleccionados(): number {
-    const matriculas = new Set<number>();
-    this.gruposPorAnio.forEach(grupo =>
-      grupo.meses.forEach(gm =>
-        gm.alumnos.forEach(alumno =>
-          alumno.maquinas.forEach(maquina => {
-            if (this.estaSeleccionada(alumno, maquina)) {
-              matriculas.add(alumno.matricula_id);
-            }
-          })
-        )
-      )
-    );
-    return matriculas.size;
-  }
-
-  get totalSesionesSeleccionadas(): number {
-    let total = 0;
-    this.selecciones.forEach(sel => {
-      if (sel.seleccionado) total += sel.sesionesAAsignar;
-    });
-    return total;
-  }
-
-  get puedeGenerarSesion(): boolean {
-    return !!this.fechaSesion && this.totalAlumnosSeleccionados > 0;
-  }
-
-  get hayResultados(): boolean {
-    return this.gruposPorAnio.length > 0;
-  }
-
-  // ==========================================
-  // GENERAR SESIÓN DE PRÁCTICA (PENDIENTE BACKEND)
-  // ==========================================
-  generarSesionPractica(): void {
-
-    if (!this.puedeGenerarSesion) {
-      return;
-    }
-
-    const detalle: any[] = [];
-
-    this.gruposPorAnio.forEach(grupo => {
-      grupo.meses.forEach(gm => {
-        gm.alumnos.forEach(alumno => {
-          alumno.maquinas.forEach(maquina => {
-            if (this.estaSeleccionada(alumno, maquina)) {
-              detalle.push({
-                matriculaId: alumno.matricula_id,
-                matriculaMaquinaId: maquina.matricula_maquina_id,
-                maquinaId: maquina.maquina_id,
-                sesiones: this.sesionesSeleccionadas(alumno, maquina)
-              });
-            }
-          });
-        });
-      });
-    });
-
-    const payload = {
-      fecha: this.fechaSesion,
-      detalle
-    };
-
-    // TODO: conectar a POST /practicas/sesiones-grupales cuando exista.
-    // Ese endpoint debe validar:
-    //  - que no haya otra sesión grupal PENDIENTE/EN_CURSO abierta
-    //  - que ningún alumno tenga estado_financiero = MOROSO
-    //  - que "sesiones" no exceda "sesiones_restantes" por máquina
-    // y devolver el id de la sesión grupal + la URL del PDF generado.
-    console.log('Payload sesión de práctica (pendiente conectar backend):', payload);
+  .resumen-bar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    align-items: stretch;
+    
+    .resumen-info { justify-content: space-between; }
+    .btn-primary { width: 100%; }
   }
 }
