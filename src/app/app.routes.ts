@@ -193,6 +193,12 @@ export const routes: Routes = [
           import('./features/practicas/pages/expedientes/expedientes')
             .then(m => m.ExpedientesComponent)
       },
+      {
+            path: 'practicas/:id',
+            loadComponent: () =>
+                import('./pages/practicas/practica-detalle/practica-detalle')
+                .then(c => c.PracticaDetalle)
+        },
 
       // =========================
       // 📄 OTROS MÓDULOS (PLACEHOLDER)
