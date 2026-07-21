@@ -1,116 +1,185 @@
-
 // ==========================================
-// ESTILOS FORMALES Y MINIMALISTAS
+// VARIABLES DE DISEÑO MODERNO (Slate / Minimalist)
 // ==========================================
+$slate-900: #0f172a;
+$slate-800: #1e293b;
+$slate-700: #334155;
+$slate-500: #64748b;
+$slate-300: #cbd5e1;
+$slate-100: #f1f5f9;
+$slate-50: #f8fafc;
 
-$border-color: #e5e7eb;
-$text-main: #111827;
-$text-muted: #6b7280;
-$bg-light: #f9fafb;
-$primary-color: #111827; // Azul muy oscuro/casi negro para elegancia
-
-.container {
-  max-width: 1200px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+.practica-wrapper {
+  background-color: $slate-50;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: $slate-800;
 }
 
-h2 {
-  font-size: 1.5rem;
+.max-w-7xl {
+  max-width: 1280px;
+}
+
+.micro-text {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+
+// Botón estilo ejecutivo principal
+.btn-dark-slate {
+  background-color: $slate-900;
+  color: #ffffff;
+  border: 1px solid $slate-900;
   font-weight: 500;
-  color: $text-main;
-  letter-spacing: -0.02em;
-}
-
-// Tarjetas de cada alumno
-.detalle-card {
-  border: 1px solid $border-color;
-  border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
-    transform: translateY(-2px);
-  }
-
-  .card-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid $border-color;
-    padding: 1rem 1.25rem;
-    
-    h5 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: $text-main;
-    }
-  }
-
-  .card-body {
-    padding: 1.25rem;
-  }
-}
-
-// Estilos limpios para formularios
-.form-label {
-  color: $text-muted;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.35rem;
-  text-transform: uppercase;
-  font-size: 0.7rem !important;
-}
-
-.form-control, .form-select {
-  border-color: $border-color;
-  font-size: 0.85rem;
-  color: $text-main;
-  box-shadow: none !important;
-  
-  &:focus {
-    border-color: #9ca3af;
-    // Anillo de enfoque minimalista gris en lugar del azul de Bootstrap
-    box-shadow: 0 0 0 0.2rem rgba(156, 163, 175, 0.15) !important; 
-  }
-}
-
-// Contenedor de previsualización de evidencia
-.img-preview {
-  width: 100%;
-  height: 120px; // Altura fija para que todas las tarjetas midan igual
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $bg-light;
-  
-  img {
-    object-fit: cover; // Asegura que la imagen llene el contenedor sin deformarse
-    width: 100%;
-    height: 100%;
-  }
-}
-
-// Botón de guardado estilo ejecutivo
-.btn-primary {
-  background-color: $primary-color;
-  border-color: $primary-color;
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
   transition: all 0.2s ease;
 
   &:hover, &:focus {
-    background-color: #374151;
-    border-color: #374151;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: $slate-800;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  }
+
+  &:disabled {
+    background-color: $slate-500;
+    border-color: $slate-500;
   }
 }
 
-// Badge sutil
-.badge {
-  font-weight: 500;
-  &.bg-secondary {
-    background-color: #f3f4f6 !important;
-    color: #4b5563 !important;
-    border: 1px solid $border-color;
+// Botones extra pequeños
+.btn-xs {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+
+// Tarjetas KPI
+.kpi-card {
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
   }
 }
+
+// TARJETA DE ALUMNO Y BORDES DE ESTADO ACCESIBLES
+.detalle-card {
+  border-left: 4px solid $slate-300 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  &.card-asistio {
+    border-left-color: #10b981 !important; // Emerald green
+  }
+  &.card-falto {
+    border-left-color: #f43f5e !important; // Rose red
+  }
+  &.card-justificado {
+    border-left-color: #f59e0b !important; // Amber yellow
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    color: $slate-900;
+  }
+}
+
+// Indicador circular de estado
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+// ÁREA DE SUBIDA DE ARCHIVO CON DRAG-AND-DROP SIMULADO
+.file-upload-box {
+  background-color: $slate-50;
+  border-color: $slate-300 !important;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #e2e8f0;
+  }
+
+  .file-input-hidden {
+    display: none;
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+}
+
+// PREVISUALIZACIÓN DE IMAGEN
+.img-preview-container {
+  width: 100%;
+  height: 120px;
+  background-color: $slate-900;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .btn-remove-img {
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+}
+
+// PAGINACIÓN
+.pagination {
+  .page-item {
+    .page-link {
+      color: $slate-700;
+      border-color: $slate-300;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.7rem;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &.active .page-link {
+      background-color: $slate-900;
+      border-color: $slate-900;
+      color: #ffffff;
+    }
+  }
+}
+
+// Utilidades de color personalizadas
+.bg-emerald-50 { background-color: #ecfdf5; }
+.bg-emerald-200 { border-color: #a7f3d0; }
+.bg-emerald-500 { background-color: #10b981; }
+.text-emerald-700 { color: #047857; }
+.text-emerald-800 { color: #065f46; }
+
+.bg-rose-50 { background-color: #fff1f2; }
+.bg-rose-200 { border-color: #fecdd3; }
+.bg-rose-500 { background-color: #f43f5e; }
+.text-rose-700 { color: #be123c; }
+.text-rose-800 { color: #9f1239; }
+
+.bg-amber-50 { background-color: #fffbeb; }
+.bg-amber-200 { border-color: #fde68a; }
+.bg-amber-500 { background-color: #f59e0b; }
+.text-amber-700 { color: #b45309; }
+.text-amber-800 { color: #92400e; }
+
+.bg-slate-100 { background-color: $slate-100; }
+.bg-slate-300 { background-color: $slate-300; }
+.text-slate-700 { color: $slate-700; }
