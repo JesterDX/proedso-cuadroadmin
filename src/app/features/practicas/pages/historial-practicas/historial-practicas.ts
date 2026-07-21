@@ -1,5 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { PracticasService } from '../../services/practicas.service';
 
 @Component({
@@ -11,55 +12,44 @@ import { PracticasService } from '../../services/practicas.service';
 })
 export class HistorialPracticasComponent implements OnInit {
 
+  private practicasService = inject(PracticasService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
   sesiones: any[] = [];
   cargando: boolean = true;
   errorMensaje: string = '';
-
-  constructor(
-    private practicasService: PracticasService,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     this.cargarHistorial();
   }
 
   cargarHistorial(): void {
-
     this.cargando = true;
+    this.errorMensaje = '';
 
-    this.practicasService.obtenerHistorialSesiones()
-    .subscribe({
-
-      next: (response) => {
-
-        if (response.ok) {
-          this.sesiones = response.data;
-        }
-
+    this.practicasService.obtenerHistorialSesiones().subscribe({
+      next: (response: any) => {
+        // CORRECCIÓN: Extraer data correctamente sin evaluar response.ok
+        this.sesiones = response.data ?? (Array.isArray(response) ? response : []);
         this.cargando = false;
-
-        // Actualizar vista manualmente
         this.cdr.detectChanges();
-
       },
-
       error: (err) => {
-
-        console.error(
-          'Error al cargar historial:',
-          err
-        );
-
-        this.errorMensaje =
-          'No se pudo cargar el historial de sesiones.';
-
+        console.error('Error al cargar historial:', err);
+        this.errorMensaje = 'No se pudo cargar el historial de sesiones.';
         this.cargando = false;
-
         this.cdr.detectChanges();
-
       }
-
     });
+  }
+
+  // Métodos de navegación
+  irAlCronograma(sesionId: number): void {
+    this.router.navigate(['/practicas/cronograma', sesionId]);
+  }
+
+  irAlDetalle(sesionId: number): void {
+    this.router.navigate(['/practicas', sesionId]);
   }
 }
