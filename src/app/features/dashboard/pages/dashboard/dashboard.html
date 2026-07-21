@@ -1,153 +1,128 @@
-<main class="dashboard" aria-label="Panel de Control Principal">
+<main class="dashboard" aria-label="Panel Ejecutivo PROEDSO">
 
-  <!-- =========================
-       HEADER
-  ========================== -->
   <header class="welcome-card">
-
     <div class="welcome-text">
-      <h1>Panel de Control PROEDSO</h1>
-      <p>
-        Resumen general del sistema: alumnos, matrículas, pagos y estados en tiempo real.
-      </p>
+      <h1>Dashboard Ejecutivo</h1>
+      <p>Indicadores porcentuales de rendimiento académico, operativo y solvencia.</p>
     </div>
-
-    <span class="admin-badge" role="status">
-      Sistema ERP
-    </span>
-
+    <span class="admin-badge">Actualizado en tiempo real</span>
   </header>
 
-  <!-- =========================
-       LOADING STATE (IMPORTANTE)
-  ========================== -->
   <section *ngIf="loading" class="loading-state">
-    <p>Cargando dashboard...</p>
+    <div class="spinner"></div>
+    <p>Calculando indicadores ejecutivos...</p>
   </section>
 
-  <!-- =========================
-       KPI GRID
-  ========================== -->
-  <section class="stats-grid" aria-label="Métricas principales" *ngIf="!loading">
+  <div *ngIf="!loading" class="dashboard-content">
 
-    <!-- TOTAL ALUMNOS -->
-    <article class="stat-card blue">
-      <div class="stat-content">
-        <span class="label">Total de alumnos</span>
-        <h3>{{ dashboard?.resumen?.totalAlumnos ?? 0 }}</h3>
-      </div>
-    </article>
+    <!-- ==========================================
+         BLOQUE 1: KPIS HÉROE (INDICADORES VITALES)
+    =========================================== -->
+    <div class="block-label">Bloque 1: Salud Académica y Operativa</div>
+    <section class="kpi-grid">
+      
+      <article class="stat-card green">
+        <span class="label">Solvencia de Alumnos</span>
+        <div class="value-row">
+          <h3>{{ dashboard.kpis?.porcentajeAlDia }}%</h3>
+          <span class="trend">Al día</span>
+        </div>
+        <div class="progress-bar"><div class="fill green" [style.width.%]="dashboard.kpis?.porcentajeAlDia"></div></div>
+      </article>
 
-    <!-- MATRICULADOS -->
-    <article class="stat-card green">
-      <div class="stat-content">
-        <span class="label">Matriculados</span>
-        <h3>{{ dashboard?.resumen?.matriculados ?? 0 }}</h3>
-      </div>
-    </article>
+      <article class="stat-card blue">
+        <span class="label">Retención Académica</span>
+        <div class="value-row">
+          <h3>{{ dashboard.kpis?.porcentajeRetencion }}%</h3>
+          <span class="trend">Culminación exitosa</span>
+        </div>
+        <div class="progress-bar"><div class="fill blue" [style.width.%]="dashboard.kpis?.porcentajeRetencion"></div></div>
+      </article>
 
-    <!-- EGRESADOS -->
-    <article class="stat-card purple">
-      <div class="stat-content">
-        <span class="label">Egresados</span>
-        <h3>{{ dashboard?.resumen?.egresados ?? 0 }}</h3>
-      </div>
-    </article>
+      <article class="stat-card purple">
+        <span class="label">Operatividad de Flota</span>
+        <div class="value-row">
+          <h3>{{ dashboard.kpis?.porcentajeOperatividadFlota }}%</h3>
+          <span class="trend">Máquinas activas</span>
+        </div>
+        <div class="progress-bar"><div class="fill purple" [style.width.%]="dashboard.kpis?.porcentajeOperatividadFlota"></div></div>
+      </article>
 
-    <!-- RETIRADOS -->
-    <article class="stat-card orange">
-      <div class="stat-content">
-        <span class="label">Retirados</span>
-        <h3>{{ dashboard?.resumen?.retirados ?? 0 }}</h3>
-      </div>
-    </article>
+      <article class="stat-card orange">
+        <span class="label">Eficiencia de Certificación</span>
+        <div class="value-row">
+          <h3>{{ dashboard.kpis?.porcentajeCertificadosEntregados }}%</h3>
+          <span class="trend">Carpetas entregadas</span>
+        </div>
+        <div class="progress-bar"><div class="fill orange" [style.width.%]="dashboard.kpis?.porcentajeCertificadosEntregados"></div></div>
+      </article>
 
-    <!-- AL DÍA -->
-    <article class="stat-card green">
-      <div class="stat-content">
-        <span class="label">Alumnos al día</span>
-        <h3>{{ dashboard?.resumen?.alumnosAlDia ?? 0 }}</h3>
-      </div>
-    </article>
+    </section>
 
-    <!-- CON DEUDA -->
-    <article class="stat-card danger">
-      <div class="stat-content">
-        <span class="label">Con deuda</span>
-        <h3>{{ dashboard?.resumen?.alumnosConDeuda ?? 0 }}</h3>
-      </div>
-    </article>
-
-    <!-- MAQUINAS -->
-    <article class="stat-card blue">
-      <div class="stat-content">
-        <span class="label">Máquinas</span>
-        <h3>{{ dashboard?.resumen?.maquinas ?? 0 }}</h3>
-      </div>
-    </article>
-
-    <!-- CURSOS -->
-    <article class="stat-card purple">
-      <div class="stat-content">
-        <span class="label">Cursos activos</span>
-        <h3>{{ dashboard?.resumen?.cursos ?? 0 }}</h3>
-      </div>
-    </article>
-
-  </section>
-
-  <!-- =========================
-       GRÁFICOS
-  ========================== -->
-  <section class="charts-grid" *ngIf="!loading">
-
-    <!-- PIE / DOUGHNUT -->
-    <div class="panel-card chart-card">
-
-      <h2>Estados de alumnos</h2>
-
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [type]="'doughnut'"
-          [data]="donutChartData"
-          [options]="donutOptions">
-        </canvas>
+    <!-- ==========================================
+         BLOQUE 2: SOLVENCIA Y DISTRIBUCIÓN
+    =========================================== -->
+    <div class="block-label mt-4">Bloque 2: Comportamiento del Alumnado</div>
+    <section class="charts-grid">
+      
+      <div class="panel-card">
+        <div class="card-header">
+          <h2>Estado del Alumnado (%)</h2>
+          <span class="subtitle">Distribución por situación académica</span>
+        </div>
+        <div class="chart-container">
+          <canvas baseChart [type]="'doughnut'" [data]="estadosChartData" [options]="chartOptions"></canvas>
+        </div>
       </div>
 
-    </div>
-
-    <!-- BAR -->
-    <div class="panel-card chart-card">
-
-      <h2>Estado de pagos</h2>
-
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [type]="'doughnut'"
-          [data]="donutChartData"
-          [options]="donutOptions">
-        </canvas>
-      </div>
-    </div>
-
-    <!-- LINE -->
-    <div class="panel-card chart-card full-width">
-
-      <h2>Evolución del sistema (Matrículas)</h2>
-
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [type]="'doughnut'"
-          [data]="donutChartData"
-          [options]="donutOptions">
-        </canvas>
+      <div class="panel-card">
+        <div class="card-header">
+          <h2>Solvencia de Pagos (%)</h2>
+          <span class="subtitle">Proporción de alumnos al día vs. morosos</span>
+        </div>
+        <div class="chart-container">
+          <canvas baseChart [type]="'pie'" [data]="solvenciaChartData" [options]="chartOptions"></canvas>
+        </div>
       </div>
 
-    </div>
+    </section>
 
-  </section>
+    <!-- ==========================================
+         BLOQUE 3: DEMANDA DE EQUIPAMIENTO
+    =========================================== -->
+    <div class="block-label mt-4">Bloque 3: Preferencia de Maquinaria</div>
+    <section class="charts-grid full">
+      <div class="panel-card">
+        <div class="card-header">
+          <h2>Top 5 Máquinas Más Demandadas (%)</h2>
+          <span class="subtitle">Porcentaje de elección en matrículas cerradas</span>
+        </div>
+        <div class="chart-container bar-container">
+          <canvas baseChart [type]="'bar'" [data]="maquinasChartData" [options]="barOptions"></canvas>
+        </div>
+      </div>
+    </section>
 
+    <!-- ==========================================
+         BLOQUE 4: GESTIÓN POR EXCEPCIÓN (ALERTAS)
+    =========================================== -->
+    <div class="block-label mt-4">Bloque 4: Alertas de Atención Prioritaria</div>
+    <section class="alerts-grid">
+      <div class="alert-card danger" *ngIf="dashboard.kpis?.porcentajeMorosidad > 15">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <h4>Atención en Cobranzas</h4>
+          <p>El <strong>{{ dashboard.kpis?.porcentajeMorosidad }}%</strong> del alumnado presenta cuotas vencidas. Se recomienda activar recordatorios automatizados por WhatsApp.</p>
+        </div>
+      </div>
+      <div class="alert-card warning" *ngIf="dashboard.kpis?.porcentajeOperatividadFlota < 80">
+        <div class="alert-icon">🔧</div>
+        <div class="alert-content">
+          <h4>Mantenimiento de Flota</h4>
+          <p>La operatividad de maquinaria cayó al <strong>{{ dashboard.kpis?.porcentajeOperatividadFlota }}%</strong>. Revisa las homologaciones y estados mecánicos.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
 </main>
