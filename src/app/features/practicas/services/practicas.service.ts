@@ -145,7 +145,6 @@ obtenerSesion(id:number){
   );
 
 }
-
 guardarSesion(id:number,data:any){
 
   return this.http.put<any>(
