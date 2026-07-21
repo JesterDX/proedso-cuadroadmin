@@ -1,78 +1,110 @@
-<div class="container mt-4">
-  <h2 class="mb-4">📜 Historial de Sesiones Grupales Finalizadas</h2>
+<div class="container-fluid max-w-7xl py-4">
+  
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+    <div>
+      <h2 class="h3 fw-bold text-slate-900 mb-1"> Historial de Sesiones</h2>
+      <p class="text-muted small m-0">Consulta y gestiona las sesiones de prácticas registradas</p>
+    </div>
+    <button class="btn btn-outline-secondary btn-sm" (click)="cargarHistorial()">
+      🔄 Actualizar
+    </button>
+  </div>
 
   <!-- Estado de carga -->
   <div *ngIf="cargando" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p class="mt-2 text-muted">Cargando historial...</p>
+    <div class="spinner-border text-dark" role="status"></div>
+    <p class="mt-2 text-muted small">Cargando historial de sesiones...</p>
   </div>
 
   <!-- Mensaje de error -->
-  <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
-    {{ errorMensaje }}
+  <div *ngIf="errorMensaje" class="alert alert-danger shadow-sm border-0" role="alert">
+    ⚠️ {{ errorMensaje }}
   </div>
 
   <!-- Sin registros -->
-  <div *ngIf="!cargando && sesiones.length === 0 && !errorMensaje" class="alert alert-info" role="alert">
-    No hay sesiones grupales finalizadas registradas.
+  <div *ngIf="!cargando && sesiones.length === 0 && !errorMensaje" class="alert alert-info shadow-sm border-0" role="alert">
+    ℹ️ No hay sesiones grupales registradas en el historial.
   </div>
 
   <!-- Listado de Sesiones -->
-  <div *ngFor="let sesion of sesiones" class="card shadow-sm mb-4">
-    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-      <span><strong>Fecha de Sesión:</strong> {{ sesion.fecha | date:'dd/MM/yyyy' }}</span>
-      <span class="badge bg-success">{{ sesion.estado }}</span>
-    </div>
+  <div *ngIf="!cargando && sesiones.length > 0">
+    <div *ngFor="let sesion of sesiones" class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
+      
+      <!-- Cabecera de la sesión con Botones de Acceso -->
+      <div class="card-header bg-slate-900 text-white p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <span class="fs-5 fw-bold">Sesión #{{ sesion.id }}</span>
+          <span class="badge bg-light text-dark">📅 {{ sesion.fecha | date:'dd/MM/yyyy' }}</span>
+          <span class="badge" [ngClass]="{
+            'bg-success': sesion.estado === 'FINALIZADO' || sesion.estado === 'COMPLETADO',
+            'bg-warning text-dark': sesion.estado === 'PENDIENTE'
+          }">
+            {{ sesion.estado || 'REGISTRADO' }}
+          </span>
+        </div>
 
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Orden</th>
-              <th>Horario</th>
-              <th>Alumno</th>
-              <th>Máquina</th>
-              <th>Sesiones</th>
-              <th>Asistencia</th>
-              <th>Observaciones</th>
-              <th>Evidencia</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of sesion.detalle">
-              <td class="text-center fw-bold">{{ item.orden || '-' }}</td>
-              <td>
-                <small *ngIf="item.hora_inicio && item.hora_fin; else sinHora">
-                  {{ item.hora_inicio }} - {{ item.hora_fin }}
-                </small>
-                <ng-template #sinHora><span class="text-muted">No especificado</span></ng-template>
-              </td>
-              <td>{{ item.alumno }}</td>
-              <td><span class="badge bg-secondary">{{ item.maquina }}</span></td>
-              <td class="text-center">{{ item.sesiones_asignadas }}</td>
-              <td class="text-center">
-                <span class="badge" [ngClass]="{
-                  'bg-success': item.asistencia === 'ASISTIO',
-                  'bg-danger': item.asistencia === 'FALTO',
-                  'bg-warning text-dark': item.asistencia === 'TARDE' || !item.asistencia
-                }">
-                  {{ item.asistencia || 'PENDIENTE' }}
-                </span>
-              </td>
-              <td>{{ item.observaciones || '-' }}</td>
-              <td class="text-center">
-                <a *ngIf="item.evidencia_url; else sinEvidencia" [href]="item.evidencia_url" target="_blank" class="btn btn-sm btn-outline-primary">
-                  Ver
-                </a>
-                <ng-template #sinEvidencia><span class="text-muted">-</span></ng-template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Botones de Acción directos -->
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-light font-medium" (click)="irAlCronograma(sesion.id)">
+            📅 Ver Cronograma
+          </button>
+          <button class="btn btn-sm btn-outline-light font-medium" (click)="irAlDetalle(sesion.id)">
+            📋 Registro Asistencia
+          </button>
+        </div>
       </div>
+
+      <!-- Tabla de Alumnos en la sesión -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle m-0 small">
+            <thead class="bg-light text-muted uppercase micro-text">
+              <tr>
+                <th class="text-center" style="width: 60px;">Orden</th>
+                <th>Horario</th>
+                <th>Alumno</th>
+                <th>Máquina</th>
+                <th class="text-center">Asistencia</th>
+                <th>Observaciones</th>
+                <th class="text-center" style="width: 80px;">Evidencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of sesion.detalle">
+                <td class="text-center fw-bold text-slate-600">{{ item.orden || '-' }}</td>
+                <td>
+                  <span *ngIf="item.hora_inicio && item.hora_fin; else sinHora" class="fw-medium">
+                    {{ item.hora_inicio }} - {{ item.hora_fin }}
+                  </span>
+                  <ng-template #sinHora><span class="text-muted">-</span></ng-template>
+                </td>
+                <td class="fw-semibold text-slate-800">{{ item.alumno }}</td>
+                <td><span class="badge bg-slate-100 text-slate-700 border">🚜 {{ item.maquina }}</span></td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="{
+                    'bg-success': item.asistencia === 'ASISTIO',
+                    'bg-danger': item.asistencia === 'FALTO',
+                    'bg-warning text-dark': item.asistencia === 'JUSTIFICADO' || item.asistencia === 'TARDE',
+                    'bg-secondary': !item.asistencia
+                  }">
+                    {{ item.asistencia || 'PENDIENTE' }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ item.observaciones || '-' }}</td>
+                <td class="text-center">
+                  <a *ngIf="item.evidencia_url" [href]="item.evidencia_url" target="_blank" class="btn btn-xs btn-outline-primary">
+                    📷 Ver
+                  </a>
+                  <span *ngIf="!item.evidencia_url" class="text-muted">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
+
 </div>
