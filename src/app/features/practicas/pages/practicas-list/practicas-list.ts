@@ -342,81 +342,81 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // ACCIÓN PRINCIPAL: GENERAR SESIÓN
   // ==========================================
 generarSesionPractica(): void {
-
   const detalle: any[] = [];
 
+  // 1. Recolectar alumnos y máquinas seleccionadas
   this.gruposPorAnio.forEach(grupo => {
-
     grupo.meses.forEach(mes => {
-
       mes.alumnos.forEach(alumno => {
-
         alumno.maquinas.forEach(maquina => {
-
           if (this.estaSeleccionada(alumno, maquina)) {
-
             detalle.push({
-
               matriculaId: alumno.matricula_id,
               matriculaMaquinaId: maquina.matricula_maquina_id,
               maquinaId: maquina.maquina_id,
               sesiones: this.sesionesSeleccionadas(alumno, maquina)
-
             });
-
           }
-
         });
-
       });
-
     });
-
   });
 
-  const payload = {
+  // Validación previa
+  if (detalle.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sin alumnos',
+      text: 'Debes seleccionar al menos un alumno y máquina para generar la sesión.'
+    });
+    return;
+  }
 
+  const payload = {
     fecha: this.fechaSesion,
     detalle
-
   };
 
-  this.practicasService
-    .crearSesionGrupal(payload)
-    .subscribe({
+  console.log('🚀 Enviando Payload:', payload);
 
-      next: (resp:any) => {
+  // 2. Petición al backend
+  this.practicasService.crearSesionGrupal(payload).subscribe({
+    next: (resp: any) => {
+      console.log('✅ Respuesta del servidor:', resp);
 
+      // Obtenemos el ID de forma segura según la estructura devuelta
+      const idSesion = resp?.data?.id ?? resp?.data ?? resp?.id;
+
+      if (!idSesion) {
+        console.error('❌ No se encontró un ID válido en la respuesta:', resp);
         Swal.fire({
-
-          icon: 'success',
-          title: 'Sesión creada',
-          text: 'Ahora organizarás el cronograma.'
-
-        }).then(() => {
-
-          this.router.navigate([
-            '/practicas/cronograma',
-            resp.data.id
-          ]);
-
-        });
-
-      },
-
-      error: (err) => {
-
-        Swal.fire({
-
           icon: 'error',
-          title: 'Error',
-          text: err.error?.error ?? 'No se pudo crear la sesión.'
-
+          title: 'Error de respuesta',
+          text: 'La sesión se creó pero no se recibió un ID válido para el cronograma.'
         });
-
+        return;
       }
 
-    });
-
+      // 3. Confirmación y navegación
+      Swal.fire({
+        icon: 'success',
+        title: 'Sesión creada',
+        text: 'Ahora organizarás el cronograma.',
+        confirmButtonText: 'Ir al cronograma',
+        confirmButtonColor: '#2563eb'
+      }).then(() => {
+        console.log(`➡️ Redirigiendo a /practicas/cronograma/${idSesion}`);
+        this.router.navigate(['/practicas/cronograma', idSesion]);
+      });
+    },
+    error: (err) => {
+      console.error('❌ Error HTTP al crear sesión:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.error?.error ?? err.error?.message ?? 'No se pudo crear la sesión.'
+      });
+    }
+  });
 }
 }
