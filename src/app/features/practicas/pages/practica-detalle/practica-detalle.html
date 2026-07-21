@@ -1,71 +1,87 @@
-<div *ngFor="let item of sesion.detalle" class="detalle-card">
+<div class="container mt-4 mb-5">
+  
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+    <h2 class="m-0">Registro de Práctica</h2>
+    <span class="badge bg-secondary" *ngIf="sesion">Sesión #{{ sesion.id }}</span>
+  </div>
 
-    <h4>{{ item.alumno }}</h4>
-
-    <p>
-        <strong>Máquina:</strong>
-        {{ item.maquina }}
-    </p>
-
-    <div class="campo">
-
-        <label>Asistencia</label>
-
-        <select [(ngModel)]="item.asistencia">
-
-            <option value="">Seleccione...</option>
-
-            <option value="ASISTIO">✅ Asistió</option>
-
-            <option value="FALTO">❌ Faltó</option>
-
-            <option value="JUSTIFICADO">🟡 Justificado</option>
-
-        </select>
-
+  <!-- Estado de carga -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
     </div>
+    <p class="mt-2 text-muted">Cargando detalles de la sesión...</p>
+  </div>
 
-    <div class="campo">
+  <!-- Contenido Principal -->
+  <div *ngIf="!cargando && sesion">
+    
+    <!-- Cuadrícula de alumnos -->
+    <div class="row">
+      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let item of sesion.detalle">
+        
+        <div class="card h-100 detalle-card">
+          <!-- Cabecera de la tarjeta: Nombre del Alumno -->
+          <div class="card-header">
+            <h5 class="m-0 text-truncate" [title]="item.alumno">{{ item.alumno }}</h5>
+          </div>
+          
+          <div class="card-body d-flex flex-column">
+            
+            <p class="text-muted mb-3 small">
+              <strong>Máquina asignada:</strong> 
+              <span class="badge bg-light text-dark border ms-1">{{ item.maquina }}</span>
+            </p>
 
-        <label>Observaciones</label>
+            <!-- Campo: Asistencia -->
+            <div class="mb-3">
+              <label class="form-label small fw-medium">Asistencia</label>
+              <select class="form-select form-select-sm" [(ngModel)]="item.asistencia">
+                <option value="">Seleccione...</option>
+                <option value="ASISTIO">✅ Asistió</option>
+                <option value="FALTO">❌ Faltó</option>
+                <option value="JUSTIFICADO">🟡 Justificado</option>
+              </select>
+            </div>
 
-        <textarea
-            rows="3"
-            [(ngModel)]="item.observaciones"
-            placeholder="Ingrese observaciones">
-        </textarea>
+            <!-- Campo: Observaciones -->
+            <div class="mb-3">
+              <label class="form-label small fw-medium">Observaciones</label>
+              <textarea 
+                class="form-control form-control-sm" 
+                rows="2" 
+                [(ngModel)]="item.observaciones" 
+                placeholder="Ingrese observaciones breves...">
+              </textarea>
+            </div>
 
-    </div>
+            <!-- Campo: Evidencia (Empujado al fondo para alinear tarjetas) -->
+            <div class="mb-2 mt-auto">
+              <label class="form-label small fw-medium">Evidencia fotográfica</label>
+              <input 
+                class="form-control form-control-sm mb-2" 
+                type="file" 
+                accept="image/*" 
+                (change)="seleccionarImagen($event, item)">
+              
+              <!-- Previsualización de la imagen -->
+              <div *ngIf="item.evidencia_url" class="img-preview rounded border mt-2">
+                <img [src]="item.evidencia_url" alt="Evidencia de {{ item.alumno }}">
+              </div>
+            </div>
 
-    <div class="campo">
-
-        <label>Evidencia</label>
-
-        <input
-            type="file"
-            accept="image/*"
-            (change)="seleccionarImagen($event,item)">
-
-        <div *ngIf="item.evidencia_url">
-
-            <img
-                [src]="item.evidencia_url"
-                width="180">
-
+          </div>
         </div>
-
+      </div>
     </div>
 
-    <hr>
+    <!-- Barra de acciones -->
+    <div class="d-flex justify-content-end mt-2 pt-3 border-top">
+      <button class="btn btn-primary px-4 py-2" (click)="guardarSesion()">
+        💾 Guardar Registro
+      </button>
+    </div>
 
-</div>
-
-<div class="acciones">
-
-    <button (click)="guardarSesion()">
-
-        💾 Guardar
-
-    </button>
-
+  </div>
 </div>
