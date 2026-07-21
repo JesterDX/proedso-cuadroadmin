@@ -213,32 +213,41 @@ export class PracticaDetalle implements OnInit {
   // GUARDAR EN EL BACKEND
   // ==========================================
   
-  guardarSesion(): void {
-    if (!this.sesion || this.sesionBloqueada) return;
+ guardarSesion(): void {
+  if (!this.sesion || this.sesionBloqueada) return;
 
-    Swal.fire({
-      title: 'Guardando registro...',
-      text: 'Subiendo evidencias fotográficas y actualizando asistencias',
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
-    });
+  Swal.fire({
+    title: 'Guardando registro...',
+    text: 'Subiendo evidencias fotográficas y actualizando asistencias',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
 
-    this.guardando = true;
+  this.guardando = true;
 
-    // Construcción de FormData para enviar imágenes y datos estructurados
+  // 1. Mapeo estructurado de los detalles
+  const detallesPayload = this.sesion.detalle.map((item: any) => ({
+    detalleId: item.detalle_id || item.id,
+    asistencia: item.asistencia || 'PENDIENTE',
+    observaciones: item.observaciones || ''
+  }));
+
+  // 2. Verificar si el usuario adjuntó alguna imagen
+  const tieneArchivos = this.sesion.detalle.some((item: any) => !!item.archivo);
+
+  let payload: any;
+
+  if (tieneArchivos) {
+    // Si HAY imágenes -> Usar FormData
     const formData = new FormData();
-    formData.append('sesionId', this.sesion.id);
+    formData.append('sesionId', this.sesion.id.toString());
+    
+    // Enviamos con la clave 'detalle' (y 'detalles') por compatibilidad de naming en el Backend
+    const jsonString = JSON.stringify(detallesPayload);
+    formData.append('detalle', jsonString);
+    formData.append('detalles', jsonString);
 
-    // Mapeo limpio de los datos
-    const detallesPayload = this.sesion.detalle.map((item: any) => ({
-      detalleId: item.detalle_id || item.id,
-      asistencia: item.asistencia || 'PENDIENTE',
-      observaciones: item.observaciones || ''
-    }));
-
-    formData.append('detalles', JSON.stringify(detallesPayload));
-
-    // Adjuntar archivos de imagen si existen
+    // Adjuntar las imágenes
     this.sesion.detalle.forEach((item: any) => {
       if (item.archivo) {
         const idKey = item.detalle_id || item.id;
@@ -246,39 +255,49 @@ export class PracticaDetalle implements OnInit {
       }
     });
 
-    // Envío al servicio
-    this.practicasService.guardarSesion(this.sesion.id, formData).subscribe({
-      next: (resp) => {
-        this.guardando = false;
-
-        // Actualizamos estado local y bloqueamos edición
-        this.sesion.estado = 'FINALIZADA';
-        this.sesion.guardado = true;
-        this.validarEstadoBloqueo();
-
-        this.cd.detectChanges();
-
-        Swal.fire({
-          icon: 'success',
-          title: '¡Registro guardado!',
-          text: 'La asistencia y evidencias se registraron correctamente. El formulario ahora está en modo de solo lectura.',
-          confirmButtonColor: '#0f172a'
-        });
-      },
-      error: (err) => {
-        console.error('Error guardando la sesión:', err);
-        this.guardando = false;
-        this.cd.detectChanges();
-
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al guardar',
-          text: err.error?.message || 'Ocurrió un problema guardando los cambios.',
-          confirmButtonColor: '#0f172a'
-        });
-      }
-    });
+    payload = formData;
+  } else {
+    // Si NO HAY imágenes -> Enviar JSON limpio para evitar errores de parseo multipart
+    payload = {
+      sesionId: this.sesion.id,
+      detalle: detallesPayload,
+      detalles: detallesPayload
+    };
   }
+
+  // 3. Envío HTTP al Backend
+  this.practicasService.guardarSesion(this.sesion.id, payload).subscribe({
+    next: (resp) => {
+      this.guardando = false;
+
+      // Actualizamos estado local y bloqueamos edición
+      this.sesion.estado = 'FINALIZADA';
+      this.sesion.guardado = true;
+      this.validarEstadoBloqueo();
+
+      this.cd.detectChanges();
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Registro guardado!',
+        text: 'La asistencia y evidencias se registraron correctamente.',
+        confirmButtonColor: '#0f172a'
+      });
+    },
+    error: (err) => {
+      console.error('Error guardando la sesión:', err);
+      this.guardando = false;
+      this.cd.detectChanges();
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al guardar (500)',
+        text: err.error?.message || 'El servidor no pudo procesar los detalles enviados.',
+        confirmButtonColor: '#0f172a'
+      });
+    }
+  });
+}
 
   volver(): void {
     this.router.navigate(['/practicas/historial']);
