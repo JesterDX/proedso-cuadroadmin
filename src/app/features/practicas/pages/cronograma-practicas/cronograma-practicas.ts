@@ -1,7 +1,8 @@
 import {
   Component,
   OnInit,
-  inject
+  inject,
+  ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -45,7 +46,7 @@ private route = inject(ActivatedRoute);
 private router = inject(Router);
 
 private practicasService = inject(PracticasService);
-
+private cdr = inject(ChangeDetectorRef);
 
 
 sesion:any = null;
@@ -76,40 +77,36 @@ this.practicasService
 
 next:(resp:any)=>{
 
-
-this.sesion = resp.data ?? resp;
-
-
-if(
- this.sesion?.detalle
-){
-
- this.generarCronograma();
-
-}
+  this.sesion = resp.data ?? resp;
 
 
-this.loading=false;
+  if(this.sesion?.detalle){
 
+    this.generarCronograma();
+
+  }
+
+
+  this.loading = false;
+
+
+  this.cdr.detectChanges();
 
 },
 
 
 error:(err)=>{
 
+  console.error(
+    'Error cargando cronograma',
+    err
+  );
 
-console.error(
- 'Error cargando cronograma',
- err
-);
+  this.loading = false;
 
-
-this.loading=false;
-
+  this.cdr.detectChanges();
 
 }
-
-
 });
 
 
