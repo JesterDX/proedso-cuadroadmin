@@ -204,6 +204,16 @@ export const routes: Routes = [
       
       },
 
+      {
+        path:'practicas/cronograma/:id',
+      
+        loadComponent:()=>
+      
+          import('./features/practicas/pages/cronograma-practicas/cronograma-practicas')
+      
+            .then(m=>m.CronogramaPracticasComponent)
+      },
+
       // =========================
       // 📄 OTROS MÓDULOS (PLACEHOLDER)
       // =========================
