@@ -39,7 +39,7 @@ implements OnInit{
   loading=true;
 
   horaInicio='08:00';
-
+  duracionSesion = 30;
   ngOnInit():void{
 
     const id=
@@ -57,10 +57,11 @@ implements OnInit{
       .subscribe({
 
         next:(resp)=>{
-
-          this.sesion=resp.data ?? resp;
-
-          this.loading=false;
+        this.sesion = resp.data ?? resp;
+        
+        this.generarCronograma();
+        
+        this.loading = false;
 
         },
 
@@ -75,5 +76,50 @@ implements OnInit{
       });
 
   }
+  generarCronograma(): void {
+
+  if (!this.sesion) return;
+
+  const [hora, minuto] = this.horaInicio
+    .split(':')
+    .map(Number);
+
+  let actual = new Date();
+
+  actual.setHours(hora);
+  actual.setMinutes(minuto);
+  actual.setSeconds(0);
+
+  this.sesion.detalle.forEach((item: any) => {
+
+    const inicio = new Date(actual);
+
+    actual.setMinutes(
+      actual.getMinutes() +
+      item.sesiones_asignadas * this.duracionSesion
+    );
+
+    const fin = new Date(actual);
+
+    item.horaInicio = this.formatearHora(inicio);
+
+    item.horaFin = this.formatearHora(fin);
+
+  });
+
+}
+
+  formatearHora(fecha: Date): string {
+
+  return fecha.toLocaleTimeString(
+    'es-PE',
+    {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }
+  );
+
+}
 
 }
