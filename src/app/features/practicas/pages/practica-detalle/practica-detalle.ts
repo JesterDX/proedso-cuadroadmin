@@ -22,7 +22,7 @@ export class PracticaDetalle implements OnInit {
   private router = inject(Router);
   private practicasService = inject(PracticasService);
   private cd = inject(ChangeDetectorRef);
-
+  Math = Math;
   // Estados de interfaz
   cargando = false;
   guardando = false;
