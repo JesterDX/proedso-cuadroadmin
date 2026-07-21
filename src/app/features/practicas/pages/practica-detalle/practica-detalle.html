@@ -12,17 +12,33 @@
           </button>
           <h1 class="h3 m-0 fw-bold tracking-tight text-slate-900">Registro de Práctica</h1>
           <span class="badge bg-slate-100 text-slate-700 border ms-2" *ngIf="sesion">Sesión #{{ sesion.id }}</span>
+          
+          <!-- Badge de Estado de la Sesión -->
+          <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" *ngIf="sesion?.guardado">
+            🔒 Finalizado / Bloqueado
+          </span>
         </div>
         <p class="text-muted small m-0 mt-1 ms-5" *ngIf="sesion?.fecha">
           📅 Fecha programada: <strong>{{ sesion.fecha | date:'fullDate' }}</strong>
         </p>
       </div>
 
-      <!-- Botón de guardado rápido -->
-      <button class="btn btn-dark-slate px-4 py-2 d-flex align-items-center gap-2 shadow-sm" (click)="guardarSesion()" [disabled]="guardando || !sesion">
+      <!-- Botón de guardado (Deshabilitado si ya está guardado) -->
+      <button class="btn btn-dark-slate px-4 py-2 d-flex align-items-center gap-2 shadow-sm" 
+              (click)="guardarSesion()" 
+              [disabled]="guardando || !sesion || sesion?.guardado">
         <span *ngIf="guardando" class="spinner-border spinner-border-sm"></span>
-        <span>💾 Guardar Registro</span>
+        <span *ngIf="!sesion?.guardado">💾 Guardar Registro</span>
+        <span *ngIf="sesion?.guardado">🔒 Registro Guardado</span>
       </button>
+    </div>
+
+    <!-- BANNER INFORMATIVO SI ESTÁ BLOQUEADO -->
+    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center gap-2 mb-4" *ngIf="sesion?.guardado">
+      <span class="fs-5">ℹ️</span>
+      <div class="small">
+        <strong>Modo de solo lectura:</strong> Esta asistencia ya ha sido guardada previamente y sus datos han sido bloqueados para evitar modificaciones.
+      </div>
     </div>
 
     <!-- TARJETAS DE MÉTRICAS RÁPIDAS (KPIs) -->
@@ -53,7 +69,7 @@
       </div>
     </div>
 
-    <!-- CONTROLES Y HERRAMIENTAS (BUSCADOR Y ACCIONES) -->
+    <!-- CONTROLES Y HERRAMIENTAS -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white" *ngIf="!cargando && sesion">
       <div class="row g-3 align-items-center">
         <!-- Buscador -->
@@ -69,15 +85,14 @@
           </div>
         </div>
 
-        <!-- Acciones Masivas -->
+        <!-- Acciones Masivas (Deshabilitados si ya está guardado) -->
         <div class="col-12 col-md-7 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
           <span class="small text-muted me-1">Marcar todos:</span>
-          <button class="btn btn-xs btn-outline-success" (click)="marcarTodos('ASISTIO')">✅ Asistió</button>
-          <button class="btn btn-xs btn-outline-danger" (click)="marcarTodos('FALTO')">❌ Faltó</button>
+          <button class="btn btn-xs btn-outline-success" [disabled]="sesion?.guardado" (click)="marcarTodos('ASISTIO')">✅ Asistió</button>
+          <button class="btn btn-xs btn-outline-danger" [disabled]="sesion?.guardado" (click)="marcarTodos('FALTO')">❌ Faltó</button>
           
           <div class="vr mx-1 d-none d-sm-block"></div>
 
-          <!-- Selector de tamaño de página -->
           <select class="form-select form-select-sm w-auto" [(ngModel)]="itemsPorPagina" (change)="paginaActual = 1">
             <option [ngValue]="6">6 por pág.</option>
             <option [ngValue]="12">12 por pág.</option>
@@ -93,10 +108,9 @@
       <p class="mt-3 text-muted">Cargando detalles de la práctica...</p>
     </div>
 
-    <!-- GRILLA DE ALUMNOS (CARDS) -->
+    <!-- GRILLA DE ALUMNOS -->
     <div *ngIf="!cargando && sesion">
       
-      <!-- Si no hay resultados de búsqueda -->
       <div *ngIf="detallePaginado.length === 0" class="text-center py-5 bg-white border rounded-3 my-3">
         <p class="text-muted m-0">No se encontraron alumnos que coincidan con "{{ filtroBusqueda }}".</p>
       </div>
@@ -108,7 +122,8 @@
                [ngClass]="{
                  'card-asistio': item.asistencia === 'ASISTIO',
                  'card-falto': item.asistencia === 'FALTO',
-                 'card-justificado': item.asistencia === 'JUSTIFICADO'
+                 'card-justificado': item.asistencia === 'JUSTIFICADO',
+                 'is-disabled': sesion?.guardado
                }">
 
             <!-- Cabecera de Tarjeta -->
@@ -118,7 +133,6 @@
                 <span class="badge bg-slate-100 text-slate-700 border">🚜 {{ item.maquina }}</span>
               </div>
 
-              <!-- Badge indicador de estado -->
               <span class="status-dot" 
                     [ngClass]="{
                       'bg-emerald-500': item.asistencia === 'ASISTIO',
@@ -133,10 +147,10 @@
             <!-- Cuerpo de la Tarjeta -->
             <div class="card-body p-3 d-flex flex-column">
 
-              <!-- Asistencia -->
+              <!-- Select Asistencia deshabilitado si sesion.guardado -->
               <div class="mb-3">
                 <label class="form-label micro-text fw-bold text-uppercase text-slate-500">Asistencia</label>
-                <select class="form-select form-select-sm" [(ngModel)]="item.asistencia">
+                <select class="form-select form-select-sm" [(ngModel)]="item.asistencia" [disabled]="sesion?.guardado">
                   <option value="">-- Seleccionar --</option>
                   <option value="ASISTIO">✅ Asistió</option>
                   <option value="FALTO">❌ Faltó</option>
@@ -144,34 +158,36 @@
                 </select>
               </div>
 
-              <!-- Observaciones -->
+              <!-- Textarea Observaciones deshabilitado si sesion.guardado -->
               <div class="mb-3">
                 <label class="form-label micro-text fw-bold text-uppercase text-slate-500">Observaciones</label>
                 <textarea 
                   class="form-control form-control-sm" 
                   rows="2" 
                   [(ngModel)]="item.observaciones" 
+                  [disabled]="sesion?.guardado"
                   placeholder="Escriba algún detalle o nota...">
                 </textarea>
               </div>
 
-              <!-- Subida de Evidencia Fotográfica -->
+              <!-- Evidencia Fotográfica -->
               <div class="mt-auto pt-2 border-top">
                 <label class="form-label micro-text fw-bold text-uppercase text-slate-500">Evidencia Fotográfica</label>
 
                 <!-- Vista si NO tiene imagen adjunta -->
-                <div *ngIf="!item.evidencia_url" class="file-upload-box rounded border border-dashed text-center p-3">
-                  <input type="file" accept="image/*" (change)="seleccionarImagen($event, item)" class="file-input-hidden" [id]="'file_' + (item.detalle_id || item.id)">
-                  <label [for]="'file_' + (item.detalle_id || item.id)" class="cursor-pointer m-0">
+                <div *ngIf="!item.evidencia_url" class="file-upload-box rounded border border-dashed text-center p-3" [class.disabled]="sesion?.guardado">
+                  <input type="file" accept="image/*" (change)="seleccionarImagen($event, item)" class="file-input-hidden" [id]="'file_' + (item.detalle_id || item.id)" [disabled]="sesion?.guardado">
+                  <label [for]="'file_' + (item.detalle_id || item.id)" [class.cursor-pointer]="!sesion?.guardado" class="m-0">
                     <span class="d-block mb-1">📷</span>
-                    <span class="small fw-medium text-slate-600">Subir fotografía</span>
+                    <span class="small fw-medium text-slate-600">{{ sesion?.guardado ? 'Sin evidencia' : 'Subir fotografía' }}</span>
                   </label>
                 </div>
 
                 <!-- Vista si SÍ tiene imagen adjunta -->
                 <div *ngIf="item.evidencia_url" class="img-preview-container rounded border position-relative overflow-hidden">
                   <img [src]="item.evidencia_url" alt="Evidencia de {{ item.alumno }}">
-                  <button type="button" class="btn btn-danger btn-sm btn-remove-img position-absolute top-0 end-0 m-1 p-1 rounded-circle" (click)="quitarImagen(item)" title="Quitar imagen">
+                  <!-- Botón quitar oculto si ya está guardado -->
+                  <button *ngIf="!sesion?.guardado" type="button" class="btn btn-danger btn-sm btn-remove-img position-absolute top-0 end-0 m-1 p-1 rounded-circle" (click)="quitarImagen(item)" title="Quitar imagen">
                     ✕
                   </button>
                 </div>
@@ -184,7 +200,7 @@
         </div>
       </div>
 
-      <!-- CONTROLES DE PAGINACIÓN -->
+      <!-- PAGINACIÓN -->
       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3" *ngIf="totalPaginas > 1">
         <span class="small text-muted">
           Mostrando <strong>{{ (paginaActual - 1) * itemsPorPagina + 1 }}</strong> - 
