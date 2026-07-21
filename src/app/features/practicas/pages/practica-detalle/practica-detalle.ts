@@ -82,28 +82,33 @@ export class PracticaDetalle implements OnInit {
 
 }
 
-  guardarSesion(){
+guardarSesion() {
+
+  console.log("ENVIANDO");
+  console.log(this.sesion);
 
   this.practicasService
-      .guardarSesion(
-          this.sesion.id,
-          this.sesion
-      )
-      .subscribe({
+    .guardarSesion(
+      this.sesion.id,
+      this.sesion
+    )
+    .subscribe({
 
-        next:()=>{
+      next: (resp) => {
 
-          alert("Sesión guardada.");
+        console.log(resp);
 
-        },
+        alert("Práctica guardada.");
 
-        error:err=>{
+      },
 
-          console.error(err);
+      error: (err) => {
 
-        }
+        console.error(err);
 
-      });
+      }
+
+    });
 
 }
 
