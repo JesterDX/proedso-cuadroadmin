@@ -1,62 +1,98 @@
 @use "sass:color";
 
-// PALETA DE COLORES
-$slate-950: #020617;
-$slate-900: #0f172a;
-$slate-800: #1e293b;
-$slate-700: #334155;
-$slate-600: #475569;
-$slate-500: #64748b;
-$slate-400: #94a3b8;
-$slate-300: #cbd5e1;
-$slate-200: #e2e8f0;
-$slate-100: #f1f5f9;
-$slate-50:  #f8fafc;
+// 1. TOKENS DE DISEÑO
+$slate: (
+  50:  #f8fafc,
+  100: #f1f5f9,
+  200: #e2e8f0,
+  300: #cbd5e1,
+  400: #94a3b8,
+  500: #64748b,
+  600: #475569,
+  700: #334155,
+  800: #1e293b,
+  900: #0f172a,
+  950: #020617
+);
 
-$color-asistio: #10b981;
-$color-falto: #f43f5e;
-$color-justificado: #f59e0b;
+$status: (
+  asistio:     (base: #10b981, bg: #ecfdf5, border: #a7f3d0, text: #065f46),
+  falto:       (base: #f43f5e, bg: #fff1f2, border: #fecdd3, text: #9f1239),
+  justificado: (base: #f59e0b, bg: #fffbeb, border: #fde68a, text: #92400e),
+  pendiente:   (base: map-get($slate, 400), bg: #ffffff, border: map-get($slate, 200), text: map-get($slate, 800))
+);
 
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 12px;
+$transition-base: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+// 2. BASE & UTILS
 .practica-wrapper {
-  background-color: $slate-50;
+  background-color: map-get($slate, 50);
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: $slate-800;
+  color: map-get($slate, 800);
 }
 
-.max-w-7xl {
-  max-width: 1280px;
-}
+.max-w-7xl { max-width: 1280px; }
 
 .micro-text {
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
+  font-size: 0.685rem;
+  letter-spacing: 0.05em;
 }
 
-// BOTONES
+.text-slate-500 { color: map-get($slate, 500); }
+.text-slate-600 { color: map-get($slate, 600); }
+.text-slate-800 { color: map-get($slate, 800); }
+.text-slate-900 { color: map-get($slate, 900); }
+
+// 3. COMPONENTES: CABECERA & BOTONES
+.page-header {
+  .header-subtitle {
+    margin-left: 2.5rem !important; // Alineado con el título (compensa el botón volver)
+    @media (max-width: 576px) { margin-left: 0 !important; }
+  }
+}
+
+.btn-icon {
+  background: #ffffff;
+  color: map-get($slate, 700);
+  border-color: map-get($slate, 200) !important;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: map-get($slate, 100);
+    color: map-get($slate, 900);
+  }
+}
+
 .btn-dark-slate {
-  background-color: $slate-900;
+  background-color: map-get($slate, 900);
   color: #ffffff;
-  border: 1px solid $slate-900;
+  border: 1px solid map-get($slate, 900);
   font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 8px;
+  border-radius: $radius-sm;
   padding: 0.5rem 1.25rem;
-  transition: all 0.2s ease-in-out;
+  transition: all $transition-base;
 
   &:hover:not(:disabled) {
-    background-color: $slate-800;
-    border-color: $slate-800;
+    background-color: map-get($slate, 800);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     transform: translateY(-1px);
   }
 
   &:disabled {
-    background-color: $slate-400;
-    border-color: $slate-400;
+    background-color: map-get($slate, 400);
+    border-color: map-get($slate, 400);
     cursor: not-allowed;
-    opacity: 0.75;
   }
 }
 
@@ -64,133 +100,169 @@ $color-justificado: #f59e0b;
   padding: 0.25rem 0.6rem;
   font-size: 0.75rem;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   transition: all 0.15s ease;
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
-// KPIS
+// 4. COMPONENTES: BADGES
+.badge-slate {
+  background-color: map-get($slate, 100);
+  color: map-get($slate, 700);
+  border: 1px solid map-get($slate, 200);
+  font-weight: 500;
+}
+
+.badge-status-locked {
+  background-color: map-get(map-get($status, asistio), bg);
+  color: map-get(map-get($status, asistio), text);
+  border: 1px solid map-get(map-get($status, asistio), border);
+}
+
+// 5. COMPONENTES: KPI CARDS
 .kpi-card {
-  border-radius: 10px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: $radius-md;
+  padding: 1rem;
+  transition: transform $transition-base, box-shadow $transition-base;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08);
   }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.685rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: map-get($slate, 500);
+  }
+
+  .kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    line-height: 1.2;
+  }
 }
 
-// TARJETAS
-.detalle-card {
-  background-color: #ffffff;
-  border: 1px solid $slate-200;
-  border-left: 4px solid $slate-300 !important;
-  border-radius: 12px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.kpi-success {
+  background-color: map-get(map-get($status, asistio), bg);
+  border: 1px solid map-get(map-get($status, asistio), border);
+  .kpi-label { color: color.adjust(map-get(map-get($status, asistio), base), $lightness: -10%); }
+  .kpi-value { color: map-get(map-get($status, asistio), text); }
+}
 
-  &:hover:not(.is-disabled) {
+.kpi-danger {
+  background-color: map-get(map-get($status, falto), bg);
+  border: 1px solid map-get(map-get($status, falto), border);
+  .kpi-label { color: color.adjust(map-get(map-get($status, falto), base), $lightness: -10%); }
+  .kpi-value { color: map-get(map-get($status, falto), text); }
+}
+
+.kpi-warning {
+  background-color: map-get(map-get($status, justificado), bg);
+  border: 1px solid map-get(map-get($status, justificado), border);
+  .kpi-label { color: color.adjust(map-get(map-get($status, justificado), base), $lightness: -15%); }
+  .kpi-value { color: map-get(map-get($status, justificado), text); }
+}
+
+// 6. COMPONENTES: TARJETAS DE ALUMNO
+.alumno-card {
+  background-color: #ffffff;
+  border: 1px solid map-get($slate, 200);
+  border-left: 4px solid map-get($slate, 300) !important;
+  border-radius: $radius-lg;
+  transition: all $transition-base;
+
+  &:hover:not(.card--disabled) {
     transform: translateY(-3px);
     box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08) !important;
   }
 
-  &.is-disabled {
+  &.card--disabled {
     background-color: #fcfcfd;
-    opacity: 0.92;
+    opacity: 0.9;
   }
 
-  &.card-asistio {
-    border-left-color: $color-asistio !important;
+  // Modificadores de estado
+  &.card--asistio {
+    border-left-color: map-get(map-get($status, asistio), base) !important;
     background: linear-gradient(180deg, rgba(16, 185, 129, 0.02) 0%, #ffffff 100%);
   }
-  &.card-falto {
-    border-left-color: $color-falto !important;
+  &.card--falto {
+    border-left-color: map-get(map-get($status, falto), base) !important;
     background: linear-gradient(180deg, rgba(244, 63, 94, 0.02) 0%, #ffffff 100%);
   }
-  &.card-justificado {
-    border-left-color: $color-justificado !important;
+  &.card--justificado {
+    border-left-color: map-get(map-get($status, justificado), base) !important;
     background: linear-gradient(180deg, rgba(245, 158, 11, 0.02) 0%, #ffffff 100%);
-  }
-
-  .card-title {
-    font-size: 0.925rem;
-    color: $slate-900;
-    letter-spacing: -0.01em;
   }
 }
 
 .status-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
+
+  &.dot--asistio     { background-color: map-get(map-get($status, asistio), base); }
+  &.dot--falto       { background-color: map-get(map-get($status, falto), base); }
+  &.dot--justificado { background-color: map-get(map-get($status, justificado), base); }
+  &.dot--pendiente   { background-color: map-get($slate, 300); }
 }
 
-// FORM INPUTS DESHABILITADOS
+// 7. COMPONENTES: FORMULARIOS & SUBIDA DE ARCHIVOS
 .form-select-sm, .form-control-sm {
-  border-color: $slate-200;
-  color: $slate-800;
+  border-color: map-get($slate, 200);
+  color: map-get($slate, 800);
   font-size: 0.825rem;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:focus {
-    border-color: $slate-700;
-    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+    border-color: map-get($slate, 400);
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
     outline: none;
   }
 
   &:disabled {
-    background-color: $slate-100;
-    color: $slate-600;
-    border-color: $slate-200;
+    background-color: map-get($slate, 100);
+    color: map-get($slate, 500);
     cursor: not-allowed;
   }
 }
 
-// SUBIDA DE ARCHIVO Y DROPZONE
 .file-upload-box {
-  background-color: $slate-50;
-  border: 2px dashed $slate-300 !important;
-  border-radius: 8px;
-  padding: 0.85rem 0.5rem;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
+  background-color: map-get($slate, 50);
+  border: 1px dashed map-get($slate, 300);
+  border-radius: $radius-sm;
+  transition: all 0.2s ease;
 
-  &:hover:not(.disabled) {
-    background-color: $slate-100;
-    border-color: $slate-400 !important;
+  &:hover:not(.is-disabled) {
+    background-color: map-get($slate, 100);
+    border-color: map-get($slate, 400);
   }
 
-  &.disabled {
-    background-color: $slate-100;
-    border-color: $slate-200 !important;
+  &.is-disabled {
+    background-color: map-get($slate, 100);
+    border-color: map-get($slate, 200);
     cursor: not-allowed;
     opacity: 0.7;
   }
 
-  .file-input-hidden {
-    display: none;
-  }
-
-  .cursor-pointer {
-    cursor: pointer;
-  }
+  .file-input-hidden { display: none; }
+  .cursor-pointer { cursor: pointer; }
 }
 
-.img-preview-container {
-  position: relative;
-  width: 100%;
-  height: 125px;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: $slate-900;
-  border: 1px solid $slate-200;
+.img-preview {
+  height: 140px;
+  background-color: map-get($slate, 900);
+  border-color: map-get($slate, 200) !important;
 
   img {
     width: 100%;
@@ -199,11 +271,8 @@ $color-justificado: #f59e0b;
   }
 
   .btn-remove-img {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: rgba(225, 29, 72, 0.9);
     color: #ffffff;
@@ -211,7 +280,7 @@ $color-justificado: #f59e0b;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: bold;
     backdrop-filter: blur(4px);
     transition: transform 0.15s ease, background-color 0.15s ease;
@@ -223,57 +292,37 @@ $color-justificado: #f59e0b;
   }
 }
 
-// PAGINACIÓN
+// 8. COMPONENTES: PAGINACIÓN
 .pagination {
-  gap: 3px;
+  gap: 4px;
 
   .page-item {
     .page-link {
-      color: $slate-700;
-      border-color: $slate-200;
+      color: map-get($slate, 700);
+      border: 1px solid map-get($slate, 200);
       font-size: 0.8rem;
       font-weight: 500;
       padding: 0.35rem 0.75rem;
-      border-radius: 6px;
+      border-radius: $radius-sm;
+      background: transparent;
 
-      &:hover {
-        background-color: $slate-100;
-        color: $slate-900;
+      &:hover:not(:disabled) {
+        background-color: map-get($slate, 100);
+        color: map-get($slate, 900);
       }
     }
 
     &.active .page-link {
-      background-color: $slate-900;
-      border-color: $slate-900;
+      background-color: map-get($slate, 900);
+      border-color: map-get($slate, 900);
       color: #ffffff;
     }
 
     &.disabled .page-link {
-      color: $slate-400;
-      border-color: $slate-200;
+      color: map-get($slate, 400);
+      border-color: map-get($slate, 200);
+      background: transparent;
+      cursor: not-allowed;
     }
   }
 }
-
-// UTILIDADES DE COLOR
-.bg-emerald-50 { background-color: #ecfdf5; }
-.bg-emerald-200 { border-color: #a7f3d0; }
-.bg-emerald-500 { background-color: $color-asistio; }
-.text-emerald-700 { color: #047857; }
-.text-emerald-800 { color: #065f46; }
-
-.bg-rose-50 { background-color: #fff1f2; }
-.bg-rose-200 { border-color: #fecdd3; }
-.bg-rose-500 { background-color: $color-falto; }
-.text-rose-700 { color: #be123c; }
-.text-rose-800 { color: #9f1239; }
-
-.bg-amber-50 { background-color: #fffbeb; }
-.bg-amber-200 { border-color: #fde68a; }
-.bg-amber-500 { background-color: $color-justificado; }
-.text-amber-700 { color: #b45309; }
-.text-amber-800 { color: #92400e; }
-
-.bg-slate-100 { background-color: $slate-100; }
-.bg-slate-300 { background-color: $slate-300; }
-.text-slate-700 { color: $slate-700; }
