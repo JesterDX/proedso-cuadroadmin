@@ -10,7 +10,7 @@
 
   <!-- ESTADO DE CARGA -->
   <section *ngIf="loading" class="loading-state">
-    <p>Cargando indicadores clave...</p>
+    <p>Cargando indicadores clave desde el servidor...</p>
   </section>
 
   <!-- CONTENIDO DEL DASHBOARD -->
@@ -54,8 +54,16 @@
         </div>
       </div>
 
-      <!-- Gráfico 2: Demanda de Maquinaria -->
+      <!-- Gráfico 2: Proporción de Actividad -->
       <div class="panel-card chart-card">
+        <h2>Proporción de Actividad (%)</h2>
+        <div class="chart-container">
+          <canvas baseChart [type]="'pie'" [data]="solvenciaChartData" [options]="chartOptions"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico 3: Demanda de Maquinaria -->
+      <div class="panel-card chart-card full-width">
         <h2>Equipos Más Demandados (%)</h2>
         <div class="chart-container">
           <canvas baseChart [type]="'bar'" [data]="maquinasChartData" [options]="barOptions"></canvas>
