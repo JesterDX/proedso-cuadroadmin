@@ -1,102 +1,168 @@
+// ==========================================
+// ESTILOS FORMALES Y MINIMALISTAS
+// ==========================================
 
-// ==========================================
-// ESTILOS PARA EL HISTORIAL DE PRÁCTICAS
-// ==========================================
+// Paleta de colores neutros
+$border-color: #e5e7eb;
+$text-main: #111827;
+$text-muted: #6b7280;
+$bg-light: #f9fafb;
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 h2 {
-  font-weight: 700;
-  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: $text-main;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid $border-color;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem !important;
 }
 
-// Tarjetas contenedoras de cada sesión
+// 1. Tarjetas contenedoras limpias
 .card {
-  border: none;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important; // Sombra casi imperceptible
+  background-color: #ffffff;
+  margin-bottom: 2.5rem;
 
-  &:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-  }
-
+  // Sobrescribimos "bg-dark text-white" por un diseño blanco impecable
   .card-header {
-    background-color: #212529;
-    font-size: 1.05rem;
-    padding: 0.85rem 1.25rem;
+    background-color: #ffffff !important;
+    color: $text-main !important;
+    border-bottom: 1px solid $border-color;
+    padding: 1.25rem 1.5rem;
+    font-size: 0.95rem;
     
     span {
-      letter-spacing: 0.3px;
+      font-weight: 500;
     }
   }
 
   .card-body {
-    padding: 1.5rem;
+    padding: 0; // Eliminamos padding para que la tabla fluya de extremo a extremo
   }
 }
 
-// Estilos de la tabla interna
+// 2. Tablas tipo "Ledger" (sin bordes verticales, mucho respiro)
 .table {
-  font-size: 0.92rem;
   margin-bottom: 0;
+  font-size: 0.875rem;
+  color: $text-main;
+
+  // Sobrescribimos "table-bordered"
+  &.table-bordered {
+    border: none;
+    th, td {
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid $border-color;
+    }
+  }
 
   thead {
-    th {
-      background-color: #f8f9fa;
-      color: #495057;
-      font-weight: 600;
+    // Sobrescribimos "table-light"
+    &.table-light th {
+      background-color: $bg-light;
+      color: $text-muted;
+      font-weight: 500;
       text-transform: uppercase;
-      font-size: 0.8rem;
-      letter-spacing: 0.5px;
-      padding: 0.75rem 0.5rem;
-      border-bottom: 2px solid #dee2e6;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid $border-color;
     }
   }
 
-  td {
-    padding: 0.85rem 0.5rem;
-    color: #333;
-    
-    // Centrar datos específicos por estética
-    &:nth-child(1), // Orden
-    &:nth-child(5), // Sesiones
-    &:nth-child(6), // Asistencia
-    &:nth-child(8)  // Evidencia
-    {
-      text-align: center;
+  tbody {
+    tr {
+      transition: background-color 0.2s ease;
+      
+      &:last-child td {
+        border-bottom: none;
+      }
+      &:hover {
+        background-color: #fcfcfc !important;
+      }
     }
-  }
 
-  // Efecto sutil al pasar el cursor sobre las filas
-  tbody tr {
-    transition: background-color 0.15s ease-in-out;
-    
-    &:hover {
-      background-color: rgba(0, 123, 255, 0.03);
+    td {
+      padding: 1.1rem 1.5rem;
+      vertical-align: middle;
+      color: #374151;
+
+      small {
+        color: $text-muted;
+      }
     }
   }
 }
 
-// Badges personalizados para asistencias y estados
+// 3. Badges apastelados (Formales, no gritan a la vista)
 .badge {
-  font-size: 0.8rem;
   font-weight: 500;
-  padding: 0.45em 0.8em;
-  border-radius: 6px;
+  border-radius: 4px;
+  padding: 0.35em 0.7em;
+  font-size: 0.72rem;
+  letter-spacing: 0.3px;
+
+  &.bg-success {
+    background-color: #def7ec !important;
+    color: #03543f !important;
+  }
+  &.bg-danger {
+    background-color: #fde8e8 !important;
+    color: #9b1c1c !important;
+  }
+  &.bg-warning {
+    background-color: #fdf6b2 !important;
+    color: #723b13 !important;
+  }
+  &.bg-secondary {
+    background-color: #f3f4f6 !important;
+    color: #4b5563 !important;
+    border: 1px solid #e5e7eb;
+  }
 }
 
-// Botones de acción (Ver evidencia)
+// 4. Botones fantasma
 .btn-outline-primary {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.6rem;
+  color: $text-main;
+  border: 1px solid $border-color;
+  background-color: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35rem 0.8rem;
   border-radius: 4px;
   transition: all 0.2s ease;
 
-  &:hover {
-    background-color: #0d6efd;
-    color: #fff;
+  &:hover, &:focus {
+    background-color: $bg-light !important;
+    color: $text-main !important;
+    border-color: #d1d5db !important;
+    box-shadow: none;
+  }
+}
+
+// 5. Estados de Alerta
+.alert {
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  
+  &.alert-info {
+    background-color: #f8fafc;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+  &.alert-danger {
+    background-color: #fdf2f2;
+    color: #9b1c1c;
+    border-color: #fde8e8;
   }
 }
