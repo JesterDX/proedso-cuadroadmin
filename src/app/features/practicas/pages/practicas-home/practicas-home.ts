@@ -4,63 +4,108 @@ import { Router, RouterModule } from '@angular/router';
 
 import { PracticasService } from '../../services/practicas.service';
 
+
 @Component({
-  selector: 'app-practicas-home',
-  standalone: true,
-  imports: [
+  selector:'app-practicas-home',
+  standalone:true,
+  imports:[
     CommonModule,
     RouterModule
   ],
-  templateUrl: './practicas-home.html',
-  styleUrl: './practicas-home.scss'
+  templateUrl:'./practicas-home.html',
+  styleUrl:'./practicas-home.scss'
 })
 export class PracticasHomeComponent implements OnInit {
 
-  private practicasService = inject(PracticasService);
-  private router = inject(Router);
 
-  ultimaSesionPendienteId: number | null = null;
+private practicasService = inject(PracticasService);
 
-  ngOnInit(): void {
-    this.obtenerUltimaSesionPendiente();
-  }
+private router = inject(Router);
 
-  obtenerUltimaSesionPendiente() {
-    this.practicasService.listarAsignaciones().subscribe({
-      next: (resp: any) => {
-        const sesiones = resp.data ?? resp;
-        
-        if (Array.isArray(sesiones) && sesiones.length > 0) {
-          // Filtramos las pendientes (o tomamos directamente la última si prefieres el flujo general)
-          const pendientes = sesiones.filter(
-            s => s.estado === 'PENDIENTE'
-          );
 
-          const listaAUsar = pendientes.length > 0 ? pendientes : sesiones;
 
-          // Ordenamos estrictamente por ID de manera descendente (el ID más alto es el más reciente)
-          listaAUsar.sort((a, b) => b.id - a.id);
+ultimaSesionPendienteId:number|null=null;
 
-          this.ultimaSesionPendienteId = listaAUsar[0].id;
-        }
-      },
-      error: (err: any) => {
-        console.error(err);
-      }
-    });
-  }
 
-  abrirRegistrarPractica() {
-    if (this.ultimaSesionPendienteId) {
-      this.router.navigate([
-        '/practicas',
-        this.ultimaSesionPendienteId
-      ]);
-    } else {
-      alert(
-        'No existe una sesión pendiente para registrar práctica.'
-      );
-    }
-  }
+
+ngOnInit(){
+
+ this.buscarSesionPendiente();
+
+}
+
+
+
+buscarSesionPendiente(){
+
+
+this.practicasService
+.listarSesionesGrupales()
+.subscribe({
+
+next:(resp:any)=>{
+
+
+const sesiones =
+resp.data ?? resp;
+
+
+
+const pendientes =
+sesiones.filter(
+(s:any)=>s.estado === 'PENDIENTE'
+);
+
+
+
+pendientes.sort(
+(a:any,b:any)=>
+b.id-a.id
+);
+
+
+
+if(pendientes.length){
+
+this.ultimaSesionPendienteId =
+pendientes[0].id;
+
+}
+
+
+
+},
+
+
+error:err=>{
+console.error(err);
+}
+
+});
+
+
+}
+
+
+
+
+abrirRegistrarPractica(){
+
+
+if(this.ultimaSesionPendienteId){
+
+
+this.router.navigate([
+'/practicas',
+this.ultimaSesionPendienteId
+]);
+
+
+}
+
+
+}
+
+
 
 }
