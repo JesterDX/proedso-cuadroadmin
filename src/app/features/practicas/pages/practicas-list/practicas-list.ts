@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, of } from 'rxjs';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import {
   debounceTime,
@@ -339,46 +340,83 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // ==========================================
   // ACCIÓN PRINCIPAL: GENERAR SESIÓN
   // ==========================================
-  generarSesionPractica(): void {
-    const detalle: any[] = [];
+  private router = inject(Router);
+generarSesionPractica(): void {
 
-    this.gruposPorAnio.forEach(grupo => {
-      grupo.meses.forEach(mes => {
-        mes.alumnos.forEach(alumno => {
-          alumno.maquinas.forEach(maquina => {
-            if (this.estaSeleccionada(alumno, maquina)) {
-              detalle.push({
-                matriculaId: alumno.matricula_id,
-                matriculaMaquinaId: maquina.matricula_maquina_id,
-                maquinaId: maquina.maquina_id,
-                sesiones: this.sesionesSeleccionadas(alumno, maquina)
-              });
-            }
-          });
+  const detalle: any[] = [];
+
+  this.gruposPorAnio.forEach(grupo => {
+
+    grupo.meses.forEach(mes => {
+
+      mes.alumnos.forEach(alumno => {
+
+        alumno.maquinas.forEach(maquina => {
+
+          if (this.estaSeleccionada(alumno, maquina)) {
+
+            detalle.push({
+
+              matriculaId: alumno.matricula_id,
+              matriculaMaquinaId: maquina.matricula_maquina_id,
+              maquinaId: maquina.maquina_id,
+              sesiones: this.sesionesSeleccionadas(alumno, maquina)
+
+            });
+
+          }
+
         });
+
       });
+
     });
 
-    const payload = {
-      fecha: this.fechaSesion,
-      detalle
-    };
+  });
 
-    console.log(payload);
+  const payload = {
 
-    this.practicasService
-      .crearSesionGrupal(payload)
-      .subscribe({
-        next: (resp: any) => {
-          alert("Sesión creada correctamente.");
-          console.log(resp);
-        },
-        error: (err) => {
-          alert(
-            err.error?.error ??
-            "Error al crear la sesión."
-          );
-        }
-      });
-  }
+    fecha: this.fechaSesion,
+    detalle
+
+  };
+
+  this.practicasService
+    .crearSesionGrupal(payload)
+    .subscribe({
+
+      next: (resp:any) => {
+
+        Swal.fire({
+
+          icon: 'success',
+          title: 'Sesión creada',
+          text: 'Ahora organizarás el cronograma.'
+
+        }).then(() => {
+
+          this.router.navigate([
+            '/practicas/cronograma',
+            resp.data.id
+          ]);
+
+        });
+
+      },
+
+      error: (err) => {
+
+        Swal.fire({
+
+          icon: 'error',
+          title: 'Error',
+          text: err.error?.error ?? 'No se pudo crear la sesión.'
+
+        });
+
+      }
+
+    });
+
+}
 }
