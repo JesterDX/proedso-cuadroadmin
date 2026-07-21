@@ -16,7 +16,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 
 import { PracticasService } from '../../services/practicas.service';
-
+import html2pdf from 'html2pdf.js';
 @Component({
   selector: 'app-cronograma-practicas',
   standalone: true,
@@ -169,6 +169,45 @@ export class CronogramaPracticasComponent implements OnInit {
       }
 
     });
+
+}
+
+  generarPDF(): void {
+
+  const elemento = document.getElementById('cronogramaPDF');
+
+  if (!elemento) return;
+
+  const opciones = {
+
+    margin: 0.5,
+
+    filename: `Cronograma_${this.sesion.fecha}.pdf`,
+
+    image: {
+      type: 'jpeg',
+      quality: 1
+    },
+
+    html2canvas: {
+      scale: 2
+    },
+
+    jsPDF: {
+      unit: 'in',
+      format: 'a4',
+      orientation: 'portrait'
+    }
+
+  };
+
+  html2pdf()
+
+    .set(opciones)
+
+    .from(elemento)
+
+    .save();
 
 }
 
