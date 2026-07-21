@@ -178,5 +178,10 @@ export class PracticasService {
   );
 
 }
+  obtenerPendientes() {
+  return this.http.get<any>(
+    `${this.apiUrl}/pendientes`
+  );
+}
 
-} // <--- ESTA LLAVE CIERRA LA CLASE PracticasService Y SOLUCIONA EL ERROR
+} // <--- ESTA LLAVE CIERRA LA CLASE
