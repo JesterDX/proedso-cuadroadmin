@@ -22,31 +22,19 @@ export class PracticasHomeComponent implements OnInit {
   ultimaSesionPendienteId: number | null = null;
 
   ngOnInit(): void {
-    this.buscarSesionPendiente();
+    this.buscarUltimaSesion();
   }
 
-  buscarSesionPendiente() {
-    // CORREGIDO: Se usa listarAsignaciones() en lugar de listarSesionesGrupales()
-    this.practicasService.listarAsignaciones().subscribe({
+  buscarUltimaSesion() {
+    this.practicasService.obtenerUltimaSesionPendiente().subscribe({
       next: (resp: any) => {
-        const sesiones = resp.data ?? resp;
-
-        if (Array.isArray(sesiones)) {
-          const pendientes = sesiones.filter(
-            (s: any) => s.estado === 'PENDIENTE'
-          );
-
-          pendientes.sort(
-            (a: any, b: any) => b.id - a.id
-          );
-
-          if (pendientes.length > 0) {
-            this.ultimaSesionPendienteId = pendientes[0].id;
-          }
+        const sesion = resp.data ?? resp;
+        if (sesion && sesion.id) {
+          this.ultimaSesionPendienteId = sesion.id;
         }
       },
-      error: (err: any) => { // CORREGIDO: Tipado estricto 'err: any'
-        console.error(err);
+      error: (err: any) => {
+        console.error('Error al buscar la última sesión pendiente:', err);
       }
     });
   }
