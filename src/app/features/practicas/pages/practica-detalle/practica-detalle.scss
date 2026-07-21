@@ -1,8 +1,6 @@
 @use "sass:color";
 
-// ==========================================
-// PALETA DE COLORES - SLATE EXECUTIVE
-// ==========================================
+// PALETA DE COLORES
 $slate-950: #020617;
 $slate-900: #0f172a;
 $slate-800: #1e293b;
@@ -15,14 +13,10 @@ $slate-200: #e2e8f0;
 $slate-100: #f1f5f9;
 $slate-50:  #f8fafc;
 
-// Estados de Asistencia
-$color-asistio: #10b981;     // Emerald 500
-$color-falto: #f43f5e;       // Rose 500
-$color-justificado: #f59e0b; // Amber 500
+$color-asistio: #10b981;
+$color-falto: #f43f5e;
+$color-justificado: #f59e0b;
 
-// ==========================================
-// CONTENEDOR PRINCIPAL Y TIPOGRAFÍA
-// ==========================================
 .practica-wrapper {
   background-color: $slate-50;
   min-height: 100vh;
@@ -39,9 +33,7 @@ $color-justificado: #f59e0b; // Amber 500
   letter-spacing: 0.06em;
 }
 
-// ==========================================
-// BOTONES Y CONTROLES
-// ==========================================
+// BOTONES
 .btn-dark-slate {
   background-color: $slate-900;
   color: #ffffff;
@@ -64,7 +56,7 @@ $color-justificado: #f59e0b; // Amber 500
     background-color: $slate-400;
     border-color: $slate-400;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.75;
   }
 }
 
@@ -74,11 +66,14 @@ $color-justificado: #f59e0b; // Amber 500
   font-weight: 500;
   border-radius: 6px;
   transition: all 0.15s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
-// ==========================================
-// TARJETAS KPI (RESUMEN RÁPIDO)
-// ==========================================
+// KPIS
 .kpi-card {
   border-radius: 10px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -90,9 +85,7 @@ $color-justificado: #f59e0b; // Amber 500
   }
 }
 
-// ==========================================
-// TARJETAS DE ALUMNO (GRILLA PRINCIPAL)
-// ==========================================
+// TARJETAS
 .detalle-card {
   background-color: #ffffff;
   border: 1px solid $slate-200;
@@ -100,12 +93,16 @@ $color-justificado: #f59e0b; // Amber 500
   border-radius: 12px;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 
-  &:hover {
+  &:hover:not(.is-disabled) {
     transform: translateY(-3px);
     box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08) !important;
   }
 
-  // Fondos tenues según estado marcado
+  &.is-disabled {
+    background-color: #fcfcfd;
+    opacity: 0.92;
+  }
+
   &.card-asistio {
     border-left-color: $color-asistio !important;
     background: linear-gradient(180deg, rgba(16, 185, 129, 0.02) 0%, #ffffff 100%);
@@ -126,19 +123,15 @@ $color-justificado: #f59e0b; // Amber 500
   }
 }
 
-// Indicador punto circular de estado
 .status-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
 }
 
-// ==========================================
-// INPUTS Y SELECCIONABLES
-// ==========================================
+// FORM INPUTS DESHABILITADOS
 .form-select-sm, .form-control-sm {
   border-color: $slate-200;
   color: $slate-800;
@@ -151,11 +144,16 @@ $color-justificado: #f59e0b; // Amber 500
     box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
     outline: none;
   }
+
+  &:disabled {
+    background-color: $slate-100;
+    color: $slate-600;
+    border-color: $slate-200;
+    cursor: not-allowed;
+  }
 }
 
-// ==========================================
-// ÁREA DE SUBIDA DE ARCHIVO (DROPZONE FOTO)
-// ==========================================
+// SUBIDA DE ARCHIVO Y DROPZONE
 .file-upload-box {
   background-color: $slate-50;
   border: 2px dashed $slate-300 !important;
@@ -164,9 +162,16 @@ $color-justificado: #f59e0b; // Amber 500
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(.disabled) {
     background-color: $slate-100;
     border-color: $slate-400 !important;
+  }
+
+  &.disabled {
+    background-color: $slate-100;
+    border-color: $slate-200 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 
   .file-input-hidden {
@@ -178,7 +183,6 @@ $color-justificado: #f59e0b; // Amber 500
   }
 }
 
-// PREVISUALIZACIÓN DE IMAGEN CON BOTÓN FLOTANTE
 .img-preview-container {
   position: relative;
   width: 100%;
@@ -192,11 +196,6 @@ $color-justificado: #f59e0b; // Amber 500
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover img {
-    transform: scale(1.03);
   }
 
   .btn-remove-img {
@@ -224,9 +223,7 @@ $color-justificado: #f59e0b; // Amber 500
   }
 }
 
-// ==========================================
 // PAGINACIÓN
-// ==========================================
 .pagination {
   gap: 3px;
 
@@ -243,10 +240,6 @@ $color-justificado: #f59e0b; // Amber 500
         background-color: $slate-100;
         color: $slate-900;
       }
-
-      &:focus {
-        box-shadow: none;
-      }
     }
 
     &.active .page-link {
@@ -262,9 +255,7 @@ $color-justificado: #f59e0b; // Amber 500
   }
 }
 
-// ==========================================
-// CLASES DE UTILIDAD
-// ==========================================
+// UTILIDADES DE COLOR
 .bg-emerald-50 { background-color: #ecfdf5; }
 .bg-emerald-200 { border-color: #a7f3d0; }
 .bg-emerald-500 { background-color: $color-asistio; }
