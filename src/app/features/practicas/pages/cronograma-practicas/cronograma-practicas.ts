@@ -133,32 +133,42 @@ export class CronogramaPracticasComponent implements OnInit {
 
   guardarCronograma(): void {
 
-  const detalle = this.sesion.detalle.map((x: any, index: number) => ({
+  const detalle = this.sesion.detalle.map(
+    (item: any, index: number) => ({
 
-    detalleId: x.detalle_id,
+      detalleId: item.detalle_id,
 
-    orden: index + 1,
+      orden: index + 1,
 
-    horaInicio: x.horaInicio,
+      horaInicio: item.horaInicio,
 
-    horaFin: x.horaFin
+      horaFin: item.horaFin
 
-  }));
+    })
+  );
 
   this.practicasService
-      .guardarCronograma(
-        this.sesion.id,
-        detalle
-      )
-      .subscribe({
+    .guardarCronograma(
+      this.sesion.id,
+      detalle
+    )
+    .subscribe({
 
-        next: () => {
+      next: () => {
 
-          alert("Cronograma guardado.");
+        alert("Cronograma guardado correctamente.");
 
-        }
+      },
 
-      });
+      error: (err) => {
+
+        console.error(err);
+
+        alert("No se pudo guardar.");
+
+      }
+
+    });
 
 }
 
