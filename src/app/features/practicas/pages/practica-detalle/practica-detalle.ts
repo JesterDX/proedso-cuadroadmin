@@ -27,7 +27,10 @@ export class PracticaDetalle implements OnInit {
   cargando = false;
   guardando = false;
   sesion: any = null;
+  sesionSeleccionadaId: number = 0;
+  sesionesPendientes: any[] = []; // <--- Arreglo para almacenar sesiones alternas/pendientes
   Math = Math;
+
   // Búsqueda y Paginación
   filtroBusqueda: string = '';
   paginaActual: number = 1;
@@ -36,8 +39,35 @@ export class PracticaDetalle implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
+      this.sesionSeleccionadaId = id;
       this.cargarSesion(id);
+      this.cargarSesionesPendientes();
     }
+  }
+
+  /**
+   * Carga la lista de sesiones disponibles para cambiar entre locales/sesiones
+   */
+  cargarSesionesPendientes(): void {
+    this.practicasService.obtenerSesionesPendientes().subscribe({
+      next: (resp: any) => {
+        this.sesionesPendientes = resp.data ?? resp ?? [];
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al obtener sesiones pendientes:', err)
+    });
+  }
+
+  /**
+   * Maneja el cambio de selección en el dropdown
+   */
+  onSesionChange(id: number): void {
+    if (!id || id === this.sesionSeleccionadaId) return;
+    this.sesionSeleccionadaId = Number(id);
+    
+    // Ruta con prefijo /practicas/ para evitar redirección por fallo de guard
+    this.router.navigate(['/practicas', id]);
+    this.cargarSesion(this.sesionSeleccionadaId);
   }
 
   /**
@@ -49,6 +79,7 @@ export class PracticaDetalle implements OnInit {
     this.practicasService.obtenerSesion(id).subscribe({
       next: (resp) => {
         this.sesion = resp.data ?? resp;
+        this.sesionSeleccionadaId = this.sesion.id;
         
         // Asignar valor por defecto si asistencia no viene definida
         if (this.sesion?.detalle) {
@@ -224,7 +255,7 @@ export class PracticaDetalle implements OnInit {
       }
     });
 
-    // Envío al servicio (puedes enviar formData o el objeto directo según tu API)
+    // Envío al servicio
     this.practicasService.guardarSesion(this.sesion.id, formData).subscribe({
       next: (resp) => {
         this.guardando = false;
