@@ -43,8 +43,9 @@
     </h2>
 
     <input
-        type="time"
-        [(ngModel)]="horaInicio">
+type="time"
+[(ngModel)]="horaInicio"
+(ngModelChange)="generarCronograma()">
 
 </section>
 
