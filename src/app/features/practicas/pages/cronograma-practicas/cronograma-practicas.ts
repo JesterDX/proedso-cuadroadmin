@@ -1,137 +1,134 @@
 import {
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
+
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import {
   DragDropModule,
   CdkDragDrop,
   moveItemInArray
 } from '@angular/cdk/drag-drop';
 
-import { CommonModule } from '@angular/common';
-
 import { ActivatedRoute } from '@angular/router';
 
 import { PracticasService } from '../../services/practicas.service';
-import { FormsModule } from '@angular/forms';
+
 @Component({
-
-  selector:'app-cronograma-practicas',
-
-  standalone:true,
-
-imports:[
-  CommonModule,
-  FormsModule,
-  DragDropModule
-]
-
-  templateUrl:'./cronograma-practicas.html',
-
-  styleUrl:'./cronograma-practicas.scss'
-
+  selector: 'app-cronograma-practicas',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    DragDropModule
+  ],
+  templateUrl: './cronograma-practicas.html',
+  styleUrl: './cronograma-practicas.scss'
 })
+export class CronogramaPracticasComponent implements OnInit {
 
-export class CronogramaPracticasComponent
-implements OnInit{
+  private route = inject(ActivatedRoute);
+  private practicasService = inject(PracticasService);
 
-  private route=inject(ActivatedRoute);
+  sesion: any = null;
 
-  private practicasService=inject(PracticasService);
+  loading = true;
 
-  sesion:any=null;
+  horaInicio = '08:00';
 
-  loading=true;
-
-  horaInicio='08:00';
   duracionSesion = 30;
-  ngOnInit():void{
 
-    const id=
+  ngOnInit(): void {
 
-      Number(
-
-        this.route.snapshot.paramMap.get('id')
-
-      );
+    const id = Number(
+      this.route.snapshot.paramMap.get('id')
+    );
 
     this.practicasService
-
       .obtenerSesionGrupal(id)
-
       .subscribe({
 
-        next:(resp)=>{
-        this.sesion = resp.data ?? resp;
-        
-        this.generarCronograma();
-        
-        this.loading = false;
+        next: (resp: any) => {
+
+          this.sesion = resp.data ?? resp;
+
+          this.generarCronograma();
+
+          this.loading = false;
 
         },
 
-        error:(err)=>{
+        error: (err: any) => {
 
           console.error(err);
 
-          this.loading=false;
+          this.loading = false;
 
         }
 
       });
 
   }
+
   generarCronograma(): void {
 
-  if (!this.sesion) return;
+    if (!this.sesion) return;
 
-  const [hora, minuto] = this.horaInicio
-    .split(':')
-    .map(Number);
+    const [hora, minuto] = this.horaInicio
+      .split(':')
+      .map(Number);
 
-  let actual = new Date();
+    const actual = new Date();
 
-  actual.setHours(hora);
-  actual.setMinutes(minuto);
-  actual.setSeconds(0);
+    actual.setHours(hora);
+    actual.setMinutes(minuto);
+    actual.setSeconds(0);
 
-  this.sesion.detalle.forEach((item: any) => {
+    this.sesion.detalle.forEach((item: any) => {
 
-    const inicio = new Date(actual);
+      const inicio = new Date(actual);
 
-    actual.setMinutes(
-      actual.getMinutes() +
-      item.sesiones_asignadas * this.duracionSesion
-    );
+      actual.setMinutes(
+        actual.getMinutes() +
+        item.sesiones_asignadas * this.duracionSesion
+      );
 
-    const fin = new Date(actual);
+      const fin = new Date(actual);
 
-    item.horaInicio = this.formatearHora(inicio);
+      item.horaInicio = this.formatearHora(inicio);
 
-    item.horaFin = this.formatearHora(fin);
+      item.horaFin = this.formatearHora(fin);
 
-  });
+    });
 
-}
+  }
 
   formatearHora(fecha: Date): string {
 
-  return fecha.toLocaleTimeString(
-    'es-PE',
-    {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }
-  );
+    return fecha.toLocaleTimeString(
+      'es-PE',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }
+    );
 
-}
-  drop(event: CdkDragDrop<any[]>) {
+  }
 
-  moveItemInArray(
-    this.sesion.detalle,
-    event.previousIndex,
-    event.currentIndex
-  );
+  drop(event: CdkDragDrop<any[]>): void {
 
-  this.generarCronograma();
+    moveItemInArray(
+      this.sesion.detalle,
+      event.previousIndex,
+      event.currentIndex
+    );
 
-}
+    this.generarCronograma();
+
+  }
 
 }
