@@ -71,6 +71,8 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   cursos: any[] = [];
   maquinas: any[] = [];
 
+  lugaresPractica: any[] = [];
+  lugarPracticaId: number | null = null;
   // ==========================================
   // ESTADO
   // ==========================================
@@ -90,17 +92,21 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   private filtrosChange$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
-  ngOnInit(): void {
-    this.filtrosChange$
-      .pipe(
-        debounceTime(350),
-        switchMap(() => this.buscarAlumnos()),
-        takeUntil(this.destroy$)
-      )
-      .subscribe();
+ngOnInit(): void {
 
-    this.filtrosChange$.next();
-  }
+  this.cargarLugaresPractica();
+
+  this.filtrosChange$
+    .pipe(
+      debounceTime(350),
+      switchMap(() => this.buscarAlumnos()),
+      takeUntil(this.destroy$)
+    )
+    .subscribe();
+
+  this.filtrosChange$.next();
+
+}
 
   ngOnDestroy(): void {
     this.destroy$.next();
