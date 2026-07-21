@@ -1,1 +1,116 @@
 
+// ==========================================
+// ESTILOS FORMALES Y MINIMALISTAS
+// ==========================================
+
+$border-color: #e5e7eb;
+$text-main: #111827;
+$text-muted: #6b7280;
+$bg-light: #f9fafb;
+$primary-color: #111827; // Azul muy oscuro/casi negro para elegancia
+
+.container {
+  max-width: 1200px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: $text-main;
+  letter-spacing: -0.02em;
+}
+
+// Tarjetas de cada alumno
+.detalle-card {
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-2px);
+  }
+
+  .card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid $border-color;
+    padding: 1rem 1.25rem;
+    
+    h5 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $text-main;
+    }
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+}
+
+// Estilos limpios para formularios
+.form-label {
+  color: $text-muted;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  font-size: 0.7rem !important;
+}
+
+.form-control, .form-select {
+  border-color: $border-color;
+  font-size: 0.85rem;
+  color: $text-main;
+  box-shadow: none !important;
+  
+  &:focus {
+    border-color: #9ca3af;
+    // Anillo de enfoque minimalista gris en lugar del azul de Bootstrap
+    box-shadow: 0 0 0 0.2rem rgba(156, 163, 175, 0.15) !important; 
+  }
+}
+
+// Contenedor de previsualización de evidencia
+.img-preview {
+  width: 100%;
+  height: 120px; // Altura fija para que todas las tarjetas midan igual
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $bg-light;
+  
+  img {
+    object-fit: cover; // Asegura que la imagen llene el contenedor sin deformarse
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Botón de guardado estilo ejecutivo
+.btn-primary {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+
+  &:hover, &:focus {
+    background-color: #374151;
+    border-color: #374151;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Badge sutil
+.badge {
+  font-weight: 500;
+  &.bg-secondary {
+    background-color: #f3f4f6 !important;
+    color: #4b5563 !important;
+    border: 1px solid $border-color;
+  }
+}
