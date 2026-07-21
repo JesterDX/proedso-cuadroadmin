@@ -419,4 +419,12 @@ generarSesionPractica(): void {
     }
   });
 }
+
+  obtenerLugaresPractica() {
+
+  return this.http.get<any>(
+    `${this.apiUrl}/lugares-practica`
+  );
+
+}
 }
