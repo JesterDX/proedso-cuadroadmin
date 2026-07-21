@@ -22,12 +22,15 @@ export class PracticaDetalle implements OnInit {
   private router = inject(Router);
   private practicasService = inject(PracticasService);
   private cd = inject(ChangeDetectorRef);
+
   Math = Math;
+
   // Estados de interfaz
   cargando = false;
   guardando = false;
   sesion: any = null;
   sesionBloqueada = false;
+
   // Búsqueda y Paginación
   filtroBusqueda: string = '';
   paginaActual: number = 1;
@@ -49,10 +52,9 @@ export class PracticaDetalle implements OnInit {
     this.practicasService.obtenerSesion(id).subscribe({
       next: (resp) => {
         this.sesion = resp.data ?? resp;
-        this.sesionBloqueada = 
-          this.sesion.estado === 'FINALIZADA' ||
-          this.sesion.estado === 'REGISTRADA' ||
-          this.sesion.estado === 'COMPLETADA';
+        
+        // Determina si la sesión ya fue completada para bloquear edición
+        this.validarEstadoBloqueo();
                 
         // Asignar valor por defecto si asistencia no viene definida
         if (this.sesion?.detalle) {
@@ -77,6 +79,19 @@ export class PracticaDetalle implements OnInit {
         });
       }
     });
+  }
+
+  /**
+   * Verifica el estado o las flags de la sesión para bloquear cambios
+   */
+  private validarEstadoBloqueo(): void {
+    if (!this.sesion) return;
+    this.sesionBloqueada = Boolean(
+      this.sesion.guardado ||
+      this.sesion.estado === 'FINALIZADA' ||
+      this.sesion.estado === 'REGISTRADA' ||
+      this.sesion.estado === 'COMPLETADA'
+    );
   }
 
   // ==========================================
@@ -139,7 +154,7 @@ export class PracticaDetalle implements OnInit {
    * Marca a todos los alumnos visibles o totales con un estado rápido
    */
   marcarTodos(estado: string): void {
-    if (!this.sesion?.detalle) return;
+    if (this.sesionBloqueada || !this.sesion?.detalle) return;
 
     Swal.fire({
       title: '¿Marcar a todos?',
@@ -167,6 +182,8 @@ export class PracticaDetalle implements OnInit {
    * Procesa la imagen seleccionada y genera una preview local en tiempo real
    */
   seleccionarImagen(event: any, item: any): void {
+    if (this.sesionBloqueada) return;
+
     const archivo = event.target.files?.[0];
     if (!archivo) return;
 
@@ -187,6 +204,7 @@ export class PracticaDetalle implements OnInit {
    * Elimina la foto seleccionada
    */
   quitarImagen(item: any): void {
+    if (this.sesionBloqueada) return;
     item.archivo = null;
     item.evidencia_url = null;
   }
@@ -196,7 +214,7 @@ export class PracticaDetalle implements OnInit {
   // ==========================================
   
   guardarSesion(): void {
-    if (!this.sesion) return;
+    if (!this.sesion || this.sesionBloqueada) return;
 
     Swal.fire({
       title: 'Guardando registro...',
@@ -228,20 +246,30 @@ export class PracticaDetalle implements OnInit {
       }
     });
 
-    // Envío al servicio (puedes enviar formData o el objeto directo según tu API)
+    // Envío al servicio
     this.practicasService.guardarSesion(this.sesion.id, formData).subscribe({
       next: (resp) => {
         this.guardando = false;
+
+        // Actualizamos estado local y bloqueamos edición
+        this.sesion.estado = 'FINALIZADA';
+        this.sesion.guardado = true;
+        this.validarEstadoBloqueo();
+
+        this.cd.detectChanges();
+
         Swal.fire({
           icon: 'success',
           title: '¡Registro guardado!',
-          text: 'La asistencia y evidencias se registraron correctamente.',
+          text: 'La asistencia y evidencias se registraron correctamente. El formulario ahora está en modo de solo lectura.',
           confirmButtonColor: '#0f172a'
         });
       },
       error: (err) => {
         console.error('Error guardando la sesión:', err);
         this.guardando = false;
+        this.cd.detectChanges();
+
         Swal.fire({
           icon: 'error',
           title: 'Error al guardar',
