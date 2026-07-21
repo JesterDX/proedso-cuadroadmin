@@ -153,7 +153,7 @@ guardarSesion(id:number,data:any){
   );
 
 }
-  obtenerSesionGrupal(id:number){
+obtenerSesionGrupal(id:number){
 
   return this.http.get<any>(
 
@@ -163,22 +163,24 @@ guardarSesion(id:number,data:any){
 
 }
 
-  guardarCronograma(
-id:number,
-detalle:any[]
+guardarCronograma(
+
+  id:number,
+
+  detalle:any[]
+
 ){
 
-return this.http.put(
+  return this.http.put<any>(
 
-`${this.api}/sesiones-grupales/${id}/cronograma`,
+    `${this.apiUrl}/sesiones-grupales/${id}/cronograma`,
 
-{
+    {
 
-detalle
+      detalle
 
-}
+    }
 
-);
+  );
 
-}
 }
