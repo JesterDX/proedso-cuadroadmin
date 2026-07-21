@@ -425,5 +425,36 @@ generarSesionPractica(): void {
     }
   });
 }
+  cargarLugaresPractica(): void {
+
+  this.practicasService.obtenerLugaresPractica().subscribe({
+
+    next: (resp: any) => {
+
+      this.lugaresPractica = resp.data ?? resp;
+
+      if (this.lugaresPractica.length > 0) {
+
+        this.lugarPracticaId = this.lugaresPractica[0].id;
+
+      }
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudieron cargar los lugares de práctica.'
+      });
+
+    }
+
+  });
+
+}
 
 }
