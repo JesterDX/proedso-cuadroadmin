@@ -162,4 +162,23 @@ guardarSesion(id:number,data:any){
   );
 
 }
+
+  guardarCronograma(
+id:number,
+detalle:any[]
+){
+
+return this.http.put(
+
+`${this.api}/sesiones-grupales/${id}/cronograma`,
+
+{
+
+detalle
+
+}
+
+);
+
+}
 }
