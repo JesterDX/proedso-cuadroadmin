@@ -1,0 +1,119 @@
+<header class="main-header">
+
+    <h1>
+        📅 Cronograma de Prácticas
+    </h1>
+
+    <p>
+        Organice el orden y horario antes de iniciar la jornada.
+    </p>
+
+</header>
+
+@if(loading){
+
+<div class="loading">
+
+    Cargando...
+
+</div>
+
+}
+
+@if(!loading){
+
+<section class="card">
+
+    <h2>
+
+        Fecha
+
+    </h2>
+
+    {{sesion.fecha}}
+
+</section>
+
+<section class="card">
+
+    <h2>
+
+        Hora de inicio
+
+    </h2>
+
+    <input
+        type="time"
+        [(ngModel)]="horaInicio">
+
+</section>
+
+<section class="card">
+
+    <h2>
+
+        Participantes
+
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>Alumno</th>
+
+                <th>Máquina</th>
+
+                <th>Sesiones</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @for(
+            item of sesion.detalle;
+            track item.detalle_id){
+
+            <tr>
+
+                <td>
+
+                    {{$index+1}}
+
+                </td>
+
+                <td>
+
+                    {{item.alumno}}
+
+                </td>
+
+                <td>
+
+                    {{item.maquina}}
+
+                </td>
+
+                <td>
+
+                    {{item.sesiones_asignadas}}
+
+                </td>
+
+            </tr>
+
+            }
+
+        </tbody>
+
+    </table>
+
+</section>
+
+}
