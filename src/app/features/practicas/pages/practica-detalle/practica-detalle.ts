@@ -23,13 +23,10 @@ export class PracticaDetalle implements OnInit {
   private practicasService = inject(PracticasService);
   private cd = inject(ChangeDetectorRef);
 
-  Math = Math;
-
   // Estados de interfaz
   cargando = false;
   guardando = false;
   sesion: any = null;
-  sesionBloqueada = false;
 
   // Búsqueda y Paginación
   filtroBusqueda: string = '';
@@ -53,9 +50,6 @@ export class PracticaDetalle implements OnInit {
       next: (resp) => {
         this.sesion = resp.data ?? resp;
         
-        // Determina si la sesión ya fue completada para bloquear edición
-        this.validarEstadoBloqueo();
-                
         // Asignar valor por defecto si asistencia no viene definida
         if (this.sesion?.detalle) {
           this.sesion.detalle.forEach((item: any) => {
@@ -79,19 +73,6 @@ export class PracticaDetalle implements OnInit {
         });
       }
     });
-  }
-
-  /**
-   * Verifica el estado o las flags de la sesión para bloquear cambios
-   */
-  private validarEstadoBloqueo(): void {
-    if (!this.sesion) return;
-    this.sesionBloqueada = Boolean(
-      this.sesion.guardado ||
-      this.sesion.estado === 'FINALIZADA' ||
-      this.sesion.estado === 'REGISTRADA' ||
-      this.sesion.estado === 'COMPLETADA'
-    );
   }
 
   // ==========================================
@@ -154,7 +135,7 @@ export class PracticaDetalle implements OnInit {
    * Marca a todos los alumnos visibles o totales con un estado rápido
    */
   marcarTodos(estado: string): void {
-    if (this.sesionBloqueada || !this.sesion?.detalle) return;
+    if (!this.sesion?.detalle) return;
 
     Swal.fire({
       title: '¿Marcar a todos?',
@@ -182,8 +163,6 @@ export class PracticaDetalle implements OnInit {
    * Procesa la imagen seleccionada y genera una preview local en tiempo real
    */
   seleccionarImagen(event: any, item: any): void {
-    if (this.sesionBloqueada) return;
-
     const archivo = event.target.files?.[0];
     if (!archivo) return;
 
@@ -204,7 +183,6 @@ export class PracticaDetalle implements OnInit {
    * Elimina la foto seleccionada
    */
   quitarImagen(item: any): void {
-    if (this.sesionBloqueada) return;
     item.archivo = null;
     item.evidencia_url = null;
   }
@@ -213,41 +191,32 @@ export class PracticaDetalle implements OnInit {
   // GUARDAR EN EL BACKEND
   // ==========================================
   
- guardarSesion(): void {
-  if (!this.sesion || this.sesionBloqueada) return;
+  guardarSesion(): void {
+    if (!this.sesion) return;
 
-  Swal.fire({
-    title: 'Guardando registro...',
-    text: 'Subiendo evidencias fotográficas y actualizando asistencias',
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
-  });
+    Swal.fire({
+      title: 'Guardando registro...',
+      text: 'Subiendo evidencias fotográficas y actualizando asistencias',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-  this.guardando = true;
+    this.guardando = true;
 
-  // 1. Mapeo estructurado de los detalles
-  const detallesPayload = this.sesion.detalle.map((item: any) => ({
-    detalleId: item.detalle_id || item.id,
-    asistencia: item.asistencia || 'PENDIENTE',
-    observaciones: item.observaciones || ''
-  }));
-
-  // 2. Verificar si el usuario adjuntó alguna imagen
-  const tieneArchivos = this.sesion.detalle.some((item: any) => !!item.archivo);
-
-  let payload: any;
-
-  if (tieneArchivos) {
-    // Si HAY imágenes -> Usar FormData
+    // Construcción de FormData para enviar imágenes y datos estructurados
     const formData = new FormData();
-    formData.append('sesionId', this.sesion.id.toString());
-    
-    // Enviamos con la clave 'detalle' (y 'detalles') por compatibilidad de naming en el Backend
-    const jsonString = JSON.stringify(detallesPayload);
-    formData.append('detalle', jsonString);
-    formData.append('detalles', jsonString);
+    formData.append('sesionId', this.sesion.id);
 
-    // Adjuntar las imágenes
+    // Mapeo limpio de los datos
+    const detallesPayload = this.sesion.detalle.map((item: any) => ({
+      detalleId: item.detalle_id || item.id,
+      asistencia: item.asistencia || 'PENDIENTE',
+      observaciones: item.observaciones || ''
+    }));
+
+    formData.append('detalles', JSON.stringify(detallesPayload));
+
+    // Adjuntar archivos de imagen si existen
     this.sesion.detalle.forEach((item: any) => {
       if (item.archivo) {
         const idKey = item.detalle_id || item.id;
@@ -255,49 +224,29 @@ export class PracticaDetalle implements OnInit {
       }
     });
 
-    payload = formData;
-  } else {
-    // Si NO HAY imágenes -> Enviar JSON limpio para evitar errores de parseo multipart
-    payload = {
-      sesionId: this.sesion.id,
-      detalle: detallesPayload,
-      detalles: detallesPayload
-    };
+    // Envío al servicio (puedes enviar formData o el objeto directo según tu API)
+    this.practicasService.guardarSesion(this.sesion.id, formData).subscribe({
+      next: (resp) => {
+        this.guardando = false;
+        Swal.fire({
+          icon: 'success',
+          title: '¡Registro guardado!',
+          text: 'La asistencia y evidencias se registraron correctamente.',
+          confirmButtonColor: '#0f172a'
+        });
+      },
+      error: (err) => {
+        console.error('Error guardando la sesión:', err);
+        this.guardando = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al guardar',
+          text: err.error?.message || 'Ocurrió un problema guardando los cambios.',
+          confirmButtonColor: '#0f172a'
+        });
+      }
+    });
   }
-
-  // 3. Envío HTTP al Backend
-  this.practicasService.guardarSesion(this.sesion.id, payload).subscribe({
-    next: (resp) => {
-      this.guardando = false;
-
-      // Actualizamos estado local y bloqueamos edición
-      this.sesion.estado = 'FINALIZADA';
-      this.sesion.guardado = true;
-      this.validarEstadoBloqueo();
-
-      this.cd.detectChanges();
-
-      Swal.fire({
-        icon: 'success',
-        title: '¡Registro guardado!',
-        text: 'La asistencia y evidencias se registraron correctamente.',
-        confirmButtonColor: '#0f172a'
-      });
-    },
-    error: (err) => {
-      console.error('Error guardando la sesión:', err);
-      this.guardando = false;
-      this.cd.detectChanges();
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al guardar (500)',
-        text: err.error?.message || 'El servidor no pudo procesar los detalles enviados.',
-        confirmButtonColor: '#0f172a'
-      });
-    }
-  });
-}
 
   volver(): void {
     this.router.navigate(['/practicas/historial']);
