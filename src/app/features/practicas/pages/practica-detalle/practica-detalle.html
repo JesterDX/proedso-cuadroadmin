@@ -18,9 +18,23 @@
           
           <h1 class="h3 m-0 fw-bold text-slate-900">Registro de Práctica</h1>
           
-          <span class="badge badge-slate" *ngIf="sesion">
-            Sesión #{{ sesion.id }}
-          </span>
+          <!-- Dropdown para alternar entre lugares/sesiones -->
+          @if (sesionesPendientes.length > 0) {
+            <select 
+              class="form-select form-select-sm w-auto fw-semibold border-slate-300"
+              [ngModel]="sesionSeleccionadaId" 
+              (ngModelChange)="onSesionChange($event)">
+              @for (s of sesionesPendientes; track s.id) {
+                <option [value]="s.id">
+                  📍 {{ s.lugar_practica }} (Sesión #{{ s.id }})
+                </option>
+              }
+            </select>
+          } @else if (sesion) {
+            <span class="badge badge-slate">
+              📍 {{ sesion.lugar_practica || ('Sesión #' + sesion.id) }}
+            </span>
+          }
           
           <span class="badge badge-status-locked" *ngIf="sesion?.guardado" role="status">
             🔒 Finalizado / Bloqueado
