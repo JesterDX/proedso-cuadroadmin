@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 import { BaseChartDirective } from 'ng2-charts';
@@ -21,6 +21,9 @@ ChartJS.register(...registerables);
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
   private cdr = inject(ChangeDetectorRef);
+
+  // Referencia a todos los gráficos en la vista
+  @ViewChildren(BaseChartDirective) charts?: QueryList<BaseChartDirective>;
 
   dashboard: any = {};
   loading = false;
@@ -83,7 +86,7 @@ export class Dashboard implements OnInit {
         // Actualizar Solvencia
         this.solvenciaChartData = {
           ...this.solvenciaChartData,
-          datasets: [{ ...this.solvenciaChartData.datasets[0], data: [kpis.porcentajeAlDia, kpis.porcentajeMorosidad] }]
+          datasets: [{ ...this.solvenciaChartData.datasets[0], data: [kpis.porcentajeAlDia ?? 0, kpis.porcentajeMorosidad ?? 0] }]
         };
 
         // Actualizar Estados Académicos
@@ -103,8 +106,16 @@ export class Dashboard implements OnInit {
         }
 
         this.loading = false;
+
+        // 1. Forzamos la detección de cambios en la vista de Angular
         this.cdr.detectChanges();
-        setTimeout(() => this.cdr.detectChanges(), 50);
+
+        // 2. Notificamos a Chart.js para que vuelva a renderizar las capas de los canvas
+        this.charts?.forEach(chart => chart.update());
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
