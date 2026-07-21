@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
-
 import { BaseChartDirective } from 'ng2-charts';
 import {
   Chart as ChartJS,
@@ -15,86 +14,59 @@ ChartJS.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    BaseChartDirective
-  ],
+  imports: [CommonModule, BaseChartDirective],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
-
   private dashboardService = inject(DashboardService);
   private cdr = inject(ChangeDetectorRef);
 
   dashboard: any = {};
   loading = false;
 
-  // =========================
-  // CHARTS DATA
-  // =========================
-
-  donutChartData: ChartConfiguration<'doughnut'>['data'] = {
-    labels: ['Matriculados', 'Egresados', 'Retirados'],
-    datasets: [
-      {
-        data: [0, 0, 0],
-        backgroundColor: ['#10b981', '#7c3aed', '#ef4444']
-      }
-    ]
+  // Gráfico 1: Distribución Académica
+  estadosChartData: ChartConfiguration<'doughnut'>['data'] = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#7c3aed'] }]
   };
 
-  pagosChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Al día', 'Con deuda'],
-    datasets: [
-      {
-        data: [0, 0],
-        backgroundColor: ['#10b981', '#ef4444']
-      }
-    ]
+  // Gráfico 2: Demanda de Maquinaria (%)
+  maquinasChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: [],
+    datasets: [{
+      data: [],
+      label: '% de Demanda por Equipo',
+      backgroundColor: '#2563eb',
+      borderRadius: 6
+    }]
   };
 
-  lineChartData: ChartConfiguration<'line'>['data'] = {
-    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-    datasets: [
-      {
-        data: [10, 20, 30, 40, 50, 60],
-        label: 'Matrículas',
-        borderColor: '#2563eb',
-        backgroundColor: 'rgba(37,99,235,0.1)',
-        fill: true
-      }
-    ]
+  // Gráfico 3: Solvencia del Alumnado (%)
+  solvenciaChartData: ChartConfiguration<'pie'>['data'] = {
+    labels: ['Al Día (%)', 'Con Deuda Pendiente (%)'],
+    datasets: [{ data: [0, 0], backgroundColor: ['#10b981', '#ef4444'] }]
   };
 
-  // =========================
-  // OPTIONS
-  // =========================
-
-  donutOptions: ChartOptions<'doughnut'> = {
+  chartOptions: ChartOptions<any> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom' }
+      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => ` ${context.label}: ${context.raw}%`
+        }
+      }
     }
   };
 
-  pagosOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    plugins: {
-      legend: { display: false }
+  barOptions: ChartOptions<'bar'> = {
+    ...this.chartOptions,
+    scales: {
+      y: { max: 100, ticks: { callback: (val) => `${val}%` } }
     }
   };
-
-  lineOptions: ChartOptions<'line'> = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
-  };
-
-  // =========================
-  // INIT
-  // =========================
 
   ngOnInit(): void {
     this.cargarDashboard();
@@ -102,53 +74,38 @@ export class Dashboard implements OnInit {
 
   cargarDashboard(): void {
     this.loading = true;
-
     this.dashboardService.getDashboard().subscribe({
-next: (resp: any) => {
+      next: (resp: any) => {
+        this.dashboard = resp.data ?? {};
+        const kpis = this.dashboard.kpis ?? {};
+        const graficos = this.dashboard.graficos ?? {};
 
-  console.log('DASHBOARD API:', resp);
+        // Actualizar Solvencia
+        this.solvenciaChartData = {
+          ...this.solvenciaChartData,
+          datasets: [{ ...this.solvenciaChartData.datasets[0], data: [kpis.porcentajeAlDia, kpis.porcentajeMorosidad] }]
+        };
 
-  this.dashboard = resp.data ?? {};
-  const r = this.dashboard.resumen ?? {};
+        // Actualizar Estados Académicos
+        if (graficos.distribucionEstados) {
+          this.estadosChartData = {
+            labels: graficos.distribucionEstados.map((e: any) => e.nombre),
+            datasets: [{ ...this.estadosChartData.datasets[0], data: graficos.distribucionEstados.map((e: any) => Number(e.porcentaje)) }]
+          };
+        }
 
-  // UPDATE DONUT
-  this.donutChartData = {
-    ...this.donutChartData,
-    datasets: [
-      {
-        ...this.donutChartData.datasets[0],
-        data: [
-          r.matriculados ?? 0,
-          r.egresados ?? 0,
-          r.retirados ?? 0
-        ]
+        // Actualizar Demanda de Maquinaria
+        if (graficos.demandaMaquinas) {
+          this.maquinasChartData = {
+            labels: graficos.demandaMaquinas.map((m: any) => m.nombre),
+            datasets: [{ ...this.maquinasChartData.datasets[0], data: graficos.demandaMaquinas.map((m: any) => Number(m.porcentaje_demanda)) }]
+          };
+        }
+
+        this.loading = false;
+        this.cdr.detectChanges();
+        setTimeout(() => this.cdr.detectChanges(), 50);
       }
-    ]
-  };
-
-  // UPDATE BAR
-  this.pagosChartData = {
-    ...this.pagosChartData,
-    datasets: [
-      {
-        ...this.pagosChartData.datasets[0],
-        data: [
-          r.alumnosAlDia ?? 0,
-          r.alumnosConDeuda ?? 0
-        ]
-      }
-    ]
-  };
-
-  this.loading = false;
-
-  this.cdr.detectChanges();
-
-  // 🔥 AQUÍ VA EL IMPORTANTE
-  setTimeout(() => {
-    this.cdr.detectChanges();
-  });
-}
     });
   }
 }
