@@ -27,7 +27,7 @@ export class PracticaDetalle implements OnInit {
   cargando = false;
   guardando = false;
   sesion: any = null;
-
+  Math = Math;
   // Búsqueda y Paginación
   filtroBusqueda: string = '';
   paginaActual: number = 1;
