@@ -156,8 +156,10 @@ export class CronogramaPracticasComponent implements OnInit {
 
       next: () => {
 
-        alert("Cronograma guardado correctamente.");
-
+Swal.fire({
+  icon:'success',
+  title:'Cronograma guardado'
+});
       },
 
       error: (err) => {
