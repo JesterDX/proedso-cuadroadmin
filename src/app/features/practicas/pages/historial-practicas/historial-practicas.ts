@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { PracticasService } from '../../services/practicas.service'; // Ajusta tu ruta
+import { CommonModule } from '@angular/common'; // <--- Importante para *ngIf, *ngFor, ngClass y date pipe
+import { PracticasService } from '../../services/practicas.service'; // Ajusta la ruta a tu service
 
 @Component({
-  selector: 'app-historial-sesiones',
+  selector: 'app-historial-practicas',
+  standalone: true,
+  imports: [CommonModule], // <--- Añadido aquí
   templateUrl: './historial-practicas.html',
   styleUrls: ['./historial-practicas.scss']
 })
-export class HistorialSesionesComponent implements OnInit {
+export class HistorialPracticasComponent implements OnInit { // <--- Nombre alineado con app.routes.ts
   
   sesiones: any[] = [];
   cargando: boolean = true;
