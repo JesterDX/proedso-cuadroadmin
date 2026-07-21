@@ -171,4 +171,12 @@ export class PracticasService {
     return this.http.get<any>(`${this.apiUrl}/sesiones-grupales/historial`);
   }
 
+    obtenerLugaresPractica() {
+
+  return this.http.get<any>(
+    `${this.apiUrl}/lugares-practica`
+  );
+
+}
+
 } // <--- ESTA LLAVE CIERRA LA CLASE PracticasService Y SOLUCIONA EL ERROR
