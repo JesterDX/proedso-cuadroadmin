@@ -126,61 +126,43 @@ export class PracticasService {
       payload
     );
   }
-  crearSesionGrupal(payload:any){
 
-  return this.http.post(
+  crearSesionGrupal(payload: any) {
+    return this.http.post(
+      `${this.apiUrl}/sesion-grupal`,
+      payload
+    );
+  }
 
-    `${this.apiUrl}/sesion-grupal`,
+  obtenerSesion(id: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/sesion-grupal/${id}`
+    );
+  }
 
-    payload
+  guardarSesion(id: number, data: any) {
+    return this.http.put<any>(
+      `${this.apiUrl}/sesion-grupal/${id}`,
+      data
+    );
+  }
 
-  );
+  obtenerSesionGrupal(id: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/sesion-grupal/${id}`
+    );
+  }
 
-}
+  guardarCronograma(
+    id: number,
+    detalle: any[]
+  ) {
+    return this.http.put<any>(
+      `${this.apiUrl}/sesiones-grupales/${id}/cronograma`,
+      {
+        detalle
+      }
+    );
+  }
 
-obtenerSesion(id:number){
-
-  return this.http.get<any>(
-    `${this.apiUrl}/sesion-grupal/${id}`
-  );
-
-}
-guardarSesion(id:number,data:any){
-
-  return this.http.put<any>(
-    `${this.apiUrl}/sesion-grupal/${id}`,
-    data
-  );
-
-}
-obtenerSesionGrupal(id:number){
-
-  return this.http.get<any>(
-
-    `${this.apiUrl}/sesion-grupal/${id}`
-
-  );
-
-}
-
-guardarCronograma(
-
-  id:number,
-
-  detalle:any[]
-
-){
-
-  return this.http.put<any>(
-
-    `${this.apiUrl}/sesiones-grupales/${id}/cronograma`,
-
-    {
-
-      detalle
-
-    }
-
-  );
-
-}
+} // <--- ESTA LLAVE CIERRA LA CLASE PracticasService Y SOLUCIONA EL ERROR
