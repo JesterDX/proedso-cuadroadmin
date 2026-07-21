@@ -379,8 +379,13 @@ generarSesionPractica(): void {
   }
 
   const payload = {
+  
     fecha: this.fechaSesion,
+  
+    lugarPracticaId: this.lugarPracticaId,
+  
     detalle
+  
   };
 
   console.log('🚀 Enviando Payload:', payload);
