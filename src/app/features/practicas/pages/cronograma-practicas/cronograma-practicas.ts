@@ -21,29 +21,81 @@ import { PracticasService } from '../../services/practicas.service';
 })
 export class CronogramaPracticasComponent implements OnInit {
 
-  // Inyecciones de dependencias
+  // Inyecciones
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private practicasService = inject(PracticasService);
   private cdr = inject(ChangeDetectorRef);
 
-  // Propiedades de estado
+  // Estados
   sesion: any = null;
   loading: boolean = true;
+  
+  // Lista de sesiones pendientes (Lugares de práctica disponibles)
+  sesionesPendientes: any[] = [];
+  sesionSeleccionadaId: number | null = null;
   
   // Configuración de horarios
   horaInicio: string = '08:00';
   duracionSesion: number = 30; // Minutos por cada sesión asignada
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.cargarSesion(id);
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const idInicial = idParam ? Number(idParam) : null;
+    
+    this.cargarSesionesPendientes(idInicial);
   }
 
   /**
-   * Obtiene los datos de la sesión desde el backend
+   * Carga la lista de sesiones pendientes y selecciona la correspondiente
    */
-  private cargarSesion(id: number): void {
+  cargarSesionesPendientes(idInicial: number | null): void {
+    this.loading = true;
+    this.practicasService.obtenerPendientes().subscribe({
+      next: (resp: any) => {
+        this.sesionesPendientes = resp.data ?? resp ?? [];
+
+        if (this.sesionesPendientes.length > 0) {
+          // Si viene un ID por la ruta y existe en la lista, lo selecciona; de lo contrario usa el primero
+          const existe = this.sesionesPendientes.find(s => Number(s.id) === idInicial);
+          this.sesionSeleccionadaId = existe ? Number(existe.id) : Number(this.sesionesPendientes[0].id);
+          
+          this.cargarSesion(this.sesionSeleccionadaId);
+        } else if (idInicial) {
+          // Si no hay lista pero se pasó un ID explícito por parámetro
+          this.sesionSeleccionadaId = idInicial;
+          this.cargarSesion(idInicial);
+        } else {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar sesiones pendientes', err);
+        if (idInicial) {
+          this.cargarSesion(idInicial);
+        } else {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  /**
+   * Evento que se ejecuta al cambiar de sesión en el dropdown
+   */
+  onSesionChange(id: number): void {
+    if (!id) return;
+    this.sesionSeleccionadaId = Number(id);
+    this.router.navigate(['/cronograma', id]); // Actualiza la URL
+    this.cargarSesion(this.sesionSeleccionadaId);
+  }
+
+  /**
+   * Obtiene la sesión por ID y genera el cronograma
+   */
+  cargarSesion(id: number): void {
     this.loading = true;
     
     this.practicasService.obtenerSesionGrupal(id).subscribe({
@@ -72,10 +124,6 @@ export class CronogramaPracticasComponent implements OnInit {
     });
   }
 
-  /**
-   * Recalcula las horas de inicio y fin para cada alumno
-   * basado en la hora de inicio general y el orden actual.
-   */
   generarCronograma(): void {
     if (!this.sesion?.detalle) return;
 
@@ -86,10 +134,7 @@ export class CronogramaPracticasComponent implements OnInit {
 
     this.sesion.detalle.forEach((item: any) => {
       const inicio = new Date(actual);
-      
-      // Sumar el tiempo correspondiente (sesiones asignadas * duración de cada sesión)
       actual.setMinutes(actual.getMinutes() + (item.sesiones_asignadas * this.duracionSesion));
-      
       const fin = new Date(actual);
 
       item.horaInicio = this.formatearHora(inicio);
@@ -97,9 +142,6 @@ export class CronogramaPracticasComponent implements OnInit {
     });
   }
 
-  /**
-   * Formatea un objeto Date a string en formato (HH:MM)
-   */
   private formatearHora(fecha: Date): string {
     return fecha.toLocaleTimeString('es-PE', {
       hour: '2-digit',
@@ -108,18 +150,11 @@ export class CronogramaPracticasComponent implements OnInit {
     });
   }
 
-  /**
-   * Maneja el evento Drag & Drop para reordenar a los alumnos en la tabla
-   */
   drop(event: CdkDragDrop<any[]>): void {
     moveItemInArray(this.sesion.detalle, event.previousIndex, event.currentIndex);
-    // Recalcular horarios automáticamente después de cambiar el orden
     this.generarCronograma();
   }
 
-  /**
-   * Guarda el nuevo orden y horarios en el backend
-   */
   guardarCronograma(): void {
     const detalle = this.sesion.detalle.map((item: any, index: number) => ({
       detalleId: item.detalle_id,
@@ -128,7 +163,6 @@ export class CronogramaPracticasComponent implements OnInit {
       horaFin: item.horaFin
     }));
 
-    // UX: Mostrar indicador de carga
     Swal.fire({
       title: 'Guardando...',
       text: 'Actualizando el orden del cronograma',
@@ -157,32 +191,18 @@ export class CronogramaPracticasComponent implements OnInit {
     });
   }
 
-  /**
-   * Genera y descarga un PDF con el diseño renderizado de la tabla
-   */
   generarPDF(): void {
     const elemento = document.getElementById('cronogramaPDF');
-    
     if (!elemento) return;
 
-    // Configuración optimizada para una impresión nítida y profesional
     const opciones: any = {
-      margin: [0.5, 0.5, 0.5, 0.5], // Márgenes [top, left, bottom, right]
-      filename: `Cronograma_Practicas_${this.sesion.fecha || 'Export'}.pdf`,
+      margin: [0.5, 0.5, 0.5, 0.5],
+      filename: `Cronograma_Practicas_${this.sesion.lugar_practica || ''}_${this.sesion.fecha || 'Export'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,           // Aumenta la resolución del texto
-        useCORS: true,      // Previene errores con recursos externos
-        logging: false
-      },
-      jsPDF: { 
-        unit: 'in', 
-        format: 'a4', 
-        orientation: 'portrait' 
-      }
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    // UX: Mostrar indicador de carga para el PDF
     Swal.fire({
       title: 'Generando PDF...',
       text: 'Preparando el documento para descarga.',
@@ -194,9 +214,7 @@ export class CronogramaPracticasComponent implements OnInit {
       .set(opciones)
       .from(elemento)
       .save()
-      .then(() => {
-        Swal.close(); // Cierra el modal cuando la descarga inicia
-      })
+      .then(() => Swal.close())
       .catch((err: any) => {
         console.error('Error generando PDF:', err);
         Swal.fire({
@@ -208,11 +226,7 @@ export class CronogramaPracticasComponent implements OnInit {
       });
   }
 
-  /**
-   * Navega a la vista de registro de asistencia / evidencias
-   */
   iniciarJornada(): void {
     this.router.navigate(['/practicas', this.sesion.id]);
   }
-
 }
