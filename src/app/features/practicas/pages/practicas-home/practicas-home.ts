@@ -16,81 +16,55 @@ import { PracticasService } from '../../services/practicas.service';
 })
 export class PracticasHomeComponent implements OnInit {
 
-
   private practicasService = inject(PracticasService);
   private router = inject(Router);
 
-
   ultimaSesionPendienteId: number | null = null;
 
-
   ngOnInit(): void {
-
     this.obtenerUltimaSesionPendiente();
-
   }
 
-
-  obtenerUltimaSesionPendiente(){
-
-    this.practicasService.obtenerSesiones().subscribe({
-
-      next: (sesiones:any[]) => {
-
-
-        const pendientes = sesiones.filter(
-          s => s.estado === 'PENDIENTE'
-        );
-
-
-        if(pendientes.length > 0){
-
-
-          // ordenamos por fecha descendente
-          pendientes.sort(
-            (a,b) =>
-            new Date(b.fecha_creacion).getTime() -
-            new Date(a.fecha_creacion).getTime()
+  obtenerUltimaSesionPendiente() {
+    // CORREGIDO: Se usa listarAsignaciones() o el método correcto del servicio para traer las sesiones
+    this.practicasService.listarAsignaciones().subscribe({
+      next: (resp: any) => {
+        const sesiones = resp.data ?? resp;
+        
+        if (Array.isArray(sesiones)) {
+          const pendientes = sesiones.filter(
+            s => s.estado === 'PENDIENTE'
           );
 
+          if (pendientes.length > 0) {
+            // Ordenamos por fecha descendente
+            pendientes.sort(
+              (a, b) =>
+                new Date(b.fecha_creacion).getTime() -
+                new Date(a.fecha_creacion).getTime()
+            );
 
-          this.ultimaSesionPendienteId = pendientes[0].id;
-
-
+            this.ultimaSesionPendienteId = pendientes[0].id;
+          }
         }
-
-
       },
-
-      error: err =>{
+      error: (err: any) => { // CORREGIDO: Tipado explícito de 'err'
         console.error(err);
       }
-
     });
-
   }
 
-
-  abrirRegistrarPractica(){
-
-
-    if(this.ultimaSesionPendienteId){
-
+  abrirRegistrarPractica() {
+    if (this.ultimaSesionPendienteId) {
       this.router.navigate([
         '/practicas',
         this.ultimaSesionPendienteId
       ]);
-
-
-    }else{
-
+    } else {
       alert(
         'No existe una sesión pendiente para registrar práctica.'
       );
-
     }
-
   }
-
 
 }
