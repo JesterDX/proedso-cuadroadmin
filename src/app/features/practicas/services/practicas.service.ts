@@ -164,5 +164,8 @@ export class PracticasService {
       }
     );
   }
+  obtenerUltimaSesionPendiente(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/sesion-grupal/ultima-pendiente`);
+  }
 
 } // <--- ESTA LLAVE CIERRA LA CLASE PracticasService Y SOLUCIONA EL ERROR
