@@ -1,52 +1,71 @@
-<div *ngIf="cargando">
+<div *ngFor="let item of sesion.detalle" class="detalle-card">
 
-    Cargando...
-
-</div>
-
-<div *ngIf="!cargando && sesion">
-
-    <h2>
-
-        Sesión #{{sesion.id}}
-
-    </h2>
+    <h4>{{ item.alumno }}</h4>
 
     <p>
-
-        Fecha:
-
-        {{sesion.fecha}}
-
+        <strong>Máquina:</strong>
+        {{ item.maquina }}
     </p>
 
-    <p>
+    <div class="campo">
 
-        Estado:
+        <label>Asistencia</label>
 
-        {{sesion.estado}}
+        <select [(ngModel)]="item.asistencia">
 
-    </p>
+            <option value="">Seleccione...</option>
+
+            <option value="ASISTIO">✅ Asistió</option>
+
+            <option value="FALTO">❌ Faltó</option>
+
+            <option value="JUSTIFICADO">🟡 Justificado</option>
+
+        </select>
+
+    </div>
+
+    <div class="campo">
+
+        <label>Observaciones</label>
+
+        <textarea
+            rows="3"
+            [(ngModel)]="item.observaciones"
+            placeholder="Ingrese observaciones">
+        </textarea>
+
+    </div>
+
+    <div class="campo">
+
+        <label>Evidencia</label>
+
+        <input
+            type="file"
+            accept="image/*"
+            (change)="seleccionarImagen($event,item)">
+
+        <div *ngIf="item.evidencia_url">
+
+            <img
+                [src]="item.evidencia_url"
+                width="180">
+
+        </div>
+
+    </div>
 
     <hr>
 
-    <div
-        *ngFor="let item of sesion.detalle">
+</div>
 
-        <h4>
+<div class="acciones">
 
-            {{item.alumno}}
+    <button (click)="guardarSesion()">
 
-        </h4>
+        💾 Guardar
 
-        <p>
-
-            {{item.maquina}}
-
-        </p>
-
-        <hr>
-
-    </div>
+    </button>
 
 </div>
