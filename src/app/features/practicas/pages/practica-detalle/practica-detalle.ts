@@ -27,7 +27,7 @@ export class PracticaDetalle implements OnInit {
   cargando = false;
   guardando = false;
   sesion: any = null;
-
+  sesionBloqueada = false;
   // Búsqueda y Paginación
   filtroBusqueda: string = '';
   paginaActual: number = 1;
@@ -49,7 +49,11 @@ export class PracticaDetalle implements OnInit {
     this.practicasService.obtenerSesion(id).subscribe({
       next: (resp) => {
         this.sesion = resp.data ?? resp;
-        
+        this.sesionBloqueada = 
+          this.sesion.estado === 'FINALIZADA' ||
+          this.sesion.estado === 'REGISTRADA' ||
+          this.sesion.estado === 'COMPLETADA';
+                
         // Asignar valor por defecto si asistencia no viene definida
         if (this.sesion?.detalle) {
           this.sesion.detalle.forEach((item: any) => {
