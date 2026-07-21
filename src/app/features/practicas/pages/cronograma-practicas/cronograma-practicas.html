@@ -25,26 +25,68 @@
       
       <!-- Panel de Configuración -->
       <div class="row mb-4">
-        <!-- Fecha -->
-        <div class="col-md-6">
-          <div class="config-card p-3 h-100 d-flex flex-column justify-content-center">
-            <label class="form-label text-muted small fw-medium text-uppercase mb-1">Fecha de Sesión</label>
-            <div class="fs-5 fw-semibold text-main">{{ sesion.fecha }}</div>
-          </div>
+
+    <!-- Fecha -->
+
+    <div class="col-md-4">
+
+        <div class="config-card p-3 h-100">
+
+            <label class="form-label text-muted small fw-medium text-uppercase mb-1">
+                Fecha
+            </label>
+
+            <div class="fs-5 fw-semibold text-main">
+
+                {{ sesion.fecha }}
+
+            </div>
+
         </div>
-        
-        <!-- Hora de Inicio -->
-        <div class="col-md-6">
-          <div class="config-card p-3 h-100 d-flex flex-column justify-content-center">
-            <label class="form-label text-muted small fw-medium text-uppercase mb-1">Hora de Inicio</label>
-            <input 
-              type="time" 
-              class="form-control form-control-sm w-50 input-minimalist" 
-              [(ngModel)]="horaInicio" 
-              (ngModelChange)="generarCronograma()">
-          </div>
+
+    </div>
+
+    <!-- Lugar -->
+
+    <div class="col-md-4">
+
+        <div class="config-card p-3 h-100">
+
+            <label class="form-label text-muted small fw-medium text-uppercase mb-1">
+                Lugar de práctica
+            </label>
+
+            <div class="fs-5 fw-semibold text-main">
+
+                📍 {{ sesion.lugar_practica }}
+
+            </div>
+
         </div>
-      </div>
+
+    </div>
+
+    <!-- Hora -->
+
+    <div class="col-md-4">
+
+        <div class="config-card p-3 h-100">
+
+            <label class="form-label text-muted small fw-medium text-uppercase mb-1">
+                Hora de inicio
+            </label>
+
+            <input
+                type="time"
+                class="form-control form-control-sm w-75 input-minimalist"
+                [(ngModel)]="horaInicio"
+                (ngModelChange)="generarCronograma()">
+
+        </div>
+
+    </div>
+
+</div>
 
       <!-- Tabla de Participantes (Drag & Drop) -->
       <div class="table-card mb-2">
