@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChildren, QueryList, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 import { BaseChartDirective } from 'ng2-charts';
@@ -16,7 +16,8 @@ ChartJS.register(...registerables);
   standalone: true,
   imports: [CommonModule, BaseChartDirective],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrls: ['./dashboard.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // Control total sobre la detección de cambios
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
@@ -87,14 +88,28 @@ export class Dashboard implements OnInit {
 
   cargarDashboard(): void {
     this.loading = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges(); // Fuerza actualizar el estado de "Cargando..."
     
     this.dashboardService.getDashboard().subscribe({
       next: (resp: any) => {
-        // Compatibilidad: absorbe la respuesta venga directa o envuelta en { data: ... }
-        const data = resp?.data?.data || resp?.data || resp || {};
+        // CONSOLA DE DEPURACIÓN: Revisa esto con F12 en tu navegador si algo sigue en 0
+        console.log('RESPUESTA CRUDA DE RENDER:', resp);
+
+        // Extracción infalible de la data sin importar cuántas veces esté envuelta
+        const rawData = resp?.data?.data || resp?.data || resp || {};
         
-        this.dashboard.kpis = data.kpis || this.dashboard.kpis;
-        const graficos = data.graficos || {};
+        // Mapeo seguro de KPIs
+        const kpis = rawData.kpis || {};
+        this.dashboard.kpis = {
+          totalAlumnos: Number(kpis.totalAlumnos) || 0,
+          porcentajeAlumnosActivos: Number(kpis.porcentajeAlumnosActivos) || 0,
+          porcentajeInactivos: Number(kpis.porcentajeInactivos) || 0,
+          totalMaquinas: Number(kpis.totalMaquinas) || 0,
+          porcentajeOperatividadFlota: Number(kpis.porcentajeOperatividadFlota) || 0
+        };
+
+        const graficos = rawData.graficos || {};
 
         // 1. Gráfico de Actividad (Activos vs Inactivos)
         this.solvenciaChartData = {
@@ -102,14 +117,14 @@ export class Dashboard implements OnInit {
           datasets: [{ 
             ...this.solvenciaChartData.datasets[0], 
             data: [
-              Number(this.dashboard.kpis.porcentajeAlumnosActivos) || 0, 
-              Number(this.dashboard.kpis.porcentajeInactivos) || 0
+              this.dashboard.kpis.porcentajeAlumnosActivos, 
+              this.dashboard.kpis.porcentajeInactivos
             ] 
           }]
         };
 
         // 2. Gráfico de Estados de Matrículas
-        if (graficos.distribucionEstados && graficos.distribucionEstados.length > 0) {
+        if (graficos.distribucionEstados && Array.isArray(graficos.distribucionEstados)) {
           this.estadosChartData = {
             labels: graficos.distribucionEstados.map((e: any) => e.nombre || 'Sin estado'),
             datasets: [{ 
@@ -121,7 +136,7 @@ export class Dashboard implements OnInit {
         }
 
         // 3. Gráfico de Demanda de Equipos
-        if (graficos.demandaMaquinas && graficos.demandaMaquinas.length > 0) {
+        if (graficos.demandaMaquinas && Array.isArray(graficos.demandaMaquinas)) {
           this.maquinasChartData = {
             labels: graficos.demandaMaquinas.map((m: any) => m.nombre || 'Equipo'),
             datasets: [{ 
@@ -132,16 +147,24 @@ export class Dashboard implements OnInit {
         }
 
         this.loading = false;
+        
+        // DETECCIÓN DE CAMBIOS 1: Avisamos a Angular que los datos ya están en memoria
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
         
-        // Damos 50ms al DOM para renderizar antes de decirle a Chart.js que dibuje las barras
+        // DETECCIÓN DE CAMBIOS 2: Damos tiempo al DOM de crear las etiquetas <canvas> y repintamos
         setTimeout(() => {
           this.charts?.forEach(chart => chart.update());
-        }, 50);
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        }, 100);
       },
       error: (err) => {
         console.error('Error al obtener datos de Render:', err);
         this.loading = false;
+        
+        // DETECCIÓN DE CAMBIOS EN ERROR: Evita que la pantalla se quede congelada en "Cargando..."
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
     });
