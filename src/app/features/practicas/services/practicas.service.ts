@@ -167,5 +167,8 @@ export class PracticasService {
   obtenerUltimaSesionPendiente(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/sesion-grupal/ultima-pendiente`);
   }
+  obtenerHistorialSesiones(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/sesiones-grupales/historial`);
+  }
 
 } // <--- ESTA LLAVE CIERRA LA CLASE PracticasService Y SOLUCIONA EL ERROR
