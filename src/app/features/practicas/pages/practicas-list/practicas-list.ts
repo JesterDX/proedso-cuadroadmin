@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, of } from 'rxjs';
+import Swal from 'sweetalert2';
 import {
   debounceTime,
   switchMap,
@@ -269,19 +270,54 @@ export class PracticasListComponent implements OnInit, OnDestroy {
     this.selecciones.set(key, actual);
   }
 
-  actualizarSesiones(alumno: AlumnoDisponible, maquina: MaquinaAlumno, valor: number): void {
+actualizarSesiones(
+  alumno: AlumnoDisponible,
+  maquina: MaquinaAlumno,
+  valor: number
+): void {
 
-    const key = this.clave(alumno.matricula_id, maquina.maquina_id);
-    const actual = this.selecciones.get(key) ?? { seleccionado: true, sesionesAAsignar: 1 };
+  const key = this.clave(
+    alumno.matricula_id,
+    maquina.maquina_id
+  );
 
-    // 👇 nunca debe pasarse de las sesiones restantes de esa máquina
-    let sesiones = Math.floor(Number(valor)) || 1;
-    if (sesiones < 1) sesiones = 1;
-    if (sesiones > maquina.sesiones_restantes) sesiones = maquina.sesiones_restantes;
+  const actual =
+    this.selecciones.get(key) ??
+    {
+      seleccionado: true,
+      sesionesAAsignar: 1
+    };
 
-    actual.sesionesAAsignar = sesiones;
-    this.selecciones.set(key, actual);
+  let sesiones = Number(valor);
+
+  if (isNaN(sesiones) || sesiones < 1) {
+    sesiones = 1;
   }
+
+  if (sesiones > maquina.sesiones_restantes) {
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sesiones insuficientes',
+      html: `
+        <b>${alumno.alumno}</b><br><br>
+
+        Máquina:
+        <b>${maquina.maquina}</b><br><br>
+
+        Solo dispone de
+        <b>${maquina.sesiones_restantes}</b>
+        sesiones restantes.
+      `
+    });
+
+    sesiones = maquina.sesiones_restantes;
+  }
+
+  actual.sesionesAAsignar = sesiones;
+
+  this.selecciones.set(key, actual);
+}
 
   // ==========================================
   // RESUMEN
@@ -318,13 +354,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
     return this.gruposPorAnio.length > 0;
   }
 
-  // ==========================================
-  // GENERAR SESIÓN DE PRÁCTICA (PENDIENTE BACKEND)
-  // ==========================================
-generarSesionPractica(): void {
-  if (!this.puedeGenerarSesion) {
-    return;
-  }
 
   const detalle: any[] = [];
 
@@ -369,4 +398,6 @@ generarSesionPractica(): void {
       }
     });
 }
+
+
 }
