@@ -85,12 +85,15 @@ export class CronogramaPracticasComponent implements OnInit {
   /**
    * Evento que se ejecuta al cambiar de sesión en el dropdown
    */
-  onSesionChange(id: number): void {
-    if (!id) return;
-    this.sesionSeleccionadaId = Number(id);
-    this.router.navigate(['/cronograma', id]); // Actualiza la URL
-    this.cargarSesion(this.sesionSeleccionadaId);
-  }
+    onSesionChange(id: number): void {
+      if (!id) return;
+      this.sesionSeleccionadaId = Number(id);
+      
+      // CORRECCIÓN AQUÍ: Agregar '/practicas/' antes de 'cronograma'
+      this.router.navigate(['/practicas/cronograma', id]); 
+      
+      this.cargarSesion(this.sesionSeleccionadaId);
+    }
 
   /**
    * Obtiene la sesión por ID y genera el cronograma
