@@ -157,7 +157,7 @@ obtenerSesionGrupal(id:number){
 
   return this.http.get<any>(
 
-    `${this.apiUrl}/sesiones-grupales/${id}`
+    `${this.apiUrl}/sesion-grupal/${id}`
 
   );
 
