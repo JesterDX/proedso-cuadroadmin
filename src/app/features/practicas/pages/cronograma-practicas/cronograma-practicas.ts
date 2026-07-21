@@ -1,8 +1,8 @@
 import {
-  Component,
-  OnInit,
-  inject
-} from '@angular/core';
+  DragDropModule,
+  CdkDragDrop,
+  moveItemInArray
+} from '@angular/cdk/drag-drop';
 
 import { CommonModule } from '@angular/common';
 
@@ -17,8 +17,9 @@ import { FormsModule } from '@angular/forms';
   standalone:true,
 
 imports:[
-    CommonModule,
-    FormsModule
+  CommonModule,
+  FormsModule,
+  DragDropModule
 ]
 
   templateUrl:'./cronograma-practicas.html',
@@ -119,6 +120,17 @@ implements OnInit{
       hour12: false
     }
   );
+
+}
+  drop(event: CdkDragDrop<any[]>) {
+
+  moveItemInArray(
+    this.sesion.detalle,
+    event.previousIndex,
+    event.currentIndex
+  );
+
+  this.generarCronograma();
 
 }
 
