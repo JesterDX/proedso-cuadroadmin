@@ -16,6 +16,23 @@
       <label>Fecha de práctica</label>
       <input type="date" [(ngModel)]="fechaSesion">
     </div>
+    <div class="filter-box">
+
+  <label>Lugar de práctica</label>
+
+  <select [(ngModel)]="lugarPracticaId">
+
+    <option
+      *ngFor="let lugar of lugaresPractica"
+      [ngValue]="lugar.id">
+
+      {{ lugar.nombre }}
+
+    </option>
+
+  </select>
+
+</div>
 
     <div class="filter-box">
       <label>Mes</label>
