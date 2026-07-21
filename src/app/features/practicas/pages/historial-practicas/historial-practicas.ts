@@ -3,8 +3,8 @@ import { PracticasService } from '../../services/practicas.service'; // Ajusta t
 
 @Component({
   selector: 'app-historial-sesiones',
-  templateUrl: './historial-sesiones.component.html',
-  styleUrls: ['./historial-sesiones.component.scss']
+  templateUrl: './historial-practicas.html',
+  styleUrls: ['./historial-practicas.scss']
 })
 export class HistorialSesionesComponent implements OnInit {
   
