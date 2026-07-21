@@ -72,5 +72,39 @@ export class PracticaDetalle implements OnInit {
       });
 
   }
+  seleccionarImagen(event:any,item:any){
+
+  const archivo = event.target.files?.[0];
+
+  if(!archivo) return;
+
+  item.archivo = archivo;
+
+}
+
+  guardarSesion(){
+
+  this.practicasService
+      .guardarSesion(
+          this.sesion.id,
+          this.sesion
+      )
+      .subscribe({
+
+        next:()=>{
+
+          alert("Sesión guardada.");
+
+        },
+
+        error:err=>{
+
+          console.error(err);
+
+        }
+
+      });
+
+}
 
 }
