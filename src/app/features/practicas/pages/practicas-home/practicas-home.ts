@@ -26,29 +26,25 @@ export class PracticasHomeComponent implements OnInit {
   }
 
   obtenerUltimaSesionPendiente() {
-    // CORREGIDO: Se usa listarAsignaciones() o el método correcto del servicio para traer las sesiones
     this.practicasService.listarAsignaciones().subscribe({
       next: (resp: any) => {
         const sesiones = resp.data ?? resp;
         
-        if (Array.isArray(sesiones)) {
+        if (Array.isArray(sesiones) && sesiones.length > 0) {
+          // Filtramos las pendientes (o tomamos directamente la última si prefieres el flujo general)
           const pendientes = sesiones.filter(
             s => s.estado === 'PENDIENTE'
           );
 
-          if (pendientes.length > 0) {
-            // Ordenamos por fecha descendente
-            pendientes.sort(
-              (a, b) =>
-                new Date(b.fecha_creacion).getTime() -
-                new Date(a.fecha_creacion).getTime()
-            );
+          const listaAUsar = pendientes.length > 0 ? pendientes : sesiones;
 
-            this.ultimaSesionPendienteId = pendientes[0].id;
-          }
+          // Ordenamos estrictamente por ID de manera descendente (el ID más alto es el más reciente)
+          listaAUsar.sort((a, b) => b.id - a.id);
+
+          this.ultimaSesionPendienteId = listaAUsar[0].id;
         }
       },
-      error: (err: any) => { // CORREGIDO: Tipado explícito de 'err'
+      error: (err: any) => {
         console.error(err);
       }
     });
