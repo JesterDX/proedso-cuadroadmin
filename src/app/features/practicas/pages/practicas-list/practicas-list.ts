@@ -89,7 +89,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-
     this.filtrosChange$
       .pipe(
         debounceTime(350),
@@ -119,7 +118,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // CARGA DE ALUMNOS
   // ==========================================
   private buscarAlumnos() {
-
     this.loadingLista = true;
     this.errorCarga = '';
 
@@ -140,7 +138,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
         this.selecciones.clear();
       
         this.loadingLista = false;
-      
         this.cdr.detectChanges();
       
         return of(alumnos);
@@ -151,7 +148,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
         this.errorCarga = 'No se pudo cargar la lista de alumnos.';
         this.gruposPorAnio = [];
         this.loadingLista = false;
-      
         this.cdr.detectChanges();
       
         return of([]);
@@ -160,11 +156,9 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   }
 
   private agruparPorAnioYMes(alumnos: AlumnoDisponible[]): void {
-
     const mapaAnios = new Map<number, Map<number, AlumnoDisponible[]>>();
 
     for (const alumno of alumnos) {
-
       if (!mapaAnios.has(alumno.anio)) {
         mapaAnios.set(alumno.anio, new Map());
       }
@@ -181,7 +175,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
     this.gruposPorAnio = Array.from(mapaAnios.entries())
       .sort((a, b) => b[0] - a[0])
       .map(([anio, mapaMeses]) => {
-
         const meses: GrupoMes[] = Array.from(mapaMeses.entries())
           .sort((a, b) => b[0] - a[0])
           .map(([mes, alumnosDelMes]) => ({
@@ -197,14 +190,9 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   }
 
   private actualizarAniosDisponibles(alumnos: AlumnoDisponible[]): void {
-  
     const set = new Set<number>();
-  
     alumnos.forEach(a => set.add(a.anio));
-  
-    this.aniosDisponibles = Array.from(set)
-      .sort((a,b)=>b-a);
-  
+    this.aniosDisponibles = Array.from(set).sort((a, b) => b - a);
   }
 
   // ==========================================
@@ -254,7 +242,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   }
 
   toggleMaquina(alumno: AlumnoDisponible, maquina: MaquinaAlumno, checked: boolean): void {
-
     if (!this.puedeSeleccionar(alumno) || maquina.sesiones_restantes <= 0) {
       return;
     }
@@ -270,54 +257,49 @@ export class PracticasListComponent implements OnInit, OnDestroy {
     this.selecciones.set(key, actual);
   }
 
-actualizarSesiones(
-  alumno: AlumnoDisponible,
-  maquina: MaquinaAlumno,
-  valor: number
-): void {
+  actualizarSesiones(
+    alumno: AlumnoDisponible,
+    maquina: MaquinaAlumno,
+    valor: number
+  ): void {
+    const key = this.clave(
+      alumno.matricula_id,
+      maquina.maquina_id
+    );
 
-  const key = this.clave(
-    alumno.matricula_id,
-    maquina.maquina_id
-  );
+    const actual =
+      this.selecciones.get(key) ??
+      {
+        seleccionado: true,
+        sesionesAAsignar: 1
+      };
 
-  const actual =
-    this.selecciones.get(key) ??
-    {
-      seleccionado: true,
-      sesionesAAsignar: 1
-    };
+    let sesiones = Number(valor);
 
-  let sesiones = Number(valor);
+    if (isNaN(sesiones) || sesiones < 1) {
+      sesiones = 1;
+    }
 
-  if (isNaN(sesiones) || sesiones < 1) {
-    sesiones = 1;
+    if (sesiones > maquina.sesiones_restantes) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sesiones insuficientes',
+        html: `
+          <b>${alumno.alumno}</b><br><br>
+          Máquina:
+          <b>${maquina.maquina}</b><br><br>
+          Solo dispone de
+          <b>${maquina.sesiones_restantes}</b>
+          sesiones restantes.
+        `
+      });
+
+      sesiones = maquina.sesiones_restantes;
+    }
+
+    actual.sesionesAAsignar = sesiones;
+    this.selecciones.set(key, actual);
   }
-
-  if (sesiones > maquina.sesiones_restantes) {
-
-    Swal.fire({
-      icon: 'warning',
-      title: 'Sesiones insuficientes',
-      html: `
-        <b>${alumno.alumno}</b><br><br>
-
-        Máquina:
-        <b>${maquina.maquina}</b><br><br>
-
-        Solo dispone de
-        <b>${maquina.sesiones_restantes}</b>
-        sesiones restantes.
-      `
-    });
-
-    sesiones = maquina.sesiones_restantes;
-  }
-
-  actual.sesionesAAsignar = sesiones;
-
-  this.selecciones.set(key, actual);
-}
 
   // ==========================================
   // RESUMEN
@@ -354,50 +336,49 @@ actualizarSesiones(
     return this.gruposPorAnio.length > 0;
   }
 
+  // ==========================================
+  // ACCIÓN PRINCIPAL: GENERAR SESIÓN
+  // ==========================================
+  generarSesionPractica(): void {
+    const detalle: any[] = [];
 
-  const detalle: any[] = [];
-
-  this.gruposPorAnio.forEach(grupo => {
-    grupo.meses.forEach(mes => {
-      mes.alumnos.forEach(alumno => {
-        alumno.maquinas.forEach(maquina => {
-          if (this.estaSeleccionada(alumno, maquina)) {
-            detalle.push({
-              matriculaId: alumno.matricula_id,
-              matriculaMaquinaId: maquina.matricula_maquina_id,
-              maquinaId: maquina.maquina_id,
-              sesiones: this.sesionesSeleccionadas(alumno, maquina)
-            });
-          }
+    this.gruposPorAnio.forEach(grupo => {
+      grupo.meses.forEach(mes => {
+        mes.alumnos.forEach(alumno => {
+          alumno.maquinas.forEach(maquina => {
+            if (this.estaSeleccionada(alumno, maquina)) {
+              detalle.push({
+                matriculaId: alumno.matricula_id,
+                matriculaMaquinaId: maquina.matricula_maquina_id,
+                maquinaId: maquina.maquina_id,
+                sesiones: this.sesionesSeleccionadas(alumno, maquina)
+              });
+            }
+          });
         });
       });
     });
-  });
 
-  // Se declara una sola vez
-  const payload = {
-    fecha: this.fechaSesion,
-    detalle
-  };
+    const payload = {
+      fecha: this.fechaSesion,
+      detalle
+    };
 
-  console.log(payload);
+    console.log(payload);
 
-  // Llamada limpia con su respectiva suscripción
-  this.practicasService
-    .crearSesionGrupal(payload)
-    .subscribe({
-      next: (resp: any) => {
-        alert("Sesión creada correctamente.");
-        console.log(resp);
-      },
-      error: (err) => {
-        alert(
-          err.error?.error ??
-          "Error al crear la sesión."
-        );
-      }
-    });
-}
-
-
+    this.practicasService
+      .crearSesionGrupal(payload)
+      .subscribe({
+        next: (resp: any) => {
+          alert("Sesión creada correctamente.");
+          console.log(resp);
+        },
+        error: (err) => {
+          alert(
+            err.error?.error ??
+            "Error al crear la sesión."
+          );
+        }
+      });
+  }
 }
