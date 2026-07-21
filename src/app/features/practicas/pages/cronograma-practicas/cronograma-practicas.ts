@@ -9,16 +9,17 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 import { PracticasService } from '../../services/practicas.service';
-
+import { FormsModule } from '@angular/forms';
 @Component({
 
   selector:'app-cronograma-practicas',
 
   standalone:true,
 
-  imports:[
-    CommonModule
-  ],
+imports:[
+    CommonModule,
+    FormsModule
+]
 
   templateUrl:'./cronograma-practicas.html',
 
