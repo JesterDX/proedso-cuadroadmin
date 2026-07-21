@@ -59,74 +59,49 @@ type="time"
 
     <table>
 
-        <thead>
+<thead>
 
-            <tr>
+<tr>
 
-                <th>#</th>
+<th>#</th>
 
-                <th>Alumno</th>
+<th>Alumno</th>
 
-                <th>Máquina</th>
+<th>Máquina</th>
 
-                <th>Sesiones</th>
+<th>Sesiones</th>
 
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            @for(
-            item of sesion.detalle;
-            track item.detalle_id){
-
-            <tr>
-
-                <td>
-
-                    {{$index+1}}
-
-                </td>
-
-                <td>
-
-                    {{item.alumno}}
-
-                </td>
-
-                <td>
-
-                    {{item.maquina}}
-
-                </td>
-
-                <td>
-
-                    {{item.sesiones_asignadas}}
-
-                </td>
-
-            </tr>
-
-            }
-          <th>Inicio</th>
+<th>Inicio</th>
 
 <th>Fin</th>
 
-          <td>
+</tr>
 
-{{item.horaInicio}}
+</thead>
 
-</td>
+<tbody>
 
-<td>
+@for(item of sesion.detalle; track item.detalle_id){
 
-{{item.horaFin}}
+<tr>
 
-</td>
+<td>{{$index+1}}</td>
 
-        </tbody>
+<td>{{item.alumno}}</td>
+
+<td>{{item.maquina}}</td>
+
+<td>{{item.sesiones_asignadas}}</td>
+
+<td>{{item.horaInicio}}</td>
+
+<td>{{item.horaFin}}</td>
+
+</tr>
+
+}
+
+</tbody>
 
     </table>
 
