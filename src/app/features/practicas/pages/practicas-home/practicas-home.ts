@@ -52,4 +52,38 @@ export class PracticasHomeComponent implements OnInit {
     }
   }
 
+  abrirCronograma(): void {
+
+  if (this.ultimaSesionPendienteId) {
+
+    this.router.navigate([
+      '/practicas/cronograma',
+      this.ultimaSesionPendienteId
+    ]);
+
+    return;
+
+  }
+
+  alert('No existe un cronograma pendiente.');
+
+}
+
+abrirRegistrarPractica(): void {
+
+  if (this.ultimaSesionPendienteId) {
+
+    this.router.navigate([
+      '/practicas',
+      this.ultimaSesionPendienteId
+    ]);
+
+    return;
+
+  }
+
+  alert('No existe una sesión pendiente para registrar práctica.');
+
+}
+
 }
