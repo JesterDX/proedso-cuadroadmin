@@ -64,6 +64,7 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   filtroMaquina: number | null = null;
   filtroNombre = '';
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
 
   // TODO: cargar desde catálogo real cuando exista el endpoint
@@ -340,7 +341,6 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   // ==========================================
   // ACCIÓN PRINCIPAL: GENERAR SESIÓN
   // ==========================================
-  private router = inject(Router);
 generarSesionPractica(): void {
 
   const detalle: any[] = [];
