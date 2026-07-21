@@ -1,274 +1,279 @@
 @use "sass:color";
 
-// 1. TOKENS DE DISEÑO
+// =============================================================
+// 1. TOKENS DE DISEÑO & VARIABLES
+// =============================================================
+$border-color: #e5e7eb;
+$text-main: #111827;
+$text-muted: #6b7280;
+$bg-light: #f9fafb;
+$primary-color: #2563eb;
+
 $slate: (
   50:  #f8fafc, 100: #f1f5f9, 200: #e2e8f0, 300: #cbd5e1,
   400: #94a3b8, 500: #64748b, 600: #475569, 700: #334155,
   800: #1e293b, 900: #0f172a
 );
 
-$status: (
-  asistio:     (base: #10b981, bg: #ecfdf5, border: #a7f3d0, text: #065f46),
-  falto:       (base: #f43f5e, bg: #fff1f2, border: #fecdd3, text: #9f1239),
-  justificado: (base: #f59e0b, bg: #fffbeb, border: #fde68a, text: #92400e),
-  pendiente:   (base: map-get($slate, 400), bg: #ffffff, border: map-get($slate, 200), text: map-get($slate, 800))
-);
-
 $radius-sm: 6px;
-$radius-md: 10px;
+$radius-md: 8px;
 $radius-lg: 12px;
-$transition-base: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
-// -------------------------------------------------------------
-// 2. SISTEMA DE GRIDA Y UTILIDADES NATIVAS (REEMPLAZO DE BOOTSTRAP)
-// -------------------------------------------------------------
+// =============================================================
+// 2. SISTEMA DE GRIDA Y UTILIDADES NATIVAS (SIN BOOTSTRAP)
+// =============================================================
 * { box-sizing: border-box; }
 
-.container-fluid { width: 100%; padding: 0 1rem; }
-.max-w-7xl { max-width: 1280px; margin: 0 auto; }
-.w-100 { width: 100% !important; }
-.w-auto { width: auto !important; }
-.h-100 { height: 100% !important; }
+.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 1rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.bg-white { background-color: #ffffff !important; }
+.bg-light { background-color: $bg-light !important; }
+.text-dark { color: $text-main !important; }
+.text-muted { color: $text-muted !important; }
+.text-main { color: $text-main; font-weight: 600; letter-spacing: -0.02em; }
+
+// Spacing (márgenes y paddings)
 .m-0 { margin: 0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
 .mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
 .mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 3rem !important; }
 .mt-1 { margin-top: 0.25rem !important; }
 .mt-3 { margin-top: 1rem !important; }
 .mt-4 { margin-top: 1.5rem !important; }
-.mt-auto { margin-top: auto !important; }
-.me-1 { margin-right: 0.25rem !important; }
-.me-2 { margin-right: 0.5rem !important; }
-.mx-1 { margin: 0 0.25rem !important; }
-.my-3 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
 .p-3 { padding: 1rem !important; }
-.py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
-.py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
 .pb-3 { padding-bottom: 1rem !important; }
-.pt-2 { padding-top: 0.5rem !important; }
 .pt-3 { padding-top: 1rem !important; }
+.py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.ps-4 { padding-left: 1.5rem !important; }
+.px-4 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
 
+// Bordes y tamaños
+.border { border: 1px solid $border-color !important; }
+.border-bottom { border-bottom: 1px solid $border-color !important; }
+.border-top { border-top: 1px solid $border-color !important; }
+.h-100 { height: 100% !important; }
+.w-75 { width: 75% !important; }
+
+// Flexbox & Alineación
 .d-flex { display: flex !important; }
-.d-block { display: block !important; }
-.flex-column { flex-direction: column !important; }
-.flex-wrap { flex-wrap: wrap !important; }
 .justify-content-between { justify-content: space-between !important; }
-.align-items-start { align-items: flex-start !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.align-items-end { align-items: flex-end !important; }
 .align-items-center { align-items: center !important; }
-.gap-2 { gap: 0.5rem !important; }
+.align-middle { vertical-align: middle !important; }
 .gap-3 { gap: 1rem !important; }
-.flex-shrink-0 { flex-shrink: 0 !important; }
-
 .text-center { text-align: center !important; }
-.text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.text-uppercase { text-transform: uppercase !important; }
-.fw-bold { font-weight: 700 !important; }
+.text-end { text-align: right !important; }
+
+// Tipografía y Badges básicos
 .small { font-size: 0.85rem !important; }
-.text-muted { color: map-get($slate, 500) !important; }
+.fs-5 { font-size: 1.25rem !important; }
+.fw-medium { font-weight: 500 !important; }
+.fw-semibold { font-weight: 600 !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.tracking-wider { letter-spacing: 0.05em !important; }
 
-.border { border: 1px solid map-get($slate, 200) !important; }
-.border-0 { border: none !important; }
-.border-top { border-top: 1px solid map-get($slate, 200) !important; }
-.border-bottom { border-bottom: 1px solid map-get($slate, 200) !important; }
-.rounded { border-radius: $radius-sm !important; }
-.rounded-3 { border-radius: $radius-md !important; }
-.rounded-circle { border-radius: 50% !important; }
-.shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; }
-.bg-white { background-color: #ffffff !important; }
-.bg-light { background-color: map-get($slate, 100) !important; }
-.overflow-hidden { overflow: hidden !important; }
-.position-relative { position: relative !important; }
-.position-absolute { position: absolute !important; }
-.top-0 { top: 0 !important; }
-.end-0 { right: 0 !important; }
+.badge {
+  display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em;
+  font-weight: 600; line-height: 1; text-align: center; white-space: nowrap;
+  vertical-align: baseline; border-radius: 4px;
+}
 
-// Grida Flexbox
+// Grida Flexbox Nativa
 .row { display: flex; flex-wrap: wrap; margin-left: -0.5rem; margin-right: -0.5rem; }
-.g-3 { margin-left: -0.5rem; margin-right: -0.5rem; > [class*="col-"] { padding: 0.5rem; } }
-.g-4 { margin-left: -0.75rem; margin-right: -0.75rem; > [class*="col-"] { padding: 0.75rem; } }
-[class*="col-"] { width: 100%; }
-.col-6 { width: 50%; }
-.col-12 { width: 100%; }
-
-@media (min-width: 576px) {
-  .flex-sm-row { flex-direction: row !important; }
-  .d-sm-block { display: block !important; }
-}
+[class*="col-"] { width: 100%; padding: 0.5rem; }
 @media (min-width: 768px) {
-  .col-md-3 { width: 25%; }
-  .col-md-5 { width: 41.666%; }
-  .col-md-6 { width: 50%; }
-  .col-md-7 { width: 58.333%; }
-  .flex-md-row { flex-direction: row !important; }
-  .justify-content-md-end { justify-content: flex-end !important; }
-  .align-items-md-center { align-items: center !important; }
-}
-@media (min-width: 992px) {
-  .col-lg-4 { width: 33.333%; }
+  .col-md-4 { width: 33.3333%; }
 }
 
-// -------------------------------------------------------------
-// 3. ESTILOS BASE Y DE FORMULARIO
-// -------------------------------------------------------------
-.practica-wrapper {
-  background-color: map-get($slate, 50);
-  min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: map-get($slate, 800);
-}
-
-.micro-text { font-size: 0.7rem; letter-spacing: 0.05em; font-weight: 600; }
-.text-slate-500 { color: map-get($slate, 500); }
-.text-slate-600 { color: map-get($slate, 600); }
-.text-slate-800 { color: map-get($slate, 800); }
-.text-slate-900 { color: map-get($slate, 900); }
-
+// Controles de Formulario Nativos
+.form-label { display: block; margin-bottom: 0.5rem; }
 .form-control, .form-select {
-  width: 100%;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid map-get($slate, 300);
-  border-radius: $radius-sm;
-  background-color: #ffffff;
-  color: map-get($slate, 800);
-  outline: none;
+  width: 100%; padding: 0.375rem 0.75rem; font-size: 0.875rem;
+  border: 1px solid $border-color; border-radius: $radius-sm;
+  background-color: #ffffff; color: $text-main; outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-  &:focus { border-color: map-get($slate, 500); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08); }
-  &:disabled { background-color: map-get($slate, 100); color: map-get($slate, 500); cursor: not-allowed; }
+  &:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08); }
 }
 .form-control-sm, .form-select-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 
-.input-group {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
+// Botones Nativos
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 0.875rem; padding: 0.5rem 1rem;
+  border-radius: $radius-sm; cursor: pointer; transition: all 0.2s ease;
+  border: 1px solid transparent; text-decoration: none;
   
-  .input-group-text {
-    display: flex; align-items: center; padding: 0.375rem 0.75rem;
-    background-color: map-get($slate, 100); border: 1px solid map-get($slate, 300);
-    border-right: none; border-radius: $radius-sm 0 0 $radius-sm;
+  &.btn-primary {
+    background-color: $primary-color; color: #ffffff;
+    &:hover { background-color: color.adjust($primary-color, $lightness: -8%); }
   }
-  .form-control {
-    border-left: none; border-radius: 0 $radius-sm $radius-sm 0;
-    &:focus { z-index: 1; }
+  &.btn-dark {
+    background-color: $text-main; color: #ffffff;
+    &:hover { background-color: #374151; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   }
-}
-
-// -------------------------------------------------------------
-// 4. COMPONENTES Y TARJETAS
-// -------------------------------------------------------------
-.page-header {
-  .header-subtitle {
-    margin-left: 2.75rem !important;
-    @media (max-width: 576px) { margin-left: 0 !important; }
+  &.btn-outline-secondary {
+    background-color: transparent; border-color: $border-color; color: $text-main;
+    &:hover { background-color: $bg-light; border-color: #9ca3af; }
   }
 }
 
-.btn-icon {
-  background: #ffffff; color: map-get($slate, 700); border: 1px solid map-get($slate, 300);
-  width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%; cursor: pointer; transition: all 0.15s ease;
-  &:hover { background: map-get($slate, 100); color: map-get($slate, 900); }
-}
-
-.btn-dark-slate {
-  background-color: map-get($slate, 900); color: #ffffff; border: 1px solid map-get($slate, 900);
-  font-weight: 500; font-size: 0.875rem; border-radius: $radius-sm; padding: 0.55rem 1.25rem;
-  cursor: pointer; transition: all $transition-base;
-  &:hover:not(:disabled) { background-color: map-get($slate, 800); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); transform: translateY(-1px); }
-  &:disabled { background-color: map-get($slate, 400); border-color: map-get($slate, 400); cursor: not-allowed; }
-}
-
-.btn-xs {
-  padding: 0.25rem 0.6rem; font-size: 0.75rem; font-weight: 500; border-radius: $radius-sm; cursor: pointer;
-  &.btn-outline-success { background: transparent; border: 1px solid #10b981; color: #065f46; &:hover { background: #ecfdf5; } }
-  &.btn-outline-danger { background: transparent; border: 1px solid #f43f5e; color: #9f1239; &:hover { background: #fff1f2; } }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-.badge-slate {
-  background-color: map-get($slate, 100); color: map-get($slate, 700); border: 1px solid map-get($slate, 200);
-  font-weight: 600; padding: 0.35em 0.65em; border-radius: 4px; display: inline-block;
-}
-
-.badge-status-locked {
-  background-color: map-get(map-get($status, asistio), bg); color: map-get(map-get($status, asistio), text);
-  border: 1px solid map-get(map-get($status, asistio), border); padding: 0.35em 0.65em; border-radius: 4px; font-weight: 600;
-}
-
-.alert-warning {
-  background-color: #fffbeb; border: 1px solid #fde68a !important; color: #92400e;
-  padding: 1rem; border-radius: $radius-md;
-}
-
-// KPI CARDS
-.kpi-card {
-  border-radius: $radius-md; padding: 1.25rem 1rem; transition: transform $transition-base, box-shadow $transition-base;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); height: 100%; display: flex; flex-direction: column; justify-content: center;
-  background-color: #ffffff; border: 1px solid map-get($slate, 200);
-  &:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08); }
-  .kpi-label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: map-get($slate, 500); }
-  .kpi-value { font-size: 1.75rem; font-weight: 800; margin-top: 0.25rem; line-height: 1.1; }
-}
-.kpi-success { background-color: map-get(map-get($status, asistio), bg); border-color: map-get(map-get($status, asistio), border); .kpi-value { color: map-get(map-get($status, asistio), text); } }
-.kpi-danger { background-color: map-get(map-get($status, falto), bg); border-color: map-get(map-get($status, falto), border); .kpi-value { color: map-get(map-get($status, falto), text); } }
-.kpi-warning { background-color: map-get(map-get($status, justificado), bg); border-color: map-get(map-get($status, justificado), border); .kpi-value { color: map-get(map-get($status, justificado), text); } }
-
-// TARJETAS DE ALUMNO
-.alumno-card {
-  background-color: #ffffff; border: 1px solid map-get($slate, 200); border-left: 5px solid map-get($slate, 300) !important;
-  border-radius: $radius-lg; transition: all $transition-base; display: flex; flex-direction: column;
-  &:hover:not(.card--disabled) { transform: translateY(-3px); box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.1) !important; }
-  &.card--disabled { background-color: #f8fafc; opacity: 0.95; }
-  &.card--asistio { border-left-color: map-get(map-get($status, asistio), base) !important; background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, #ffffff 100%); }
-  &.card--falto { border-left-color: map-get(map-get($status, falto), base) !important; background: linear-gradient(180deg, rgba(244, 63, 94, 0.03) 0%, #ffffff 100%); }
-  &.card--justificado { border-left-color: map-get(map-get($status, justificado), base) !important; background: linear-gradient(180deg, rgba(245, 158, 11, 0.03) 0%, #ffffff 100%); }
-}
-
-.status-dot {
-  width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0;
-  &.dot--asistio { background-color: map-get(map-get($status, asistio), base); }
-  &.dot--falto { background-color: map-get(map-get($status, falto), base); }
-  &.dot--justificado { background-color: map-get(map-get($status, justificado), base); }
-  &.dot--pendiente { background-color: map-get($slate, 300); }
-}
-
-// SUBIDA DE ARCHIVOS Y FOTOS
-.file-upload-box {
-  background-color: map-get($slate, 50); border: 1px dashed map-get($slate, 300); border-radius: $radius-sm; transition: all 0.2s ease;
-  &:hover:not(.is-disabled) { background-color: map-get($slate, 100); border-color: map-get($slate, 500); }
-  &.is-disabled { opacity: 0.7; cursor: not-allowed; }
-  .file-input-hidden { display: none; }
-  .cursor-pointer { cursor: pointer; }
-}
-
-.img-preview {
-  height: 150px; background-color: map-get($slate, 900);
-  img { width: 100%; height: 100%; object-fit: cover; }
-  .btn-remove-img {
-    width: 26px; height: 26px; border-radius: 50%; background-color: rgba(225, 29, 72, 0.9); color: #ffffff;
-    border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    &:hover { background-color: #be123c; transform: scale(1.1); }
-  }
-}
-
-// PAGINACIÓN Y SPINNERS
-.pagination {
-  display: flex; list-style: none; padding: 0; margin: 0; gap: 4px;
-  .page-item {
-    .page-link {
-      color: map-get($slate, 700); border: 1px solid map-get($slate, 200); font-size: 0.85rem; padding: 0.4rem 0.8rem;
-      border-radius: $radius-sm; background: #ffffff; cursor: pointer;
-      &:hover:not(:disabled) { background-color: map-get($slate, 100); }
-    }
-    &.active .page-link { background-color: map-get($slate, 900); border-color: map-get($slate, 900); color: #ffffff; }
-    &.disabled .page-link { color: map-get($slate, 400); cursor: not-allowed; }
-  }
-}
-
+// Spinner
 .spinner-border {
   display: inline-block; width: 2rem; height: 2rem; border: 0.25em solid currentColor;
   border-right-color: transparent; border-radius: 50%; animation: spinner-border .75s linear infinite;
-  &.spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.15em; }
 }
 @keyframes spinner-border { to { transform: rotate(360deg); } }
+
+// =============================================================
+// 3. ESTILOS ESPECÍFICOS DEL CRONOGRAMA & LEDGER
+// =============================================================
+
+.pdf-wrapper {
+  padding: 1.5rem;
+  border-radius: $radius-lg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+}
+
+// 1. Tarjetas de Configuración
+.config-card {
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.input-minimalist {
+  border-color: $border-color;
+  font-size: 1rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: $radius-sm;
+  color: $text-main;
+  box-shadow: none !important;
+  transition: all 0.2s;
+
+  &:focus {
+    border-color: #9ca3af;
+    background-color: #f8fafc;
+  }
+}
+
+// 2. Tabla Estilo Ledger
+.table-card {
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  
+  thead tr {
+    background-color: $bg-light;
+    border-bottom: 2px solid $border-color;
+    
+    th {
+      color: $text-muted;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 0.5rem;
+      border: none;
+      text-align: left;
+    }
+  }
+
+  tbody td {
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid $border-color;
+    color: #374151;
+    background-color: #ffffff;
+  }
+
+  &.table-hover tbody tr:hover td {
+    background-color: #f8fafc;
+  }
+}
+
+// 3. Estilos de los Badges y Tiempos
+.badge-outline {
+  background-color: transparent;
+  color: $text-main;
+  border: 1px solid #d1d5db;
+  font-weight: 500;
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+}
+
+.time-badge {
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+  background-color: #f3f4f6;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+// =============================================================
+// 4. ANIMACIONES Y ESTILOS CDK DRAG & DROP
+// =============================================================
+
+.drag-row {
+  cursor: grab;
+  &:active { cursor: grabbing; }
+}
+
+.drag-handle {
+  width: 80px;
+  user-select: none;
+  .handle-icon {
+    cursor: grab; color: #9ca3af; transition: color 0.2s;
+  }
+  &:hover .handle-icon { color: $text-main; }
+}
+
+/* Efecto cuando la fila está siendo arrastrada (Preview) */
+.cdk-drag-preview {
+  display: table;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: $radius-sm;
+  td {
+    border-bottom: none !important;
+    background-color: #ffffff;
+    padding: 1rem 0.5rem;
+  }
+}
+
+/* El espacio vacío que deja la fila en la tabla (Placeholder) */
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background-color: #e5e7eb;
+  border: 2px dashed #9ca3af;
+  td { visibility: hidden; }
+}
+
+/* Transición suave al soltar o reordenar */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .drag-row:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// 5. Botones Formales del Pie de página
+.acciones-footer {
+  .btn {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
