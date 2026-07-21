@@ -48,16 +48,16 @@ export class PracticaDetalle implements OnInit {
   /**
    * Carga la lista de sesiones disponibles para cambiar entre locales/sesiones
    */
-  cargarSesionesPendientes(): void {
-    this.practicasService.obtenerSesionesPendientes().subscribe({
+cargarSesionesPendientes(): void {
+    // Se corrige el nombre a obtenerPendientes() y el tipado explícito de (err: any)
+    this.practicasService.obtenerPendientes().subscribe({
       next: (resp: any) => {
         this.sesionesPendientes = resp.data ?? resp ?? [];
         this.cd.detectChanges();
       },
-      error: (err) => console.error('Error al obtener sesiones pendientes:', err)
+      error: (err: any) => console.error('Error al obtener sesiones pendientes:', err)
     });
   }
-
   /**
    * Maneja el cambio de selección en el dropdown
    */
