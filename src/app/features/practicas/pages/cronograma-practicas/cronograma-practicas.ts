@@ -6,7 +6,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 import {
   DragDropModule,
   CdkDragDrop,
@@ -32,7 +32,7 @@ export class CronogramaPracticasComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private practicasService = inject(PracticasService);
-
+  private router = inject(Router);
   sesion: any = null;
 
   loading = true;
@@ -208,6 +208,17 @@ export class CronogramaPracticasComponent implements OnInit {
     .from(elemento)
 
     .save();
+
+}
+  iniciarJornada(): void {
+
+  this.router.navigate([
+
+    '/practicas/jornada',
+
+    this.sesion.id
+
+  ]);
 
 }
 
