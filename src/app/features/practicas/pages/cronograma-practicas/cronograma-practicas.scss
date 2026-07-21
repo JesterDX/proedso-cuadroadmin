@@ -1,28 +1,147 @@
+@use "sass:color";
 
-// ==========================================
-// ESTILOS MINIMALISTAS Y DRAG & DROP
-// ==========================================
-
+// =============================================================
+// 1. TOKENS DE DISEÑO & VARIABLES
+// =============================================================
 $border-color: #e5e7eb;
 $text-main: #111827;
 $text-muted: #6b7280;
 $bg-light: #f9fafb;
 $primary-color: #2563eb;
 
-.container {
-  max-width: 1100px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$slate: (
+  50:  #f8fafc, 100: #f1f5f9, 200: #e2e8f0, 300: #cbd5e1,
+  400: #94a3b8, 500: #64748b, 600: #475569, 700: #334155,
+  800: #1e293b, 900: #0f172a
+);
+
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+// =============================================================
+// 2. SISTEMA DE GRIDA Y UTILIDADES NATIVAS (SIN BOOTSTRAP)
+// =============================================================
+* { box-sizing: border-box; }
+
+.container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 1rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.bg-white { background-color: #ffffff !important; }
+.bg-light { background-color: $bg-light !important; }
+.text-dark { color: $text-main !important; }
+.text-muted { color: $text-muted !important; }
+.text-main { color: $text-main; font-weight: 600; letter-spacing: -0.02em; }
+
+// Spacing (márgenes y paddings)
+.m-0 { margin: 0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 3rem !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.pb-3 { padding-bottom: 1rem !important; }
+.pt-3 { padding-top: 1rem !important; }
+.py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.ps-4 { padding-left: 1.5rem !important; }
+.px-4 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+
+// Bordes y tamaños
+.border { border: 1px solid $border-color !important; }
+.border-bottom { border-bottom: 1px solid $border-color !important; }
+.border-top { border-top: 1px solid $border-color !important; }
+.h-100 { height: 100% !important; }
+.w-75 { width: 75% !important; }
+
+// Flexbox & Alineación
+.d-flex { display: flex !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-center { align-items: center !important; }
+.align-middle { vertical-align: middle !important; }
+.gap-3 { gap: 1rem !important; }
+.text-center { text-align: center !important; }
+.text-end { text-align: right !important; }
+
+// Tipografía y Badges básicos
+.small { font-size: 0.85rem !important; }
+.fs-5 { font-size: 1.25rem !important; }
+.fw-medium { font-weight: 500 !important; }
+.fw-semibold { font-weight: 600 !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.tracking-wider { letter-spacing: 0.05em !important; }
+
+.badge {
+  display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em;
+  font-weight: 600; line-height: 1; text-align: center; white-space: nowrap;
+  vertical-align: baseline; border-radius: 4px;
 }
 
-h2.text-main {
-  font-weight: 600;
-  letter-spacing: -0.02em;
+// Grida Flexbox Nativa
+.row { display: flex; flex-wrap: wrap; margin-left: -0.5rem; margin-right: -0.5rem; }
+[class*="col-"] { width: 100%; padding: 0.5rem; }
+@media (min-width: 768px) {
+  .col-md-4 { width: 33.3333%; }
+}
+
+// Controles de Formulario Nativos
+.form-label { display: block; margin-bottom: 0.5rem; }
+.form-control, .form-select {
+  width: 100%; padding: 0.375rem 0.75rem; font-size: 0.875rem;
+  border: 1px solid $border-color; border-radius: $radius-sm;
+  background-color: #ffffff; color: $text-main; outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  &:focus { border-color: #9ca3af; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08); }
+}
+.form-control-sm, .form-select-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+
+// Botones Nativos
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 0.875rem; padding: 0.5rem 1rem;
+  border-radius: $radius-sm; cursor: pointer; transition: all 0.2s ease;
+  border: 1px solid transparent; text-decoration: none;
+  
+  &.btn-primary {
+    background-color: $primary-color; color: #ffffff;
+    &:hover { background-color: color.adjust($primary-color, $lightness: -8%); }
+  }
+  &.btn-dark {
+    background-color: $text-main; color: #ffffff;
+    &:hover { background-color: #374151; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  }
+  &.btn-outline-secondary {
+    background-color: transparent; border-color: $border-color; color: $text-main;
+    &:hover { background-color: $bg-light; border-color: #9ca3af; }
+  }
+}
+
+// Spinner
+.spinner-border {
+  display: inline-block; width: 2rem; height: 2rem; border: 0.25em solid currentColor;
+  border-right-color: transparent; border-radius: 50%; animation: spinner-border .75s linear infinite;
+}
+@keyframes spinner-border { to { transform: rotate(360deg); } }
+
+// =============================================================
+// 3. ESTILOS ESPECÍFICOS DEL CRONOGRAMA & LEDGER
+// =============================================================
+
+.pdf-wrapper {
+  padding: 1.5rem;
+  border-radius: $radius-lg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
 }
 
 // 1. Tarjetas de Configuración
 .config-card {
   border: 1px solid $border-color;
-  border-radius: 8px;
+  border-radius: $radius-md;
   background-color: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
@@ -31,7 +150,7 @@ h2.text-main {
   border-color: $border-color;
   font-size: 1rem;
   padding: 0.4rem 0.75rem;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   color: $text-main;
   box-shadow: none !important;
   transition: all 0.2s;
@@ -45,12 +164,15 @@ h2.text-main {
 // 2. Tabla Estilo Ledger
 .table-card {
   border: 1px solid $border-color;
-  border-radius: 8px;
-  overflow: hidden; // Redondea las esquinas de la tabla
+  border-radius: $radius-md;
+  overflow: hidden;
 }
 
 .table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.9rem;
+  margin-bottom: 0;
   
   thead tr {
     background-color: $bg-light;
@@ -64,6 +186,7 @@ h2.text-main {
       letter-spacing: 0.05em;
       padding: 1rem 0.5rem;
       border: none;
+      text-align: left;
     }
   }
 
@@ -72,6 +195,10 @@ h2.text-main {
     border-bottom: 1px solid $border-color;
     color: #374151;
     background-color: #ffffff;
+  }
+
+  &.table-hover tbody tr:hover td {
+    background-color: #f8fafc;
   }
 }
 
@@ -86,7 +213,7 @@ h2.text-main {
 }
 
 .time-badge {
-  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace; // Fuente monoespaciada para horas
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
   background-color: #f3f4f6;
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
@@ -95,33 +222,22 @@ h2.text-main {
   color: #4b5563;
 }
 
-// ==========================================
+// =============================================================
 // 4. ANIMACIONES Y ESTILOS CDK DRAG & DROP
-// ==========================================
+// =============================================================
 
 .drag-row {
   cursor: grab;
-  
-  &:active {
-    cursor: grabbing;
-  }
-  
-  // Efecto hover sutil
-  &:hover td {
-    background-color: #f8fafc;
-  }
+  &:active { cursor: grabbing; }
 }
 
 .drag-handle {
   width: 80px;
+  user-select: none;
   .handle-icon {
-    cursor: grab;
-    color: #9ca3af;
-    transition: color 0.2s;
+    cursor: grab; color: #9ca3af; transition: color 0.2s;
   }
-  &:hover .handle-icon {
-    color: $text-main;
-  }
+  &:hover .handle-icon { color: $text-main; }
 }
 
 /* Efecto cuando la fila está siendo arrastrada (Preview) */
@@ -129,11 +245,11 @@ h2.text-main {
   display: table;
   background-color: #ffffff;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  // Ocultamos los bordes internos durante el vuelo
+  border-radius: $radius-sm;
   td {
     border-bottom: none !important;
     background-color: #ffffff;
+    padding: 1rem 0.5rem;
   }
 }
 
@@ -142,10 +258,7 @@ h2.text-main {
   opacity: 0.4;
   background-color: #e5e7eb;
   border: 2px dashed #9ca3af;
-  
-  td {
-    visibility: hidden; // Oculta el texto interno en el espacio vacío
-  }
+  td { visibility: hidden; }
 }
 
 /* Transición suave al soltar o reordenar */
@@ -157,24 +270,10 @@ h2.text-main {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-// 5. Botones Formales
+// 5. Botones Formales del Pie de página
 .acciones-footer {
   .btn {
     font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    border-radius: 6px;
-  }
-  
-  .btn-primary {
-    background-color: $primary-color;
-    border: none;
-    &:hover { background-color: darken($primary-color, 10%); }
-  }
-
-  .btn-dark {
-    background-color: $text-main;
-    border: none;
-    &:hover { background-color: #374151; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
   }
 }
