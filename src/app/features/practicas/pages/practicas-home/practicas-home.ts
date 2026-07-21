@@ -69,21 +69,5 @@ export class PracticasHomeComponent implements OnInit {
 
 }
 
-abrirRegistrarPractica(): void {
-
-  if (this.ultimaSesionPendienteId) {
-
-    this.router.navigate([
-      '/practicas',
-      this.ultimaSesionPendienteId
-    ]);
-
-    return;
-
-  }
-
-  alert('No existe una sesión pendiente para registrar práctica.');
-
-}
 
 }
