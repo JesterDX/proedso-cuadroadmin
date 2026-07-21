@@ -1,1 +1,28 @@
 
+.card {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .card-header {
+    font-size: 1.1rem;
+  }
+}
+
+.table {
+  font-size: 0.95rem;
+  
+  th {
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.75em;
+}
