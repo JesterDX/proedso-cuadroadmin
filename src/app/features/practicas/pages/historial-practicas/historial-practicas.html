@@ -1,1 +1,78 @@
-<h2>Historial de Prácticas</h2>
+<div class="container mt-4">
+  <h2 class="mb-4">📜 Historial de Sesiones Grupales Finalizadas</h2>
+
+  <!-- Estado de carga -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2 text-muted">Cargando historial...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
+    {{ errorMensaje }}
+  </div>
+
+  <!-- Sin registros -->
+  <div *ngIf="!cargando && sesiones.length === 0 && !errorMensaje" class="alert alert-info" role="alert">
+    No hay sesiones grupales finalizadas registradas.
+  </div>
+
+  <!-- Listado de Sesiones -->
+  <div *ngFor="let sesion of sesiones" class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+      <span><strong>Fecha de Sesión:</strong> {{ sesion.fecha | date:'dd/MM/yyyy' }}</span>
+      <span class="badge bg-success">{{ sesion.estado }}</span>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Orden</th>
+              <th>Horario</th>
+              <th>Alumno</th>
+              <th>Máquina</th>
+              <th>Sesiones</th>
+              <th>Asistencia</th>
+              <th>Observaciones</th>
+              <th>Evidencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of sesion.detalle">
+              <td class="text-center fw-bold">{{ item.orden || '-' }}</td>
+              <td>
+                <small *ngIf="item.hora_inicio && item.hora_fin; else sinHora">
+                  {{ item.hora_inicio }} - {{ item.hora_fin }}
+                </small>
+                <ng-template #sinHora><span class="text-muted">No especificado</span></ng-template>
+              </td>
+              <td>{{ item.alumno }}</td>
+              <td><span class="badge bg-secondary">{{ item.maquina }}</span></td>
+              <td class="text-center">{{ item.sesiones_asignadas }}</td>
+              <td class="text-center">
+                <span class="badge" [ngClass]="{
+                  'bg-success': item.asistencia === 'ASISTIO',
+                  'bg-danger': item.asistencia === 'FALTO',
+                  'bg-warning text-dark': item.asistencia === 'TARDE' || !item.asistencia
+                }">
+                  {{ item.asistencia || 'PENDIENTE' }}
+                </span>
+              </td>
+              <td>{{ item.observaciones || '-' }}</td>
+              <td class="text-center">
+                <a *ngIf="item.evidencia_url; else sinEvidencia" [href]="item.evidencia_url" target="_blank" class="btn btn-sm btn-outline-primary">
+                  Ver
+                </a>
+                <ng-template #sinEvidencia><span class="text-muted">-</span></ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
