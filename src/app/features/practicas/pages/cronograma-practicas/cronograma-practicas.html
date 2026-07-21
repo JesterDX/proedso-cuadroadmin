@@ -79,23 +79,51 @@ type="time"
 
 </thead>
 
-<tbody>
+<tbody
+cdkDropList
+(cdkDropListDropped)="drop($event)">
 
-@for(item of sesion.detalle; track item.detalle_id){
+@for(
+item of sesion.detalle;
+track item.detalle_id){
 
-<tr>
+<tr cdkDrag>
 
-<td>{{$index+1}}</td>
+<td>
 
-<td>{{item.alumno}}</td>
+☰ {{$index+1}}
 
-<td>{{item.maquina}}</td>
+</td>
 
-<td>{{item.sesiones_asignadas}}</td>
+<td>
 
-<td>{{item.horaInicio}}</td>
+{{item.alumno}}
 
-<td>{{item.horaFin}}</td>
+</td>
+
+<td>
+
+{{item.maquina}}
+
+</td>
+
+<td>
+
+{{item.sesiones_asignadas}}
+
+</td>
+
+<td>
+
+{{item.horaInicio}}
+
+</td>
+
+<td>
+
+{{item.horaFin}}
+
+</td>
 
 </tr>
 
