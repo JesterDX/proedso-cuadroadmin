@@ -193,16 +193,6 @@ export const routes: Routes = [
           import('./features/practicas/pages/expedientes/expedientes')
             .then(m => m.ExpedientesComponent)
       },
-      {
-        path:'practicas/:id',
-      
-        loadComponent:()=>
-      
-          import('./features/practicas/pages/practica-detalle/practica-detalle')
-      
-            .then(m=>m.PracticaDetalle)
-      
-      },
 
       {
         path:'practicas/cronograma/:id',
@@ -212,6 +202,16 @@ export const routes: Routes = [
           import('./features/practicas/pages/cronograma-practicas/cronograma-practicas')
       
             .then(m=>m.CronogramaPracticasComponent)
+      },
+            {
+        path:'practicas/:id',
+      
+        loadComponent:()=>
+      
+          import('./features/practicas/pages/practica-detalle/practica-detalle')
+      
+            .then(m=>m.PracticaDetalle)
+      
       },
 
       // =========================
