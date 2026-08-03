@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { HomologadosService } from '../../services/homologados.service';
-
+import { HomologadosService } from '../homologado-service/homologacion-service';
 @Component({
   selector: 'app-homologados-list',
   standalone: true,
