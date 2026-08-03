@@ -238,10 +238,10 @@ export const routes: Routes = [
       {
         path: 'homologados',
         loadComponent: () =>
-         import('./features/homologados/homologados-list')
-            .then(m => m.homologadosComponent)
+          import('./features/homologados/homologados-list/homologados-list')
+            .then(m => m.HomologadosListComponent)
       },
-      
+                  
       {
         path: 'configuracion',
         loadComponent: () =>
