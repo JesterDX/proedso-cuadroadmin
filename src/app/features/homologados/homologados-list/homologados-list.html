@@ -1,0 +1,278 @@
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h3 class="fw-bold">
+
+                Homologados
+
+            </h3>
+
+            <small class="text-muted">
+
+                Gestión de certificados y homologaciones
+
+            </small>
+
+        </div>
+
+        <button
+            class="btn btn-primary"
+            (click)="nuevo()">
+
+            Nuevo Homologado
+
+        </button>
+
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-3">
+
+                <div class="col-md-4">
+
+                    <input
+                        class="form-control"
+                        placeholder="Buscar alumno o DNI..."
+                        [(ngModel)]="busqueda">
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <select
+                        class="form-select"
+                        [(ngModel)]="estadoPago">
+
+                        <option value="">
+
+                            Estado Pago
+
+                        </option>
+
+                        <option>
+
+                            Pagado
+
+                        </option>
+
+                        <option>
+
+                            Parcial
+
+                        </option>
+
+                        <option>
+
+                            Pendiente
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <select
+                        class="form-select"
+                        [(ngModel)]="estadoDocumento">
+
+                        <option value="">
+
+                            Estado Documento
+
+                        </option>
+
+                        <option>
+
+                            REGISTRADO
+
+                        </option>
+
+                        <option>
+
+                            PAGO_PARCIAL
+
+                        </option>
+
+                        <option>
+
+                            PAGO_COMPLETO
+
+                        </option>
+
+                        <option>
+
+                            CERTIFICADO_DIGITAL
+
+                        </option>
+
+                        <option>
+
+                            FALTA_FIRMAS
+
+                        </option>
+
+                        <option>
+
+                            ENVIADO
+
+                        </option>
+
+                        <option>
+
+                            ENTREGADO
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <input
+                        class="form-control"
+                        placeholder="Vendedor"
+                        [(ngModel)]="vendedor">
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Alumno</th>
+
+                            <th>Curso</th>
+
+                            <th>Total</th>
+
+                            <th>Pagado</th>
+
+                            <th>Saldo</th>
+
+                            <th>Estado Pago</th>
+
+                            <th>Estado Documento</th>
+
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr
+                            *ngFor="let h of homologadosPagina">
+
+                            <td>
+
+                                {{h.id}}
+
+                            </td>
+
+                            <td>
+
+                                {{h.alumno}}
+
+                            </td>
+
+                            <td>
+
+                                {{h.curso}}
+
+                            </td>
+
+                            <td>
+
+                                S/. {{h.monto_total}}
+
+                            </td>
+
+                            <td>
+
+                                S/. {{h.monto_pagado}}
+
+                            </td>
+
+                            <td>
+
+                                S/. {{h.saldo}}
+
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="badge bg-success"
+                                    *ngIf="h.estado_pago=='Pagado'">
+
+                                    Pagado
+
+                                </span>
+
+                                <span
+                                    class="badge bg-warning text-dark"
+                                    *ngIf="h.estado_pago=='Parcial'">
+
+                                    Parcial
+
+                                </span>
+
+                                <span
+                                    class="badge bg-danger"
+                                    *ngIf="h.estado_pago=='Pendiente'">
+
+                                    Pendiente
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {{h.estado_documento}}
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="btn btn-sm btn-outline-primary"
+                                    (click)="editar(h.id)">
+
+                                    Ver
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
