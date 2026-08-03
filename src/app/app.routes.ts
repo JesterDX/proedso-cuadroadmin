@@ -236,6 +236,13 @@ export const routes: Routes = [
             .then(m => m.Dashboard)
       },
       {
+        path: 'homologados',
+        loadComponent: () =>
+         import('./features/homologados/homologado-list')
+            .then(m => m.Dashboard)
+      },
+      
+      {
         path: 'configuracion',
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard/dashboard')
