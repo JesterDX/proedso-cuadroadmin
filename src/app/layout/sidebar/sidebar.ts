@@ -99,7 +99,8 @@ export class Sidebar {
           expanded: true,
           children: [
 
-            { label: 'Prácticas', route: '/practicas' }
+            { label: 'Prácticas', route: '/practicas' },
+            { label: 'Homologados', route: '/homologados' }
           ]
         },
         {
