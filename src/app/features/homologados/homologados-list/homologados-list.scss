@@ -1,24 +1,23 @@
 // ==========================================
+// HOMOLOGADOS - PROEDSO ADMIN STYLE
+// ==========================================
+
+
+// ==========================================
 // VARIABLES
 // ==========================================
 
-$navy:#0f172a;
+$navy: #0f172a;
+$blue: #2563eb;
+$blue-soft: #eff6ff;
 
-$blue:#2563eb;
+$green: #16a34a;
+$red: #dc2626;
 
-$blue-soft:#eff6ff;
+$border: #e2e8f0;
 
-$green:#16a34a;
-
-$red:#dc2626;
-
-$border:#e2e8f0;
-
-$text:#334155;
-
-$muted:#64748b;
-
-
+$text: #334155;
+$muted: #64748b;
 
 
 
@@ -26,175 +25,167 @@ $muted:#64748b;
 // HOST
 // ==========================================
 
-:host{
+:host {
 
-display:block;
+  display: block;
 
 }
 
+
+
+// ==========================================
+// HEADER MODULO
+// ==========================================
+
+.header-modulo {
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  background:white;
+
+  padding:22px 26px;
+
+  border-radius:16px;
+
+  border:1px solid $border;
+
+  box-shadow:
+  0 4px 14px rgba(15,23,42,.05);
+
+}
+
+
+
+.header-info {
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+
+.titulo {
+
+  margin:0;
+
+  color:$navy;
+
+  font-size:1.7rem;
+
+  font-weight:800;
+
+  letter-spacing:-.5px;
+
+}
 
 
 
 
 // ==========================================
-// HEADER
+// BOTONES SUPERIORES
 // ==========================================
 
+.acciones {
 
-.header-modulo{
+  display:flex;
 
+  gap:12px;
 
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-
-background:white;
-
-padding:22px 26px;
-
-
-border-radius:16px;
-
-border:1px solid $border;
-
-
-box-shadow:
-
-0 4px 14px rgba(15,23,42,.05);
-
+  align-items:center;
 
 }
 
 
 
+.btn {
 
-.titulo{
+  height:42px;
 
+  padding:0 18px;
 
-color:$navy;
+  border-radius:10px;
 
-font-size:1.7rem;
+  font-weight:600;
 
-font-weight:800;
+  display:flex;
 
+  align-items:center;
 
-}
+  gap:8px;
 
-
-
-
-.header-info{
-
-
-display:flex;
-
-flex-direction:column;
-
+  transition:.2s ease;
 
 }
 
 
 
+.btn:hover {
 
-
-.acciones{
-
-
-display:flex;
-
-gap:12px;
-
-align-items:center;
-
+  transform:translateY(-1px);
 
 }
 
 
 
+.btn-primary {
 
+  background:$navy;
 
-
-// ==========================================
-// BOTONES
-// ==========================================
-
-
-.btn{
-
-
-height:42px;
-
-padding:0 18px;
-
-border-radius:10px;
-
-font-weight:600;
-
-display:flex;
-
-align-items:center;
-
-gap:8px;
-
-transition:.2s;
-
+  border-color:$navy;
 
 }
 
 
 
+.btn-primary:hover {
 
-
-.btn-primary{
-
-
-background:$navy;
-
-border-color:$navy;
-
+  background:#1e293b;
 
 }
 
 
 
-.btn-success{
+.btn-success {
 
+  background:$green;
 
-background:$green;
-
-border-color:$green;
-
+  border-color:$green;
 
 }
 
 
 
+.btn-success:hover {
 
-.btn-outline-primary{
-
-
-border-color:$navy;
-
-color:$navy;
-
+  background:#15803d;
 
 }
 
 
 
+.btn-outline-primary {
 
-.btn:hover{
+  color:$navy;
 
-
-transform:translateY(-1px);
-
+  border-color:$navy;
 
 }
 
 
+
+.btn-outline-primary:hover {
+
+  background:$navy;
+
+  color:white;
+
+}
 
 
 
@@ -202,142 +193,114 @@ transform:translateY(-1px);
 // FILTROS
 // ==========================================
 
+.filtros {
 
-.filtros{
+  display:grid;
 
+  grid-template-columns:2fr 1fr 1fr 1fr;
 
-display:grid;
+  gap:12px;
 
-grid-template-columns:
+  background:white;
 
-2fr
+  padding:18px;
 
-1fr
+  margin-top:18px;
 
-1fr
+  border-radius:16px;
 
-1fr;
-
-
-gap:12px;
-
-
-background:white;
-
-padding:18px;
-
-
-border-radius:16px;
-
-
-border:1px solid $border;
-
+  border:1px solid $border;
 
 }
 
 
 
+.busqueda {
 
-
-.busqueda{
-
-
-position:relative;
-
+  position:relative;
 
 }
 
 
 
+.busqueda i {
 
-.busqueda i{
+  position:absolute;
 
+  left:14px;
 
-position:absolute;
+  top:13px;
 
-left:14px;
-
-top:12px;
-
-color:$muted;
-
+  color:$muted;
 
 }
 
 
 
+.busqueda input {
 
-
-.busqueda input{
-
-
-padding-left:40px;
-
+  padding-left:40px;
 
 }
-
-
 
 
 
 .form-control,
-.form-select{
+.form-select {
 
+  height:42px;
 
-height:42px;
+  border-radius:10px;
 
-border-radius:10px;
+  border:1px solid $border;
 
-border:1px solid $border;
-
+  color:$text;
 
 }
 
 
+
+.form-control:focus,
+.form-select:focus {
+
+  border-color:$blue;
+
+  box-shadow:
+  0 0 0 3px rgba(37,99,235,.12);
+
+}
 
 
 
 // ==========================================
-// CONTADOR
+// INFORMACION TABLA
 // ==========================================
 
+.tabla-info {
 
-.tabla-info{
+  margin-top:18px;
 
+  padding:14px 18px;
 
-padding:14px 18px;
+  background:white;
 
+  border:1px solid $border;
 
-background:white;
+  border-bottom:none;
 
+  border-radius:16px 16px 0 0;
 
-border:1px solid $border;
-
-
-border-bottom:none;
-
-
-border-radius:16px 16px 0 0;
-
-
-color:$muted;
-
+  color:$muted;
 
 }
 
 
 
+.tabla-info strong {
 
-
-.tabla-info strong{
-
-
-color:$navy;
-
+  color:$navy;
 
 }
-
-
 
 
 
@@ -345,103 +308,101 @@ color:$navy;
 // TABLA
 // ==========================================
 
+.tabla-homologados {
 
-.tabla-homologados{
+  background:white;
 
+  border:1px solid $border;
 
-background:white;
+  border-radius:0 0 16px 16px;
 
+  overflow-x:auto;
 
-border:1px solid $border;
-
-
-overflow-x:auto;
-
-
-box-shadow:
-
-0 4px 14px rgba(15,23,42,.04);
+  box-shadow:
+  0 4px 14px rgba(15,23,42,.04);
 
 
 
-table{
+  table {
 
+    min-width:1400px;
 
-min-width:1400px;
+    margin:0;
 
-margin:0;
+  }
 
 
 }
 
 
 
-thead th{
+thead th {
 
+  background:#f8fafc;
 
-background:#f8fafc;
+  color:#475569;
 
-color:#475569;
+  font-size:.75rem;
 
-font-size:.75rem;
+  font-weight:800;
 
-font-weight:800;
+  text-transform:uppercase;
 
-text-transform:uppercase;
+  letter-spacing:.4px;
 
-padding:15px;
+  padding:15px;
 
-white-space:nowrap;
+  white-space:nowrap;
 
-
-}
-
-
-
-
-
-tbody td{
-
-
-padding:14px;
-
-font-size:.88rem;
-
-color:$text;
-
-
-border-bottom:1px solid #f1f5f9;
-
+  border-bottom:1px solid $border;
 
 }
 
 
 
+tbody td {
+
+  padding:14px;
+
+  font-size:.88rem;
+
+  color:$text;
+
+  white-space:nowrap;
+
+  border-bottom:1px solid #f1f5f9;
+
+}
 
 
-tbody tr:hover{
 
+tbody tr {
 
-background:$blue-soft;
-
+  transition:.15s ease;
 
 }
 
 
 
+tbody tr:hover {
 
-
-.alumno{
-
-
-font-weight:700;
-
-color:$navy;
-
+  background:$blue-soft;
 
 }
 
 
+
+// ==========================================
+// ALUMNO
+// ==========================================
+
+.alumno {
+
+  color:$navy;
+
+  font-weight:700;
+
+}
 
 
 
@@ -449,142 +410,113 @@ color:$navy;
 // BADGES
 // ==========================================
 
+.badge {
 
-.badge{
+  padding:7px 12px;
 
+  border-radius:20px;
 
-padding:7px 12px;
+  font-size:.72rem;
 
-border-radius:20px;
-
-font-size:.72rem;
-
-font-weight:700;
-
+  font-weight:700;
 
 }
 
 
 
-.pago{
+// Pago
 
+.pago {
 
-background:#dcfce7;
+  background:#dcfce7;
 
-color:#166534;
-
-
-}
-
-
-
-
-.documento{
-
-
-background:#f1f5f9;
-
-color:#475569;
-
+  color:#166534;
 
 }
 
 
 
+// Documento
 
-.estado{
+.documento {
 
+  background:#f1f5f9;
 
-background:#dbeafe;
-
-color:#1d4ed8;
-
+  color:#475569;
 
 }
 
 
+
+// Estado
+
+.estado {
+
+  background:#dbeafe;
+
+  color:#1d4ed8;
+
+}
 
 
 
 // ==========================================
-// SALDOS
+// SALDO
 // ==========================================
 
+.saldo-ok {
 
-.saldo-ok{
+  color:$green;
 
-
-color:$green;
-
-font-weight:800;
-
+  font-weight:800;
 
 }
 
 
 
-.saldo-pendiente{
+.saldo-pendiente {
 
+  color:$red;
 
-color:$red;
-
-font-weight:800;
-
+  font-weight:800;
 
 }
-
-
 
 
 
 // ==========================================
-// MENU
+// MENU ACCIONES
 // ==========================================
 
+.btn-menu {
 
-.btn-menu{
+  width:34px;
 
+  height:34px;
 
-width:34px;
+  border-radius:50%;
 
-height:34px;
+  border:1px solid $border;
 
+  background:white;
 
-border-radius:50%;
+  color:$muted;
 
+  font-size:20px;
 
-border:1px solid $border;
-
-
-background:white;
-
-
-font-size:20px;
-
-
-color:$muted;
-
-
-cursor:pointer;
-
+  cursor:pointer;
 
 }
 
 
 
+.btn-menu:hover {
 
+  background:#e2e8f0;
 
-.btn-menu:hover{
-
-
-background:#e2e8f0;
-
-color:$navy;
-
+  color:$navy;
 
 }
-
-
 
 
 
@@ -592,31 +524,36 @@ color:$navy;
 // RESPONSIVE
 // ==========================================
 
-
 @media(max-width:1100px){
 
 
-.header-modulo{
+  .header-modulo {
 
+    flex-direction:column;
 
-flex-direction:column;
+    align-items:flex-start;
 
-align-items:flex-start;
+    gap:18px;
 
-gap:18px;
-
-
-}
+  }
 
 
 
-.filtros{
+  .acciones {
+
+    width:100%;
+
+    flex-wrap:wrap;
+
+  }
 
 
-grid-template-columns:1fr;
 
+  .filtros {
 
-}
+    grid-template-columns:1fr;
+
+  }
 
 
 }
