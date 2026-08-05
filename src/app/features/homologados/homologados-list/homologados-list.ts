@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { HomologadosService } from '../services/homologados.service';
+import { HomologacionService } from '../homologado-service/homologacion-service';
 
 @Component({
   selector: 'app-homologados-list',
