@@ -1,136 +1,200 @@
-
 // ==========================================
-// HOMOLOGADOS - PROEDSO ADMIN STYLE
+// VARIABLES
 // ==========================================
 
-$navy: #0f172a;
-$blue: #2563eb;
-$blue-soft: #eff6ff;
+$navy:#0f172a;
 
-$border: #e2e8f0;
+$blue:#2563eb;
 
-$text: #334155;
-$muted: #64748b;
+$blue-soft:#eff6ff;
 
-$success: #16a34a;
-$warning: #ca8a04;
-$danger: #dc2626;
+$green:#16a34a;
+
+$red:#dc2626;
+
+$border:#e2e8f0;
+
+$text:#334155;
+
+$muted:#64748b;
+
+
+
 
 
 // ==========================================
 // HOST
 // ==========================================
 
-:host {
+:host{
 
-  display:block;
+display:block;
 
 }
+
+
 
 
 
 // ==========================================
-// TITULO
+// HEADER
 // ==========================================
 
-.titulo {
 
-  color:$navy;
+.header-modulo{
 
-  font-size:1.65rem;
 
-  font-weight:800;
+display:flex;
 
-  letter-spacing:-.4px;
+justify-content:space-between;
+
+align-items:center;
+
+
+background:white;
+
+padding:22px 26px;
+
+
+border-radius:16px;
+
+border:1px solid $border;
+
+
+box-shadow:
+
+0 4px 14px rgba(15,23,42,.05);
+
 
 }
+
+
+
+
+.titulo{
+
+
+color:$navy;
+
+font-size:1.7rem;
+
+font-weight:800;
+
+
+}
+
+
+
+
+.header-info{
+
+
+display:flex;
+
+flex-direction:column;
+
+
+}
+
+
+
+
+
+.acciones{
+
+
+display:flex;
+
+gap:12px;
+
+align-items:center;
+
+
+}
+
+
+
 
 
 
 // ==========================================
-// BOTONES SUPERIORES
+// BOTONES
 // ==========================================
 
-.btn {
 
-  border-radius:10px;
-
-  font-weight:600;
-
-  padding:.55rem 1rem;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:.5rem;
-
-  transition:.2s ease;
+.btn{
 
 
-}
+height:42px;
 
+padding:0 18px;
 
+border-radius:10px;
 
-.btn-primary {
+font-weight:600;
 
+display:flex;
 
-  background:$navy;
+align-items:center;
 
-  border-color:$navy;
+gap:8px;
 
-
-  &:hover {
-
-    background:#1e293b;
-
-    transform:translateY(-1px);
-
-  }
+transition:.2s;
 
 
 }
 
 
 
-.btn-success {
 
 
-  background:#16a34a;
-
-  border-color:#16a34a;
+.btn-primary{
 
 
-  &:hover {
+background:$navy;
 
-    background:#15803d;
-
-    transform:translateY(-1px);
-
-  }
+border-color:$navy;
 
 
 }
 
 
 
-.btn-outline-primary {
+.btn-success{
 
 
-  color:$navy;
+background:$green;
 
-  border-color:$navy;
+border-color:$green;
 
-
-  &:hover {
-
-    background:$navy;
-
-    color:white;
-
-  }
 
 }
+
+
+
+
+.btn-outline-primary{
+
+
+border-color:$navy;
+
+color:$navy;
+
+
+}
+
+
+
+
+.btn:hover{
+
+
+transform:translateY(-1px);
+
+
+}
+
+
 
 
 
@@ -138,30 +202,93 @@ $danger: #dc2626;
 // FILTROS
 // ==========================================
 
+
+.filtros{
+
+
+display:grid;
+
+grid-template-columns:
+
+2fr
+
+1fr
+
+1fr
+
+1fr;
+
+
+gap:12px;
+
+
+background:white;
+
+padding:18px;
+
+
+border-radius:16px;
+
+
+border:1px solid $border;
+
+
+}
+
+
+
+
+
+.busqueda{
+
+
+position:relative;
+
+
+}
+
+
+
+
+.busqueda i{
+
+
+position:absolute;
+
+left:14px;
+
+top:12px;
+
+color:$muted;
+
+
+}
+
+
+
+
+
+.busqueda input{
+
+
+padding-left:40px;
+
+
+}
+
+
+
+
+
 .form-control,
-.form-select {
+.form-select{
 
 
-  height:42px;
+height:42px;
 
-  border-radius:10px;
+border-radius:10px;
 
-  border:1px solid $border;
-
-  color:$text;
-
-  font-size:.9rem;
-
-
-  &:focus {
-
-    border-color:$blue;
-
-    box-shadow:
-
-    0 0 0 3px rgba(37,99,235,.12);
-
-  }
+border:1px solid $border;
 
 
 }
@@ -169,206 +296,212 @@ $danger: #dc2626;
 
 
 
+
 // ==========================================
-// TABLA PRINCIPAL
+// CONTADOR
 // ==========================================
 
-.tabla-homologados {
+
+.tabla-info{
 
 
-  background:white;
-
-  border-radius:16px;
-
-  border:1px solid $border;
-
-  overflow-x:auto;
-
-  box-shadow:
-
-  0 4px 15px rgba(15,23,42,.05);
+padding:14px 18px;
 
 
-
-  table {
-
-
-    margin-bottom:0;
-
-    min-width:1400px;
+background:white;
 
 
-  }
+border:1px solid $border;
 
+
+border-bottom:none;
+
+
+border-radius:16px 16px 0 0;
+
+
+color:$muted;
 
 
 }
 
 
 
-// ==========================================
-// HEADER TABLA
-// ==========================================
-
-thead {
 
 
-  background:#f8fafc;
+.tabla-info strong{
 
 
-  th {
-
-
-    color:#475569;
-
-    font-size:.75rem;
-
-    font-weight:800;
-
-    text-transform:uppercase;
-
-    letter-spacing:.5px;
-
-    padding:15px 12px;
-
-    white-space:nowrap;
-
-    border-bottom:1px solid $border;
-
-
-  }
+color:$navy;
 
 
 }
 
 
 
+
+
 // ==========================================
-// CUERPO TABLA
+// TABLA
 // ==========================================
 
-tbody {
+
+.tabla-homologados{
 
 
-  tr {
+background:white;
 
 
-    transition:.15s ease;
+border:1px solid $border;
 
 
-
-    &:hover {
-
-
-      background:$blue-soft;
+overflow-x:auto;
 
 
-    }
+box-shadow:
 
-
-
-  }
+0 4px 14px rgba(15,23,42,.04);
 
 
 
-  td {
+table{
 
 
-    color:$text;
+min-width:1400px;
 
-    font-size:.88rem;
-
-    padding:14px 12px;
-
-    border-bottom:1px solid #f1f5f9;
-
-    white-space:nowrap;
-
-
-  }
-
+margin:0;
 
 
 }
 
 
 
+thead th{
+
+
+background:#f8fafc;
+
+color:#475569;
+
+font-size:.75rem;
+
+font-weight:800;
+
+text-transform:uppercase;
+
+padding:15px;
+
+white-space:nowrap;
+
+
+}
+
+
+
+
+
+tbody td{
+
+
+padding:14px;
+
+font-size:.88rem;
+
+color:$text;
+
+
+border-bottom:1px solid #f1f5f9;
+
+
+}
+
+
+
+
+
+tbody tr:hover{
+
+
+background:$blue-soft;
+
+
+}
+
+
+
+
+
+.alumno{
+
+
+font-weight:700;
+
+color:$navy;
+
+
+}
+
+
+
+
+
 // ==========================================
-// ALUMNO
+// BADGES
 // ==========================================
 
-.fw-semibold {
+
+.badge{
 
 
-  color:$navy;
+padding:7px 12px;
 
-  font-weight:700;
+border-radius:20px;
 
+font-size:.72rem;
 
-}
-
-
-
-// ==========================================
-// BADGES ESTADOS
-// ==========================================
-
-.badge {
-
-
-  padding:.45rem .75rem;
-
-  border-radius:20px;
-
-  font-size:.72rem;
-
-  font-weight:700;
-
-  letter-spacing:.2px;
+font-weight:700;
 
 
 }
 
 
 
-// Estados pagos
-
-.bg-success {
-
-  background:#dcfce7!important;
-
-  color:#166534;
+.pago{
 
 
-}
+background:#dcfce7;
 
-
-
-// Documento
-
-.bg-secondary {
-
-
-  background:#f1f5f9!important;
-
-  color:#475569;
+color:#166534;
 
 
 }
 
 
 
-// Estado general
 
-.bg-primary {
+.documento{
 
 
-  background:#dbeafe!important;
+background:#f1f5f9;
 
-  color:#1d4ed8;
+color:#475569;
 
 
 }
+
+
+
+
+.estado{
+
+
+background:#dbeafe;
+
+color:#1d4ed8;
+
+
+}
+
 
 
 
@@ -377,85 +510,113 @@ tbody {
 // SALDOS
 // ==========================================
 
-.text-success {
+
+.saldo-ok{
 
 
-  color:$success!important;
+color:$green;
 
-  font-weight:800;
-
-
-}
-
-
-
-.text-danger {
-
-
-  color:$danger!important;
-
-  font-weight:800;
+font-weight:800;
 
 
 }
 
 
 
-
-// ==========================================
-// BOTON MENU ⋮
-// ==========================================
-
-.btn-light {
+.saldo-pendiente{
 
 
-  width:34px;
+color:$red;
 
-  height:34px;
-
-  padding:0;
-
-  justify-content:center;
-
-  border-radius:50%;
-
-  border:1px solid $border;
-
-  color:$muted;
-
-  font-size:1.2rem;
-
-
-
-  &:hover {
-
-
-    background:#e2e8f0;
-
-    color:$navy;
-
-
-  }
+font-weight:800;
 
 
 }
 
 
 
+
+
 // ==========================================
-// SCROLL TABLET / MOVIL
+// MENU
 // ==========================================
 
-@media(max-width:1200px){
+
+.btn-menu{
 
 
-  .tabla-homologados {
+width:34px;
+
+height:34px;
 
 
-    border-radius:12px;
+border-radius:50%;
 
 
-  }
+border:1px solid $border;
+
+
+background:white;
+
+
+font-size:20px;
+
+
+color:$muted;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+
+
+.btn-menu:hover{
+
+
+background:#e2e8f0;
+
+color:$navy;
+
+
+}
+
+
+
+
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+
+
+@media(max-width:1100px){
+
+
+.header-modulo{
+
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:18px;
+
+
+}
+
+
+
+.filtros{
+
+
+grid-template-columns:1fr;
+
+
+}
 
 
 }
