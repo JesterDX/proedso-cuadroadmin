@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HomologadosService } from '../homologado-service/homologacion-service';
 @Component({
   selector: 'app-homologados-list',
@@ -46,9 +46,9 @@ export class HomologadosListComponent implements OnInit {
 
 
   constructor(
-    private service: HomologadosService
+    private service: HomologadosService,
+    private cd: ChangeDetectorRef
   ){}
-
 
 
   ngOnInit():void{
@@ -59,47 +59,41 @@ export class HomologadosListComponent implements OnInit {
 
 
 
-  cargarHomologados():void{
+cargarHomologados():void{
+
+  this.loading = true;
+
+  this.service.listar().subscribe({
+
+    next:(resp:any)=>{
+
+      this.homologados = resp.data ?? [];
+
+      this.aplicarFiltros();
+
+      this.loading = false;
+
+      this.cd.detectChanges();
+
+    },
 
 
-    this.loading=true;
+    error:(err)=>{
 
+      console.error(
+        'Error cargando homologados',
+        err
+      );
 
-    this.service.listar().subscribe({
+      this.loading = false;
 
-      next:(resp:any)=>{
+      this.cd.detectChanges();
 
+    }
 
-        this.homologados = resp.data ?? [];
+  });
 
-
-        this.aplicarFiltros();
-
-
-        this.loading=false;
-
-
-      },
-
-
-      error:(err)=>{
-
-
-        console.error(
-          'Error cargando homologados',
-          err
-        );
-
-
-        this.loading=false;
-
-
-      }
-
-    });
-
-
-  }
+}
 
 
 
