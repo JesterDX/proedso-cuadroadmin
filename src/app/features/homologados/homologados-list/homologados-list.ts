@@ -1,18 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { 
+  Component, 
+  OnInit, 
+  ChangeDetectorRef 
+} from '@angular/core';
+
+import { 
+  CommonModule 
+} from '@angular/common';
+
+import { 
+  FormsModule 
+} from '@angular/forms';
+
+
 import { HomologadosService } from '../homologado-service/homologacion-service';
+
+
+
 @Component({
+
   selector: 'app-homologados-list',
+
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule
   ],
+
   templateUrl: './homologados-list.html',
+
   styleUrl: './homologados-list.scss'
+
 })
+
+
 export class HomologadosListComponent implements OnInit {
 
 
@@ -24,14 +46,14 @@ export class HomologadosListComponent implements OnInit {
   loading:boolean = false;
 
 
-  busqueda:string = '';
+  busqueda:string = "";
 
 
-  estadoSeleccionado:string = '';
+  estadoSeleccionado:string = "";
 
-  documentoSeleccionado:string = '';
+  documentoSeleccionado:string = "";
 
-  vendedorSeleccionado:string = '';
+  vendedorSeleccionado:string = "";
 
 
 
@@ -46,9 +68,15 @@ export class HomologadosListComponent implements OnInit {
 
 
   constructor(
+
     private service: HomologadosService,
+
     private cd: ChangeDetectorRef
+
   ){}
+
+
+
 
 
   ngOnInit():void{
@@ -59,41 +87,82 @@ export class HomologadosListComponent implements OnInit {
 
 
 
-cargarHomologados():void{
-
-  this.loading = true;
-
-  this.service.listar().subscribe({
-
-    next:(resp:any)=>{
-
-      this.homologados = resp.data ?? [];
-
-      this.aplicarFiltros();
-
-      this.loading = false;
-
-      this.cd.detectChanges();
-
-    },
 
 
-    error:(err)=>{
 
-      console.error(
-        'Error cargando homologados',
-        err
-      );
+  cargarHomologados():void{
 
-      this.loading = false;
 
-      this.cd.detectChanges();
+    this.loading = true;
 
-    }
 
-  });
+    this.service.listar()
+    .subscribe({
 
-}
+
+
+      next:(resp:any)=>{
+
+
+        console.log(
+          "Respuesta homologaciones:",
+          resp
+        );
+
+
+
+        this.homologados = resp.data ?? [];
+
+
+
+        this.aplicarFiltros();
+
+
+
+        this.loading = false;
+
+
+
+        this.cd.detectChanges();
+
+
+
+      },
+
+
+
+
+      error:(err)=>{
+
+
+        console.error(
+          "Error cargando homologaciones:",
+          err
+        );
+
+
+        this.homologados = [];
+
+        this.homologadosFiltrados = [];
+
+        this.loading = false;
+
+
+
+        this.cd.detectChanges();
+
+
+      }
+
+
+
+    });
+
+
+
+  }
+
+
 
 
 
@@ -102,24 +171,43 @@ cargarHomologados():void{
   aplicarFiltros():void{
 
 
-    this.homologadosFiltrados = this.homologados.filter(h=>{
+    this.homologadosFiltrados = 
+
+    this.homologados.filter((h)=>{
 
 
-      const texto = this.busqueda.toLowerCase();
+
+      const texto = 
+
+      this.busqueda
+      .toLowerCase()
+      .trim();
+
 
 
 
       const coincideBusqueda =
 
-      !this.busqueda ||
+      !texto ||
 
-      h.alumno?.toLowerCase()
+      h.alumno
+      ?.toLowerCase()
       .includes(texto)
 
       ||
 
-      h.dni?.toString()
-      .includes(this.busqueda);
+      h.dni
+      ?.toString()
+      .includes(texto)
+
+      ||
+
+      h.curso_equipo
+      ?.toLowerCase()
+      .includes(texto);
+
+
+
 
 
 
@@ -131,6 +219,9 @@ cargarHomologados():void{
 
 
 
+
+
+
       const coincideDocumento =
 
       !this.documentoSeleccionado ||
@@ -139,11 +230,17 @@ cargarHomologados():void{
 
 
 
+
+
+
       const coincideVendedor =
 
       !this.vendedorSeleccionado ||
 
       h.vendedor === this.vendedorSeleccionado;
+
+
+
 
 
 
@@ -160,13 +257,20 @@ cargarHomologados():void{
       );
 
 
+
     });
 
 
-    this.paginaActual=1;
+
+
+    this.paginaActual = 1;
+
 
 
   }
+
+
+
 
 
 
@@ -182,6 +286,8 @@ cargarHomologados():void{
 
 
 
+
+
   filtrarEstado():void{
 
     this.aplicarFiltros();
@@ -192,11 +298,15 @@ cargarHomologados():void{
 
 
 
+
+
   filtrarDocumento():void{
 
     this.aplicarFiltros();
 
   }
+
+
 
 
 
@@ -226,6 +336,7 @@ cargarHomologados():void{
     ) || 1;
 
 
+
   }
 
 
@@ -233,7 +344,10 @@ cargarHomologados():void{
 
 
 
+
+
   get homologadosPagina():any[]{
+
 
 
     const inicio =
@@ -248,6 +362,7 @@ cargarHomologados():void{
 
 
 
+
     return this.homologadosFiltrados.slice(
 
       inicio,
@@ -255,6 +370,7 @@ cargarHomologados():void{
       inicio + this.itemsPorPagina
 
     );
+
 
 
   }
@@ -265,7 +381,9 @@ cargarHomologados():void{
 
 
 
-  cambiarPagina(pagina:number){
+
+  cambiarPagina(pagina:number):void{
+
 
 
     if(
@@ -281,6 +399,7 @@ cargarHomologados():void{
     }
 
 
+
   }
 
 
@@ -292,7 +411,11 @@ cargarHomologados():void{
 
   abrirNuevo():void{
 
-    console.log('Nuevo homologado');
+
+    console.log(
+      "Nuevo homologado"
+    );
+
 
   }
 
@@ -306,7 +429,7 @@ cargarHomologados():void{
 
 
     console.log(
-      'Editar',
+      "Editar",
       item
     );
 
@@ -323,7 +446,7 @@ cargarHomologados():void{
 
 
     console.log(
-      'Eliminar',
+      "Eliminar",
       item
     );
 
@@ -340,7 +463,7 @@ cargarHomologados():void{
 
 
     console.log(
-      'Pagos',
+      "Pagos",
       item
     );
 
@@ -357,7 +480,7 @@ cargarHomologados():void{
 
 
     console.log(
-      'Importar Google Sheets'
+      "Importar Google Sheets"
     );
 
 
