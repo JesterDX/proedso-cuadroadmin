@@ -111,7 +111,25 @@ export class HomologadosListComponent implements OnInit {
 
 
 
-        this.homologados = resp.data ?? [];
+        this.homologados = (resp.data ?? []).map((h: any) => {
+
+          if (h.fecha_registro) {
+        
+            const fecha = String(h.fecha_registro).substring(0, 10);
+        
+            const [anio, mes, dia] = fecha.split("-");
+        
+            h.fecha_registro_texto = `${dia}/${mes}/${anio}`;
+        
+          } else {
+        
+            h.fecha_registro_texto = "";
+        
+          }
+        
+          return h;
+        
+        });
 
 
 
