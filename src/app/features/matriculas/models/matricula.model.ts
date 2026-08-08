@@ -1,3 +1,4 @@
+
 export interface Matricula {
   id: number;
   alumno_id: number;
@@ -16,6 +17,12 @@ export interface Matricula {
   cuota_inicial: number | null;
 }
 
+export interface CuotaCronogramaPayload {
+  numero_cuota: number;
+  fecha_vencimiento: string;
+  monto: number;
+}
+
 export interface MatriculaPayload {
   alumno_id: number | null;
   plan_curso_id: number | null;
@@ -25,7 +32,10 @@ export interface MatriculaPayload {
   fecha_fin_estimada?: string | null;
   notas?: string | null;
   maquinas_seleccionadas?: number[];
+
   modalidad_pago?: 'MENSUAL' | 'QUINCENAL';
   monto_total: number | null;
   cuota_inicial: number | null;
+
+  cuotas?: CuotaCronogramaPayload[];
 }
