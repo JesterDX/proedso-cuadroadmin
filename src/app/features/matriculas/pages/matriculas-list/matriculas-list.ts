@@ -1,3 +1,4 @@
+
 import {
   Component,
   OnInit,
@@ -155,6 +156,19 @@ export class MatriculasList implements OnInit {
   // ==========================================================
 
   modalOpen = false;
+
+  /**
+   * Compatibilidad con el HTML actual.
+   * El HTML utiliza mostrarModal, pero internamente
+   * el componente trabaja con modalOpen.
+   */
+  get mostrarModal(): boolean {
+    return this.modalOpen;
+  }
+
+  set mostrarModal(valor: boolean) {
+    this.modalOpen = valor;
+  }
 
   modoModal: 'crear' | 'editar' = 'crear';
 
@@ -553,6 +567,23 @@ export class MatriculasList implements OnInit {
     this.searchSubject.next(
       this.search || ''
     );
+
+  }
+
+  // ==========================================================
+  // FILTRAR ALUMNOS
+  // ==========================================================
+
+  /**
+   * Método utilizado directamente por el HTML
+   * mediante (ngModelChange)="filtrarAlumnos()".
+   *
+   * El filtrado real se realiza mediante el getter
+   * alumnosFiltrados.
+   */
+  filtrarAlumnos(): void {
+
+    this.cd.detectChanges();
 
   }
 
@@ -2314,3 +2345,4 @@ export class MatriculasList implements OnInit {
   }
 
 }
+
