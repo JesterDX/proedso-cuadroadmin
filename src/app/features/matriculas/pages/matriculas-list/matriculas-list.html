@@ -1069,42 +1069,101 @@
         <!-- BOTÓN PREVISUALIZAR -->
         <!-- ===================================================== -->
 
-        <div class="preview-action">
 
-          <button
-            type="button"
-            class="btn-preview"
-            (click)="previsualizarCuotas()"
-            [disabled]="
-              saving ||
-              previewCuotasLoading
-            "
-          >
+<div class="preview-action">
 
-            <span
-              *ngIf="!previewCuotasLoading"
-            >
-              👁 Previsualizar cuotas
-            </span>
+  <div class="preview-action__info">
+
+    <div class="preview-action__icon">
+      <span *ngIf="!previewCuotasLoading && previewCuotas.length === 0">
+        👁
+      </span>
+
+      <span *ngIf="previewCuotasLoading">
+        ⏳
+      </span>
+
+      <span
+        *ngIf="
+          !previewCuotasLoading &&
+          previewCuotas.length > 0
+        "
+      >
+        ✓
+      </span>
+    </div>
+
+    <div class="preview-action__content">
+
+      <strong>
+        {{
+          previewCuotas.length > 0
+            ? 'Cronograma listo para revisar'
+            : 'Confirma el cronograma de pagos'
+        }}
+      </strong>
+
+      <span>
+        {{
+          previewCuotas.length > 0
+            ? 'Puedes revisar y ajustar las fechas de vencimiento.'
+            : 'Genera una previsualización antes de guardar la matrícula.'
+        }}
+      </span>
+
+    </div>
+
+  </div>
 
 
-            <span
-              *ngIf="previewCuotasLoading"
-            >
-              ⏳ Generando previsualización...
-            </span>
+  <button
+    type="button"
+    class="btn-preview"
+    [class.btn-preview--success]="
+      previewCuotas.length > 0 &&
+      !previewCuotasLoading
+    "
+    (click)="previsualizarCuotas()"
+    [disabled]="
+      saving ||
+      previewCuotasLoading
+    "
+  >
 
-          </button>
+    <span
+      class="btn-preview__icon"
+      *ngIf="!previewCuotasLoading"
+    >
+      {{
+        previewCuotas.length > 0
+          ? '↻'
+          : '👁'
+      }}
+    </span>
+
+    <span
+      class="btn-preview__icon"
+      *ngIf="previewCuotasLoading"
+    >
+      ⏳
+    </span>
 
 
-          <small class="field-help">
+    <span>
 
-            Revisa las cuotas antes de registrar
-            la matrícula.
+      {{
+        previewCuotasLoading
+          ? 'Generando...'
+          : previewCuotas.length > 0
+            ? 'Actualizar previsualización'
+            : 'Previsualizar cuotas'
+      }}
 
-          </small>
+    </span>
 
-        </div>
+  </button>
+
+</div>
 
 
         <!-- ===================================================== -->
