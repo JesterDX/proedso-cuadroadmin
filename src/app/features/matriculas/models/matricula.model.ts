@@ -24,4 +24,6 @@ export interface MatriculaPayload {
   notas?: string | null;
   maquinas_seleccionadas?: number[];
   modalidad_pago?: 'MENSUAL' | 'QUINCENAL';
+  monto_total: number | null;
+  cuota_inicial: number | null;
 }
