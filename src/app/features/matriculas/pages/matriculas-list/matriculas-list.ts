@@ -1546,6 +1546,17 @@ export class MatriculasList implements OnInit {
       );
 
     }
+    if (
+  this.form.costo_certificacion === null ||
+  this.form.costo_certificacion === undefined ||
+  Number(this.form.costo_certificacion) < 0
+) {
+
+  errores.push(
+    'Debes indicar el costo de certificación.'
+  );
+
+}
 
     return errores;
 
