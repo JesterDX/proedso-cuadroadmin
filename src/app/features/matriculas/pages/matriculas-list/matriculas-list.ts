@@ -646,7 +646,16 @@ export class MatriculasList implements OnInit {
       maquinas_seleccionadas:
         [
           ...this.maquinasSeleccionadas
-        ]
+        ],
+      
+        certificacion_incluida:
+          true,
+      
+        costo_certificacion:
+          this.form.costo_certificacion ??
+          null
+      
+      };
 
     };
 
