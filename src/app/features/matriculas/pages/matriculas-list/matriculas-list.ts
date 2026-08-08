@@ -687,18 +687,6 @@ abrirModalEditar(matricula: Matricula): void {
       this.getNombrePlan(matricula.plan_curso_id)
     );
   }
-
-  previsualizarCuotas(payload: {
-  plan_curso_id: number;
-  fecha_matricula: string;
-  monto_total?: number | null;
-  cuota_inicial?: number | null;
-}): Observable<ApiResponse> {
-  return this.http.post<ApiResponse>(
-    `${this.apiUrl}/previsualizar-cuotas`,
-    payload
-  );
-}
   puedeMostrarActivar(): boolean {
     return ['RETIRADO', 'RESERVA', 'EGRESADO'].includes(this.vistaActual);
   }
