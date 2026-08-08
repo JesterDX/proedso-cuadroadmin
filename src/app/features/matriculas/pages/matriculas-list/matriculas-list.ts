@@ -1,3 +1,4 @@
+
 import {
   Component,
   OnInit,
@@ -254,14 +255,17 @@ export class MatriculasList implements OnInit {
 
   constructor() {
 
-    const anioActual = new Date().getFullYear();
+    const anioActual =
+      new Date().getFullYear();
 
     for (
       let i = anioActual + 1;
       i >= 2023;
       i--
     ) {
+
       this.aniosDisponibles.push(i);
+
     }
 
   }
@@ -311,46 +315,46 @@ export class MatriculasList implements OnInit {
   // FORMULARIO VACÍO
   // ==========================================================
 
- getEmptyForm(): MatriculaPayload {
+  getEmptyForm(): MatriculaPayload {
 
-  return {
+    return {
 
-    alumno_id: null,
+      alumno_id: null,
 
-    plan_curso_id: null,
+      plan_curso_id: null,
 
-    estado_alumno_id: null,
+      estado_alumno_id: null,
 
-    fecha_matricula:
-      new Date()
-        .toISOString()
-        .slice(0, 10),
+      fecha_matricula:
+        new Date()
+          .toISOString()
+          .slice(0, 10),
 
-    fecha_inicio: null,
+      fecha_inicio: null,
 
-    fecha_fin_estimada: null,
+      fecha_fin_estimada: null,
 
-    notas: '',
+      notas: '',
 
-    maquinas_seleccionadas: [],
+      maquinas_seleccionadas: [],
 
-    modalidad_pago: 'MENSUAL',
+      modalidad_pago: 'MENSUAL',
 
-    monto_total: null,
+      monto_total: null,
 
-    cuota_inicial: null,
+      cuota_inicial: null,
 
-    // ==================================================
-    // CERTIFICACIÓN
-    // ==================================================
+      // ==================================================
+      // CERTIFICACIÓN
+      // ==================================================
 
-    certificacion_incluida: true,
+      certificacion_incluida: true,
 
-    costo_certificacion: null
+      costo_certificacion: null
 
-  };
+    };
 
-}
+  }
 
   // ==========================================================
   // CARGAR TODO
@@ -647,16 +651,15 @@ export class MatriculasList implements OnInit {
         [
           ...this.maquinasSeleccionadas
         ],
-      
-        certificacion_incluida:
-          true,
-      
-        costo_certificacion:
-          this.form.costo_certificacion ??
-          null
-      
-      };
 
+      certificacion_incluida:
+        this.form.certificacion_incluida ?? true,
+
+      costo_certificacion:
+        this.form.costo_certificacion ??
+        null
+
+    };
 
     // ========================================================
     // LOG REQUEST
@@ -700,6 +703,16 @@ export class MatriculasList implements OnInit {
     console.log(
       '🚜 MÁQUINAS:',
       payload.maquinas_seleccionadas
+    );
+
+    console.log(
+      '🎓 CERTIFICACIÓN:',
+      payload.certificacion_incluida
+    );
+
+    console.log(
+      '💳 COSTO CERTIFICACIÓN:',
+      payload.costo_certificacion
     );
 
     console.log('========================================');
@@ -1432,6 +1445,14 @@ export class MatriculasList implements OnInit {
 
       cuota_inicial:
         matricula.cuota_inicial ??
+        null,
+
+      certificacion_incluida:
+        matricula.certificacion_incluida ??
+        true,
+
+      costo_certificacion:
+        matricula.costo_certificacion ??
         null
 
     };
@@ -1554,17 +1575,18 @@ export class MatriculasList implements OnInit {
       );
 
     }
+
     if (
-  this.form.costo_certificacion === null ||
-  this.form.costo_certificacion === undefined ||
-  Number(this.form.costo_certificacion) < 0
-) {
+      this.form.costo_certificacion === null ||
+      this.form.costo_certificacion === undefined ||
+      Number(this.form.costo_certificacion) < 0
+    ) {
 
-  errores.push(
-    'Debes indicar el costo de certificación.'
-  );
+      errores.push(
+        'Debes indicar el costo de certificación.'
+      );
 
-}
+    }
 
     return errores;
 
@@ -1660,6 +1682,14 @@ export class MatriculasList implements OnInit {
 
       cuota_inicial:
         this.form.cuota_inicial ??
+        null,
+
+      certificacion_incluida:
+        this.form.certificacion_incluida ??
+        true,
+
+      costo_certificacion:
+        this.form.costo_certificacion ??
         null
 
     };
