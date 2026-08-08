@@ -1011,6 +1011,68 @@ export class MatriculasList implements OnInit {
     );
   }
 
+  getFechaCuotaInput(cuota: any): string {
+
+const fecha =
+this.getFechaCuota(cuota);
+
+if (!fecha) {
+return '';
+}
+
+return fecha
+.split('T')[0];
+}
+
+/**
+
+Permite modificar manualmente
+la fecha de vencimiento de una cuota
+dentro de la previsualización.
+*/
+editarFechaCuota(
+cuota: any,
+nuevaFecha: string
+): void {
+
+if (!nuevaFecha) {
+return;
+}
+
+// Mantener el nombre de propiedad
+// que ya utiliza el backend.
+if (
+cuota.fecha_vencimiento !== undefined
+) {
+
+cuota.fecha_vencimiento =
+  nuevaFecha;
+
+} else if (
+cuota.fecha_pago !== undefined
+) {
+
+cuota.fecha_pago =
+  nuevaFecha;
+
+} else if (
+cuota.fecha !== undefined
+) {
+
+cuota.fecha =
+  nuevaFecha;
+
+} else {
+
+cuota.fecha_vencimiento =
+  nuevaFecha;
+
+}
+
+this.cd.detectChanges();
+
+}
+
   // ==========================================================
   // MONTO CUOTA
   // ==========================================================
