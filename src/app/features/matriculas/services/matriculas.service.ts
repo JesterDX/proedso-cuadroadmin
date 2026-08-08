@@ -57,6 +57,18 @@ export class MatriculasService {
       codigo_estado: codigoEstado
     });
   }
+  
+  previsualizarCuotas(payload: {
+  plan_curso_id: number;
+  fecha_matricula: string;
+  monto_total?: number | null;
+  cuota_inicial?: number | null;
+}): Observable<ApiResponse> {
+  return this.http.post<ApiResponse>(
+    `${this.apiUrl}/previsualizar-cuotas`,
+    payload
+  );
+}
   obtenerHistorial(id: number) {
       return this.http.get<ApiResponse<any[]>>(
           `${this.apiUrl}/${id}/historial`
