@@ -1,7 +1,6 @@
-
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 
 import { ApiResponse } from '../../../core/models/api-response.model';
 
@@ -23,6 +22,7 @@ export class MatriculasService {
 
   private apiUrl =
     'https://proedso-back-wtdl.onrender.com/api/matriculas';
+
 
   // ==========================================================
   // LISTAR MATRÍCULAS
@@ -59,19 +59,21 @@ export class MatriculasService {
     );
   }
 
+
   // ==========================================================
   // CREAR MATRÍCULA
   // ==========================================================
 
   crear(
     payload: MatriculaPayload
-  ): Observable<ApiResponse<Matricula>> {
+  ): Observable<ApiResponse> {
 
     return this.http.post<ApiResponse<Matricula>>(
       this.apiUrl,
       payload
     );
   }
+
 
   // ==========================================================
   // ACTUALIZAR MATRÍCULA
@@ -80,7 +82,7 @@ export class MatriculasService {
   actualizar(
     id: number,
     payload: MatriculaPayload
-  ): Observable<ApiResponse<Matricula>> {
+  ): Observable<ApiResponse> {
 
     return this.http.put<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}`,
@@ -88,18 +90,20 @@ export class MatriculasService {
     );
   }
 
+
   // ==========================================================
   // OBTENER MATRÍCULA
   // ==========================================================
 
   obtenerPorId(
     id: number
-  ): Observable<ApiResponse<Matricula>> {
+  ): Observable<ApiResponse> {
 
     return this.http.get<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}`
     );
   }
+
 
   // ==========================================================
   // OBTENER DETALLE
@@ -107,12 +111,13 @@ export class MatriculasService {
 
   obtenerDetalle(
     id: number
-  ): Observable<ApiResponse<MatriculaDetail>> {
+  ): Observable<ApiResponse> {
 
     return this.http.get<ApiResponse<MatriculaDetail>>(
       `${this.apiUrl}/${id}/detalle`
     );
   }
+
 
   // ==========================================================
   // LISTAR MÁQUINAS DE MATRÍCULA
@@ -127,6 +132,7 @@ export class MatriculasService {
     );
   }
 
+
   // ==========================================================
   // CAMBIAR ESTADO
   // ==========================================================
@@ -134,7 +140,7 @@ export class MatriculasService {
   cambiarEstado(
     id: number,
     codigoEstado: string
-  ): Observable<ApiResponse<Matricula>> {
+  ): Observable<ApiResponse> {
 
     return this.http.patch<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}/estado`,
@@ -144,32 +150,138 @@ export class MatriculasService {
     );
   }
 
+
   // ==========================================================
   // PREVISUALIZAR CUOTAS
   // ==========================================================
 
   previsualizarCuotas(
     payload: {
-      plan_curso_id: number;
+      plan_curso_id: number | string;
       fecha_matricula: string;
       monto_total?: number | null;
       cuota_inicial?: number | null;
       modalidad_pago?: string | null;
+      maquinas_seleccionadas?: number[];
     }
   ): Observable<ApiResponse<any[]>> {
-  
+
+    const url = `${this.apiUrl}/previsualizar-cuotas`;
+
+    console.log('');
     console.log('========================================');
     console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
-    console.log('URL:', `${this.apiUrl}/previsualizar-cuotas`);
-    console.log('PAYLOAD:', payload);
     console.log('========================================');
-  
+    console.log('🌐 URL:', url);
+    console.log('📦 PAYLOAD:', payload);
+    console.log('📋 PLAN:', payload.plan_curso_id);
+    console.log('📅 FECHA MATRÍCULA:', payload.fecha_matricula);
+    console.log('💰 MONTO TOTAL:', payload.monto_total);
+    console.log('💵 CUOTA INICIAL:', payload.cuota_inicial);
+    console.log('📆 MODALIDAD:', payload.modalidad_pago);
+    console.log(
+      '🚜 MÁQUINAS:',
+      payload.maquinas_seleccionadas
+    );
+    console.log('========================================');
+    console.log('⏳ Esperando respuesta del backend...');
+    console.log('');
+
     return this.http
       .post<ApiResponse<any[]>>(
-        `${this.apiUrl}/previsualizar-cuotas`,
+        url,
         payload
+      )
+      .pipe(
+
+        // ======================================================
+        // RESPUESTA EXITOSA
+        // ======================================================
+
+        tap((response) => {
+
+          console.log('');
+          console.log('========================================');
+          console.log('📥 PREVISUALIZAR CUOTAS - RESPONSE');
+          console.log('========================================');
+
+          console.log(
+            '📊 RESPUESTA COMPLETA:',
+            response
+          );
+
+          console.log(
+            '✅ OK:',
+            response?.ok
+          );
+
+          console.log(
+            '📦 DATA:',
+            response?.data
+          );
+
+          console.log(
+            '📏 CANTIDAD DE CUOTAS:',
+            Array.isArray(response?.data)
+              ? response.data.length
+              : 'NO ES ARRAY'
+          );
+
+          console.log('========================================');
+          console.log('');
+
+        }),
+
+        // ======================================================
+        // ERROR HTTP
+        // ======================================================
+
+        catchError((error) => {
+
+          console.error('');
+          console.error('========================================');
+          console.error('❌ PREVISUALIZAR CUOTAS - ERROR');
+          console.error('========================================');
+
+          console.error(
+            '🌐 URL:',
+            url
+          );
+
+          console.error(
+            '📦 PAYLOAD ENVIADO:',
+            payload
+          );
+
+          console.error(
+            '🔴 STATUS:',
+            error?.status
+          );
+
+          console.error(
+            '🔴 STATUS TEXT:',
+            error?.statusText
+          );
+
+          console.error(
+            '🔴 ERROR:',
+            error?.error
+          );
+
+          console.error(
+            '🔴 MENSAJE:',
+            error?.message
+          );
+
+          console.error('========================================');
+          console.error('');
+
+          return throwError(() => error);
+        })
+
       );
   }
+
 
   // ==========================================================
   // HISTORIAL
@@ -184,13 +296,14 @@ export class MatriculasService {
     );
   }
 
+
   // ==========================================================
   // FINANZAS
   // ==========================================================
 
   obtenerFinanzas(
     id: number
-  ): Observable<ApiResponse<MatriculaFinanzasData>> {
+  ): Observable<ApiResponse> {
 
     return this.http.get<ApiResponse<MatriculaFinanzasData>>(
       `${this.apiUrl}/${id}/finanzas`
@@ -198,3 +311,4 @@ export class MatriculasService {
   }
 
 }
+
