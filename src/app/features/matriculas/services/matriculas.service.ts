@@ -150,22 +150,22 @@ export class MatriculasService {
   // ==========================================================
   // PREVISUALIZAR CUOTAS
   // ==========================================================
-
+  
   previsualizarCuotas(
     payload: {
       plan_curso_id: number;
       fecha_matricula: string;
       monto_total?: number | null;
       cuota_inicial?: number | null;
+      modalidad_pago?: string | null;
     }
-  ): Observable<ApiResponse<any>> {
-
-    return this.http.post<ApiResponse<any>>(
+  ): Observable<ApiResponse<any[]>> {
+  
+    return this.http.post<ApiResponse<any[]>>(
       `${this.apiUrl}/previsualizar-cuotas`,
       payload
     );
   }
-
 
   // ==========================================================
   // HISTORIAL
