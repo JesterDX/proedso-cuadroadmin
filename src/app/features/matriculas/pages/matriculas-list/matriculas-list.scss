@@ -309,18 +309,53 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
 .modal-main {
   display: flex;
   flex-direction: column;
+
   min-width: 0;
   min-height: 0;
-}
 
+  // El scroll pertenece a TODO el contenido derecho.
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: $c-surface;
+
+  // Scroll más limpio
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+}
 .modal-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+
   padding: 24px 32px;
+
   border-bottom: 1px solid $c-border;
+
   background: $c-surface;
+
+  // Se queda arriba mientras bajas
+  position: sticky;
+  top: 0;
+  z-index: 20;
 
   h2 {
     margin: 0;
@@ -335,10 +370,11 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
     font-size: 0.875rem;
   }
 }
-
 .modal-header--main {
   flex-shrink: 0;
 }
+
+
 
 .btn-close {
   width: 32px;
@@ -361,11 +397,16 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
 }
 
 .modal-body {
-  flex: 1;
-  overflow-y: auto;
+  flex: none;
+
+  overflow: visible;
+
   padding: 32px;
-  min-height: 0;
+
+  min-height: auto;
 }
+
+
 
 // --- Forms ---
 .section-card {
@@ -482,16 +523,26 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
   text-align: center;
 }
 
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 24px 32px;
-  border-top: 1px solid $c-border;
-  background: $c-surface;
-  flex-shrink: 0;
-}
 
+  padding: 24px 32px;
+
+  border-top: 1px solid $c-border;
+
+  background: $c-surface;
+
+  flex-shrink: 0;
+
+  // Siempre visibles abajo mientras haces scroll
+  position: sticky;
+  bottom: 0;
+
+  z-index: 20;
+}
 // --- Table Actions (Mini buttons) ---
 .table-actions {
   display: flex;
