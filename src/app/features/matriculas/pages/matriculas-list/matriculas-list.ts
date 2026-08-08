@@ -565,160 +565,358 @@ export class MatriculasList implements OnInit {
   // PREVISUALIZAR CUOTAS
   // ==========================================================
 
-  previsualizarCuotas(): void {
+previsualizarCuotas(): void {
 
-    if (!this.form.alumno_id) {
+  // ========================================================
+  // VALIDACIONES
+  // ========================================================
 
-      Swal.fire({
-        icon: 'warning',
-        title: 'Selecciona un alumno',
-        text:
-          'Debes seleccionar un alumno antes de previsualizar las cuotas.',
-        confirmButtonText: 'Entendido'
-      });
+  if (!this.form.alumno_id) {
 
-      return;
-    }
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selecciona un alumno',
+      text: 'Debes seleccionar un alumno antes de previsualizar las cuotas.',
+      confirmButtonText: 'Entendido'
+    });
 
-    if (!this.form.plan_curso_id) {
+    return;
+  }
 
-      Swal.fire({
-        icon: 'warning',
-        title: 'Selecciona un plan',
-        text:
-          'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
-        confirmButtonText: 'Entendido'
-      });
+  if (!this.form.plan_curso_id) {
 
-      return;
-    }
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selecciona un plan',
+      text: 'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
+      confirmButtonText: 'Entendido'
+    });
 
-    if (!this.form.fecha_matricula) {
+    return;
+  }
 
-      Swal.fire({
-        icon: 'warning',
-        title: 'Fecha requerida',
-        text:
-          'Debes indicar la fecha de matrícula.',
-        confirmButtonText: 'Entendido'
-      });
+  if (!this.form.fecha_matricula) {
 
-      return;
-    }
+    Swal.fire({
+      icon: 'warning',
+      title: 'Fecha requerida',
+      text: 'Debes indicar la fecha de matrícula.',
+      confirmButtonText: 'Entendido'
+    });
 
-    if (
-      this.mostrarSelectorMaquinas &&
-      this.maquinasSeleccionadas.length !==
-        this.cantidadMaquinasRequeridas
-    ) {
+    return;
+  }
 
-      Swal.fire({
-        icon: 'warning',
-        title: 'Máquinas incompletas',
-        text:
-          `Debes seleccionar exactamente ${this.cantidadMaquinasRequeridas} máquina(s) antes de previsualizar.`,
-        confirmButtonText: 'Entendido'
-      });
+  if (
+    this.mostrarSelectorMaquinas &&
+    this.maquinasSeleccionadas.length !==
+      this.cantidadMaquinasRequeridas
+  ) {
 
-      return;
-    }
+    Swal.fire({
+      icon: 'warning',
+      title: 'Máquinas incompletas',
+      text:
+        `Debes seleccionar exactamente ${this.cantidadMaquinasRequeridas} máquina(s) antes de previsualizar.`,
+      confirmButtonText: 'Entendido'
+    });
 
-    this.previewCuotasLoading = true;
+    return;
+  }
 
-    this.previewCuotasError = '';
+  // ========================================================
+  // ESTADO INICIAL
+  // ========================================================
 
-    this.previewCuotas = [];
+  this.previewCuotasLoading = true;
+  this.previewCuotasError = '';
+  this.previewCuotas = [];
+  this.previewCuotasOpen = false;
 
-    this.previewCuotasOpen = false;
+  this.previewMontoTotal =
+    this.form.monto_total ?? null;
 
-    this.previewMontoTotal =
-      this.form.monto_total ??
-      null;
+  this.previewCuotaInicial =
+    this.form.cuota_inicial ?? null;
 
-    this.previewCuotaInicial =
-      this.form.cuota_inicial ??
-      null;
+  // ========================================================
+  // PAYLOAD
+  // ========================================================
 
-    const payload = {
+  const payload = {
 
-      plan_curso_id:
-        this.form.plan_curso_id,
+    plan_curso_id:
+      Number(this.form.plan_curso_id),
 
-      fecha_matricula:
-        this.form.fecha_matricula,
+    fecha_matricula:
+      this.form.fecha_matricula,
 
-      monto_total:
-        this.form.monto_total,
+    monto_total:
+      this.form.monto_total ?? null,
 
-      cuota_inicial:
-        this.form.cuota_inicial,
+    cuota_inicial:
+      this.form.cuota_inicial ?? null,
 
-      modalidad_pago:
-        this.form.modalidad_pago,
+    modalidad_pago:
+      this.form.modalidad_pago ?? 'MENSUAL',
 
-      maquinas_seleccionadas:
-        [
-          ...this.maquinasSeleccionadas
-        ]
+    maquinas_seleccionadas:
+      [...this.maquinasSeleccionadas]
 
-    };
+  };
 
-    this.matriculasService
-      .previsualizarCuotas(payload)
-      .subscribe({
+  // ========================================================
+  // LOG REQUEST
+  // ========================================================
 
-        next: (resp: ApiResponse<any[]>) => {
+  console.log('');
+  console.log('========================================');
+  console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
+  console.log('========================================');
 
-          this.previewCuotasLoading = false;
+  console.log(
+    '🌐 URL:',
+    'https://proedso-back-wtdl.onrender.com/api/matriculas/previsualizar-cuotas'
+  );
 
-          this.previewCuotas =
-            resp.data ?? [];
+  console.log('📦 PAYLOAD:', payload);
+  console.log('📋 PLAN:', payload.plan_curso_id);
+  console.log('📅 FECHA MATRÍCULA:', payload.fecha_matricula);
+  console.log('💰 MONTO TOTAL:', payload.monto_total);
+  console.log('💵 CUOTA INICIAL:', payload.cuota_inicial);
+  console.log('📆 MODALIDAD:', payload.modalidad_pago);
+  console.log('🚜 MÁQUINAS:', payload.maquinas_seleccionadas);
 
-          if (
-            this.previewCuotas.length === 0
-          ) {
+  console.log('========================================');
+  console.log('⏳ Esperando respuesta del backend...');
+  console.log('');
 
-            this.previewCuotasError =
-              'No se pudieron generar cuotas para los datos seleccionados.';
+  // ========================================================
+  // REQUEST
+  // ========================================================
 
-            this.cd.detectChanges();
+  this.matriculasService
+    .previsualizarCuotas(payload)
+    .subscribe({
 
-            return;
-          }
+      // ====================================================
+      // SUCCESS
+      // ====================================================
 
-          this.previewCuotasOpen = true;
+      next: (resp: ApiResponse<any>) => {
 
-          this.cd.detectChanges();
+        console.log('');
+        console.log('========================================');
+        console.log('📥 PREVISUALIZAR CUOTAS - RESPONSE');
+        console.log('========================================');
 
-        },
+        console.log(
+          '📊 RESPUESTA COMPLETA:',
+          resp
+        );
 
-        error: (err: any) => {
+        console.log(
+          '✅ OK:',
+          resp.ok
+        );
+
+        console.log(
+          '📦 DATA:',
+          resp.data
+        );
+
+        // ==================================================
+        // VALIDAR DATA
+        // ==================================================
+
+        if (!resp.data) {
+
+          console.error(
+            '❌ El backend respondió sin data.'
+          );
 
           this.previewCuotasLoading = false;
 
           this.previewCuotasError =
-            err?.error?.message ||
-            'No se pudo generar la previsualización de cuotas.';
-
-          Swal.fire({
-
-            icon: 'error',
-
-            title: 'Error',
-
-            text:
-              this.previewCuotasError,
-
-            confirmButtonText: 'Aceptar'
-
-          });
+            'El backend no devolvió información para la previsualización.';
 
           this.cd.detectChanges();
 
+          return;
         }
 
-      });
-  }
+        // ==================================================
+        // LA RESPUESTA REAL TIENE ESTA ESTRUCTURA:
+        //
+        // data: {
+        //   plan: {...},
+        //   precio: {...},
+        //   modalidad_pago: 'MENSUAL',
+        //   maquinas: [...],
+        //   cuotas: [...]
+        // }
+        // ==================================================
+
+        const cuotas =
+          Array.isArray(resp.data)
+            ? resp.data
+            : Array.isArray(resp.data.cuotas)
+              ? resp.data.cuotas
+              : [];
+
+        console.log(
+          '📋 CUOTAS EXTRAÍDAS:',
+          cuotas
+        );
+
+        console.log(
+          '📏 CANTIDAD DE CUOTAS:',
+          cuotas.length
+        );
+
+        // ==================================================
+        // GUARDAR CUOTAS
+        // ==================================================
+
+        this.previewCuotas =
+          cuotas;
+
+        // ==================================================
+        // GUARDAR DATOS ADICIONALES DEL BACKEND
+        // ==================================================
+
+        if (resp.data.precio) {
+
+          console.log(
+            '💰 INFORMACIÓN DE PRECIO:',
+            resp.data.precio
+          );
+
+        }
+
+        if (resp.data.plan) {
+
+          console.log(
+            '📚 INFORMACIÓN DEL PLAN:',
+            resp.data.plan
+          );
+
+        }
+
+        if (resp.data.maquinas) {
+
+          console.log(
+            '🚜 MÁQUINAS DEL BACKEND:',
+            resp.data.maquinas
+          );
+
+        }
+
+        // ==================================================
+        // SIN CUOTAS
+        // ==================================================
+
+        if (this.previewCuotas.length === 0) {
+
+          console.warn(
+            '⚠️ El backend respondió correctamente, pero no hay cuotas.'
+          );
+
+          this.previewCuotasLoading = false;
+
+          this.previewCuotasError =
+            'No se pudieron generar cuotas para los datos seleccionados.';
+
+          this.cd.detectChanges();
+
+          console.log('========================================');
+
+          return;
+        }
+
+        // ==================================================
+        // MOSTRAR PREVISUALIZACIÓN
+        // ==================================================
+
+        this.previewCuotasLoading = false;
+
+        this.previewCuotasOpen = true;
+
+        this.cd.detectChanges();
+
+        console.log(
+          '✅ Previsualización lista para mostrar.'
+        );
+
+        console.log(
+          '💰 TOTAL PREVISUALIZADO:',
+          this.totalPreviewCuotas
+        );
+
+        console.log('========================================');
+        console.log('');
+
+      },
+
+      // ====================================================
+      // ERROR
+      // ====================================================
+
+      error: (err: any) => {
+
+        console.error('');
+        console.error('========================================');
+        console.error('❌ PREVISUALIZAR CUOTAS - ERROR');
+        console.error('========================================');
+
+        console.error(
+          'STATUS:',
+          err?.status
+        );
+
+        console.error(
+          'STATUS TEXT:',
+          err?.statusText
+        );
+
+        console.error(
+          'ERROR COMPLETO:',
+          err
+        );
+
+        console.error(
+          'ERROR BACKEND:',
+          err?.error
+        );
+
+        console.error('========================================');
+
+        this.previewCuotasLoading = false;
+
+        this.previewCuotasError =
+          err?.error?.message ||
+          err?.error?.error ||
+          'No se pudo generar la previsualización de cuotas.';
+
+        Swal.fire({
+
+          icon: 'error',
+
+          title: 'Error',
+
+          text:
+            this.previewCuotasError,
+
+          confirmButtonText: 'Aceptar'
+
+        });
+
+        this.cd.detectChanges();
+
+      }
+
+    });
+}
 
   // ==========================================================
   // CERRAR PREVIEW
