@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -24,6 +23,7 @@ import {
 } from '@angular/router';
 
 import { Alumno } from '../../../alumnos/models/alumno.model';
+
 import {
   Matricula,
   MatriculaPayload
@@ -71,7 +71,6 @@ export class MatriculasList implements OnInit {
 
   private searchSubject = new Subject<string>();
 
-
   // ==========================================================
   // VISTA
   // ==========================================================
@@ -84,7 +83,6 @@ export class MatriculasList implements OnInit {
 
   tituloVista = 'Matrículas activas';
 
-
   // ==========================================================
   // MATRÍCULAS
   // ==========================================================
@@ -92,7 +90,6 @@ export class MatriculasList implements OnInit {
   matriculas: Matricula[] = [];
   matriculasOriginal: Matricula[] = [];
   matriculasPaginadas: Matricula[] = [];
-
 
   // ==========================================================
   // CATÁLOGOS
@@ -105,7 +102,6 @@ export class MatriculasList implements OnInit {
 
   maquinasDisponibles: Maquina[] = [];
   maquinasSeleccionadas: number[] = [];
-
 
   // ==========================================================
   // BÚSQUEDA Y FILTROS
@@ -135,7 +131,6 @@ export class MatriculasList implements OnInit {
     { value: 12, label: 'Diciembre' }
   ];
 
-
   // ==========================================================
   // PAGINACIÓN
   // ==========================================================
@@ -143,7 +138,6 @@ export class MatriculasList implements OnInit {
   paginaActual = 1;
   itemsPorPagina = 10;
   totalPaginas = 1;
-
 
   // ==========================================================
   // ESTADOS DE CARGA
@@ -155,7 +149,6 @@ export class MatriculasList implements OnInit {
   errorMsg = '';
   cargado = false;
 
-
   // ==========================================================
   // MODAL MATRÍCULA
   // ==========================================================
@@ -166,13 +159,11 @@ export class MatriculasList implements OnInit {
 
   matriculaEditandoId: number | null = null;
 
-
   // ==========================================================
   // FORMULARIO
   // ==========================================================
 
   form: MatriculaPayload = this.getEmptyForm();
-
 
   // ==========================================================
   // SELECTOR DE MÁQUINAS
@@ -181,7 +172,6 @@ export class MatriculasList implements OnInit {
   mostrarSelectorMaquinas = false;
 
   cantidadMaquinasRequeridas = 0;
-
 
   // ==========================================================
   // PREVISUALIZACIÓN DE CUOTAS
@@ -199,19 +189,8 @@ export class MatriculasList implements OnInit {
 
   previewCuotaInicial: number | null = null;
 
-
   // ==========================================================
-  // COMPATIBILIDAD CON EL HTML ACTUAL
-  // ==========================================================
-  //
-  // El HTML existente todavía utiliza estos nombres:
-  //
-  // mostrarPrevisualizacionCuotas
-  // cuotasPrevisualizadas
-  // cargandoPrevisualizacion
-  //
-  // Los dejamos como getters para NO tener que modificar
-  // todo el HTML.
+  // COMPATIBILIDAD CON HTML ACTUAL
   // ==========================================================
 
   get mostrarPrevisualizacionCuotas(): boolean {
@@ -225,7 +204,6 @@ export class MatriculasList implements OnInit {
   get cargandoPrevisualizacion(): boolean {
     return this.previewCuotasLoading;
   }
-
 
   // ==========================================================
   // TOTAL PREVISUALIZACIÓN
@@ -246,7 +224,6 @@ export class MatriculasList implements OnInit {
     );
   }
 
-
   // ==========================================================
   // CONSTRUCTOR
   // ==========================================================
@@ -262,9 +239,7 @@ export class MatriculasList implements OnInit {
     ) {
       this.aniosDisponibles.push(i);
     }
-
   }
-
 
   // ==========================================================
   // INIT
@@ -280,7 +255,6 @@ export class MatriculasList implements OnInit {
       this.route.snapshot.data['titulo'] ??
       'Matrículas';
 
-
     // ========================================================
     // BUSCADOR
     // ========================================================
@@ -290,7 +264,7 @@ export class MatriculasList implements OnInit {
         debounceTime(300),
         distinctUntilChanged()
       )
-      .subscribe((texto) => {
+      .subscribe((texto: string) => {
 
         this.search = texto;
 
@@ -300,15 +274,12 @@ export class MatriculasList implements OnInit {
 
       });
 
-
     // ========================================================
     // CARGAR DATOS
     // ========================================================
 
     this.cargarTodo();
-
   }
-
 
   // ==========================================================
   // FORMULARIO VACÍO
@@ -344,9 +315,7 @@ export class MatriculasList implements OnInit {
       cuota_inicial: null
 
     };
-
   }
-
 
   // ==========================================================
   // CARGAR TODO
@@ -361,7 +330,6 @@ export class MatriculasList implements OnInit {
     this.cargado = false;
 
     this.cd.detectChanges();
-
 
     // ========================================================
     // ALUMNOS
@@ -393,7 +361,6 @@ export class MatriculasList implements OnInit {
 
       });
 
-
     // ========================================================
     // ESTADOS
     // ========================================================
@@ -423,7 +390,6 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
 
     // ========================================================
     // PLANES
@@ -455,7 +421,6 @@ export class MatriculasList implements OnInit {
 
       });
 
-
     // ========================================================
     // MÁQUINAS
     // ========================================================
@@ -485,7 +450,6 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
 
     // ========================================================
     // MATRÍCULAS
@@ -542,9 +506,7 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
   }
-
 
   // ==========================================================
   // ABRIR MODAL CREAR
@@ -574,9 +536,7 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // BUSCAR ALUMNO
@@ -587,9 +547,7 @@ export class MatriculasList implements OnInit {
     this.searchSubject.next(
       this.search || ''
     );
-
   }
-
 
   // ==========================================================
   // PREVISUALIZAR CUOTAS
@@ -613,9 +571,7 @@ export class MatriculasList implements OnInit {
       });
 
       return;
-
     }
-
 
     if (!this.form.fecha_matricula) {
 
@@ -633,9 +589,7 @@ export class MatriculasList implements OnInit {
       });
 
       return;
-
     }
-
 
     this.previewCuotasLoading = true;
 
@@ -644,7 +598,6 @@ export class MatriculasList implements OnInit {
     this.previewCuotas = [];
 
     this.previewCuotasOpen = false;
-
 
     const payload = {
 
@@ -665,18 +618,16 @@ export class MatriculasList implements OnInit {
 
     };
 
-
     this.matriculasService
       .previsualizarCuotas(payload)
       .subscribe({
 
-        next: (resp: ApiResponse) => {
+        next: (resp: ApiResponse<any[]>) => {
 
           this.previewCuotasLoading = false;
 
           this.previewCuotas =
             resp.data ?? [];
-
 
           if (
             this.previewCuotas.length === 0
@@ -688,16 +639,13 @@ export class MatriculasList implements OnInit {
             this.cd.detectChanges();
 
             return;
-
           }
-
 
           this.previewCuotasOpen = true;
 
           this.cd.detectChanges();
 
         },
-
 
         error: (err: any) => {
 
@@ -706,7 +654,6 @@ export class MatriculasList implements OnInit {
           this.previewCuotasError =
             err?.error?.message ||
             'No se pudo generar la previsualización de cuotas.';
-
 
           Swal.fire({
 
@@ -721,15 +668,12 @@ export class MatriculasList implements OnInit {
 
           });
 
-
           this.cd.detectChanges();
 
         }
 
       });
-
   }
-
 
   // ==========================================================
   // CERRAR PREVIEW
@@ -752,9 +696,7 @@ export class MatriculasList implements OnInit {
     this.previewMontoTotal = null;
 
     this.previewCuotaInicial = null;
-
   }
-
 
   // ==========================================================
   // CAMBIO MODALIDAD PAGO
@@ -769,9 +711,7 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // CAMBIO MONTO
@@ -786,9 +726,7 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // FORMATEAR MONTO
@@ -809,9 +747,7 @@ export class MatriculasList implements OnInit {
         minimumFractionDigits: 2
       }
     );
-
   }
-
 
   // ==========================================================
   // NÚMERO CUOTA
@@ -830,9 +766,7 @@ export class MatriculasList implements OnInit {
       index + 1
 
     );
-
   }
-
 
   // ==========================================================
   // FECHA CUOTA
@@ -848,9 +782,7 @@ export class MatriculasList implements OnInit {
       cuota.fecha ??
       null
     );
-
   }
-
 
   // ==========================================================
   // MONTO CUOTA
@@ -869,9 +801,7 @@ export class MatriculasList implements OnInit {
       0
 
     );
-
   }
-
 
   // ==========================================================
   // CERRAR MODAL
@@ -888,9 +818,7 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // PAGINACIÓN
@@ -904,11 +832,9 @@ export class MatriculasList implements OnInit {
         this.itemsPorPagina
       );
 
-
     if (this.totalPaginas < 1) {
       this.totalPaginas = 1;
     }
-
 
     if (
       this.paginaActual >
@@ -917,9 +843,7 @@ export class MatriculasList implements OnInit {
 
       this.paginaActual =
         this.totalPaginas;
-
     }
-
 
     const inicio =
       (this.paginaActual - 1) *
@@ -929,7 +853,6 @@ export class MatriculasList implements OnInit {
       inicio +
       this.itemsPorPagina;
 
-
     this.matriculasPaginadas =
       this.matriculas.slice(
         inicio,
@@ -937,9 +860,7 @@ export class MatriculasList implements OnInit {
       );
 
     this.cd.detectChanges();
-
   }
-
 
   cambiarPagina(
     pagina: number
@@ -956,9 +877,7 @@ export class MatriculasList implements OnInit {
       pagina;
 
     this.actualizarPaginacion();
-
   }
-
 
   get paginas(): number[] {
 
@@ -973,9 +892,7 @@ export class MatriculasList implements OnInit {
         i + 1
 
     );
-
   }
-
 
   // ==========================================================
   // ALUMNOS FILTRADOS
@@ -989,12 +906,10 @@ export class MatriculasList implements OnInit {
       return this.alumnos;
     }
 
-
     const busqueda =
       this.txtBusquedaAlumno
         .toLowerCase()
         .trim();
-
 
     return this.alumnos.filter(
       (a) => {
@@ -1011,7 +926,6 @@ export class MatriculasList implements OnInit {
           a.dni?.toString() ??
           '';
 
-
         return (
           nombres.includes(busqueda) ||
           apellidos.includes(busqueda) ||
@@ -1020,9 +934,7 @@ export class MatriculasList implements OnInit {
 
       }
     );
-
   }
-
 
   // ==========================================================
   // EDITAR MATRÍCULA
@@ -1036,7 +948,6 @@ export class MatriculasList implements OnInit {
 
     this.matriculaEditandoId =
       matricula.id;
-
 
     this.form = {
 
@@ -1087,7 +998,6 @@ export class MatriculasList implements OnInit {
 
     };
 
-
     this.modalOpen = true;
 
     this.cerrarPreviewCuotas();
@@ -1095,7 +1005,6 @@ export class MatriculasList implements OnInit {
     this.actualizarSelectorMaquinas();
 
     this.recalcularFechaFin();
-
 
     // ========================================================
     // CARGAR MÁQUINAS DE LA MATRÍCULA
@@ -1118,12 +1027,10 @@ export class MatriculasList implements OnInit {
                 (m) => m.maquina_id
               );
 
-
           this.form.maquinas_seleccionadas =
             [
               ...this.maquinasSeleccionadas
             ];
-
 
           this.cd.detectChanges();
 
@@ -1139,9 +1046,7 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
   }
-
 
   // ==========================================================
   // VALIDAR FORMULARIO
@@ -1151,7 +1056,6 @@ export class MatriculasList implements OnInit {
 
     const errores: string[] = [];
 
-
     if (!this.form.alumno_id) {
 
       errores.push(
@@ -1159,7 +1063,6 @@ export class MatriculasList implements OnInit {
       );
 
     }
-
 
     if (!this.form.plan_curso_id) {
 
@@ -1169,7 +1072,6 @@ export class MatriculasList implements OnInit {
 
     }
 
-
     if (!this.form.estado_alumno_id) {
 
       errores.push(
@@ -1178,7 +1080,6 @@ export class MatriculasList implements OnInit {
 
     }
 
-
     if (!this.form.fecha_matricula) {
 
       errores.push(
@@ -1186,7 +1087,6 @@ export class MatriculasList implements OnInit {
       );
 
     }
-
 
     if (
       this.mostrarSelectorMaquinas &&
@@ -1200,11 +1100,8 @@ export class MatriculasList implements OnInit {
 
     }
 
-
     return errores;
-
   }
-
 
   // ==========================================================
   // GUARDAR MATRÍCULA
@@ -1214,7 +1111,6 @@ export class MatriculasList implements OnInit {
 
     const errores =
       this.validarFormulario();
-
 
     if (
       errores.length > 0
@@ -1239,9 +1135,7 @@ export class MatriculasList implements OnInit {
       });
 
       return;
-
     }
-
 
     const payload:
       MatriculaPayload = {
@@ -1289,11 +1183,9 @@ export class MatriculasList implements OnInit {
 
     };
 
-
     this.saving = true;
 
     this.cd.detectChanges();
-
 
     const request$ =
       this.modoModal === 'crear'
@@ -1307,7 +1199,6 @@ export class MatriculasList implements OnInit {
               payload
             );
 
-
     request$.subscribe({
 
       next: (
@@ -1317,7 +1208,6 @@ export class MatriculasList implements OnInit {
         const modo =
           this.modoModal;
 
-
         this.saving = false;
 
         this.modalOpen = false;
@@ -1325,7 +1215,6 @@ export class MatriculasList implements OnInit {
         this.cerrarPreviewCuotas();
 
         this.cd.detectChanges();
-
 
         Swal.fire({
 
@@ -1349,18 +1238,15 @@ export class MatriculasList implements OnInit {
 
         });
 
-
         this.cargarTodo();
 
       },
-
 
       error: (err: any) => {
 
         this.saving = false;
 
         this.cd.detectChanges();
-
 
         Swal.fire({
 
@@ -1380,9 +1266,7 @@ export class MatriculasList implements OnInit {
       }
 
     });
-
   }
-
 
   // ==========================================================
   // CAMBIO DE PLAN
@@ -1397,9 +1281,7 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // CAMBIO FECHA INICIO
@@ -1410,9 +1292,7 @@ export class MatriculasList implements OnInit {
     this.recalcularFechaFin();
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // RECALCULAR FECHA FIN
@@ -1429,9 +1309,7 @@ export class MatriculasList implements OnInit {
         null;
 
       return;
-
     }
-
 
     const plan =
       this.planesCurso.find(
@@ -1440,22 +1318,18 @@ export class MatriculasList implements OnInit {
           this.form.plan_curso_id
       );
 
-
     if (!plan) {
 
       this.form.fecha_fin_estimada =
         null;
 
       return;
-
     }
-
 
     const meses =
       this.getDuracionMesesPorTipo(
         plan.tipo_curso_codigo
       );
-
 
     if (!meses) {
 
@@ -1463,18 +1337,14 @@ export class MatriculasList implements OnInit {
         null;
 
       return;
-
     }
-
 
     this.form.fecha_fin_estimada =
       this.calcularFechaFin(
         this.form.fecha_inicio,
         meses
       );
-
   }
-
 
   // ==========================================================
   // SELECTOR DE MÁQUINAS
@@ -1497,7 +1367,6 @@ export class MatriculasList implements OnInit {
     this.form.maquinas_seleccionadas =
       [];
 
-
     if (
       !this.form.plan_curso_id
     ) {
@@ -1505,9 +1374,7 @@ export class MatriculasList implements OnInit {
       this.cd.detectChanges();
 
       return;
-
     }
-
 
     const plan =
       this.planesCurso.find(
@@ -1516,15 +1383,12 @@ export class MatriculasList implements OnInit {
           this.form.plan_curso_id
       );
 
-
     if (!plan) {
 
       this.cd.detectChanges();
 
       return;
-
     }
-
 
     if (
       !plan.permite_eleccion_personalizada
@@ -1533,19 +1397,15 @@ export class MatriculasList implements OnInit {
       this.cd.detectChanges();
 
       return;
-
     }
-
 
     this.mostrarSelectorMaquinas =
       true;
-
 
     this.cantidadMaquinasRequeridas =
       this.getCantidadMaquinasPorTipo(
         plan.tipo_curso_codigo
       );
-
 
     const maquinasOrdenadas =
       [...this.maquinas].sort(
@@ -1553,7 +1413,6 @@ export class MatriculasList implements OnInit {
           (a.orden_visual ?? 999) -
           (b.orden_visual ?? 999)
       );
-
 
     this.maquinasDisponibles =
       this.esPlanMultipleConRegalo()
@@ -1566,11 +1425,8 @@ export class MatriculasList implements OnInit {
 
         : maquinasOrdenadas;
 
-
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // CANTIDAD MÁQUINAS POR PLAN
@@ -1600,9 +1456,7 @@ export class MatriculasList implements OnInit {
         return 0;
 
     }
-
   }
-
 
   // ==========================================================
   // TOGGLE MÁQUINA
@@ -1616,7 +1470,6 @@ export class MatriculasList implements OnInit {
     const input =
       event.target as HTMLInputElement;
 
-
     if (input.checked) {
 
       if (
@@ -1625,7 +1478,6 @@ export class MatriculasList implements OnInit {
       ) {
 
         input.checked = false;
-
 
         Swal.fire({
 
@@ -1642,9 +1494,7 @@ export class MatriculasList implements OnInit {
         });
 
         return;
-
       }
-
 
       if (
         !this.maquinasSeleccionadas
@@ -1667,17 +1517,13 @@ export class MatriculasList implements OnInit {
 
     }
 
-
     this.form.maquinas_seleccionadas =
       [
         ...this.maquinasSeleccionadas
       ];
 
-
     this.cd.detectChanges();
-
   }
-
 
   isMaquinaSeleccionada(
     maquinaId: number
@@ -1685,9 +1531,7 @@ export class MatriculasList implements OnInit {
 
     return this.maquinasSeleccionadas
       .includes(maquinaId);
-
   }
-
 
   // ==========================================================
   // DURACIÓN DEL PLAN
@@ -1717,9 +1561,7 @@ export class MatriculasList implements OnInit {
         return 0;
 
     }
-
   }
-
 
   // ==========================================================
   // CALCULAR FECHA FIN
@@ -1737,7 +1579,6 @@ export class MatriculasList implements OnInit {
     ] =
       fechaInicio.split('-');
 
-
     const anio =
       Number(anioStr);
 
@@ -1747,14 +1588,12 @@ export class MatriculasList implements OnInit {
     const dia =
       Number(diaStr);
 
-
     const fecha =
       new Date(
         anio,
         mes - 1,
         dia
       );
-
 
     if (
       Number.isNaN(
@@ -1763,15 +1602,12 @@ export class MatriculasList implements OnInit {
     ) {
 
       return '';
-
     }
-
 
     fecha.setMonth(
       fecha.getMonth() +
       meses
     );
-
 
     const anioFinal =
       fecha.getFullYear();
@@ -1786,11 +1622,8 @@ export class MatriculasList implements OnInit {
         fecha.getDate()
       ).padStart(2, '0');
 
-
     return `${anioFinal}-${mesFinal}-${diaFinal}`;
-
   }
-
 
   // ==========================================================
   // NOMBRES
@@ -1806,13 +1639,10 @@ export class MatriculasList implements OnInit {
           a.id === alumnoId
       );
 
-
     return alumno
       ? `${alumno.nombres} ${alumno.apellidos}`
       : '-';
-
   }
-
 
   getNombreEstado(
     estadoId: number
@@ -1824,12 +1654,9 @@ export class MatriculasList implements OnInit {
           e.id === estadoId
       );
 
-
     return estado?.nombre ??
       '-';
-
   }
-
 
   getNombrePlan(
     planId: number
@@ -1841,12 +1668,9 @@ export class MatriculasList implements OnInit {
           p.id === planId
       );
 
-
     return plan?.nombre ??
       '-';
-
   }
-
 
   // ==========================================================
   // TRACK BY
@@ -1858,9 +1682,7 @@ export class MatriculasList implements OnInit {
   ): number {
 
     return matricula.id;
-
   }
-
 
   // ==========================================================
   // PLAN MULTIPLE
@@ -1875,19 +1697,15 @@ export class MatriculasList implements OnInit {
           this.form.plan_curso_id
       );
 
-
     if (!plan) {
       return false;
     }
-
 
     return (
       plan.tipo_curso_codigo ===
       'MULTIPLE'
     );
-
   }
-
 
   // ==========================================================
   // ESTADOS DISPONIBLES
@@ -1903,16 +1721,13 @@ export class MatriculasList implements OnInit {
       'RESERVA'
     ];
 
-
     return this.estadosAlumno.filter(
       (e) =>
         permitidos.includes(
           e.codigo
         )
     );
-
   }
-
 
   // ==========================================================
   // FORMATO FECHA
@@ -1926,23 +1741,18 @@ export class MatriculasList implements OnInit {
       return '-';
     }
 
-
     const soloFecha =
       fecha.split('T')[0];
 
-
     const partes =
       soloFecha.split('-');
-
 
     if (
       partes.length !== 3
     ) {
 
       return fecha;
-
     }
-
 
     const [
       anio,
@@ -1950,11 +1760,8 @@ export class MatriculasList implements OnInit {
       dia
     ] = partes;
 
-
     return `${dia}/${mes}/${anio}`;
-
   }
-
 
   // ==========================================================
   // CLASE ESTADO
@@ -1969,7 +1776,6 @@ export class MatriculasList implements OnInit {
         (e) =>
           e.id === estadoId
       );
-
 
     switch (
       estado?.codigo
@@ -1996,9 +1802,7 @@ export class MatriculasList implements OnInit {
         return 'estado-badge';
 
     }
-
   }
-
 
   // ==========================================================
   // CAMBIAR ESTADO
@@ -2017,7 +1821,6 @@ export class MatriculasList implements OnInit {
       this.getNombreEstadoPorCodigo(
         codigoEstado
       );
-
 
     Swal.fire({
 
@@ -2045,7 +1848,6 @@ export class MatriculasList implements OnInit {
           return;
         }
 
-
         this.matriculasService
           .cambiarEstado(
             matricula.id,
@@ -2070,11 +1872,9 @@ export class MatriculasList implements OnInit {
 
               });
 
-
               this.cargarTodo();
 
             },
-
 
             error: (err: any) => {
 
@@ -2096,9 +1896,7 @@ export class MatriculasList implements OnInit {
 
       }
     );
-
   }
-
 
   // ==========================================================
   // NOMBRE ESTADO POR CÓDIGO
@@ -2115,9 +1913,7 @@ export class MatriculasList implements OnInit {
       )?.nombre ??
       codigo
     );
-
   }
-
 
   // ==========================================================
   // PERMISOS
@@ -2132,9 +1928,7 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
-
 
   puedeEgresar(
     estadoId: number
@@ -2145,9 +1939,7 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
-
 
   puedeReservar(
     estadoId: number
@@ -2158,9 +1950,7 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
-
 
   puedeActivarMatricula(
     estadoId: number
@@ -2171,15 +1961,12 @@ export class MatriculasList implements OnInit {
         estadoId
       );
 
-
     return [
       'RETIRADO',
       'RESERVA',
       'EGRESADO'
     ].includes(codigo);
-
   }
-
 
   getCodigoEstado(
     estadoId: number
@@ -2192,9 +1979,7 @@ export class MatriculasList implements OnInit {
       )?.codigo ??
       ''
     );
-
   }
-
 
   // ==========================================================
   // VISTAS
@@ -2206,9 +1991,7 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
-
 
   esVistaNoActiva(): boolean {
 
@@ -2219,9 +2002,7 @@ export class MatriculasList implements OnInit {
     ].includes(
       this.vistaActual
     );
-
   }
-
 
   puedeEditar(): boolean {
 
@@ -2229,16 +2010,12 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
-
 
   puedeVer(): boolean {
 
     return true;
-
   }
-
 
   puedeMostrarAccionesDeActiva(): boolean {
 
@@ -2246,9 +2023,7 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
-
 
   puedeMostrarActivar(): boolean {
 
@@ -2259,9 +2034,7 @@ export class MatriculasList implements OnInit {
     ].includes(
       this.vistaActual
     );
-
   }
-
 
   // ==========================================================
   // DESCARGAR CRONOGRAMA
@@ -2279,7 +2052,6 @@ export class MatriculasList implements OnInit {
       matricula
     );
 
-
     this.matriculaPdfService
       .generarCronogramaPDF(
 
@@ -2294,9 +2066,7 @@ export class MatriculasList implements OnInit {
         )
 
       );
-
   }
-
 
   // ==========================================================
   // BÚSQUEDA
@@ -2312,12 +2082,10 @@ export class MatriculasList implements OnInit {
         .toLowerCase()
         .trim();
 
-
     let filtradas =
       [
         ...this.matriculasOriginal
       ];
-
 
     // ========================================================
     // TEXTO
@@ -2335,7 +2103,6 @@ export class MatriculasList implements OnInit {
               )
                 .toLowerCase();
 
-
             const alumnoData =
               this.alumnos.find(
                 (a) =>
@@ -2343,13 +2110,11 @@ export class MatriculasList implements OnInit {
                   m.alumno_id
               );
 
-
             const dni =
               alumnoData?.dni
                 ?.toString()
                 .toLowerCase() ??
               '';
-
 
             return (
               alumno.includes(texto) ||
@@ -2360,7 +2125,6 @@ export class MatriculasList implements OnInit {
         );
 
     }
-
 
     // ========================================================
     // AÑO
@@ -2380,17 +2144,14 @@ export class MatriculasList implements OnInit {
               return false;
             }
 
-
             const fecha =
               m.fecha_matricula
                 .split('T')[0];
-
 
             const anio =
               Number(
                 fecha.split('-')[0]
               );
-
 
             return (
               anio ===
@@ -2401,7 +2162,6 @@ export class MatriculasList implements OnInit {
         );
 
     }
-
 
     // ========================================================
     // MES
@@ -2421,17 +2181,14 @@ export class MatriculasList implements OnInit {
               return false;
             }
 
-
             const fecha =
               m.fecha_matricula
                 .split('T')[0];
-
 
             const mes =
               Number(
                 fecha.split('-')[1]
               );
-
 
             return (
               mes ===
@@ -2443,7 +2200,6 @@ export class MatriculasList implements OnInit {
 
     }
 
-
     // ========================================================
     // ACTUALIZAR
     // ========================================================
@@ -2451,15 +2207,12 @@ export class MatriculasList implements OnInit {
     this.matriculas =
       filtradas;
 
-
     this.paginaActual = 1;
 
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
-
   }
-
 
   // ==========================================================
   // LIMPIAR FILTROS
@@ -2485,7 +2238,6 @@ export class MatriculasList implements OnInit {
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
-
   }
 
 }
