@@ -1032,6 +1032,27 @@
 
             </div>
 
+            <div class="form-field">
+
+  <label>
+    Costo de certificación
+  </label>
+
+  <input
+    type="number"
+    min="0"
+    step="0.01"
+    [(ngModel)]="form.monto_certificacion"
+    (ngModelChange)="onMontoPagoChange()"
+    placeholder="0.00"
+  />
+
+  <small class="field-help">
+    Monto correspondiente al costo de certificación.
+  </small>
+
+</div>
+
 
             <!-- ================================================= -->
             <!-- NOTAS -->
