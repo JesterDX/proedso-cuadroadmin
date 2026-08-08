@@ -29,7 +29,9 @@ import { Alumno } from '../../../alumnos/models/alumno.model';
 
 import {
   Matricula,
-  MatriculaPayload
+  MatriculaPayload,
+  CuotaCronograma,
+  PrevisualizacionCuotasData
 } from '../../models/matricula.model';
 
 import { EstadoAlumno } from '../../models/estado-alumno.model';
@@ -74,6 +76,7 @@ export class MatriculasList implements OnInit {
 
   private searchSubject = new Subject<string>();
 
+
   // ==========================================================
   // VISTA
   // ==========================================================
@@ -86,25 +89,34 @@ export class MatriculasList implements OnInit {
 
   tituloVista = 'Matrículas activas';
 
+
   // ==========================================================
   // MATRÍCULAS
   // ==========================================================
 
   matriculas: Matricula[] = [];
+
   matriculasOriginal: Matricula[] = [];
+
   matriculasPaginadas: Matricula[] = [];
+
 
   // ==========================================================
   // CATÁLOGOS
   // ==========================================================
 
   alumnos: Alumno[] = [];
+
   estadosAlumno: EstadoAlumno[] = [];
+
   planesCurso: PlanCurso[] = [];
+
   maquinas: Maquina[] = [];
 
   maquinasDisponibles: Maquina[] = [];
+
   maquinasSeleccionadas: number[] = [];
+
 
   // ==========================================================
   // BÚSQUEDA Y FILTROS
@@ -115,6 +127,7 @@ export class MatriculasList implements OnInit {
   search = '';
 
   anioFiltro: number | null = null;
+
   mesFiltro: number | null = null;
 
   aniosDisponibles: number[] = [];
@@ -134,23 +147,30 @@ export class MatriculasList implements OnInit {
     { value: 12, label: 'Diciembre' }
   ];
 
+
   // ==========================================================
   // PAGINACIÓN
   // ==========================================================
 
   paginaActual = 1;
+
   itemsPorPagina = 10;
+
   totalPaginas = 1;
+
 
   // ==========================================================
   // ESTADOS DE CARGA
   // ==========================================================
 
   loading = false;
+
   saving = false;
 
   errorMsg = '';
+
   cargado = false;
+
 
   // ==========================================================
   // MODAL MATRÍCULA
@@ -159,7 +179,8 @@ export class MatriculasList implements OnInit {
   modalOpen = false;
 
   /**
-   * Compatibilidad con el HTML que usa:
+   * Compatibilidad con HTML que utiliza:
+   *
    * *ngIf="mostrarModal"
    */
   get mostrarModal(): boolean {
@@ -170,11 +191,13 @@ export class MatriculasList implements OnInit {
 
   matriculaEditandoId: number | null = null;
 
+
   // ==========================================================
   // FORMULARIO
   // ==========================================================
 
   form: MatriculaPayload = this.getEmptyForm();
+
 
   // ==========================================================
   // SELECTOR DE MÁQUINAS
@@ -183,6 +206,7 @@ export class MatriculasList implements OnInit {
   mostrarSelectorMaquinas = false;
 
   cantidadMaquinasRequeridas = 0;
+
 
   // ==========================================================
   // PREVISUALIZACIÓN DE CUOTAS
@@ -194,11 +218,18 @@ export class MatriculasList implements OnInit {
 
   previewCuotasError = '';
 
-  previewCuotas: any[] = [];
+  previewCuotas: CuotaCronograma[] = [];
 
   previewMontoTotal: number | null = null;
 
   previewCuotaInicial: number | null = null;
+
+  previewPrecio: any = null;
+
+  previewPlan: any = null;
+
+  previewMaquinas: any[] = [];
+
 
   // ==========================================================
   // COMPATIBILIDAD CON HTML
@@ -208,7 +239,7 @@ export class MatriculasList implements OnInit {
     return this.previewCuotasOpen;
   }
 
-  get cuotasPrevisualizadas(): any[] {
+  get cuotasPrevisualizadas(): CuotaCronograma[] {
     return this.previewCuotas;
   }
 
@@ -216,17 +247,21 @@ export class MatriculasList implements OnInit {
     return this.previewCuotasLoading;
   }
 
+
   // ==========================================================
   // TOTAL PREVISUALIZACIÓN
   // ==========================================================
 
   get totalPreviewCuotas(): number {
+
     return this.previewCuotas.reduce(
       (total, cuota) =>
         total + this.getMontoCuota(cuota),
       0
     );
+
   }
+
 
   // ==========================================================
   // CONSTRUCTOR
@@ -234,12 +269,21 @@ export class MatriculasList implements OnInit {
 
   constructor() {
 
-    const anioActual = new Date().getFullYear();
+    const anioActual =
+      new Date().getFullYear();
 
-    for (let i = anioActual + 1; i >= 2023; i--) {
+    for (
+      let i = anioActual + 1;
+      i >= 2023;
+      i--
+    ) {
+
       this.aniosDisponibles.push(i);
+
     }
+
   }
+
 
   // ==========================================================
   // INIT
@@ -254,6 +298,7 @@ export class MatriculasList implements OnInit {
     this.tituloVista =
       this.route.snapshot.data['titulo'] ??
       'Matrículas';
+
 
     // ========================================================
     // BUSCADOR
@@ -274,12 +319,15 @@ export class MatriculasList implements OnInit {
 
       });
 
+
     // ========================================================
     // CARGAR DATOS
     // ========================================================
 
     this.cargarTodo();
+
   }
+
 
   // ==========================================================
   // FORMULARIO VACÍO
@@ -315,7 +363,9 @@ export class MatriculasList implements OnInit {
       cuota_inicial: null
 
     };
+
   }
+
 
   // ==========================================================
   // CARGAR TODO
@@ -331,18 +381,6 @@ export class MatriculasList implements OnInit {
 
     this.cd.detectChanges();
 
-    /*
-     * IMPORTANTE:
-     *
-     * Antes los catálogos y las matrículas se cargaban
-     * independientemente.
-     *
-     * Eso podía provocar que las matrículas llegaran antes
-     * que alumnos / estados / planes y los getters devolvieran "-".
-     *
-     * Ahora esperamos a que todos los catálogos estén cargados
-     * antes de procesar las matrículas.
-     */
 
     forkJoin({
 
@@ -391,12 +429,14 @@ export class MatriculasList implements OnInit {
           this.alumnos =
             resp.alumnos?.data ?? [];
 
+
           // ==================================================
           // ESTADOS
           // ==================================================
 
           this.estadosAlumno =
             resp.estados?.data ?? [];
+
 
           // ==================================================
           // PLANES
@@ -405,12 +445,14 @@ export class MatriculasList implements OnInit {
           this.planesCurso =
             resp.planes?.data ?? [];
 
+
           // ==================================================
           // MÁQUINAS
           // ==================================================
 
           this.maquinas =
             resp.maquinas?.data ?? [];
+
 
           // ==================================================
           // MATRÍCULAS
@@ -421,6 +463,7 @@ export class MatriculasList implements OnInit {
 
           this.matriculasOriginal =
             [...this.matriculas];
+
 
           // ==================================================
           // PAGINACIÓN
@@ -447,7 +490,9 @@ export class MatriculasList implements OnInit {
         }
 
       });
+
   }
+
 
   // ==========================================================
   // ABRIR MODAL CREAR
@@ -477,7 +522,9 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // BUSCAR ALUMNO
@@ -488,21 +535,20 @@ export class MatriculasList implements OnInit {
     this.searchSubject.next(
       this.search || ''
     );
+
   }
 
-  /**
-   * Compatibilidad con el HTML actual.
-   *
-   * Si el input de alumnos llama:
-   * (ngModelChange)="filtrarAlumnos()"
-   *
-   * no necesitamos duplicar la lógica porque
-   * alumnosFiltrados es un getter.
-   */
+
+  // ==========================================================
+  // FILTRAR ALUMNOS
+  // ==========================================================
+
   filtrarAlumnos(): void {
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // PREVISUALIZAR CUOTAS
@@ -519,36 +565,45 @@ export class MatriculasList implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'Selecciona un alumno',
-        text: 'Debes seleccionar un alumno antes de previsualizar las cuotas.',
+        text:
+          'Debes seleccionar un alumno antes de previsualizar las cuotas.',
         confirmButtonText: 'Entendido'
       });
 
       return;
+
     }
+
 
     if (!this.form.plan_curso_id) {
 
       Swal.fire({
         icon: 'warning',
         title: 'Selecciona un plan',
-        text: 'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
+        text:
+          'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
         confirmButtonText: 'Entendido'
       });
 
       return;
+
     }
+
 
     if (!this.form.fecha_matricula) {
 
       Swal.fire({
         icon: 'warning',
         title: 'Fecha requerida',
-        text: 'Debes indicar la fecha de matrícula.',
+        text:
+          'Debes indicar la fecha de matrícula.',
         confirmButtonText: 'Entendido'
       });
 
       return;
+
     }
+
 
     if (
       this.mostrarSelectorMaquinas &&
@@ -565,7 +620,9 @@ export class MatriculasList implements OnInit {
       });
 
       return;
+
     }
+
 
     // ========================================================
     // ESTADO INICIAL
@@ -579,11 +636,18 @@ export class MatriculasList implements OnInit {
 
     this.previewCuotasOpen = false;
 
+    this.previewPrecio = null;
+
+    this.previewPlan = null;
+
+    this.previewMaquinas = [];
+
     this.previewMontoTotal =
       this.form.monto_total ?? null;
 
     this.previewCuotaInicial =
       this.form.cuota_inicial ?? null;
+
 
     // ========================================================
     // PAYLOAD
@@ -604,21 +668,34 @@ export class MatriculasList implements OnInit {
         this.form.cuota_inicial ?? null,
 
       modalidad_pago:
-        this.form.modalidad_pago ?? 'MENSUAL',
+        this.form.modalidad_pago ??
+        'MENSUAL',
 
       maquinas_seleccionadas:
-        [...this.maquinasSeleccionadas]
+        [
+          ...this.maquinasSeleccionadas
+        ]
 
     };
+
 
     // ========================================================
     // LOG REQUEST
     // ========================================================
 
     console.log('');
-    console.log('========================================');
-    console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
-    console.log('========================================');
+
+    console.log(
+      '========================================'
+    );
+
+    console.log(
+      '📤 PREVISUALIZAR CUOTAS - REQUEST'
+    );
+
+    console.log(
+      '========================================'
+    );
 
     console.log(
       '📦 PAYLOAD:',
@@ -655,9 +732,16 @@ export class MatriculasList implements OnInit {
       payload.maquinas_seleccionadas
     );
 
-    console.log('========================================');
-    console.log('⏳ Esperando respuesta del backend...');
+    console.log(
+      '========================================'
+    );
+
+    console.log(
+      '⏳ Esperando respuesta del backend...'
+    );
+
     console.log('');
+
 
     // ========================================================
     // REQUEST
@@ -671,12 +755,23 @@ export class MatriculasList implements OnInit {
         // SUCCESS
         // ====================================================
 
-        next: (resp: ApiResponse<any>) => {
+        next: (
+          resp: ApiResponse<any>
+        ) => {
 
           console.log('');
-          console.log('========================================');
-          console.log('📥 PREVISUALIZAR CUOTAS - RESPONSE');
-          console.log('========================================');
+
+          console.log(
+            '========================================'
+          );
+
+          console.log(
+            '📥 PREVISUALIZAR CUOTAS - RESPONSE'
+          );
+
+          console.log(
+            '========================================'
+          );
 
           console.log(
             '📊 RESPUESTA COMPLETA:',
@@ -685,22 +780,27 @@ export class MatriculasList implements OnInit {
 
           console.log(
             '✅ OK:',
-            resp.ok
+            resp?.ok
           );
 
           console.log(
             '📦 DATA:',
-            resp.data
+            resp?.data
           );
 
+
           // ==================================================
-          // VALIDAR DATA
+          // VALIDAR RESPUESTA
           // ==================================================
 
-          if (!resp.data) {
+          if (
+            !resp ||
+            !resp.ok ||
+            !resp.data
+          ) {
 
             console.error(
-              '❌ El backend respondió sin data.'
+              '❌ El backend no devolvió información válida.'
             );
 
             this.previewCuotasLoading = false;
@@ -711,18 +811,58 @@ export class MatriculasList implements OnInit {
             this.cd.detectChanges();
 
             return;
+
           }
+
+
+          // ==================================================
+          // DATA DEL BACKEND
+          // ==================================================
+
+          const data =
+            resp.data as
+            PrevisualizacionCuotasData;
+
 
           // ==================================================
           // EXTRAER CUOTAS
           // ==================================================
 
-          const cuotas =
-            Array.isArray(resp.data)
-              ? resp.data
-              : Array.isArray(resp.data.cuotas)
-                ? resp.data.cuotas
-                : [];
+          let cuotas: CuotaCronograma[] = [];
+
+
+          /*
+           * El backend actualmente responde:
+           *
+           * data: {
+           *   plan: {...},
+           *   precio: {...},
+           *   modalidad_pago: "MENSUAL",
+           *   maquinas: [...],
+           *   cuotas: [...]
+           * }
+           *
+           * Por compatibilidad también soportamos
+           * que data sea directamente un array.
+           */
+
+          if (Array.isArray(data)) {
+
+            cuotas =
+              data as unknown as
+              CuotaCronograma[];
+
+          } else if (
+            Array.isArray(
+              (data as any).cuotas
+            )
+          ) {
+
+            cuotas =
+              (data as any).cuotas;
+
+          }
+
 
           console.log(
             '📋 CUOTAS EXTRAÍDAS:',
@@ -734,6 +874,58 @@ export class MatriculasList implements OnInit {
             cuotas.length
           );
 
+
+          // ==================================================
+          // DATOS ADICIONALES
+          // ==================================================
+
+          if (
+            (data as any).precio
+          ) {
+
+            this.previewPrecio =
+              (data as any).precio;
+
+            console.log(
+              '💰 INFORMACIÓN DE PRECIO:',
+              this.previewPrecio
+            );
+
+          }
+
+
+          if (
+            (data as any).plan
+          ) {
+
+            this.previewPlan =
+              (data as any).plan;
+
+            console.log(
+              '📚 INFORMACIÓN DEL PLAN:',
+              this.previewPlan
+            );
+
+          }
+
+
+          if (
+            Array.isArray(
+              (data as any).maquinas
+            )
+          ) {
+
+            this.previewMaquinas =
+              (data as any).maquinas;
+
+            console.log(
+              '🚜 MÁQUINAS DEL BACKEND:',
+              this.previewMaquinas
+            );
+
+          }
+
+
           // ==================================================
           // GUARDAR CUOTAS
           // ==================================================
@@ -741,36 +933,6 @@ export class MatriculasList implements OnInit {
           this.previewCuotas =
             cuotas;
 
-          // ==================================================
-          // DATOS ADICIONALES
-          // ==================================================
-
-          if (resp.data.precio) {
-
-            console.log(
-              '💰 INFORMACIÓN DE PRECIO:',
-              resp.data.precio
-            );
-
-          }
-
-          if (resp.data.plan) {
-
-            console.log(
-              '📚 INFORMACIÓN DEL PLAN:',
-              resp.data.plan
-            );
-
-          }
-
-          if (resp.data.maquinas) {
-
-            console.log(
-              '🚜 MÁQUINAS DEL BACKEND:',
-              resp.data.maquinas
-            );
-
-          }
 
           // ==================================================
           // SIN CUOTAS
@@ -796,7 +958,9 @@ export class MatriculasList implements OnInit {
             );
 
             return;
+
           }
+
 
           // ==================================================
           // MOSTRAR PREVISUALIZACIÓN
@@ -807,6 +971,7 @@ export class MatriculasList implements OnInit {
           this.previewCuotasOpen = true;
 
           this.cd.detectChanges();
+
 
           console.log(
             '✅ Previsualización lista para mostrar.'
@@ -825,6 +990,7 @@ export class MatriculasList implements OnInit {
 
         },
 
+
         // ====================================================
         // ERROR
         // ====================================================
@@ -832,9 +998,18 @@ export class MatriculasList implements OnInit {
         error: (err: any) => {
 
           console.error('');
-          console.error('========================================');
-          console.error('❌ PREVISUALIZAR CUOTAS - ERROR');
-          console.error('========================================');
+
+          console.error(
+            '========================================'
+          );
+
+          console.error(
+            '❌ PREVISUALIZAR CUOTAS - ERROR'
+          );
+
+          console.error(
+            '========================================'
+          );
 
           console.error(
             'STATUS:',
@@ -860,12 +1035,15 @@ export class MatriculasList implements OnInit {
             '========================================'
           );
 
+
           this.previewCuotasLoading = false;
+
 
           this.previewCuotasError =
             err?.error?.message ||
             err?.error?.error ||
             'No se pudo generar la previsualización de cuotas.';
+
 
           Swal.fire({
 
@@ -880,12 +1058,15 @@ export class MatriculasList implements OnInit {
 
           });
 
+
           this.cd.detectChanges();
 
         }
 
       });
+
   }
+
 
   // ==========================================================
   // CERRAR PREVIEW
@@ -893,9 +1074,14 @@ export class MatriculasList implements OnInit {
 
   cerrarPreviewCuotas(): void {
 
-    if (this.previewCuotasLoading) {
+    if (
+      this.previewCuotasLoading
+    ) {
+
       return;
+
     }
+
 
     this.previewCuotasOpen = false;
 
@@ -907,8 +1093,16 @@ export class MatriculasList implements OnInit {
 
     this.previewCuotaInicial = null;
 
+    this.previewPrecio = null;
+
+    this.previewPlan = null;
+
+    this.previewMaquinas = [];
+
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // CAMBIO MODALIDAD PAGO
@@ -923,7 +1117,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // CAMBIO MONTO
@@ -938,7 +1134,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // CAMBIO CUOTA INICIAL
@@ -953,7 +1151,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // FORMATEAR MONTO
@@ -974,7 +1174,9 @@ export class MatriculasList implements OnInit {
         minimumFractionDigits: 2
       }
     );
+
   }
+
 
   // ==========================================================
   // NÚMERO CUOTA
@@ -993,7 +1195,9 @@ export class MatriculasList implements OnInit {
       index + 1
 
     );
+
   }
+
 
   // ==========================================================
   // FECHA CUOTA
@@ -1004,74 +1208,97 @@ export class MatriculasList implements OnInit {
   ): string | null {
 
     return (
+
       cuota.fecha_vencimiento ??
       cuota.fecha_pago ??
+      cuota.fecha_programada ??
       cuota.fecha ??
       null
+
     );
+
   }
 
-  getFechaCuotaInput(cuota: any): string {
 
-const fecha =
-this.getFechaCuota(cuota);
+  // ==========================================================
+  // FECHA INPUT
+  // ==========================================================
 
-if (!fecha) {
-return '';
-}
+  getFechaCuotaInput(
+    cuota: any
+  ): string {
 
-return fecha
-.split('T')[0];
-}
+    const fecha =
+      this.getFechaCuota(cuota);
 
-/**
+    if (!fecha) {
 
-Permite modificar manualmente
-la fecha de vencimiento de una cuota
-dentro de la previsualización.
-*/
-editarFechaCuota(
-cuota: any,
-nuevaFecha: string
-): void {
+      return '';
 
-if (!nuevaFecha) {
-return;
-}
+    }
 
-// Mantener el nombre de propiedad
-// que ya utiliza el backend.
-if (
-cuota.fecha_vencimiento !== undefined
-) {
+    return fecha
+      .split('T')[0];
 
-cuota.fecha_vencimiento =
-  nuevaFecha;
+  }
 
-} else if (
-cuota.fecha_pago !== undefined
-) {
 
-cuota.fecha_pago =
-  nuevaFecha;
+  // ==========================================================
+  // EDITAR FECHA DE CUOTA
+  // ==========================================================
 
-} else if (
-cuota.fecha !== undefined
-) {
+  editarFechaCuota(
+    cuota: any,
+    nuevaFecha: string
+  ): void {
 
-cuota.fecha =
-  nuevaFecha;
+    if (!nuevaFecha) {
 
-} else {
+      return;
 
-cuota.fecha_vencimiento =
-  nuevaFecha;
+    }
 
-}
 
-this.cd.detectChanges();
+    if (
+      cuota.fecha_vencimiento !== undefined
+    ) {
 
-}
+      cuota.fecha_vencimiento =
+        nuevaFecha;
+
+    } else if (
+      cuota.fecha_pago !== undefined
+    ) {
+
+      cuota.fecha_pago =
+        nuevaFecha;
+
+    } else if (
+      cuota.fecha_programada !== undefined
+    ) {
+
+      cuota.fecha_programada =
+        nuevaFecha;
+
+    } else if (
+      cuota.fecha !== undefined
+    ) {
+
+      cuota.fecha =
+        nuevaFecha;
+
+    } else {
+
+      cuota.fecha_vencimiento =
+        nuevaFecha;
+
+    }
+
+
+    this.cd.detectChanges();
+
+  }
+
 
   // ==========================================================
   // MONTO CUOTA
@@ -1090,7 +1317,9 @@ this.cd.detectChanges();
       0
 
     );
+
   }
+
 
   // ==========================================================
   // CERRAR MODAL
@@ -1099,7 +1328,9 @@ this.cd.detectChanges();
   cerrarModal(): void {
 
     if (this.saving) {
+
       return;
+
     }
 
     this.modalOpen = false;
@@ -1107,7 +1338,9 @@ this.cd.detectChanges();
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // PAGINACIÓN
@@ -1121,9 +1354,15 @@ this.cd.detectChanges();
         this.itemsPorPagina
       );
 
-    if (this.totalPaginas < 1) {
+
+    if (
+      this.totalPaginas < 1
+    ) {
+
       this.totalPaginas = 1;
+
     }
+
 
     if (
       this.paginaActual >
@@ -1135,13 +1374,18 @@ this.cd.detectChanges();
 
     }
 
+
     const inicio =
-      (this.paginaActual - 1) *
+      (
+        this.paginaActual - 1
+      ) *
       this.itemsPorPagina;
+
 
     const fin =
       inicio +
       this.itemsPorPagina;
+
 
     this.matriculasPaginadas =
       this.matriculas.slice(
@@ -1149,8 +1393,11 @@ this.cd.detectChanges();
         fin
       );
 
+
     this.cd.detectChanges();
+
   }
+
 
   cambiarPagina(
     pagina: number
@@ -1160,14 +1407,19 @@ this.cd.detectChanges();
       pagina < 1 ||
       pagina > this.totalPaginas
     ) {
+
       return;
+
     }
+
 
     this.paginaActual =
       pagina;
 
     this.actualizarPaginacion();
+
   }
+
 
   get paginas(): number[] {
 
@@ -1182,7 +1434,9 @@ this.cd.detectChanges();
         i + 1
 
     );
+
   }
+
 
   // ==========================================================
   // ALUMNOS FILTRADOS
@@ -1193,13 +1447,17 @@ this.cd.detectChanges();
     if (
       !this.txtBusquedaAlumno
     ) {
+
       return this.alumnos;
+
     }
+
 
     const busqueda =
       this.txtBusquedaAlumno
         .toLowerCase()
         .trim();
+
 
     return this.alumnos.filter(
       (a) => {
@@ -1216,6 +1474,7 @@ this.cd.detectChanges();
           a.dni?.toString() ??
           '';
 
+
         return (
           nombres.includes(busqueda) ||
           apellidos.includes(busqueda) ||
@@ -1224,7 +1483,9 @@ this.cd.detectChanges();
 
       }
     );
+
   }
+
 
   // ==========================================================
   // EDITAR MATRÍCULA
@@ -1239,8 +1500,9 @@ this.cd.detectChanges();
     this.matriculaEditandoId =
       matricula.id;
 
+
     // ========================================================
-    // NORMALIZAR FECHAS
+    // FECHAS
     // ========================================================
 
     const fechaMatricula =
@@ -1251,17 +1513,20 @@ this.cd.detectChanges();
           .toISOString()
           .slice(0, 10);
 
+
     const fechaInicio =
       matricula.fecha_inicio
         ? matricula.fecha_inicio
           .split('T')[0]
         : null;
 
+
     const fechaFin =
       matricula.fecha_fin_estimada
         ? matricula.fecha_fin_estimada
           .split('T')[0]
         : null;
+
 
     // ========================================================
     // FORMULARIO
@@ -1308,20 +1573,21 @@ this.cd.detectChanges();
 
     };
 
+
     this.modalOpen = true;
 
     this.cerrarPreviewCuotas();
 
-    /*
-     * Primero configuramos el selector según el plan.
-     * No debemos perder las máquinas que luego vienen
-     * desde el backend.
-     */
+
+    // ========================================================
+    // CONFIGURAR SELECTOR
+    // ========================================================
 
     this.actualizarSelectorMaquinas();
 
+
     // ========================================================
-    // CARGAR MÁQUINAS DE LA MATRÍCULA
+    // CARGAR MÁQUINAS
     // ========================================================
 
     this.matriculasService
@@ -1345,10 +1611,12 @@ this.cd.detectChanges();
                   !Number.isNaN(id)
               );
 
+
           this.form.maquinas_seleccionadas =
             [
               ...this.maquinasSeleccionadas
             ];
+
 
           this.cd.detectChanges();
 
@@ -1365,8 +1633,11 @@ this.cd.detectChanges();
 
       });
 
+
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // VALIDAR FORMULARIO
@@ -1376,7 +1647,10 @@ this.cd.detectChanges();
 
     const errores: string[] = [];
 
-    if (!this.form.alumno_id) {
+
+    if (
+      !this.form.alumno_id
+    ) {
 
       errores.push(
         'Debes seleccionar un alumno.'
@@ -1384,7 +1658,10 @@ this.cd.detectChanges();
 
     }
 
-    if (!this.form.plan_curso_id) {
+
+    if (
+      !this.form.plan_curso_id
+    ) {
 
       errores.push(
         'Debes seleccionar un plan de curso.'
@@ -1392,7 +1669,10 @@ this.cd.detectChanges();
 
     }
 
-    if (!this.form.estado_alumno_id) {
+
+    if (
+      !this.form.estado_alumno_id
+    ) {
 
       errores.push(
         'Debes seleccionar un estado.'
@@ -1400,13 +1680,17 @@ this.cd.detectChanges();
 
     }
 
-    if (!this.form.fecha_matricula) {
+
+    if (
+      !this.form.fecha_matricula
+    ) {
 
       errores.push(
         'La fecha de matrícula es obligatoria.'
       );
 
     }
+
 
     if (
       this.mostrarSelectorMaquinas &&
@@ -1420,8 +1704,11 @@ this.cd.detectChanges();
 
     }
 
+
     return errores;
+
   }
+
 
   // ==========================================================
   // GUARDAR MATRÍCULA
@@ -1431,6 +1718,7 @@ this.cd.detectChanges();
 
     const errores =
       this.validarFormulario();
+
 
     if (
       errores.length > 0
@@ -1455,7 +1743,23 @@ this.cd.detectChanges();
       });
 
       return;
+
     }
+
+
+    // ========================================================
+    // SINCRONIZAR MÁQUINAS
+    // ========================================================
+
+    this.form.maquinas_seleccionadas =
+      [
+        ...this.maquinasSeleccionadas
+      ];
+
+
+    // ========================================================
+    // PAYLOAD
+    // ========================================================
 
     const payload:
       MatriculaPayload = {
@@ -1503,9 +1807,15 @@ this.cd.detectChanges();
 
     };
 
+
+    // ========================================================
+    // GUARDAR
+    // ========================================================
+
     this.saving = true;
 
     this.cd.detectChanges();
+
 
     const request$ =
       this.modoModal === 'crear'
@@ -1519,6 +1829,7 @@ this.cd.detectChanges();
             payload
           );
 
+
     request$.subscribe({
 
       next: (
@@ -1528,6 +1839,7 @@ this.cd.detectChanges();
         const modo =
           this.modoModal;
 
+
         this.saving = false;
 
         this.modalOpen = false;
@@ -1535,6 +1847,7 @@ this.cd.detectChanges();
         this.cerrarPreviewCuotas();
 
         this.cd.detectChanges();
+
 
         Swal.fire({
 
@@ -1558,15 +1871,18 @@ this.cd.detectChanges();
 
         });
 
+
         this.cargarTodo();
 
       },
+
 
       error: (err: any) => {
 
         this.saving = false;
 
         this.cd.detectChanges();
+
 
         Swal.fire({
 
@@ -1586,7 +1902,9 @@ this.cd.detectChanges();
       }
 
     });
+
   }
+
 
   // ==========================================================
   // CAMBIO DE PLAN
@@ -1601,7 +1919,9 @@ this.cd.detectChanges();
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // CAMBIO FECHA INICIO
@@ -1609,17 +1929,12 @@ this.cd.detectChanges();
 
   onFechaInicioChange(): void {
 
-    /*
-     * La fecha de inicio es editable.
-     *
-     * Al cambiarla, la fecha fin se recalcula
-     * automáticamente según la duración del plan.
-     */
-
     this.recalcularFechaFin();
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // RECALCULAR FECHA FIN
@@ -1636,7 +1951,9 @@ this.cd.detectChanges();
         null;
 
       return;
+
     }
+
 
     const plan =
       this.planesCurso.find(
@@ -1645,18 +1962,22 @@ this.cd.detectChanges();
           Number(this.form.plan_curso_id)
       );
 
+
     if (!plan) {
 
       this.form.fecha_fin_estimada =
         null;
 
       return;
+
     }
+
 
     const meses =
       this.getDuracionMesesPorTipo(
         plan.tipo_curso_codigo
       );
+
 
     if (!meses) {
 
@@ -1664,14 +1985,18 @@ this.cd.detectChanges();
         null;
 
       return;
+
     }
+
 
     this.form.fecha_fin_estimada =
       this.calcularFechaFin(
         this.form.fecha_inicio,
         meses
       );
+
   }
+
 
   // ==========================================================
   // SELECTOR DE MÁQUINAS
@@ -1688,12 +2013,10 @@ this.cd.detectChanges();
     this.maquinasDisponibles =
       [];
 
+
     /*
-     * Solo limpiamos las máquinas cuando realmente
-     * estamos cambiando de plan / creando.
-     *
-     * En edición, las máquinas se vuelven a cargar
-     * desde listarMaquinas().
+     * Cuando se cambia el plan realmente debemos
+     * reiniciar las máquinas.
      */
 
     this.maquinasSeleccionadas =
@@ -1702,6 +2025,7 @@ this.cd.detectChanges();
     this.form.maquinas_seleccionadas =
       [];
 
+
     if (
       !this.form.plan_curso_id
     ) {
@@ -1709,7 +2033,9 @@ this.cd.detectChanges();
       this.cd.detectChanges();
 
       return;
+
     }
+
 
     const plan =
       this.planesCurso.find(
@@ -1718,12 +2044,15 @@ this.cd.detectChanges();
           Number(this.form.plan_curso_id)
       );
 
+
     if (!plan) {
 
       this.cd.detectChanges();
 
       return;
+
     }
+
 
     if (
       !plan.permite_eleccion_personalizada
@@ -1732,15 +2061,19 @@ this.cd.detectChanges();
       this.cd.detectChanges();
 
       return;
+
     }
+
 
     this.mostrarSelectorMaquinas =
       true;
+
 
     this.cantidadMaquinasRequeridas =
       this.getCantidadMaquinasPorTipo(
         plan.tipo_curso_codigo
       );
+
 
     const maquinasOrdenadas =
       [...this.maquinas].sort(
@@ -1748,6 +2081,7 @@ this.cd.detectChanges();
           (a.orden_visual ?? 999) -
           (b.orden_visual ?? 999)
       );
+
 
     this.maquinasDisponibles =
       this.esPlanMultipleConRegalo()
@@ -1760,11 +2094,14 @@ this.cd.detectChanges();
 
         : maquinasOrdenadas;
 
+
     this.cd.detectChanges();
+
   }
 
+
   // ==========================================================
-  // CANTIDAD MÁQUINAS POR PLAN
+  // CANTIDAD MÁQUINAS
   // ==========================================================
 
   getCantidadMaquinasPorTipo(
@@ -1791,7 +2128,9 @@ this.cd.detectChanges();
         return 0;
 
     }
+
   }
+
 
   // ==========================================================
   // TOGGLE MÁQUINA
@@ -1805,10 +2144,14 @@ this.cd.detectChanges();
     const input =
       event.target as HTMLInputElement;
 
+
     const id =
       Number(maquinaId);
 
-    if (input.checked) {
+
+    if (
+      input.checked
+    ) {
 
       if (
         this.maquinasSeleccionadas.length >=
@@ -1816,6 +2159,7 @@ this.cd.detectChanges();
       ) {
 
         input.checked = false;
+
 
         Swal.fire({
 
@@ -1831,8 +2175,11 @@ this.cd.detectChanges();
 
         });
 
+
         return;
+
       }
+
 
       if (
         !this.maquinasSeleccionadas
@@ -1855,15 +2202,23 @@ this.cd.detectChanges();
 
     }
 
+
     this.form.maquinas_seleccionadas =
       [
         ...this.maquinasSeleccionadas
       ];
 
+
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
+
   }
+
+
+  // ==========================================================
+  // MÁQUINA SELECCIONADA
+  // ==========================================================
 
   isMaquinaSeleccionada(
     maquinaId: number
@@ -1875,7 +2230,9 @@ this.cd.detectChanges();
           Number(id) ===
           Number(maquinaId)
       );
+
   }
+
 
   // ==========================================================
   // DURACIÓN DEL PLAN
@@ -1905,7 +2262,9 @@ this.cd.detectChanges();
         return 0;
 
     }
+
   }
+
 
   // ==========================================================
   // CALCULAR FECHA FIN
@@ -1923,6 +2282,7 @@ this.cd.detectChanges();
     ] =
       fechaInicio.split('-');
 
+
     const anio =
       Number(anioStr);
 
@@ -1932,12 +2292,14 @@ this.cd.detectChanges();
     const dia =
       Number(diaStr);
 
+
     const fecha =
       new Date(
         anio,
         mes - 1,
         dia
       );
+
 
     if (
       Number.isNaN(
@@ -1949,29 +2311,36 @@ this.cd.detectChanges();
 
     }
 
+
     fecha.setMonth(
       fecha.getMonth() +
       meses
     );
 
+
     const anioFinal =
       fecha.getFullYear();
+
 
     const mesFinal =
       String(
         fecha.getMonth() + 1
       ).padStart(2, '0');
 
+
     const diaFinal =
       String(
         fecha.getDate()
       ).padStart(2, '0');
 
+
     return `${anioFinal}-${mesFinal}-${diaFinal}`;
+
   }
 
+
   // ==========================================================
-  // NOMBRES
+  // NOMBRE ALUMNO
   // ==========================================================
 
   getNombreAlumno(
@@ -1985,10 +2354,17 @@ this.cd.detectChanges();
           Number(alumnoId)
       );
 
+
     return alumno
       ? `${alumno.nombres ?? ''} ${alumno.apellidos ?? ''}`.trim()
       : '-';
+
   }
+
+
+  // ==========================================================
+  // NOMBRE ESTADO
+  // ==========================================================
 
   getNombreEstado(
     estadoId: number
@@ -2001,9 +2377,16 @@ this.cd.detectChanges();
           Number(estadoId)
       );
 
+
     return estado?.nombre ??
       '-';
+
   }
+
+
+  // ==========================================================
+  // NOMBRE PLAN
+  // ==========================================================
 
   getNombrePlan(
     planId: number
@@ -2016,9 +2399,12 @@ this.cd.detectChanges();
           Number(planId)
       );
 
+
     return plan?.nombre ??
       '-';
+
   }
+
 
   // ==========================================================
   // TRACK BY
@@ -2030,7 +2416,9 @@ this.cd.detectChanges();
   ): number {
 
     return matricula.id;
+
   }
+
 
   // ==========================================================
   // PLAN MULTIPLE
@@ -2045,15 +2433,21 @@ this.cd.detectChanges();
           Number(this.form.plan_curso_id)
       );
 
+
     if (!plan) {
+
       return false;
+
     }
+
 
     return (
       plan.tipo_curso_codigo ===
       'MULTIPLE'
     );
+
   }
+
 
   // ==========================================================
   // ESTADOS DISPONIBLES
@@ -2063,11 +2457,14 @@ this.cd.detectChanges();
     EstadoAlumno[] {
 
     const permitidos = [
+
       'MATRICULADO',
       'EGRESADO',
       'RETIRADO',
       'RESERVA'
+
     ];
+
 
     return this.estadosAlumno.filter(
       (e) =>
@@ -2075,7 +2472,9 @@ this.cd.detectChanges();
           e.codigo
         )
     );
+
   }
+
 
   // ==========================================================
   // FORMATO FECHA
@@ -2086,14 +2485,19 @@ this.cd.detectChanges();
   ): string {
 
     if (!fecha) {
+
       return '-';
+
     }
+
 
     const soloFecha =
       fecha.split('T')[0];
 
+
     const partes =
       soloFecha.split('-');
+
 
     if (
       partes.length !== 3
@@ -2103,14 +2507,18 @@ this.cd.detectChanges();
 
     }
 
+
     const [
       anio,
       mes,
       dia
     ] = partes;
 
+
     return `${dia}/${mes}/${anio}`;
+
   }
+
 
   // ==========================================================
   // CLASE ESTADO
@@ -2126,6 +2534,7 @@ this.cd.detectChanges();
           Number(e.id) ===
           Number(estadoId)
       );
+
 
     switch (
       estado?.codigo
@@ -2147,7 +2556,9 @@ this.cd.detectChanges();
         return 'estado-badge';
 
     }
+
   }
+
 
   // ==========================================================
   // CAMBIAR ESTADO
@@ -2166,6 +2577,7 @@ this.cd.detectChanges();
       this.getNombreEstadoPorCodigo(
         codigoEstado
       );
+
 
     Swal.fire({
 
@@ -2190,8 +2602,11 @@ this.cd.detectChanges();
         if (
           !result.isConfirmed
         ) {
+
           return;
+
         }
+
 
         this.matriculasService
           .cambiarEstado(
@@ -2217,9 +2632,11 @@ this.cd.detectChanges();
 
               });
 
+
               this.cargarTodo();
 
             },
+
 
             error: (err: any) => {
 
@@ -2241,7 +2658,9 @@ this.cd.detectChanges();
 
       }
     );
+
   }
+
 
   // ==========================================================
   // NOMBRE ESTADO POR CÓDIGO
@@ -2252,13 +2671,41 @@ this.cd.detectChanges();
   ): string {
 
     return (
+
       this.estadosAlumno.find(
         (e) =>
           e.codigo === codigo
       )?.nombre ??
+
       codigo
+
     );
+
   }
+
+
+  // ==========================================================
+  // CÓDIGO ESTADO
+  // ==========================================================
+
+  getCodigoEstado(
+    estadoId: number
+  ): string {
+
+    return (
+
+      this.estadosAlumno.find(
+        (e) =>
+          Number(e.id) ===
+          Number(estadoId)
+      )?.codigo ??
+
+      ''
+
+    );
+
+  }
+
 
   // ==========================================================
   // PERMISOS
@@ -2273,7 +2720,9 @@ this.cd.detectChanges();
         estadoId
       ) === 'MATRICULADO'
     );
+
   }
+
 
   puedeEgresar(
     estadoId: number
@@ -2284,7 +2733,9 @@ this.cd.detectChanges();
         estadoId
       ) === 'MATRICULADO'
     );
+
   }
+
 
   puedeReservar(
     estadoId: number
@@ -2295,7 +2746,9 @@ this.cd.detectChanges();
         estadoId
       ) === 'MATRICULADO'
     );
+
   }
+
 
   puedeActivarMatricula(
     estadoId: number
@@ -2306,26 +2759,17 @@ this.cd.detectChanges();
         estadoId
       );
 
+
     return [
+
       'RETIRADO',
       'RESERVA',
       'EGRESADO'
+
     ].includes(codigo);
+
   }
 
-  getCodigoEstado(
-    estadoId: number
-  ): string {
-
-    return (
-      this.estadosAlumno.find(
-        (e) =>
-          Number(e.id) ===
-          Number(estadoId)
-      )?.codigo ??
-      ''
-    );
-  }
 
   // ==========================================================
   // VISTAS
@@ -2337,18 +2781,24 @@ this.cd.detectChanges();
       this.vistaActual ===
       'MATRICULADO'
     );
+
   }
+
 
   esVistaNoActiva(): boolean {
 
     return [
+
       'RETIRADO',
       'RESERVA',
       'EGRESADO'
+
     ].includes(
       this.vistaActual
     );
+
   }
+
 
   puedeEditar(): boolean {
 
@@ -2356,12 +2806,16 @@ this.cd.detectChanges();
       this.vistaActual ===
       'MATRICULADO'
     );
+
   }
+
 
   puedeVer(): boolean {
 
     return true;
+
   }
+
 
   puedeMostrarAccionesDeActiva(): boolean {
 
@@ -2369,18 +2823,24 @@ this.cd.detectChanges();
       this.vistaActual ===
       'MATRICULADO'
     );
+
   }
+
 
   puedeMostrarActivar(): boolean {
 
     return [
+
       'RETIRADO',
       'RESERVA',
       'EGRESADO'
+
     ].includes(
       this.vistaActual
     );
+
   }
+
 
   // ==========================================================
   // DESCARGAR CRONOGRAMA
@@ -2391,12 +2851,10 @@ this.cd.detectChanges();
   ): void {
 
     console.log(
-      'MATRICULA COMPLETA'
-    );
-
-    console.log(
+      'MATRÍCULA COMPLETA',
       matricula
     );
+
 
     this.matriculaPdfService
       .generarCronogramaPDF(
@@ -2412,7 +2870,9 @@ this.cd.detectChanges();
         )
 
       );
+
   }
+
 
   // ==========================================================
   // BÚSQUEDA
@@ -2428,10 +2888,12 @@ this.cd.detectChanges();
         .toLowerCase()
         .trim();
 
+
     let filtradas =
       [
         ...this.matriculasOriginal
       ];
+
 
     // ========================================================
     // TEXTO
@@ -2449,6 +2911,7 @@ this.cd.detectChanges();
               )
                 .toLowerCase();
 
+
             const alumnoData =
               this.alumnos.find(
                 (a) =>
@@ -2456,11 +2919,13 @@ this.cd.detectChanges();
                   Number(m.alumno_id)
               );
 
+
             const dni =
               alumnoData?.dni
                 ?.toString()
                 .toLowerCase() ??
               '';
+
 
             return (
               alumno.includes(texto) ||
@@ -2471,6 +2936,7 @@ this.cd.detectChanges();
         );
 
     }
+
 
     // ========================================================
     // AÑO
@@ -2487,17 +2953,22 @@ this.cd.detectChanges();
             if (
               !m.fecha_matricula
             ) {
+
               return false;
+
             }
+
 
             const fecha =
               m.fecha_matricula
                 .split('T')[0];
 
+
             const anio =
               Number(
                 fecha.split('-')[0]
               );
+
 
             return (
               anio ===
@@ -2508,6 +2979,7 @@ this.cd.detectChanges();
         );
 
     }
+
 
     // ========================================================
     // MES
@@ -2524,17 +2996,22 @@ this.cd.detectChanges();
             if (
               !m.fecha_matricula
             ) {
+
               return false;
+
             }
+
 
             const fecha =
               m.fecha_matricula
                 .split('T')[0];
 
+
             const mes =
               Number(
                 fecha.split('-')[1]
               );
+
 
             return (
               mes ===
@@ -2546,6 +3023,7 @@ this.cd.detectChanges();
 
     }
 
+
     // ========================================================
     // ACTUALIZAR
     // ========================================================
@@ -2553,12 +3031,16 @@ this.cd.detectChanges();
     this.matriculas =
       filtradas;
 
+
     this.paginaActual = 1;
+
 
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
+
   }
+
 
   // ==========================================================
   // LIMPIAR FILTROS
@@ -2574,15 +3056,21 @@ this.cd.detectChanges();
 
     this.mesFiltro = null;
 
+
     this.matriculas =
       [
         ...this.matriculasOriginal
       ];
 
+
     this.paginaActual = 1;
+
 
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
+
   }
+
 }
+
