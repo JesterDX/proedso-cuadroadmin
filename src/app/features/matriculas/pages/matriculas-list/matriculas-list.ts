@@ -43,6 +43,9 @@ export class MatriculasList implements OnInit {
   tituloVista = 'Matrículas activas';
   matriculas: Matricula[] = [];
   matriculasOriginal: Matricula[] = [];
+  mostrarPrevisualizacionCuotas = false;
+  cuotasPrevisualizadas: any[] = [];
+  cargandoPrevisualizacion = false;
   paginaActual = 1;
   itemsPorPagina = 10;
   totalPaginas = 1;
