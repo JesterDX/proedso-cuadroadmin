@@ -130,7 +130,9 @@ export class MatriculasList implements OnInit {
       fecha_fin_estimada: null,
       notas: '',
       maquinas_seleccionadas: [],
-      modalidad_pago: 'MENSUAL'
+      modalidad_pago: 'MENSUAL',
+      monto_total: null,
+      cuota_inicial: null
     };
   }
 
@@ -256,33 +258,33 @@ export class MatriculasList implements OnInit {
     this.previewCuotasLoading = true;
     this.previewCuotasError = '';
     this.previewCuotas = [];
-  
+      
     const payload = {
       plan_curso_id: this.form.plan_curso_id,
       fecha_matricula: this.form.fecha_matricula,
-      monto_total: this.previewMontoTotal,
-      cuota_inicial: this.previewCuotaInicial
+      monto_total: this.form.monto_total,
+      cuota_inicial: this.form.cuota_inicial,
+      modalidad_pago: this.form.modalidad_pago
     };
-  
     this.matriculasService.previsualizarCuotas(payload).subscribe({
-  
+        
       next: (resp: ApiResponse<any>) => {
-  
-        this.previewCuotasLoading = false;
-  
-        this.previewCuotas = resp.data ?? [];
-  
-        if (this.previewCuotas.length === 0) {
+      
+        this.cargandoPrevisualizacion = false;
+      
+        this.cuotasPrevisualizadas = resp.data ?? [];
+      
+        if (this.cuotasPrevisualizadas.length === 0) {
           this.previewCuotasError =
             'No se pudieron generar cuotas para los datos seleccionados.';
           return;
         }
-  
-        this.previewCuotasOpen = true;
-  
+      
+        this.mostrarPrevisualizacionCuotas = true;
+      
         this.cd.detectChanges();
-      },
-  
+      }
+        
       error: (err: any) => {
   
         this.previewCuotasLoading = false;
@@ -312,6 +314,16 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
   }
   
+  onModalidadPagoChange(): void {
+    this.mostrarPrevisualizacionCuotas = false;
+    this.cuotasPrevisualizadas = [];
+    this.cd.detectChanges();
+  }
+  onMontoPagoChange(): void {
+  this.mostrarPrevisualizacionCuotas = false;
+  this.cuotasPrevisualizadas = [];
+  this.cd.detectChanges();
+}  
   formatMonto(valor: number | string | null | undefined): string {
   
     const numero = Number(valor ?? 0);
