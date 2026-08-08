@@ -1,1617 +1,1471 @@
-<div class="matriculas-container">
+<div class="matriculas-page">
 
-  <!-- =========================================================
+  <!-- =====================================================
        HEADER
-  ========================================================== -->
+  ====================================================== -->
 
   <div class="page-header">
 
-```
-<div>
-  <h1>{{ tituloVista }}</h1>
+    <div class="page-header__info">
 
-  <p>
-    Gestión y consulta de matrículas registradas.
-  </p>
-</div>
+      <h1>{{ tituloVista }}</h1>
 
-<button
-  *ngIf="esVistaActiva()"
-  type="button"
-  class="btn-primary"
-  (click)="abrirModalCrear()">
+      <p>
+        Gestión y consulta de matrículas registradas.
+      </p>
 
-  + Nueva matrícula
+    </div>
 
-</button>
-```
+    <button
+      *ngIf="esVistaActiva()"
+      type="button"
+      class="btn-primary"
+      (click)="abrirModalCrear()">
+
+      + Nueva matrícula
+
+    </button>
 
   </div>
 
-  <!-- =========================================================
+
+  <!-- =====================================================
        FILTROS
-  ========================================================== -->
+  ====================================================== -->
 
-  <div class="filters-container">
+  <div class="filters-card">
 
-```
-<input
-  type="text"
-  [(ngModel)]="search"
-  (ngModelChange)="onSearchChange()"
-  placeholder="Buscar por DNI, nombre o apellido" />
+    <div class="filters-row">
 
+      <div class="filter-group filter-group--search">
 
-<select
-  [(ngModel)]="anioFiltro"
-  (ngModelChange)="buscar()">
+        <label>
+          Buscar
+        </label>
 
-  <option [ngValue]="null">
-    Todos los años
-  </option>
+        <input
+          type="text"
+          [(ngModel)]="search"
+          (ngModelChange)="onSearchChange()"
+          placeholder="Buscar por DNI, nombre o apellido" />
 
-  <option
-    *ngFor="let anio of aniosDisponibles"
-    [ngValue]="anio">
-
-    {{ anio }}
-
-  </option>
-
-</select>
+      </div>
 
 
-<select
-  [(ngModel)]="mesFiltro"
-  (ngModelChange)="buscar()">
+      <div class="filter-group">
 
-  <option [ngValue]="null">
-    Todos los meses
-  </option>
+        <label>
+          Año
+        </label>
 
-  <option
-    *ngFor="let mes of mesesDisponibles"
-    [ngValue]="mes.value">
+        <select
+          [(ngModel)]="anioFiltro"
+          (ngModelChange)="buscar()">
 
-    {{ mes.label }}
+          <option [ngValue]="null">
+            Todos los años
+          </option>
 
-  </option>
+          <option
+            *ngFor="let anio of aniosDisponibles"
+            [ngValue]="anio">
 
-</select>
+            {{ anio }}
+
+          </option>
+
+        </select>
+
+      </div>
 
 
-<button
-  type="button"
-  class="btn-light"
-  (click)="limpiarFiltros()">
+      <div class="filter-group">
 
-  Limpiar
+        <label>
+          Mes
+        </label>
 
-</button>
-```
+        <select
+          [(ngModel)]="mesFiltro"
+          (ngModelChange)="buscar()">
+
+          <option [ngValue]="null">
+            Todos los meses
+          </option>
+
+          <option
+            *ngFor="let mes of mesesDisponibles"
+            [ngValue]="mes.value">
+
+            {{ mes.label }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button
+          type="button"
+          class="btn-light"
+          (click)="limpiarFiltros()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
-  <!-- =========================================================
-       LOADING
-  ========================================================== -->
+
+  <!-- =====================================================
+       ESTADOS
+  ====================================================== -->
 
   <div
     class="loading-state"
     *ngIf="loading">
 
-```
-Cargando información de matrículas...
-```
+    Cargando información de matrículas...
 
   </div>
 
-  <!-- =========================================================
-       ERROR
-  ========================================================== -->
 
   <div
-    class="error-message"
-    *ngIf="errorMsg">
+    class="error-state"
+    *ngIf="errorMsg && !loading">
 
-```
-{{ errorMsg }}
-```
+    {{ errorMsg }}
 
   </div>
 
-  <!-- =========================================================
+
+  <!-- =====================================================
        RESUMEN
-  ========================================================== -->
+  ====================================================== -->
 
-  <div class="summary-grid">
+  <div
+    class="summary-grid"
+    *ngIf="!loading">
 
-```
-<div class="summary-card">
+    <div class="summary-card">
 
-  <span class="summary-label">
-    Alumnos activos
-  </span>
+      <span class="summary-label">
+        Alumnos activos
+      </span>
 
-  <strong>
-    {{ alumnos.length }}
-  </strong>
+      <strong>
+        {{ alumnos.length }}
+      </strong>
 
-</div>
-
-
-<div class="summary-card">
-
-  <span class="summary-label">
-    Planes de curso
-  </span>
-
-  <strong>
-    {{ planesCurso.length }}
-  </strong>
-
-</div>
+    </div>
 
 
-<div class="summary-card">
+    <div class="summary-card">
 
-  <span class="summary-label">
-    Matrículas
-  </span>
+      <span class="summary-label">
+        Planes de curso
+      </span>
 
-  <strong>
-    {{ matriculas.length }}
-  </strong>
+      <strong>
+        {{ planesCurso.length }}
+      </strong>
 
-</div>
-```
+    </div>
+
+
+    <div class="summary-card">
+
+      <span class="summary-label">
+        Matrículas
+      </span>
+
+      <strong>
+        {{ matriculas.length }}
+      </strong>
+
+    </div>
 
   </div>
 
-  <!-- =========================================================
+
+  <!-- =====================================================
        TABLA
-  ========================================================== -->
+  ====================================================== -->
 
-  <div class="table-container">
+  <div class="table-card">
 
-```
-<table>
+    <div class="table-wrapper">
 
-  <thead>
+      <table>
 
-    <tr>
+        <thead>
 
-      <th>ID</th>
+          <tr>
 
-      <th>
-        Alumno
-      </th>
+            <th>ID</th>
 
-      <th>
-        Plan de curso
-      </th>
+            <th>
+              Alumno
+            </th>
 
-      <th>
-        Estado
-      </th>
+            <th>
+              Plan de curso
+            </th>
 
-      <th>
-        Fecha matrícula
-      </th>
+            <th>
+              Estado
+            </th>
 
-      <th>
-        Fecha inicio
-      </th>
+            <th>
+              Fecha matrícula
+            </th>
 
-      <th>
-        Fecha fin estimada
-      </th>
+            <th>
+              Fecha inicio
+            </th>
 
-      <th>
-        Acciones
-      </th>
+            <th>
+              Fecha fin estimada
+            </th>
 
-    </tr>
+            <th>
+              Acciones
+            </th>
 
-  </thead>
+          </tr>
 
-
-  <tbody>
-
-    <!-- =====================================================
-         FILAS
-    ====================================================== -->
-
-    <tr
-      *ngFor="
-        let matricula of matriculasPaginadas;
-        trackBy: trackByMatriculaId
-      ">
-
-      <td>
-        {{ matricula.id }}
-      </td>
+        </thead>
 
 
-      <td>
-        {{ getNombreAlumno(matricula.alumno_id) }}
-      </td>
+        <tbody>
 
-
-      <td>
-        {{ getNombrePlan(matricula.plan_curso_id) }}
-      </td>
-
-
-      <td>
-
-        <span
-          [class]="
-            getClaseEstado(
-              matricula.estado_alumno_id
-            )
-          ">
-
-          {{
-            getNombreEstado(
-              matricula.estado_alumno_id
-            )
-          }}
-
-        </span>
-
-      </td>
-
-
-      <td>
-        {{
-          formatFechaVista(
-            matricula.fecha_matricula
-          )
-        }}
-      </td>
-
-
-      <td>
-        {{
-          formatFechaVista(
-            matricula.fecha_inicio
-          )
-        }}
-      </td>
-
-
-      <td>
-        {{
-          formatFechaVista(
-            matricula.fecha_fin_estimada
-          )
-        }}
-      </td>
-
-
-      <!-- =================================================
-           ACCIONES
-      ================================================== -->
-
-      <td>
-
-        <div class="table-actions">
-
-          <!-- VER FICHA -->
-
-          <a
-            [routerLink]="[
-              '/matriculas',
-              matricula.id
-            ]"
-            class="btn-table btn-view btn-view--pro">
-
-            <span class="btn-view__icon">
-              👁
-            </span>
-
-            <span class="btn-view__text">
-              Ver ficha
-            </span>
-
-          </a>
-
-
-          <!-- EDITAR -->
-
-          <button
-            *ngIf="puedeEditar()"
-            type="button"
-            class="btn-table btn-edit"
-            (click)="
-              abrirModalEditar(
-                matricula
-              )
+          <tr
+            *ngFor="
+              let matricula of matriculasPaginadas;
+              trackBy: trackByMatriculaId
             ">
 
-            Editar
+            <td>
+              {{ matricula.id }}
+            </td>
 
-          </button>
+
+            <td>
+
+              <div class="student-cell">
+
+                <strong>
+                  {{ getNombreAlumno(matricula.alumno_id) }}
+                </strong>
+
+              </div>
+
+            </td>
 
 
-          <!-- RETIRAR -->
+            <td>
+              {{ getNombrePlan(matricula.plan_curso_id) }}
+            </td>
 
-          <button
+
+            <td>
+
+              <span
+                [class]="
+                  getClaseEstado(
+                    matricula.estado_alumno_id
+                  )
+                ">
+
+                {{
+                  getNombreEstado(
+                    matricula.estado_alumno_id
+                  )
+                }}
+
+              </span>
+
+            </td>
+
+
+            <td>
+              {{
+                formatFechaVista(
+                  matricula.fecha_matricula
+                )
+              }}
+            </td>
+
+
+            <td>
+              {{
+                formatFechaVista(
+                  matricula.fecha_inicio
+                )
+              }}
+            </td>
+
+
+            <td>
+              {{
+                formatFechaVista(
+                  matricula.fecha_fin_estimada
+                )
+              }}
+            </td>
+
+
+            <td>
+
+              <div class="table-actions">
+
+                <a
+                  [routerLink]="[
+                    '/matriculas',
+                    matricula.id
+                  ]"
+                  class="btn-table btn-view btn-view--pro">
+
+                  <span class="btn-view__icon">
+                    👁
+                  </span>
+
+                  <span class="btn-view__text">
+                    Ver ficha
+                  </span>
+
+                </a>
+
+
+                <button
+                  *ngIf="puedeEditar()"
+                  type="button"
+                  class="btn-table btn-edit"
+                  (click)="
+                    abrirModalEditar(
+                      matricula
+                    )
+                  ">
+
+                  Editar
+
+                </button>
+
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeRetirar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-retire"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'RETIRADO'
+                    )
+                  ">
+
+                  Retirar
+
+                </button>
+
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeEgresar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-success"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'EGRESADO'
+                    )
+                  ">
+
+                  Egresar
+
+                </button>
+
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeReservar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-warning"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'RESERVA'
+                    )
+                  ">
+
+                  Reserva
+
+                </button>
+
+
+                <button
+                  *ngIf="puedeMostrarActivar()"
+                  type="button"
+                  class="btn-table btn-activate"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'MATRICULADO'
+                    )
+                  ">
+
+                  Activar matrícula
+
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+
+          <tr
             *ngIf="
-              puedeMostrarAccionesDeActiva() &&
-              puedeRetirar(
-                matricula.estado_alumno_id
-              )
-            "
-            type="button"
-            class="btn-table btn-retire"
-            (click)="
-              cambiarEstadoMatricula(
-                matricula,
-                'RETIRADO'
-              )
+              matriculas.length === 0 &&
+              !loading
             ">
 
-            Retirar
+            <td
+              colspan="8"
+              class="empty-cell">
 
-          </button>
+              Aún no hay matrículas registradas.
 
+            </td>
 
-          <!-- EGRESAR -->
+          </tr>
 
-          <button
-            *ngIf="
-              puedeMostrarAccionesDeActiva() &&
-              puedeEgresar(
-                matricula.estado_alumno_id
-              )
-            "
-            type="button"
-            class="btn-table btn-success"
-            (click)="
-              cambiarEstadoMatricula(
-                matricula,
-                'EGRESADO'
-              )
-            ">
+        </tbody>
 
-            Egresar
+      </table>
 
-          </button>
-
-
-          <!-- RESERVA -->
-
-          <button
-            *ngIf="
-              puedeMostrarAccionesDeActiva() &&
-              puedeReservar(
-                matricula.estado_alumno_id
-              )
-            "
-            type="button"
-            class="btn-table btn-warning"
-            (click)="
-              cambiarEstadoMatricula(
-                matricula,
-                'RESERVA'
-              )
-            ">
-
-            Reserva
-
-          </button>
-
-
-          <!-- ACTIVAR -->
-
-          <button
-            *ngIf="puedeMostrarActivar()"
-            type="button"
-            class="btn-table btn-activate"
-            (click)="
-              cambiarEstadoMatricula(
-                matricula,
-                'MATRICULADO'
-              )
-            ">
-
-            Activar matrícula
-
-          </button>
-
-        </div>
-
-      </td>
-
-    </tr>
-
-
-    <!-- =====================================================
-         SIN DATOS
-    ====================================================== -->
-
-    <tr
-      *ngIf="
-        matriculas.length === 0 &&
-        !loading
-      ">
-
-      <td
-        colspan="8"
-        class="empty-cell">
-
-        Aún no hay matrículas registradas.
-
-      </td>
-
-    </tr>
-
-  </tbody>
-
-</table>
-```
+    </div>
 
   </div>
 
-  <!-- =========================================================
+
+  <!-- =====================================================
        PAGINACIÓN
-  ========================================================== -->
+  ====================================================== -->
 
   <div
     class="pagination"
-    *ngIf="totalPaginas > 1">
+    *ngIf="
+      !loading &&
+      matriculas.length > 0
+    ">
 
-```
-<button
-  type="button"
-  class="page-btn"
-  (click)="
-    cambiarPagina(
-      paginaActual - 1
-    )
-  "
-  [disabled]="paginaActual === 1">
+    <button
+      type="button"
+      class="page-btn"
+      (click)="
+        cambiarPagina(
+          paginaActual - 1
+        )
+      "
+      [disabled]="paginaActual === 1">
 
-  ←
+      ←
 
-</button>
-
-
-<button
-  *ngFor="let pagina of paginas"
-  type="button"
-  class="page-number"
-  [class.active]="
-    pagina === paginaActual
-  "
-  (click)="
-    cambiarPagina(
-      pagina
-    )
-  ">
-
-  {{ pagina }}
-
-</button>
+    </button>
 
 
-<button
-  type="button"
-  class="page-btn"
-  (click)="
-    cambiarPagina(
-      paginaActual + 1
-    )
-  "
-  [disabled]="
-    paginaActual === totalPaginas
-  ">
+    <button
+      *ngFor="let pagina of paginas"
+      type="button"
+      class="page-number"
+      [class.active]="
+        pagina === paginaActual
+      "
+      (click)="
+        cambiarPagina(
+          pagina
+        )
+      ">
 
-  →
+      {{ pagina }}
 
-</button>
-```
+    </button>
+
+
+    <button
+      type="button"
+      class="page-btn"
+      (click)="
+        cambiarPagina(
+          paginaActual + 1
+        )
+      "
+      [disabled]="
+        paginaActual === totalPaginas
+      ">
+
+      →
+
+    </button>
 
   </div>
 
 </div>
 
-<!-- ===========================================================
-     MODAL NUEVA / EDITAR MATRÍCULA
-============================================================ -->
+
+<!-- =======================================================
+     MODAL
+======================================================== -->
 
 <div
   class="modal-overlay"
   *ngIf="modalOpen"
   (click)="cerrarModal()">
 
+
   <div
-    class="modal-card modal-card--split"
+    class="modal-container"
     (click)="$event.stopPropagation()">
 
-```
-<!-- =======================================================
-     PANEL LATERAL
-======================================================== -->
 
-<div class="modal-side">
+    <!-- ===================================================
+         PANEL LATERAL
+    ==================================================== -->
 
+    <div class="modal-side">
 
-  <!-- HEADER LATERAL -->
+      <div class="modal-side__top">
 
-  <div class="modal-side__top">
+        <h2>
 
-    <h2>
+          {{
+            modoModal === 'crear'
+              ? 'Nueva matrícula'
+              : 'Editar matrícula'
+          }}
 
-      {{
-        modoModal === 'crear'
-          ? 'Nueva matrícula'
-          : 'Editar matrícula'
-      }}
+        </h2>
 
-    </h2>
+        <p>
 
+          {{
+            modoModal === 'crear'
+              ? 'Completa la información académica del alumno.'
+              : 'Actualiza la información de la matrícula.'
+          }}
 
-    <p>
-
-      {{
-        modoModal === 'crear'
-          ? 'Completa la información académica del alumno.'
-          : 'Actualiza la información de la matrícula.'
-      }}
-
-    </p>
-
-  </div>
-
-
-  <!-- =====================================================
-       RESUMEN LATERAL
-  ====================================================== -->
-
-  <div class="side-summary">
-
-
-    <!-- PLAN -->
-
-    <div class="side-summary__item">
-
-      <span class="side-summary__label">
-        Plan seleccionado
-      </span>
-
-      <strong>
-
-        {{
-          getNombrePlan(
-            form.plan_curso_id || 0
-          ) || 'Sin seleccionar'
-        }}
-
-      </strong>
-
-    </div>
-
-
-    <!-- MÁQUINAS -->
-
-    <div
-      class="side-summary__item"
-      *ngIf="
-        cantidadMaquinasRequeridas > 0
-      ">
-
-      <span class="side-summary__label">
-        Máquinas requeridas
-      </span>
-
-      <strong>
-
-        {{ cantidadMaquinasRequeridas }}
-
-      </strong>
-
-    </div>
-
-
-    <!-- FECHA FIN -->
-
-    <div
-      class="side-summary__item"
-      *ngIf="
-        form.fecha_fin_estimada
-      ">
-
-      <span class="side-summary__label">
-        Fin estimado
-      </span>
-
-      <strong>
-
-        {{
-          formatFechaVista(
-            form.fecha_fin_estimada
-          )
-        }}
-
-      </strong>
-
-    </div>
-
-
-    <!-- REGALO -->
-
-    <div
-      class="side-note"
-      *ngIf="
-        esPlanMultipleConRegalo()
-      ">
-
-      Este plan incluye
-
-      <strong>
-        Camioneta
-      </strong>
-
-      como regalo.
-
-    </div>
-
-
-    <!-- MÁQUINAS -->
-
-    <div
-      class="side-note"
-      *ngIf="
-        mostrarSelectorMaquinas
-      ">
-
-      Selecciona exactamente
-
-      <strong>
-        {{ cantidadMaquinasRequeridas }}
-      </strong>
-
-      máquina(s).
-
-    </div>
-
-
-    <!-- =================================================
-         PREVISUALIZACIÓN DE CUOTAS
-    ================================================== -->
-
-    <div
-      class="side-note side-note--payment"
-      *ngIf="
-        mostrarPrevisualizacionCuotas &&
-        cuotasPrevisualizadas.length > 0
-      ">
-
-      <strong>
-        Vista previa de cuotas
-      </strong>
-
-
-      <div class="payment-preview">
-
-
-        <!-- CABECERA -->
-
-        <div
-          class="payment-preview__header">
-
-          <span>
-            Cuota
-          </span>
-
-          <span>
-            Importe
-          </span>
-
-        </div>
-
-
-        <!-- CUOTAS -->
-
-        <div
-          class="payment-preview__row"
-          *ngFor="
-            let cuota of cuotasPrevisualizadas;
-            let i = index
-          ">
-
-          <span>
-
-            Cuota
-            {{ getNumeroCuota(cuota, i) }}
-
-          </span>
-
-
-          <strong>
-
-            {{
-              formatMonto(
-                getMontoCuota(cuota)
-              )
-            }}
-
-          </strong>
-
-        </div>
-
-
-        <!-- TOTAL -->
-
-        <div
-          class="
-            payment-preview__row
-            payment-preview__row--total
-          ">
-
-          <span>
-            Total
-          </span>
-
-          <strong>
-
-            {{
-              formatMonto(
-                totalPreviewCuotas
-              )
-            }}
-
-          </strong>
-
-        </div>
+        </p>
 
       </div>
 
-    </div>
 
+      <div class="side-summary">
 
-    <!-- CARGANDO CUOTAS -->
+        <div class="side-summary__item">
 
-    <div
-      class="payment-preview__loading"
-      *ngIf="
-        cargandoPrevisualizacion
-      ">
+          <span class="side-summary__label">
+            Plan seleccionado
+          </span>
 
-      Calculando cuotas...
+          <strong>
 
-    </div>
+            {{
+              getNombrePlan(
+                form.plan_curso_id || 0
+              ) || 'Sin seleccionar'
+            }}
 
-
-    <!-- ERROR CUOTAS -->
-
-    <div
-      class="payment-preview__error"
-      *ngIf="
-        previewCuotasError &&
-        !cargandoPrevisualizacion
-      ">
-
-      {{ previewCuotasError }}
-
-    </div>
-
-
-  </div>
-
-</div>
-
-
-<!-- =======================================================
-     CONTENIDO PRINCIPAL
-======================================================== -->
-
-<div class="modal-main">
-
-
-  <!-- HEADER -->
-
-  <div
-    class="
-      modal-header
-      modal-header--main
-    ">
-
-    <div>
-
-      <h2>
-        Datos principales
-      </h2>
-
-      <p>
-        Configura la matrícula del alumno
-        y el plan de curso.
-      </p>
-
-    </div>
-
-
-    <button
-      type="button"
-      class="btn-close"
-      (click)="cerrarModal()">
-
-      ×
-
-    </button>
-
-  </div>
-
-
-  <!-- =====================================================
-       BODY
-  ====================================================== -->
-
-  <div class="modal-body">
-
-    <div class="section-card">
-
-      <div class="form-grid">
-
-
-        <!-- =================================================
-             ALUMNO
-        ================================================== -->
-
-        <div
-          class="form-field full-width">
-
-          <label>
-            Alumno *
-          </label>
-
-
-          <div
-            class="search-select-container"
-            style="margin-bottom: 8px;">
-
-            <input
-              type="text"
-              [(ngModel)]="
-                txtBusquedaAlumno
-              "
-              placeholder="
-                Escribe nombre o DNI para filtrar...
-              "
-              class="form-control-search"
-              style="
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-              " />
-
-          </div>
-
-
-          <select
-            [(ngModel)]="
-              form.alumno_id
-            ">
-
-            <option
-              [ngValue]="null">
-
-              {{
-                alumnosFiltrados.length === 0
-                  ? 'No se encontraron coincidencias'
-                  : 'Seleccionar alumno'
-              }}
-
-            </option>
-
-
-            <option
-              *ngFor="
-                let alumno of alumnosFiltrados
-              "
-              [ngValue]="alumno.id">
-
-              {{ alumno.nombres }}
-              {{ alumno.apellidos }}
-              -
-              {{ alumno.dni }}
-
-            </option>
-
-          </select>
-
-
-          <small
-            class="field-help"
-            *ngIf="
-              txtBusquedaAlumno
-            ">
-
-            Mostrando
-
-            {{ alumnosFiltrados.length }}
-
-            de
-
-            {{ alumnos.length }}
-
-            alumnos.
-
-          </small>
+          </strong>
 
         </div>
 
 
-        <!-- =================================================
-             PLAN
-        ================================================== -->
-
         <div
-          class="form-field">
+          class="side-summary__item"
+          *ngIf="
+            cantidadMaquinasRequeridas > 0
+          ">
 
-          <label>
-            Plan de curso *
-          </label>
+          <span class="side-summary__label">
+            Máquinas requeridas
+          </span>
 
+          <strong>
 
-          <select
-            [(ngModel)]="
-              form.plan_curso_id
-            "
-            (ngModelChange)="
-              onPlanChange()
-            ">
+            {{ cantidadMaquinasRequeridas }}
 
-            <option
-              [ngValue]="null">
-
-              Seleccionar plan
-
-            </option>
-
-
-            <option
-              *ngFor="
-                let plan of planesCurso
-              "
-              [ngValue]="plan.id">
-
-              {{ plan.nombre }}
-
-            </option>
-
-          </select>
+          </strong>
 
         </div>
 
 
-        <!-- =================================================
-             ESTADO
-        ================================================== -->
-
         <div
-          class="form-field">
+          class="side-summary__item"
+          *ngIf="
+            form.fecha_fin_estimada
+          ">
 
-          <label>
-            Estado del alumno *
-          </label>
+          <span class="side-summary__label">
+            Fin estimado
+          </span>
 
+          <strong>
 
-          <select
-            [(ngModel)]="
-              form.estado_alumno_id
-            ">
+            {{
+              formatFechaVista(
+                form.fecha_fin_estimada
+              )
+            }}
 
-            <option
-              [ngValue]="null">
-
-              Seleccionar estado
-
-            </option>
-
-
-            <option
-              *ngFor="
-                let estado of
-                estadosMatriculaDisponibles
-              "
-              [ngValue]="estado.id">
-
-              {{ estado.nombre }}
-
-            </option>
-
-          </select>
+          </strong>
 
         </div>
 
 
-        <!-- =================================================
-             MÁQUINAS
-        ================================================== -->
+        <div
+          class="side-note"
+          *ngIf="
+            esPlanMultipleConRegalo()
+          ">
+
+          Este plan incluye
+
+          <strong>
+            Camioneta
+          </strong>
+
+          como regalo.
+
+        </div>
+
 
         <div
-          class="form-field full-width"
+          class="side-note"
           *ngIf="
             mostrarSelectorMaquinas
           ">
 
-          <label>
-            Máquinas seleccionadas *
-          </label>
+          Selecciona exactamente
+
+          <strong>
+            {{ cantidadMaquinasRequeridas }}
+          </strong>
+
+          máquina(s).
+
+        </div>
 
 
-          <div
-            class="machine-selector"
-            *ngIf="
-              maquinasDisponibles.length > 0;
-              else sinMaquinas
-            ">
+        <div
+          class="side-note side-note--payment"
+          *ngIf="
+            mostrarPrevisualizacionCuotas &&
+            cuotasPrevisualizadas.length > 0
+          ">
+
+          <strong>
+            Vista previa de cuotas
+          </strong>
 
 
-            <label
-              *ngFor="
-                let maquina of
-                maquinasDisponibles
-              "
-              class="machine-option">
+          <div class="payment-preview">
 
-
-              <input
-                type="checkbox"
-                [checked]="
-                  isMaquinaSeleccionada(
-                    maquina.id
-                  )
-                "
-                (change)="
-                  toggleMaquina(
-                    maquina.id,
-                    $event
-                  )
-                " />
-
+            <div
+              class="payment-preview__header">
 
               <span>
-                {{ maquina.nombre }}
+                Cuota
               </span>
 
-            </label>
-
-          </div>
-
-
-          <ng-template
-            #sinMaquinas>
-
-            <div
-              class="machine-empty">
-
-              No hay máquinas disponibles
-              para este plan.
+              <span>
+                Importe
+              </span>
 
             </div>
 
-          </ng-template>
+
+            <div
+              class="payment-preview__row"
+              *ngFor="
+                let cuota of cuotasPrevisualizadas;
+                let i = index
+              ">
+
+              <span>
+
+                Cuota
+                {{ getNumeroCuota(cuota, i) }}
+
+              </span>
 
 
-          <small
-            class="field-help">
+              <strong>
 
-            Debes seleccionar exactamente
+                {{
+                  formatMonto(
+                    getMontoCuota(cuota)
+                  )
+                }}
 
-            {{ cantidadMaquinasRequeridas }}
+              </strong>
 
-            máquina(s).
-
-          </small>
-
-
-          <small
-            class="field-help"
-            *ngIf="
-              esPlanMultipleConRegalo()
-            ">
-
-            La
-
-            <strong>
-              Camioneta
-            </strong>
-
-            se agregará automáticamente
-            como regalo.
-
-          </small>
-
-        </div>
+            </div>
 
 
-        <!-- =================================================
-             FECHA MATRÍCULA
-        ================================================== -->
+            <div
+              class="
+                payment-preview__row
+                payment-preview__row--total
+              ">
 
-        <div
-          class="form-field">
+              <span>
+                Total
+              </span>
 
-          <label>
-            Fecha de matrícula *
-          </label>
+              <strong>
 
+                {{
+                  formatMonto(
+                    totalPreviewCuotas
+                  )
+                }}
 
-          <input
-            type="date"
-            [(ngModel)]="
-              form.fecha_matricula
-            "
-            (ngModelChange)="
-              onMontoPagoChange()
-            " />
+              </strong>
+
+            </div>
+
+          </div>
 
         </div>
 
 
-        <!-- =================================================
-             MODALIDAD PAGO
-        ================================================== -->
-
         <div
-          class="form-field">
-
-          <label>
-            Modalidad de pago *
-          </label>
-
-
-          <select
-            [(ngModel)]="
-              form.modalidad_pago
-            "
-            (ngModelChange)="
-              onModalidadPagoChange()
-            ">
-
-            <option
-              value="MENSUAL">
-
-              Mensual
-
-            </option>
-
-            <option
-              value="QUINCENAL">
-
-              Quincenal
-
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- =================================================
-             FECHA INICIO
-        ================================================== -->
-
-        <div
-          class="form-field">
-
-          <label>
-            Fecha de inicio
-          </label>
-
-
-          <input
-            type="date"
-            [(ngModel)]="
-              form.fecha_inicio
-            "
-            (ngModelChange)="
-              onFechaInicioChange()
-            " />
-
-        </div>
-
-
-        <!-- =================================================
-             FECHA FIN
-        ================================================== -->
-
-        <div
-          class="form-field">
-
-          <label>
-            Fecha fin estimada
-          </label>
-
-
-          <input
-            type="date"
-            [(ngModel)]="
-              form.fecha_fin_estimada
-            "
-            readonly />
-
-
-          <small
-            class="field-help">
-
-            Se calcula automáticamente
-            según el tipo de curso
-            y la fecha de inicio.
-
-          </small>
-
-        </div>
-
-
-        <!-- =================================================
-             MONTO TOTAL
-        ================================================== -->
-
-        <div
-          class="form-field">
-
-          <label>
-            Monto total
-          </label>
-
-
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            [(ngModel)]="
-              form.monto_total
-            "
-            (ngModelChange)="
-              onMontoPagoChange()
-            "
-            placeholder="0.00" />
-
-        </div>
-
-
-        <!-- =================================================
-             CUOTA INICIAL
-        ================================================== -->
-
-        <div
-          class="form-field">
-
-          <label>
-            Cuota inicial
-          </label>
-
-
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            [(ngModel)]="
-              form.cuota_inicial
-            "
-            (ngModelChange)="
-              onMontoPagoChange()
-            "
-            placeholder="0.00" />
-
-        </div>
-
-
-        <!-- =================================================
-             PREVISUALIZAR CUOTAS
-        ================================================== -->
-
-        <div
-          class="form-field full-width"
+          class="payment-preview__loading"
           *ngIf="
-            form.plan_curso_id &&
-            form.fecha_matricula &&
-            form.monto_total
+            cargandoPrevisualizacion
           ">
 
-
-          <button
-            type="button"
-            class="btn-preview"
-            (click)="
-              previsualizarCuotas()
-            "
-            [disabled]="
-              cargandoPrevisualizacion
-            ">
-
-
-            <span
-              *ngIf="
-                !cargandoPrevisualizacion
-              ">
-
-              👁 Previsualizar cuotas
-
-            </span>
-
-
-            <span
-              *ngIf="
-                cargandoPrevisualizacion
-              ">
-
-              Calculando cuotas...
-
-            </span>
-
-          </button>
-
-
-          <!-- =================================================
-               ERROR
-          ================================================== -->
-
-          <div
-            class="payment-preview__error"
-            *ngIf="
-              previewCuotasError &&
-              !cargandoPrevisualizacion
-            ">
-
-            {{ previewCuotasError }}
-
-          </div>
-
-
-          <!-- =================================================
-               RESULTADO
-          ================================================== -->
-
-          <div
-            class="
-              payment-preview
-              payment-preview--main
-            "
-            *ngIf="
-              mostrarPrevisualizacionCuotas &&
-              cuotasPrevisualizadas.length > 0
-            ">
-
-
-            <div
-              class="
-                payment-preview__header
-              ">
-
-              <div>
-
-                <strong>
-                  Vista previa del plan de pagos
-                </strong>
-
-                <small>
-
-                  {{
-                    cuotasPrevisualizadas.length
-                  }}
-
-                  cuota(s)
-
-                </small>
-
-              </div>
-
-
-              <button
-                type="button"
-                class="btn-close-preview"
-                (click)="
-                  cerrarPreviewCuotas()
-                ">
-
-                ×
-
-              </button>
-
-            </div>
-
-
-            <!-- =================================================
-                 TABLA
-            ================================================== -->
-
-            <div
-              class="
-                payment-preview__table
-              ">
-
-
-              <!-- CABECERA -->
-
-              <div
-                class="
-                  payment-preview__table-header
-                ">
-
-                <span>
-                  Cuota
-                </span>
-
-                <span>
-                  Vencimiento
-                </span>
-
-                <span>
-                  Importe
-                </span>
-
-              </div>
-
-
-              <!-- CUOTAS -->
-
-              <div
-                class="
-                  payment-preview__row
-                "
-                *ngFor="
-                  let cuota of
-                  cuotasPrevisualizadas;
-                  let i = index
-                ">
-
-
-                <span>
-
-                  Cuota
-
-                  {{
-                    getNumeroCuota(
-                      cuota,
-                      i
-                    )
-                  }}
-
-                </span>
-
-
-                <span>
-
-                  {{
-                    formatFechaVista(
-                      getFechaCuota(
-                        cuota
-                      )
-                    )
-                  }}
-
-                </span>
-
-
-                <strong>
-
-                  {{
-                    formatMonto(
-                      getMontoCuota(
-                        cuota
-                      )
-                    )
-                  }}
-
-                </strong>
-
-              </div>
-
-
-              <!-- =================================================
-                   TOTAL
-              ================================================== -->
-
-              <div
-                class="
-                  payment-preview__row
-                  payment-preview__row--total
-                ">
-
-                <span>
-                  Total proyectado
-                </span>
-
-                <span></span>
-
-                <strong>
-
-                  {{
-                    formatMonto(
-                      totalPreviewCuotas
-                    )
-                  }}
-
-                </strong>
-
-              </div>
-
-
-            </div>
-
-          </div>
+          Calculando cuotas...
 
         </div>
 
-
-        <!-- =================================================
-             NOTAS
-        ================================================== -->
 
         <div
-          class="
-            form-field
-            full-width
+          class="payment-preview__error"
+          *ngIf="
+            previewCuotasError &&
+            !cargandoPrevisualizacion
           ">
 
-          <label>
-            Notas
-          </label>
-
-
-          <textarea
-            rows="4"
-            [(ngModel)]="
-              form.notas
-            ">
-          </textarea>
+          {{ previewCuotasError }}
 
         </div>
-
 
       </div>
 
     </div>
 
-  </div>
+
+    <!-- ===================================================
+         CONTENIDO PRINCIPAL
+    ==================================================== -->
+
+    <div class="modal-main">
+
+      <div
+        class="
+          modal-header
+          modal-header--main
+        ">
+
+        <div>
+
+          <h2>
+            Datos principales
+          </h2>
+
+          <p>
+            Configura la matrícula del alumno
+            y el plan de curso.
+          </p>
+
+        </div>
 
 
-  <!-- =====================================================
-       ACCIONES
-  ====================================================== -->
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarModal()">
 
-  <div
-    class="modal-actions">
+          ×
 
+        </button>
 
-    <button
-      type="button"
-      class="btn-light"
-      (click)="cerrarModal()"
-      [disabled]="saving">
-
-      Cancelar
-
-    </button>
+      </div>
 
 
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="guardarMatricula()"
-      [disabled]="saving">
+      <div class="modal-body">
 
-      {{
-        saving
-          ? 'Guardando...'
-          : 'Guardar matrícula'
-      }}
+        <div class="section-card">
 
-    </button>
+          <div class="form-grid">
+
+            <div
+              class="form-field full-width">
+
+              <label>
+                Alumno *
+              </label>
 
 
-  </div>
+              <div class="search-select-container">
 
-</div>
-```
+                <input
+                  type="text"
+                  [(ngModel)]="
+                    txtBusquedaAlumno
+                  "
+                  placeholder="
+                    Escribe nombre o DNI para filtrar...
+                  "
+                  class="form-control-search" />
+
+              </div>
+
+
+              <select
+                [(ngModel)]="
+                  form.alumno_id
+                ">
+
+                <option
+                  [ngValue]="null">
+
+                  {{
+                    alumnosFiltrados.length === 0
+                      ? 'No se encontraron coincidencias'
+                      : 'Seleccionar alumno'
+                  }}
+
+                </option>
+
+
+                <option
+                  *ngFor="
+                    let alumno of alumnosFiltrados
+                  "
+                  [ngValue]="alumno.id">
+
+                  {{ alumno.nombres }}
+                  {{ alumno.apellidos }}
+                  -
+                  {{ alumno.dni }}
+
+                </option>
+
+              </select>
+
+
+              <small
+                class="field-help"
+                *ngIf="
+                  txtBusquedaAlumno
+                ">
+
+                Mostrando
+                {{ alumnosFiltrados.length }}
+                de
+                {{ alumnos.length }}
+                alumnos.
+
+              </small>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Plan de curso *
+              </label>
+
+
+              <select
+                [(ngModel)]="
+                  form.plan_curso_id
+                "
+                (ngModelChange)="
+                  onPlanChange()
+                ">
+
+                <option
+                  [ngValue]="null">
+
+                  Seleccionar plan
+
+                </option>
+
+
+                <option
+                  *ngFor="
+                    let plan of planesCurso
+                  "
+                  [ngValue]="plan.id">
+
+                  {{ plan.nombre }}
+
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Estado del alumno *
+              </label>
+
+
+              <select
+                [(ngModel)]="
+                  form.estado_alumno_id
+                ">
+
+                <option
+                  [ngValue]="null">
+
+                  Seleccionar estado
+
+                </option>
+
+
+                <option
+                  *ngFor="
+                    let estado of
+                    estadosMatriculaDisponibles
+                  "
+                  [ngValue]="estado.id">
+
+                  {{ estado.nombre }}
+
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div
+              class="form-field full-width"
+              *ngIf="
+                mostrarSelectorMaquinas
+              ">
+
+              <label>
+                Máquinas seleccionadas *
+              </label>
+
+
+              <div
+                class="machine-selector"
+                *ngIf="
+                  maquinasDisponibles.length > 0;
+                  else sinMaquinas
+                ">
+
+                <label
+                  *ngFor="
+                    let maquina of
+                    maquinasDisponibles
+                  "
+                  class="machine-option">
+
+                  <input
+                    type="checkbox"
+                    [checked]="
+                      isMaquinaSeleccionada(
+                        maquina.id
+                      )
+                    "
+                    (change)="
+                      toggleMaquina(
+                        maquina.id,
+                        $event
+                      )
+                    " />
+
+
+                  <span>
+                    {{ maquina.nombre }}
+                  </span>
+
+                </label>
+
+              </div>
+
+
+              <ng-template
+                #sinMaquinas>
+
+                <div class="machine-empty">
+
+                  No hay máquinas disponibles
+                  para este plan.
+
+                </div>
+
+              </ng-template>
+
+
+              <small class="field-help">
+
+                Debes seleccionar exactamente
+                {{ cantidadMaquinasRequeridas }}
+                máquina(s).
+
+              </small>
+
+
+              <small
+                class="field-help"
+                *ngIf="
+                  esPlanMultipleConRegalo()
+                ">
+
+                La
+                <strong>
+                  Camioneta
+                </strong>
+                se agregará automáticamente
+                como regalo.
+
+              </small>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Fecha de matrícula *
+              </label>
+
+
+              <input
+                type="date"
+                [(ngModel)]="
+                  form.fecha_matricula
+                "
+                (ngModelChange)="
+                  onMontoPagoChange()
+                " />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Modalidad de pago *
+              </label>
+
+
+              <select
+                [(ngModel)]="
+                  form.modalidad_pago
+                "
+                (ngModelChange)="
+                  onModalidadPagoChange()
+                ">
+
+                <option value="MENSUAL">
+                  Mensual
+                </option>
+
+                <option value="QUINCENAL">
+                  Quincenal
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Fecha de inicio
+              </label>
+
+
+              <input
+                type="date"
+                [(ngModel)]="
+                  form.fecha_inicio
+                "
+                (ngModelChange)="
+                  onFechaInicioChange()
+                " />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Fecha fin estimada
+              </label>
+
+
+              <input
+                type="date"
+                [(ngModel)]="
+                  form.fecha_fin_estimada
+                "
+                readonly />
+
+              <small class="field-help">
+
+                Se calcula automáticamente
+                según el tipo de curso
+                y la fecha de inicio.
+
+              </small>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Monto total
+              </label>
+
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                [(ngModel)]="
+                  form.monto_total
+                "
+                (ngModelChange)="
+                  onMontoPagoChange()
+                "
+                placeholder="0.00" />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Cuota inicial
+              </label>
+
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                [(ngModel)]="
+                  form.cuota_inicial
+                "
+                (ngModelChange)="
+                  onMontoPagoChange()
+                "
+                placeholder="0.00" />
+
+            </div>
+
+
+            <div
+              class="form-field full-width"
+              *ngIf="
+                form.plan_curso_id &&
+                form.fecha_matricula &&
+                form.monto_total
+              ">
+
+              <button
+                type="button"
+                class="btn-preview"
+                (click)="
+                  previsualizarCuotas()
+                "
+                [disabled]="
+                  cargandoPrevisualizacion
+                ">
+
+                <span
+                  *ngIf="
+                    !cargandoPrevisualizacion
+                  ">
+
+                  👁 Previsualizar cuotas
+
+                </span>
+
+
+                <span
+                  *ngIf="
+                    cargandoPrevisualizacion
+                  ">
+
+                  Calculando cuotas...
+
+                </span>
+
+              </button>
+
+
+              <div
+                class="payment-preview__error"
+                *ngIf="
+                  previewCuotasError &&
+                  !cargandoPrevisualizacion
+                ">
+
+                {{ previewCuotasError }}
+
+              </div>
+
+
+              <div
+                class="
+                  payment-preview
+                  payment-preview--main
+                "
+                *ngIf="
+                  mostrarPrevisualizacionCuotas &&
+                  cuotasPrevisualizadas.length > 0
+                ">
+
+                <div
+                  class="
+                    payment-preview__header
+                  ">
+
+                  <div>
+
+                    <strong>
+                      Vista previa del plan de pagos
+                    </strong>
+
+                    <small>
+
+                      {{
+                        cuotasPrevisualizadas.length
+                      }}
+
+                      cuota(s)
+
+                    </small>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    class="btn-close-preview"
+                    (click)="
+                      cerrarPreviewCuotas()
+                    ">
+
+                    ×
+
+                  </button>
+
+                </div>
+
+
+                <div
+                  class="
+                    payment-preview__table
+                  ">
+
+                  <div
+                    class="
+                      payment-preview__table-header
+                    ">
+
+                    <span>
+                      Cuota
+                    </span>
+
+                    <span>
+                      Vencimiento
+                    </span>
+
+                    <span>
+                      Importe
+                    </span>
+
+                  </div>
+
+
+                  <div
+                    class="
+                      payment-preview__row
+                    "
+                    *ngFor="
+                      let cuota of
+                      cuotasPrevisualizadas;
+                      let i = index
+                    ">
+
+                    <span>
+
+                      Cuota
+                      {{
+                        getNumeroCuota(
+                          cuota,
+                          i
+                        )
+                      }}
+
+                    </span>
+
+
+                    <span>
+
+                      {{
+                        formatFechaVista(
+                          getFechaCuota(
+                            cuota
+                          )
+                        )
+                      }}
+
+                    </span>
+
+
+                    <strong>
+
+                      {{
+                        formatMonto(
+                          getMontoCuota(
+                            cuota
+                          )
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+
+                  <div
+                    class="
+                      payment-preview__row
+                      payment-preview__row--total
+                    ">
+
+                    <span>
+                      Total proyectado
+                    </span>
+
+                    <span></span>
+
+                    <strong>
+
+                      {{
+                        formatMonto(
+                          totalPreviewCuotas
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="
+                form-field
+                full-width
+              ">
+
+              <label>
+                Notas
+              </label>
+
+
+              <textarea
+                rows="4"
+                [(ngModel)]="
+                  form.notas
+                ">
+              </textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn-light"
+          (click)="cerrarModal()"
+          [disabled]="saving">
+
+          Cancelar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardarMatricula()"
+          [disabled]="saving">
+
+          {{
+            saving
+              ? 'Guardando...'
+              : 'Guardar matrícula'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
