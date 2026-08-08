@@ -235,79 +235,74 @@ export class MatriculasList implements OnInit {
   }
 
   previsualizarCuotas(): void {
-  
-    if (!this.form.plan_curso_id) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Selecciona un plan',
-        text: 'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
-        confirmButtonText: 'Entendido'
-      });
-  
-      return;
-    }
-  
-    if (!this.form.fecha_matricula) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Fecha requerida',
-        text: 'Debes indicar la fecha de matrícula.',
-        confirmButtonText: 'Entendido'
-      });
-  
-      return;
-    }
-  
-    this.previewCuotasLoading = true;
-    this.previewCuotasError = '';
-    this.previewCuotas = [];
-      
-    const payload = {
-      plan_curso_id: this.form.plan_curso_id,
-      fecha_matricula: this.form.fecha_matricula,
-      monto_total: this.form.monto_total,
-      cuota_inicial: this.form.cuota_inicial,
-      modalidad_pago: this.form.modalidad_pago
-    };
-    this.matriculasService.previsualizarCuotas(payload).subscribe({
-        
-      next: (resp: ApiResponse<any>) => {
-      
-        this.cargandoPrevisualizacion = false;
-      
-        this.cuotasPrevisualizadas = resp.data ?? [];
-      
-        if (this.cuotasPrevisualizadas.length === 0) {
-          this.previewCuotasError =
-            'No se pudieron generar cuotas para los datos seleccionados.';
-          return;
-        }
-      
-        this.mostrarPrevisualizacionCuotas = true;
-      
-        this.cd.detectChanges();
-      }
-        
-      error: (err: any) => {
-  
-        this.previewCuotasLoading = false;
-  
-        this.previewCuotasError =
-          err?.error?.message ||
-          'No se pudo generar la previsualización de cuotas.';
-  
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: this.previewCuotasError,
-          confirmButtonText: 'Aceptar'
-        });
-  
-        this.cd.detectChanges();
-      }
-  
+  if (!this.form.plan_curso_id) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selecciona un plan',
+      text: 'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
+      confirmButtonText: 'Entendido'
     });
+    return;
   }
+
+  if (!this.form.fecha_matricula) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Fecha requerida',
+      text: 'Debes indicar la fecha de matrícula.',
+      confirmButtonText: 'Entendido'
+    });
+    return;
+  }
+
+  this.previewCuotasLoading = true;
+  this.previewCuotasError = '';
+  this.previewCuotas = [];
+  this.previewCuotasOpen = false;
+
+  const payload = {
+    plan_curso_id: this.form.plan_curso_id,
+    fecha_matricula: this.form.fecha_matricula,
+    monto_total: this.form.monto_total,
+    cuota_inicial: this.form.cuota_inicial,
+    modalidad_pago: this.form.modalidad_pago
+  };
+
+  this.matriculasService.previsualizarCuotas(payload).subscribe({
+    next: (resp: ApiResponse<any>) => {
+      this.previewCuotasLoading = false;
+
+      this.previewCuotas = resp.data ?? [];
+
+      if (this.previewCuotas.length === 0) {
+        this.previewCuotasError =
+          'No se pudieron generar cuotas para los datos seleccionados.';
+        return;
+      }
+
+      this.previewCuotasOpen = true;
+
+      this.cd.detectChanges();
+    },
+
+    error: (err: any) => {
+      this.previewCuotasLoading = false;
+
+      this.previewCuotasError =
+        err?.error?.message ||
+        'No se pudo generar la previsualización de cuotas.';
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: this.previewCuotasError,
+        confirmButtonText: 'Aceptar'
+      });
+
+      this.cd.detectChanges();
+    }
+  });
+}
   
   cerrarPreviewCuotas(): void {
     if (this.previewCuotasLoading) return;
