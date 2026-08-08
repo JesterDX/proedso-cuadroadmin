@@ -157,11 +157,18 @@ export class MatriculasService {
       modalidad_pago?: string | null;
     }
   ): Observable<ApiResponse<any[]>> {
-
-    return this.http.post<ApiResponse<any[]>>(
-      `${this.apiUrl}/previsualizar-cuotas`,
-      payload
-    );
+  
+    console.log('========================================');
+    console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
+    console.log('URL:', `${this.apiUrl}/previsualizar-cuotas`);
+    console.log('PAYLOAD:', payload);
+    console.log('========================================');
+  
+    return this.http
+      .post<ApiResponse<any[]>>(
+        `${this.apiUrl}/previsualizar-cuotas`,
+        payload
+      );
   }
 
   // ==========================================================
