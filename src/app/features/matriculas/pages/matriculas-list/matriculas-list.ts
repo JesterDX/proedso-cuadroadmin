@@ -418,7 +418,9 @@ abrirModalEditar(matricula: Matricula): void {
     fecha_fin_estimada: matricula.fecha_fin_estimada?.split('T')[0] || null,
     notas: matricula.notas || '',
     maquinas_seleccionadas: [],
-    modalidad_pago: matricula.modalidad_pago || 'MENSUAL'
+    modalidad_pago: matricula.modalidad_pago || 'MENSUAL',
+    monto_total: matricula.monto_total ?? null,
+  cuota_inicial: matricula.cuota_inicial ?? null
   };
 
   this.modalOpen = true;
@@ -478,7 +480,9 @@ abrirModalEditar(matricula: Matricula): void {
       fecha_fin_estimada: this.form.fecha_fin_estimada || null,
       notas: this.form.notas || '',
       maquinas_seleccionadas: [...this.maquinasSeleccionadas],
-      modalidad_pago: this.form.modalidad_pago || 'MENSUAL'
+      modalidad_pago: this.form.modalidad_pago || 'MENSUAL',
+      monto_total: matricula.monto_total ?? null,
+  cuota_inicial: matricula.cuota_inicial ?? null
 
     };
 
