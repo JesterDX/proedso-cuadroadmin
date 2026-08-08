@@ -12,6 +12,8 @@ export interface Matricula {
   fecha_creacion: string;
 
   modalidad_pago?: 'MENSUAL' | 'QUINCENAL';
+  monto_total: number | null;
+  cuota_inicial: number | null;
 }
 
 export interface MatriculaPayload {
