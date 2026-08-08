@@ -9,10 +9,7 @@ import {
 
 import { ApiResponse } from '../../../core/models/api-response.model';
 
-import {
-  Matricula,
-  MatriculaPayload
-} from '../models/matricula.model';
+import { Matricula, MatriculaPayload, PrevisualizacionCuotasData } from '../models/matricula.model';
 
 import { MatriculaDetail } from '../models/matricula-detail.model';
 import { MatriculaMaquina } from '../models/matricula-maquina.model';
@@ -160,178 +157,122 @@ export class MatriculasService {
   // PREVISUALIZAR CUOTAS
   // ==========================================================
 
-  previsualizarCuotas(
-    payload: {
-      plan_curso_id: number | string;
-      fecha_matricula: string;
-      monto_total?: number | null;
-      cuota_inicial?: number | null;
-      modalidad_pago?: string | null;
-      maquinas_seleccionadas?: number[];
-    }
-  ): Observable<ApiResponse<any[]>> {
 
-    const url =
-      `${this.apiUrl}/previsualizar-cuotas`;
+// ==========================================================
+// PREVISUALIZAR CUOTAS
+// ==========================================================
 
-    console.log('');
-    console.log('========================================');
-    console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
-    console.log('========================================');
-
-    console.log(
-      '🌐 URL:',
-      url
-    );
-
-    console.log(
-      '📦 PAYLOAD:',
-      payload
-    );
-
-    console.log(
-      '📋 PLAN:',
-      payload.plan_curso_id
-    );
-
-    console.log(
-      '📅 FECHA MATRÍCULA:',
-      payload.fecha_matricula
-    );
-
-    console.log(
-      '💰 MONTO TOTAL:',
-      payload.monto_total
-    );
-
-    console.log(
-      '💵 CUOTA INICIAL:',
-      payload.cuota_inicial
-    );
-
-    console.log(
-      '📆 MODALIDAD:',
-      payload.modalidad_pago
-    );
-
-    console.log(
-      '🚜 MÁQUINAS:',
-      payload.maquinas_seleccionadas
-    );
-
-    console.log(
-      '========================================'
-    );
-
-    console.log(
-      '⏳ Esperando respuesta del backend...'
-    );
-
-    console.log('');
-
-    return this.http
-      .post<ApiResponse<any[]>>(
-        url,
-        payload
-      )
-      .pipe(
-
-        // ======================================================
-        // RESPUESTA EXITOSA
-        // ======================================================
-
-        tap((response) => {
-
-          console.log('');
-          console.log('========================================');
-          console.log('📥 PREVISUALIZAR CUOTAS - RESPONSE');
-          console.log('========================================');
-
-          console.log(
-            '📊 RESPUESTA COMPLETA:',
-            response
-          );
-
-          console.log(
-            '✅ OK:',
-            response?.ok
-          );
-
-          console.log(
-            '📦 DATA:',
-            response?.data
-          );
-
-          console.log(
-            '📏 CANTIDAD DE CUOTAS:',
-            Array.isArray(response?.data)
-              ? response.data.length
-              : 'NO ES ARRAY'
-          );
-
-          console.log(
-            '========================================'
-          );
-
-          console.log('');
-
-        }),
-
-        // ======================================================
-        // ERROR HTTP
-        // ======================================================
-
-        catchError((error) => {
-
-          console.error('');
-          console.error('========================================');
-          console.error('❌ PREVISUALIZAR CUOTAS - ERROR');
-          console.error('========================================');
-
-          console.error(
-            '🌐 URL:',
-            url
-          );
-
-          console.error(
-            '📦 PAYLOAD ENVIADO:',
-            payload
-          );
-
-          console.error(
-            '🔴 STATUS:',
-            error?.status
-          );
-
-          console.error(
-            '🔴 STATUS TEXT:',
-            error?.statusText
-          );
-
-          console.error(
-            '🔴 ERROR:',
-            error?.error
-          );
-
-          console.error(
-            '🔴 MENSAJE:',
-            error?.message
-          );
-
-          console.error(
-            '========================================'
-          );
-
-          console.error('');
-
-          return throwError(
-            () => error
-          );
-
-        })
-
-      );
+previsualizarCuotas(
+  payload: {
+    plan_curso_id: number | string;
+    fecha_matricula: string;
+    monto_total?: number | null;
+    cuota_inicial?: number | null;
+    modalidad_pago?: 'MENSUAL' | 'QUINCENAL' | null;
+    maquinas_seleccionadas?: number[];
   }
+): Observable<ApiResponse<PrevisualizacionCuotasData>> {
+
+  const url =
+    `${this.apiUrl}/previsualizar-cuotas`;
+
+  console.log('');
+  console.log('========================================');
+  console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
+  console.log('========================================');
+
+  console.log('🌐 URL:', url);
+  console.log('📦 PAYLOAD:', payload);
+
+  console.log('========================================');
+  console.log('⏳ Esperando respuesta del backend...');
+  console.log('');
+
+  return this.http
+    .post<ApiResponse<PrevisualizacionCuotasData>>(
+      url,
+      payload
+    )
+    .pipe(
+
+      tap((response) => {
+
+        console.log('');
+        console.log('========================================');
+        console.log('📥 PREVISUALIZAR CUOTAS - RESPONSE');
+        console.log('========================================');
+
+        console.log(
+          '📊 RESPUESTA COMPLETA:',
+          response
+        );
+
+        console.log(
+          '✅ OK:',
+          response?.ok
+        );
+
+        console.log(
+          '📦 DATA:',
+          response?.data
+        );
+
+        console.log(
+          '📋 CUOTAS:',
+          response?.data?.cuotas
+        );
+
+        console.log(
+          '📏 CANTIDAD:',
+          response?.data?.cuotas?.length ?? 0
+        );
+
+        console.log(
+          '========================================'
+        );
+
+      }),
+
+      catchError((error) => {
+
+        console.error('');
+        console.error('========================================');
+        console.error('❌ PREVISUALIZAR CUOTAS - ERROR');
+        console.error('========================================');
+
+        console.error(
+          '🌐 URL:',
+          url
+        );
+
+        console.error(
+          '📦 PAYLOAD:',
+          payload
+        );
+
+        console.error(
+          '🔴 STATUS:',
+          error?.status
+        );
+
+        console.error(
+          '🔴 ERROR:',
+          error?.error
+        );
+
+        console.error(
+          '========================================'
+        );
+
+        return throwError(
+          () => error
+        );
+
+      })
+
+    );
+}
+
 
 
   // ==========================================================
