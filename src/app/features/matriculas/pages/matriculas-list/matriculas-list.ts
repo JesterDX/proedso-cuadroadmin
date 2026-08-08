@@ -311,38 +311,46 @@ export class MatriculasList implements OnInit {
   // FORMULARIO VACÍO
   // ==========================================================
 
-  getEmptyForm(): MatriculaPayload {
+ getEmptyForm(): MatriculaPayload {
 
-    return {
+  return {
 
-      alumno_id: null,
+    alumno_id: null,
 
-      plan_curso_id: null,
+    plan_curso_id: null,
 
-      estado_alumno_id: null,
+    estado_alumno_id: null,
 
-      fecha_matricula:
-        new Date()
-          .toISOString()
-          .slice(0, 10),
+    fecha_matricula:
+      new Date()
+        .toISOString()
+        .slice(0, 10),
 
-      fecha_inicio: null,
+    fecha_inicio: null,
 
-      fecha_fin_estimada: null,
+    fecha_fin_estimada: null,
 
-      notas: '',
+    notas: '',
 
-      maquinas_seleccionadas: [],
+    maquinas_seleccionadas: [],
 
-      modalidad_pago: 'MENSUAL',
+    modalidad_pago: 'MENSUAL',
 
-      monto_total: null,
+    monto_total: null,
 
-      cuota_inicial: null
+    cuota_inicial: null,
 
-    };
+    // ==================================================
+    // CERTIFICACIÓN
+    // ==================================================
 
-  }
+    certificacion_incluida: true,
+
+    costo_certificacion: null
+
+  };
+
+}
 
   // ==========================================================
   // CARGAR TODO
