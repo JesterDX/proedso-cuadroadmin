@@ -460,7 +460,7 @@ abrirModalEditar(matricula: Matricula): void {
 
   guardarMatricula(): void {
     const errores = this.validarFormulario();
-
+  
     if (errores.length > 0) {
       Swal.fire({
         icon: 'warning',
@@ -470,7 +470,7 @@ abrirModalEditar(matricula: Matricula): void {
       });
       return;
     }
-
+  
     const payload: MatriculaPayload = {
       alumno_id: this.form.alumno_id,
       plan_curso_id: this.form.plan_curso_id,
@@ -481,42 +481,52 @@ abrirModalEditar(matricula: Matricula): void {
       notas: this.form.notas || '',
       maquinas_seleccionadas: [...this.maquinasSeleccionadas],
       modalidad_pago: this.form.modalidad_pago || 'MENSUAL',
-      monto_total: matricula.monto_total ?? null,
-  cuota_inicial: matricula.cuota_inicial ?? null
-
+      monto_total: this.form.monto_total ?? null,
+      cuota_inicial: this.form.cuota_inicial ?? null
     };
-
+  
     this.saving = true;
     this.cd.detectChanges();
-
+  
     const request$ =
       this.modoModal === 'crear'
         ? this.matriculasService.crear(payload)
-        : this.matriculasService.actualizar(this.matriculaEditandoId!, payload);
-
+        : this.matriculasService.actualizar(
+            this.matriculaEditandoId!,
+            payload
+          );
+  
     request$.subscribe({
       next: (resp: ApiResponse<Matricula>) => {
         this.saving = false;
         this.modalOpen = false;
         this.cd.detectChanges();
-
+  
         Swal.fire({
           icon: 'success',
-          title: 'Matrícula creada',
-          text: resp.message || 'La matrícula fue registrada correctamente.',
+          title: this.modoModal === 'crear'
+            ? 'Matrícula creada'
+            : 'Matrícula actualizada',
+          text: resp.message ||
+            (this.modoModal === 'crear'
+              ? 'La matrícula fue registrada correctamente.'
+              : 'La matrícula fue actualizada correctamente.'),
           confirmButtonText: 'Aceptar'
         });
-
+  
         this.cargarTodo();
       },
+  
       error: (err: any) => {
         this.saving = false;
         this.cd.detectChanges();
-
+  
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: err?.error?.message || 'No se pudo registrar la matrícula.',
+          text:
+            err?.error?.message ||
+            'No se pudo guardar la matrícula.',
           confirmButtonText: 'Aceptar'
         });
       }
