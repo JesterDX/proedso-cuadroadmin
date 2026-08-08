@@ -697,3 +697,630 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
     align-items: flex-start;
   }
 }
+
+
+// ==========================================================================
+// PREVISUALIZACIÓN DE CUOTAS
+// ==========================================================================
+
+.preview-section {
+  padding: 0 32px 24px;
+}
+
+
+// --------------------------------------------------------------------------
+// ACTION AREA
+// --------------------------------------------------------------------------
+
+.preview-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 18px 20px;
+
+  border: 1px solid rgba(16, 37, 68, 0.14);
+  border-radius: $radius-lg;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc 0%,
+      #ffffff 100%
+    );
+
+  box-shadow: 0 2px 8px rgba(16, 37, 68, 0.05);
+}
+
+
+// --------------------------------------------------------------------------
+// INFORMATION
+// --------------------------------------------------------------------------
+
+.preview-action__info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+
+.preview-action__icon {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: $radius-md;
+
+  background: $c-primary-bg;
+  color: $c-primary;
+
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+
+.preview-action__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
+
+  strong {
+    color: $c-text-main;
+
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  span {
+    color: $c-text-muted;
+
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW BUTTON
+// --------------------------------------------------------------------------
+
+.btn-preview {
+  min-width: 220px;
+  height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  flex-shrink: 0;
+
+  padding: 0 20px;
+
+  border: 1px solid $c-text-main;
+  border-radius: $radius-md;
+
+  background: $c-text-main;
+  color: $c-surface;
+
+  cursor: pointer;
+
+  font-family: $font-sans;
+  font-size: 0.8125rem;
+  font-weight: 600;
+
+  box-shadow:
+    0 3px 8px rgba(16, 37, 68, 0.16);
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+
+  @include focus-ring;
+
+
+  &:hover:not(:disabled) {
+    background: $c-accent-hover;
+    border-color: $c-accent-hover;
+
+    box-shadow:
+      0 5px 14px rgba(16, 37, 68, 0.22);
+
+    transform: translateY(-1px);
+  }
+
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+
+    box-shadow:
+      0 2px 5px rgba(16, 37, 68, 0.16);
+  }
+
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: wait;
+
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+
+// --------------------------------------------------------------------------
+// ICON
+// --------------------------------------------------------------------------
+
+.btn-preview__icon {
+  width: 18px;
+  height: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.95rem;
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW READY
+// --------------------------------------------------------------------------
+
+.btn-preview--success {
+  background: $c-success;
+  border-color: $c-success;
+
+  box-shadow:
+    0 3px 8px rgba(22, 163, 74, 0.18);
+
+
+  &:hover:not(:disabled) {
+    background: #15803d;
+    border-color: #15803d;
+
+    box-shadow:
+      0 5px 14px rgba(22, 163, 74, 0.22);
+  }
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW ERROR
+// --------------------------------------------------------------------------
+
+.preview-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 12px;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-left: 3px solid $c-danger;
+
+  border-radius: $radius-md;
+
+  background: $c-danger-bg;
+  color: $c-danger;
+
+  font-size: 0.8125rem;
+}
+
+
+.preview-error__icon {
+  display: grid;
+  place-items: center;
+
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: $c-danger;
+  color: white;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW CARD
+// --------------------------------------------------------------------------
+
+.preview-card {
+  margin-top: 16px;
+
+  border: 1px solid $c-border;
+  border-radius: $radius-lg;
+
+  background: $c-surface;
+
+  box-shadow:
+    0 2px 8px rgba(16, 37, 68, 0.05);
+
+  overflow: hidden;
+}
+
+
+.preview-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid $c-border;
+
+  background: #fafafa;
+
+  h3 {
+    margin: 4px 0 0;
+
+    color: $c-text-main;
+
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 5px 0 0;
+
+    color: $c-text-muted;
+
+    font-size: 0.75rem;
+  }
+}
+
+
+.preview-card__eyebrow {
+  @include mono-label;
+
+  color: $c-primary;
+}
+
+
+.preview-card__close {
+  width: 30px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+
+  background: $c-surface;
+  color: $c-text-muted;
+
+  cursor: pointer;
+
+  font-size: 1.1rem;
+
+  transition: all 0.15s ease;
+
+
+  &:hover:not(:disabled) {
+    color: $c-danger;
+
+    border-color: $c-danger;
+    background: $c-danger-bg;
+  }
+
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW SUMMARY
+// --------------------------------------------------------------------------
+
+.preview-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  border-bottom: 1px solid $c-border;
+}
+
+
+.preview-summary__item {
+  padding: 16px 20px;
+
+  border-right: 1px solid $c-border;
+
+
+  &:last-child {
+    border-right: none;
+  }
+
+
+  span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: $c-text-muted;
+
+    @include mono-label;
+  }
+
+
+  strong {
+    color: $c-text-main;
+
+    font-family: $font-mono;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+
+// --------------------------------------------------------------------------
+// PREVIEW TABLE
+// --------------------------------------------------------------------------
+
+.preview-table-container {
+  overflow-x: auto;
+}
+
+
+.preview-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+
+  th,
+  td {
+    padding: 12px 20px;
+
+    border-bottom: 1px solid $c-border;
+
+    text-align: left;
+
+    font-size: 0.8125rem;
+  }
+
+
+  th {
+    background: #fafafa;
+
+    color: $c-text-muted;
+
+    @include mono-label;
+  }
+
+
+  tbody tr {
+    transition: background 0.15s ease;
+
+
+    &:hover {
+      background: #fafafa;
+    }
+  }
+
+
+  tfoot td {
+    border-bottom: none;
+  }
+}
+
+
+.cuota-number {
+  width: 26px;
+  height: 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: $c-primary-bg;
+  color: $c-primary;
+
+  font-family: $font-mono;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+
+.preview-date-input {
+  height: 34px !important;
+
+  padding: 0 9px !important;
+
+  border: 1px solid $c-border !important;
+  border-radius: $radius-sm !important;
+
+  background: $c-surface !important;
+
+  color: $c-text-main !important;
+
+  font-size: 0.8125rem !important;
+
+  transition: border-color 0.15s ease,
+              box-shadow 0.15s ease;
+
+
+  &:focus {
+    border-color: $c-text-main !important;
+
+    box-shadow:
+      0 0 0 1px $c-text-main !important;
+  }
+}
+
+
+.preview-table__amount {
+  color: $c-text-main;
+
+  font-family: $font-mono;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+.preview-total-label {
+  text-align: right !important;
+
+  color: $c-text-muted;
+
+  @include mono-label;
+}
+
+
+.preview-total {
+  color: $c-text-main;
+
+  font-family: $font-mono;
+
+  font-size: 1rem !important;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+// --------------------------------------------------------------------------
+// CONFIRMATION
+// --------------------------------------------------------------------------
+
+.preview-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  margin: 16px 20px 20px;
+
+  padding: 14px 16px;
+
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: $radius-md;
+
+  background: $c-success-bg;
+
+  color: $c-text-main;
+
+
+  strong {
+    font-size: 0.8125rem;
+  }
+
+
+  p {
+    margin: 4px 0 0;
+
+    color: $c-text-muted;
+
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+}
+
+
+.preview-confirmation__icon {
+  width: 24px;
+  height: 24px;
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: $c-success;
+  color: white;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+
+// --------------------------------------------------------------------------
+// EMPTY
+// --------------------------------------------------------------------------
+
+.preview-empty {
+  padding: 24px;
+
+  text-align: center;
+
+  color: $c-text-muted;
+
+  font-family: $font-mono;
+  font-size: 0.75rem;
+}
+
+
+// --------------------------------------------------------------------------
+// RESPONSIVE
+// --------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+
+  .preview-section {
+    padding: 0 16px 20px;
+  }
+
+
+  .preview-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+
+  .preview-action__info {
+    align-items: flex-start;
+  }
+
+
+  .btn-preview {
+    width: 100%;
+  }
+
+
+  .preview-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+
+  .preview-summary__item {
+
+    &:nth-child(2) {
+      border-right: none;
+    }
+
+    &:nth-child(-n + 2) {
+      border-bottom: 1px solid $c-border;
+    }
+  }
+
+}
+
