@@ -158,16 +158,11 @@ export class MatriculasList implements OnInit {
   modalOpen = false;
 
   /**
-   * Compatibilidad con el HTML actual.
-   * El HTML utiliza mostrarModal, pero internamente
-   * el componente trabaja con modalOpen.
+   * Compatibilidad con el HTML que usa:
+   * *ngIf="mostrarModal"
    */
   get mostrarModal(): boolean {
     return this.modalOpen;
-  }
-
-  set mostrarModal(valor: boolean) {
-    this.modalOpen = valor;
   }
 
   modoModal: 'crear' | 'editar' = 'crear';
@@ -205,7 +200,7 @@ export class MatriculasList implements OnInit {
   previewCuotaInicial: number | null = null;
 
   // ==========================================================
-  // COMPATIBILIDAD CON HTML ACTUAL
+  // COMPATIBILIDAD CON HTML
   // ==========================================================
 
   get mostrarPrevisualizacionCuotas(): boolean {
@@ -227,14 +222,7 @@ export class MatriculasList implements OnInit {
   get totalPreviewCuotas(): number {
     return this.previewCuotas.reduce(
       (total, cuota) =>
-        total +
-        Number(
-          cuota.monto ??
-          cuota.monto_cuota ??
-          cuota.importe ??
-          cuota.total ??
-          0
-        ),
+        total + this.getMontoCuota(cuota),
       0
     );
   }
@@ -247,14 +235,9 @@ export class MatriculasList implements OnInit {
 
     const anioActual = new Date().getFullYear();
 
-    for (
-      let i = anioActual + 1;
-      i >= 2023;
-      i--
-    ) {
+    for (let i = anioActual + 1; i >= 2023; i--) {
       this.aniosDisponibles.push(i);
     }
-
   }
 
   // ==========================================================
@@ -295,7 +278,6 @@ export class MatriculasList implements OnInit {
     // ========================================================
 
     this.cargarTodo();
-
   }
 
   // ==========================================================
@@ -332,7 +314,6 @@ export class MatriculasList implements OnInit {
       cuota_inicial: null
 
     };
-
   }
 
   // ==========================================================
@@ -524,7 +505,6 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
   }
 
   // ==========================================================
@@ -555,7 +535,6 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -567,24 +546,19 @@ export class MatriculasList implements OnInit {
     this.searchSubject.next(
       this.search || ''
     );
-
   }
 
-  // ==========================================================
-  // FILTRAR ALUMNOS
-  // ==========================================================
-
   /**
-   * Método utilizado directamente por el HTML
-   * mediante (ngModelChange)="filtrarAlumnos()".
+   * Compatibilidad con el HTML actual.
    *
-   * El filtrado real se realiza mediante el getter
-   * alumnosFiltrados.
+   * Si el input de alumnos llama:
+   * (ngModelChange)="filtrarAlumnos()"
+   *
+   * no necesitamos duplicar la lógica porque
+   * alumnosFiltrados es un getter.
    */
   filtrarAlumnos(): void {
-
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -593,42 +567,60 @@ export class MatriculasList implements OnInit {
 
   previsualizarCuotas(): void {
 
-    if (!this.form.plan_curso_id) {
+    if (!this.form.alumno_id) {
 
       Swal.fire({
-
         icon: 'warning',
-
-        title: 'Selecciona un plan',
-
+        title: 'Selecciona un alumno',
         text:
-          'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
-
+          'Debes seleccionar un alumno antes de previsualizar las cuotas.',
         confirmButtonText: 'Entendido'
-
       });
 
       return;
+    }
 
+    if (!this.form.plan_curso_id) {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Selecciona un plan',
+        text:
+          'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
+        confirmButtonText: 'Entendido'
+      });
+
+      return;
     }
 
     if (!this.form.fecha_matricula) {
 
       Swal.fire({
-
         icon: 'warning',
-
         title: 'Fecha requerida',
-
         text:
           'Debes indicar la fecha de matrícula.',
-
         confirmButtonText: 'Entendido'
-
       });
 
       return;
+    }
 
+    if (
+      this.mostrarSelectorMaquinas &&
+      this.maquinasSeleccionadas.length !==
+        this.cantidadMaquinasRequeridas
+    ) {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Máquinas incompletas',
+        text:
+          `Debes seleccionar exactamente ${this.cantidadMaquinasRequeridas} máquina(s) antes de previsualizar.`,
+        confirmButtonText: 'Entendido'
+      });
+
+      return;
     }
 
     this.previewCuotasLoading = true;
@@ -638,6 +630,14 @@ export class MatriculasList implements OnInit {
     this.previewCuotas = [];
 
     this.previewCuotasOpen = false;
+
+    this.previewMontoTotal =
+      this.form.monto_total ??
+      null;
+
+    this.previewCuotaInicial =
+      this.form.cuota_inicial ??
+      null;
 
     const payload = {
 
@@ -684,7 +684,6 @@ export class MatriculasList implements OnInit {
             this.cd.detectChanges();
 
             return;
-
           }
 
           this.previewCuotasOpen = true;
@@ -719,7 +718,6 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
   }
 
   // ==========================================================
@@ -728,9 +726,7 @@ export class MatriculasList implements OnInit {
 
   cerrarPreviewCuotas(): void {
 
-    if (
-      this.previewCuotasLoading
-    ) {
+    if (this.previewCuotasLoading) {
       return;
     }
 
@@ -744,6 +740,7 @@ export class MatriculasList implements OnInit {
 
     this.previewCuotaInicial = null;
 
+    this.cd.detectChanges();
   }
 
   // ==========================================================
@@ -759,7 +756,6 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -775,7 +771,21 @@ export class MatriculasList implements OnInit {
     this.previewCuotasError = '';
 
     this.cd.detectChanges();
+  }
 
+  // ==========================================================
+  // CAMBIO CUOTA INICIAL
+  // ==========================================================
+
+  onCuotaInicialChange(): void {
+
+    this.previewCuotasOpen = false;
+
+    this.previewCuotas = [];
+
+    this.previewCuotasError = '';
+
+    this.cd.detectChanges();
   }
 
   // ==========================================================
@@ -797,7 +807,6 @@ export class MatriculasList implements OnInit {
         minimumFractionDigits: 2
       }
     );
-
   }
 
   // ==========================================================
@@ -817,7 +826,6 @@ export class MatriculasList implements OnInit {
       index + 1
 
     );
-
   }
 
   // ==========================================================
@@ -834,7 +842,6 @@ export class MatriculasList implements OnInit {
       cuota.fecha ??
       null
     );
-
   }
 
   // ==========================================================
@@ -854,7 +861,6 @@ export class MatriculasList implements OnInit {
       0
 
     );
-
   }
 
   // ==========================================================
@@ -872,7 +878,6 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -916,7 +921,6 @@ export class MatriculasList implements OnInit {
       );
 
     this.cd.detectChanges();
-
   }
 
   cambiarPagina(
@@ -934,7 +938,6 @@ export class MatriculasList implements OnInit {
       pagina;
 
     this.actualizarPaginacion();
-
   }
 
   get paginas(): number[] {
@@ -950,7 +953,6 @@ export class MatriculasList implements OnInit {
         i + 1
 
     );
-
   }
 
   // ==========================================================
@@ -993,7 +995,6 @@ export class MatriculasList implements OnInit {
 
       }
     );
-
   }
 
   // ==========================================================
@@ -1079,10 +1080,10 @@ export class MatriculasList implements OnInit {
           this.maquinasSeleccionadas =
             (resp.data ?? [])
               .filter(
-                (m) => !m.es_regalo
+                (m: any) => !m.es_regalo
               )
               .map(
-                (m) => m.maquina_id
+                (m: any) => m.maquina_id
               );
 
           this.form.maquinas_seleccionadas =
@@ -1104,7 +1105,6 @@ export class MatriculasList implements OnInit {
         }
 
       });
-
   }
 
   // ==========================================================
@@ -1160,7 +1160,6 @@ export class MatriculasList implements OnInit {
     }
 
     return errores;
-
   }
 
   // ==========================================================
@@ -1195,7 +1194,6 @@ export class MatriculasList implements OnInit {
       });
 
       return;
-
     }
 
     const payload:
@@ -1327,7 +1325,6 @@ export class MatriculasList implements OnInit {
       }
 
     });
-
   }
 
   // ==========================================================
@@ -1343,7 +1340,6 @@ export class MatriculasList implements OnInit {
     this.cerrarPreviewCuotas();
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -1355,7 +1351,6 @@ export class MatriculasList implements OnInit {
     this.recalcularFechaFin();
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -1373,7 +1368,6 @@ export class MatriculasList implements OnInit {
         null;
 
       return;
-
     }
 
     const plan =
@@ -1389,7 +1383,6 @@ export class MatriculasList implements OnInit {
         null;
 
       return;
-
     }
 
     const meses =
@@ -1403,7 +1396,6 @@ export class MatriculasList implements OnInit {
         null;
 
       return;
-
     }
 
     this.form.fecha_fin_estimada =
@@ -1411,7 +1403,6 @@ export class MatriculasList implements OnInit {
         this.form.fecha_inicio,
         meses
       );
-
   }
 
   // ==========================================================
@@ -1442,7 +1433,6 @@ export class MatriculasList implements OnInit {
       this.cd.detectChanges();
 
       return;
-
     }
 
     const plan =
@@ -1457,7 +1447,6 @@ export class MatriculasList implements OnInit {
       this.cd.detectChanges();
 
       return;
-
     }
 
     if (
@@ -1467,7 +1456,6 @@ export class MatriculasList implements OnInit {
       this.cd.detectChanges();
 
       return;
-
     }
 
     this.mostrarSelectorMaquinas =
@@ -1497,7 +1485,6 @@ export class MatriculasList implements OnInit {
         : maquinasOrdenadas;
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -1528,7 +1515,6 @@ export class MatriculasList implements OnInit {
         return 0;
 
     }
-
   }
 
   // ==========================================================
@@ -1567,7 +1553,6 @@ export class MatriculasList implements OnInit {
         });
 
         return;
-
       }
 
       if (
@@ -1596,8 +1581,9 @@ export class MatriculasList implements OnInit {
         ...this.maquinasSeleccionadas
       ];
 
-    this.cd.detectChanges();
+    this.cerrarPreviewCuotas();
 
+    this.cd.detectChanges();
   }
 
   isMaquinaSeleccionada(
@@ -1606,7 +1592,6 @@ export class MatriculasList implements OnInit {
 
     return this.maquinasSeleccionadas
       .includes(maquinaId);
-
   }
 
   // ==========================================================
@@ -1637,7 +1622,6 @@ export class MatriculasList implements OnInit {
         return 0;
 
     }
-
   }
 
   // ==========================================================
@@ -1701,7 +1685,6 @@ export class MatriculasList implements OnInit {
       ).padStart(2, '0');
 
     return `${anioFinal}-${mesFinal}-${diaFinal}`;
-
   }
 
   // ==========================================================
@@ -1721,7 +1704,6 @@ export class MatriculasList implements OnInit {
     return alumno
       ? `${alumno.nombres} ${alumno.apellidos}`
       : '-';
-
   }
 
   getNombreEstado(
@@ -1736,7 +1718,6 @@ export class MatriculasList implements OnInit {
 
     return estado?.nombre ??
       '-';
-
   }
 
   getNombrePlan(
@@ -1751,7 +1732,6 @@ export class MatriculasList implements OnInit {
 
     return plan?.nombre ??
       '-';
-
   }
 
   // ==========================================================
@@ -1764,7 +1744,6 @@ export class MatriculasList implements OnInit {
   ): number {
 
     return matricula.id;
-
   }
 
   // ==========================================================
@@ -1788,7 +1767,6 @@ export class MatriculasList implements OnInit {
       plan.tipo_curso_codigo ===
       'MULTIPLE'
     );
-
   }
 
   // ==========================================================
@@ -1811,7 +1789,6 @@ export class MatriculasList implements OnInit {
           e.codigo
         )
     );
-
   }
 
   // ==========================================================
@@ -1847,7 +1824,6 @@ export class MatriculasList implements OnInit {
     ] = partes;
 
     return `${dia}/${mes}/${anio}`;
-
   }
 
   // ==========================================================
@@ -1869,27 +1845,21 @@ export class MatriculasList implements OnInit {
     ) {
 
       case 'MATRICULADO':
-
         return 'estado-badge estado-badge--matriculado';
 
       case 'EGRESADO':
-
         return 'estado-badge estado-badge--egresado';
 
       case 'RETIRADO':
-
         return 'estado-badge estado-badge--retirado';
 
       case 'RESERVA':
-
         return 'estado-badge estado-badge--reserva';
 
       default:
-
         return 'estado-badge';
 
     }
-
   }
 
   // ==========================================================
@@ -1984,7 +1954,6 @@ export class MatriculasList implements OnInit {
 
       }
     );
-
   }
 
   // ==========================================================
@@ -2002,7 +1971,6 @@ export class MatriculasList implements OnInit {
       )?.nombre ??
       codigo
     );
-
   }
 
   // ==========================================================
@@ -2018,7 +1986,6 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
 
   puedeEgresar(
@@ -2030,7 +1997,6 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
 
   puedeReservar(
@@ -2042,7 +2008,6 @@ export class MatriculasList implements OnInit {
         estadoId
       ) === 'MATRICULADO'
     );
-
   }
 
   puedeActivarMatricula(
@@ -2059,7 +2024,6 @@ export class MatriculasList implements OnInit {
       'RESERVA',
       'EGRESADO'
     ].includes(codigo);
-
   }
 
   getCodigoEstado(
@@ -2073,7 +2037,6 @@ export class MatriculasList implements OnInit {
       )?.codigo ??
       ''
     );
-
   }
 
   // ==========================================================
@@ -2086,7 +2049,6 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
 
   esVistaNoActiva(): boolean {
@@ -2098,7 +2060,6 @@ export class MatriculasList implements OnInit {
     ].includes(
       this.vistaActual
     );
-
   }
 
   puedeEditar(): boolean {
@@ -2107,13 +2068,11 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
 
   puedeVer(): boolean {
 
     return true;
-
   }
 
   puedeMostrarAccionesDeActiva(): boolean {
@@ -2122,7 +2081,6 @@ export class MatriculasList implements OnInit {
       this.vistaActual ===
       'MATRICULADO'
     );
-
   }
 
   puedeMostrarActivar(): boolean {
@@ -2134,7 +2092,6 @@ export class MatriculasList implements OnInit {
     ].includes(
       this.vistaActual
     );
-
   }
 
   // ==========================================================
@@ -2167,7 +2124,6 @@ export class MatriculasList implements OnInit {
         )
 
       );
-
   }
 
   // ==========================================================
@@ -2314,7 +2270,6 @@ export class MatriculasList implements OnInit {
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
-
   }
 
   // ==========================================================
@@ -2341,8 +2296,5 @@ export class MatriculasList implements OnInit {
     this.actualizarPaginacion();
 
     this.cd.detectChanges();
-
   }
-
 }
-
