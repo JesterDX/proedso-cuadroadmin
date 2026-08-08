@@ -79,6 +79,22 @@ export class MatriculasList implements OnInit {
   modalOpen = false;
   saving = false;
 
+
+  previewCuotasOpen = false;
+  previewCuotasLoading = false;
+  previewCuotasError = '';
+  previewCuotas: any[] = [];
+  
+  previewMontoTotal: number | null = null;
+  previewCuotaInicial: number | null = null;
+  
+  get totalPreviewCuotas(): number {
+    return this.previewCuotas.reduce(
+      (total, cuota) => total + Number(cuota.monto || cuota.monto_cuota || 0),
+      0
+    );
+  }
+
   mostrarSelectorMaquinas = false;
   cantidadMaquinasRequeridas = 0;
   maquinasDisponibles: Maquina[] = [];
@@ -212,6 +228,127 @@ export class MatriculasList implements OnInit {
   onSearchChange(): void {
     this.searchSubject.next(this.search);
   }
+
+  previsualizarCuotas(): void {
+  
+    if (!this.form.plan_curso_id) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Selecciona un plan',
+        text: 'Debes seleccionar un plan de curso antes de previsualizar las cuotas.',
+        confirmButtonText: 'Entendido'
+      });
+  
+      return;
+    }
+  
+    if (!this.form.fecha_matricula) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Fecha requerida',
+        text: 'Debes indicar la fecha de matrícula.',
+        confirmButtonText: 'Entendido'
+      });
+  
+      return;
+    }
+  
+    this.previewCuotasLoading = true;
+    this.previewCuotasError = '';
+    this.previewCuotas = [];
+  
+    const payload = {
+      plan_curso_id: this.form.plan_curso_id,
+      fecha_matricula: this.form.fecha_matricula,
+      monto_total: this.previewMontoTotal,
+      cuota_inicial: this.previewCuotaInicial
+    };
+  
+    this.matriculasService.previsualizarCuotas(payload).subscribe({
+  
+      next: (resp: ApiResponse<any>) => {
+  
+        this.previewCuotasLoading = false;
+  
+        this.previewCuotas = resp.data ?? [];
+  
+        if (this.previewCuotas.length === 0) {
+          this.previewCuotasError =
+            'No se pudieron generar cuotas para los datos seleccionados.';
+          return;
+        }
+  
+        this.previewCuotasOpen = true;
+  
+        this.cd.detectChanges();
+      },
+  
+      error: (err: any) => {
+  
+        this.previewCuotasLoading = false;
+  
+        this.previewCuotasError =
+          err?.error?.message ||
+          'No se pudo generar la previsualización de cuotas.';
+  
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: this.previewCuotasError,
+          confirmButtonText: 'Aceptar'
+        });
+  
+        this.cd.detectChanges();
+      }
+  
+    });
+  }
+  
+  cerrarPreviewCuotas(): void {
+    if (this.previewCuotasLoading) return;
+  
+    this.previewCuotasOpen = false;
+    this.previewCuotas = [];
+    this.previewCuotasError = '';
+  }
+  
+  formatMonto(valor: number | string | null | undefined): string {
+  
+    const numero = Number(valor ?? 0);
+  
+    return numero.toLocaleString('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+      minimumFractionDigits: 2
+    });
+  }
+  
+  getNumeroCuota(cuota: any, index: number): number {
+    return Number(
+      cuota.numero_cuota ??
+      cuota.nro_cuota ??
+      cuota.numero ??
+      index + 1
+    );
+  }
+  
+  getFechaCuota(cuota: any): string | null {
+    return cuota.fecha_vencimiento ??
+      cuota.fecha_pago ??
+      cuota.fecha ??
+      null;
+  }
+  
+  getMontoCuota(cuota: any): number {
+    return Number(
+      cuota.monto ??
+      cuota.monto_cuota ??
+      cuota.importe ??
+      cuota.total ??
+      0
+    );
+  }
+
   cerrarModal(): void {
     if (this.saving) return;
     this.modalOpen = false;
