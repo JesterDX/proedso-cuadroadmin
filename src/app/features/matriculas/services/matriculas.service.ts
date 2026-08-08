@@ -1,6 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import {
+  Observable,
+  tap,
+  catchError,
+  throwError
+} from 'rxjs';
 
 import { ApiResponse } from '../../../core/models/api-response.model';
 
@@ -66,7 +71,7 @@ export class MatriculasService {
 
   crear(
     payload: MatriculaPayload
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<Matricula>> {
 
     return this.http.post<ApiResponse<Matricula>>(
       this.apiUrl,
@@ -82,7 +87,7 @@ export class MatriculasService {
   actualizar(
     id: number,
     payload: MatriculaPayload
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<Matricula>> {
 
     return this.http.put<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}`,
@@ -97,7 +102,7 @@ export class MatriculasService {
 
   obtenerPorId(
     id: number
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<Matricula>> {
 
     return this.http.get<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}`
@@ -111,7 +116,7 @@ export class MatriculasService {
 
   obtenerDetalle(
     id: number
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<MatriculaDetail>> {
 
     return this.http.get<ApiResponse<MatriculaDetail>>(
       `${this.apiUrl}/${id}/detalle`
@@ -140,7 +145,7 @@ export class MatriculasService {
   cambiarEstado(
     id: number,
     codigoEstado: string
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<Matricula>> {
 
     return this.http.patch<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}/estado`,
@@ -166,25 +171,62 @@ export class MatriculasService {
     }
   ): Observable<ApiResponse<any[]>> {
 
-    const url = `${this.apiUrl}/previsualizar-cuotas`;
+    const url =
+      `${this.apiUrl}/previsualizar-cuotas`;
 
     console.log('');
     console.log('========================================');
     console.log('📤 PREVISUALIZAR CUOTAS - REQUEST');
     console.log('========================================');
-    console.log('🌐 URL:', url);
-    console.log('📦 PAYLOAD:', payload);
-    console.log('📋 PLAN:', payload.plan_curso_id);
-    console.log('📅 FECHA MATRÍCULA:', payload.fecha_matricula);
-    console.log('💰 MONTO TOTAL:', payload.monto_total);
-    console.log('💵 CUOTA INICIAL:', payload.cuota_inicial);
-    console.log('📆 MODALIDAD:', payload.modalidad_pago);
+
+    console.log(
+      '🌐 URL:',
+      url
+    );
+
+    console.log(
+      '📦 PAYLOAD:',
+      payload
+    );
+
+    console.log(
+      '📋 PLAN:',
+      payload.plan_curso_id
+    );
+
+    console.log(
+      '📅 FECHA MATRÍCULA:',
+      payload.fecha_matricula
+    );
+
+    console.log(
+      '💰 MONTO TOTAL:',
+      payload.monto_total
+    );
+
+    console.log(
+      '💵 CUOTA INICIAL:',
+      payload.cuota_inicial
+    );
+
+    console.log(
+      '📆 MODALIDAD:',
+      payload.modalidad_pago
+    );
+
     console.log(
       '🚜 MÁQUINAS:',
       payload.maquinas_seleccionadas
     );
-    console.log('========================================');
-    console.log('⏳ Esperando respuesta del backend...');
+
+    console.log(
+      '========================================'
+    );
+
+    console.log(
+      '⏳ Esperando respuesta del backend...'
+    );
+
     console.log('');
 
     return this.http
@@ -227,7 +269,10 @@ export class MatriculasService {
               : 'NO ES ARRAY'
           );
 
-          console.log('========================================');
+          console.log(
+            '========================================'
+          );
+
           console.log('');
 
         }),
@@ -273,10 +318,16 @@ export class MatriculasService {
             error?.message
           );
 
-          console.error('========================================');
+          console.error(
+            '========================================'
+          );
+
           console.error('');
 
-          return throwError(() => error);
+          return throwError(
+            () => error
+          );
+
         })
 
       );
@@ -303,7 +354,7 @@ export class MatriculasService {
 
   obtenerFinanzas(
     id: number
-  ): Observable<ApiResponse> {
+  ): Observable<ApiResponse<MatriculaFinanzasData>> {
 
     return this.http.get<ApiResponse<MatriculaFinanzasData>>(
       `${this.apiUrl}/${id}/finanzas`
@@ -311,4 +362,3 @@ export class MatriculasService {
   }
 
 }
-
