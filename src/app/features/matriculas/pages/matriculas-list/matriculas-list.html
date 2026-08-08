@@ -1319,17 +1319,16 @@
                   </td>
 
 
-                  <td>
-
-                    {{
-                      formatFechaVista(
-                        getFechaCuota(
-                          cuota
-                        )
-                      )
-                    }}
-
-                  </td>
+                <td>
+                
+                <input
+                type="date"
+                [ngModel]="getFechaCuotaInput(cuota)"
+                (ngModelChange)="editarFechaCuota(cuota, $event)"
+                class="preview-date-input"
+                />
+                
+                </td>
 
 
                   <td
