@@ -657,7 +657,6 @@ export class MatriculasList implements OnInit {
       
       };
 
-    };
 
     // ========================================================
     // LOG REQUEST
