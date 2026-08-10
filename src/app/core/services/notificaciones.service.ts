@@ -1,3 +1,4 @@
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -24,13 +25,6 @@ export interface NotificacionCuota {
 
   tipo: 'VENCIDA' | 'POR_VENCER';
 
-  /**
-   * VENCIDA:
-   * cantidad de días que lleva vencida.
-   *
-   * POR_VENCER:
-   * cantidad de días que faltan para vencer.
-   */
   dias: number;
 }
 
@@ -39,9 +33,11 @@ export interface ResumenNotificaciones {
   por_vencer: number;
   total: number;
 
-  cantidad_alumnos: number;
-  cantidad_alumnos_vencidos: number;
-  cantidad_alumnos_por_vencer: number;
+  // Estos datos vienen del backend,
+  // pero no son obligatorios para el header.
+  cantidad_alumnos?: number;
+  cantidad_alumnos_vencidos?: number;
+  cantidad_alumnos_por_vencer?: number;
 
   notificaciones: NotificacionCuota[];
 }
@@ -61,13 +57,6 @@ export class NotificacionService {
   private apiUrl =
     'https://proedso-back-wtdl.onrender.com/api/notificaciones/pagos';
 
-  /**
-   * Obtiene las notificaciones de cuotas:
-   *
-   * - Cuotas vencidas con saldo pendiente.
-   * - Cuotas que vencen dentro de los próximos 5 días.
-   * - Que todavía tienen saldo pendiente.
-   */
   obtenerNotificaciones(): Observable<ResumenNotificaciones> {
 
     return this.http
