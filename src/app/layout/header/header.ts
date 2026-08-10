@@ -1,4 +1,3 @@
-
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -11,27 +10,10 @@ import {
 import Swal from 'sweetalert2';
 
 import { AuthService } from '../../auth/services/auth.service';
-import { NotificacionService } from '../../core/services/notificaciones.service';
-interface Notificacion {
-  tipo: 'VENCIDA' | 'POR_VENCER';
-  alumno_id: number;
-  alumno_nombre: string;
-  alumno_dni: string;
-  cuota_id: number;
-  numero_cuota: number | null;
-  fecha_vencimiento: string;
-  monto_programado: number;
-  saldo_pendiente: number;
-  dias: number;
-  mensaje: string;
-}
-
-interface ResumenNotificaciones {
-  vencidas: number;
-  por_vencer: number;
-  total: number;
-  notificaciones: Notificacion[];
-}
+import {
+  NotificacionService,
+  ResumenNotificaciones
+} from '../../core/services/notificaciones.service';
 
 @Component({
   selector: 'app-header',
@@ -82,6 +64,7 @@ export class HeaderComponent implements OnInit {
         },
 
         error: (error) => {
+
           console.error(
             'Error al cargar las notificaciones:',
             error
@@ -93,6 +76,7 @@ export class HeaderComponent implements OnInit {
             total: 0,
             notificaciones: []
           });
+
         }
       });
   }
@@ -102,6 +86,7 @@ export class HeaderComponent implements OnInit {
     const data = this.notificaciones();
 
     if (!data.total) {
+
       Swal.fire({
         icon: 'success',
         title: 'Sin notificaciones',
@@ -133,6 +118,9 @@ export class HeaderComponent implements OnInit {
           notificacion.saldo_pendiente || 0
         ).toFixed(2);
 
+        const nombreCompleto =
+          `${notificacion.alumno_nombres} ${notificacion.alumno_apellidos}`.trim();
+
         return `
           <div style="
             text-align:left;
@@ -155,7 +143,7 @@ export class HeaderComponent implements OnInit {
               font-weight:600;
               color:#1f2937;
             ">
-              ${notificacion.alumno_nombre}
+              ${nombreCompleto}
             </div>
 
             <div style="
