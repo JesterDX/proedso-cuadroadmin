@@ -1637,193 +1637,239 @@ editarFechaCuota(
 
   }
 
-  // ==========================================================
-  // GUARDAR MATRÍCULA
-  // ==========================================================
 
-  guardarMatricula(): void {
+// ==========================================================
+// GUARDAR MATRÍCULA
+// ==========================================================
 
-    const errores =
-      this.validarFormulario();
+guardarMatricula(): void {
 
-    if (
-      errores.length > 0
-    ) {
+  const errores =
+    this.validarFormulario();
 
-      Swal.fire({
+  if (
+    errores.length > 0
+  ) {
 
-        icon: 'warning',
+    Swal.fire({
 
-        title: 'Faltan datos',
+      icon: 'warning',
 
-        html:
-          errores
-            .map(
-              (e) => `• ${e}`
-            )
-            .join('<br>'),
+      title: 'Faltan datos',
 
-        confirmButtonText:
-          'Entendido'
+      html:
+        errores
+          .map(
+            (e) => `• ${e}`
+          )
+          .join('<br>'),
 
-      });
-
-      return;
-
-    }
-
-    // ========================================================
-    // SINCRONIZAR MÁQUINAS
-    // ========================================================
-
-    this.form.maquinas_seleccionadas =
-      [
-        ...this.maquinasSeleccionadas
-      ];
-
-    // ========================================================
-    // PAYLOAD
-    // ========================================================
-
-    const payload:
-      MatriculaPayload = {
-
-      alumno_id:
-        this.form.alumno_id,
-
-      plan_curso_id:
-        this.form.plan_curso_id,
-
-      estado_alumno_id:
-        this.form.estado_alumno_id,
-
-      fecha_matricula:
-        this.form.fecha_matricula,
-
-      fecha_inicio:
-        this.form.fecha_inicio ||
-        null,
-
-      fecha_fin_estimada:
-        this.form.fecha_fin_estimada ||
-        null,
-
-      notas:
-        this.form.notas ||
-        '',
-
-      maquinas_seleccionadas:
-        [
-          ...this.maquinasSeleccionadas
-        ],
-
-      modalidad_pago:
-        this.form.modalidad_pago ||
-        'MENSUAL',
-
-      monto_total:
-        this.form.monto_total ??
-        null,
-
-      cuota_inicial:
-        this.form.cuota_inicial ??
-        null,
-
-      certificacion_incluida:
-        this.form.certificacion_incluida ??
-        true,
-
-      costo_certificacion:
-        this.form.costo_certificacion ??
-        null
-
-    };
-
-    // ========================================================
-    // GUARDAR
-    // ========================================================
-
-    this.saving = true;
-
-    this.cd.detectChanges();
-
-    const request$ =
-      this.modoModal === 'crear'
-        ? this.matriculasService.crear(payload)
-        : this.matriculasService.actualizar(
-            this.matriculaEditandoId!,
-            payload
-          );
-
-    request$.subscribe({
-
-      next: (
-        resp: ApiResponse<Matricula>
-      ) => {
-
-        const modo =
-          this.modoModal;
-
-        this.saving = false;
-
-        this.modalOpen = false;
-
-        this.cerrarPreviewCuotas();
-
-        this.cd.detectChanges();
-
-        Swal.fire({
-
-          icon: 'success',
-
-          title:
-            modo === 'crear'
-              ? 'Matrícula creada'
-              : 'Matrícula actualizada',
-
-          text:
-            resp.message ||
-            (
-              modo === 'crear'
-                ? 'La matrícula fue registrada correctamente.'
-                : 'La matrícula fue actualizada correctamente.'
-            ),
-
-          confirmButtonText:
-            'Aceptar'
-
-        });
-
-        this.cargarTodo();
-
-      },
-
-      error: (err: any) => {
-
-        this.saving = false;
-
-        this.cd.detectChanges();
-
-        Swal.fire({
-
-          icon: 'error',
-
-          title: 'Error',
-
-          text:
-            err?.error?.message ||
-            'No se pudo guardar la matrícula.',
-
-          confirmButtonText:
-            'Aceptar'
-
-        });
-
-      }
+      confirmButtonText:
+        'Entendido'
 
     });
 
+    return;
+
   }
+
+  // ========================================================
+  // SINCRONIZAR MÁQUINAS
+  // ========================================================
+
+  this.form.maquinas_seleccionadas =
+    [
+      ...this.maquinasSeleccionadas
+    ];
+
+  // ========================================================
+  // PAYLOAD
+  // ========================================================
+
+  const payload:
+    MatriculaPayload = {
+
+    alumno_id:
+      this.form.alumno_id,
+
+    plan_curso_id:
+      this.form.plan_curso_id,
+
+    estado_alumno_id:
+      this.form.estado_alumno_id,
+
+    fecha_matricula:
+      this.form.fecha_matricula,
+
+    fecha_inicio:
+      this.form.fecha_inicio ||
+      null,
+
+    fecha_fin_estimada:
+      this.form.fecha_fin_estimada ||
+      null,
+
+    notas:
+      this.form.notas ||
+      '',
+
+    maquinas_seleccionadas:
+      [
+        ...this.maquinasSeleccionadas
+      ],
+
+    modalidad_pago:
+      this.form.modalidad_pago ||
+      'MENSUAL',
+
+    monto_total:
+      this.form.monto_total ??
+      null,
+
+    cuota_inicial:
+      this.form.cuota_inicial ??
+      null,
+
+    certificacion_incluida:
+      this.form.certificacion_incluida ??
+      true,
+
+    costo_certificacion:
+      this.form.costo_certificacion ??
+      null,
+
+    // ======================================================
+    // CRONOGRAMA CONFIRMADO
+    // ======================================================
+
+    cronograma_confirmado:
+      this.previewCuotas.length > 0
+        ? this.previewCuotas
+        : null
+
+  };
+
+  // ========================================================
+  // LOG CRONOGRAMA
+  // ========================================================
+
+  console.log('');
+  console.log('========================================');
+  console.log('🔥 GUARDANDO MATRÍCULA');
+  console.log('========================================');
+
+  console.log(
+    '📦 PAYLOAD COMPLETO:',
+    payload
+  );
+
+  console.log(
+    '📅 CRONOGRAMA CONFIRMADO:',
+    payload.cronograma_confirmado
+  );
+
+  console.log(
+    '📏 CANTIDAD CRONOGRAMA:',
+    payload.cronograma_confirmado?.length ?? 0
+  );
+
+  console.log(
+    '📋 CRONOGRAMA JSON:',
+    JSON.stringify(
+      payload.cronograma_confirmado,
+      null,
+      2
+    )
+  );
+
+  console.log('========================================');
+
+  // ========================================================
+  // GUARDAR
+  // ========================================================
+
+  this.saving = true;
+
+  this.cd.detectChanges();
+
+  const request$ =
+    this.modoModal === 'crear'
+      ? this.matriculasService.crear(payload)
+      : this.matriculasService.actualizar(
+          this.matriculaEditandoId!,
+          payload
+        );
+
+  request$.subscribe({
+
+    next: (
+      resp: ApiResponse<Matricula>
+    ) => {
+
+      const modo =
+        this.modoModal;
+
+      this.saving = false;
+
+      this.modalOpen = false;
+
+      this.cerrarPreviewCuotas();
+
+      this.cd.detectChanges();
+
+      Swal.fire({
+
+        icon: 'success',
+
+        title:
+          modo === 'crear'
+            ? 'Matrícula creada'
+            : 'Matrícula actualizada',
+
+        text:
+          resp.message ||
+          (
+            modo === 'crear'
+              ? 'La matrícula fue registrada correctamente.'
+              : 'La matrícula fue actualizada correctamente.'
+          ),
+
+        confirmButtonText:
+          'Aceptar'
+
+      });
+
+      this.cargarTodo();
+
+    },
+
+    error: (err: any) => {
+
+      this.saving = false;
+
+      this.cd.detectChanges();
+
+      Swal.fire({
+
+        icon: 'error',
+
+        title: 'Error',
+
+        text:
+          err?.error?.message ||
+          'No se pudo guardar la matrícula.',
+
+        confirmButtonText:
+          'Aceptar'
+
+      });
+
+    }
+
+  });
+
+}
+
 
   // ==========================================================
   // CAMBIO DE PLAN
