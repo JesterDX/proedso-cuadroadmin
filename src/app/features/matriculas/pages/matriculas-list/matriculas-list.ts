@@ -681,7 +681,7 @@ const payload = {
   cuotas_personalizadas:
   this.previewCuotas.length > 0
     ? this.previewCuotas
-    : null
+    : []
 
 };
 
