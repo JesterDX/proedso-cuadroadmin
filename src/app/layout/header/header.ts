@@ -14,8 +14,7 @@ import { Subscription, interval } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { AuthService } from '../../auth/services/auth.service';
-import { NotificacionService } from '../services/notificacion.service';
-
+import { NotificacionService } from '../../core/services/notificaciones.service';
 interface Notificacion {
 id: number;
 tipo: 'VENCIDA' | 'POR_VENCER';
