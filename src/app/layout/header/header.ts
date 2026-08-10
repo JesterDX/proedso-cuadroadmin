@@ -1,327 +1,265 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+typescript
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-LucideAngularModule,
-Search,
-Bell,
-UserCircle2,
-LogOut,
-AlertCircle,
-Clock,
-ChevronDown
+  LucideAngularModule,
+  Search,
+  Bell,
+  UserCircle2,
+  LogOut
 } from 'lucide-angular';
-import { Subscription, interval } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { NotificacionService } from '../../core/services/notificaciones.service';
 interface Notificacion {
-id: number;
-tipo: 'VENCIDA' | 'POR_VENCER';
-matricula_id: number;
-alumno_id: number;
-alumno_nombre: string;
-alumno_dni: string;
-cuota_id: number;
-numero_cuota: number | null;
-fecha_vencimiento: string;
-monto: number;
-dias_diferencia: number;
-mensaje: string;
+  tipo: 'VENCIDA' | 'POR_VENCER';
+  alumno_id: number;
+  alumno_nombre: string;
+  alumno_dni: string;
+  cuota_id: number;
+  numero_cuota: number | null;
+  fecha_vencimiento: string;
+  monto_programado: number;
+  saldo_pendiente: number;
+  dias: number;
+  mensaje: string;
 }
 
 interface ResumenNotificaciones {
-vencidas: number;
-por_vencer: number;
-total: number;
-notificaciones: Notificacion[];
+  vencidas: number;
+  por_vencer: number;
+  total: number;
+  notificaciones: Notificacion[];
 }
 
 @Component({
-selector: 'app-header',
-standalone: true,
-imports: [LucideAngularModule],
-templateUrl: './header.html',
-styleUrls: ['./header.scss']
+  selector: 'app-header',
+  standalone: true,
+  imports: [LucideAngularModule],
+  templateUrl: './header.html',
+  styleUrls: ['./header.scss']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit {
 
-private authService = inject(AuthService);
-private router = inject(Router);
-private notificacionService = inject(NotificacionService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private notificacionService = inject(NotificacionService);
 
-private refreshSubscription?: Subscription;
+  public usuarioLogueado = this.authService.usuarioActual;
 
-public usuarioLogueado = this.authService.usuarioActual;
+  readonly icons = {
+    search: Search,
+    bell: Bell,
+    user: UserCircle2,
+    logout: LogOut
+  };
 
-readonly icons = {
-search: Search,
-bell: Bell,
-user: UserCircle2,
-logout: LogOut,
-alert: AlertCircle,
-clock: Clock,
-chevron: ChevronDown
-};
-
-// =========================================================
-// NOTIFICACIONES
-// =========================================================
-
-notificaciones = signal<ResumenNotificaciones>({
-vencidas: 0,
-por_vencer: 0,
-total: 0,
-notificaciones: []
-});
-
-mostrarNotificaciones = signal(false);
-
-cargandoNotificaciones = signal(false);
-
-// =========================================================
-// INICIO
-// =========================================================
-
-ngOnInit(): void {
-
-
-this.cargarNotificaciones();
-
-// Actualizar cada 5 minutos
-this.refreshSubscription = interval(5 * 60 * 1000)
-  .subscribe(() => {
-    this.cargarNotificaciones();
+  notificaciones = signal<ResumenNotificaciones>({
+    vencidas: 0,
+    por_vencer: 0,
+    total: 0,
+    notificaciones: []
   });
 
+  ngOnInit(): void {
+    this.cargarNotificaciones();
+  }
 
-}
+  cargarNotificaciones(): void {
 
-// =========================================================
-// DESTRUIR
-// =========================================================
+    this.notificacionService.obtenerNotificaciones()
+      .subscribe({
+        next: (response: ResumenNotificaciones) => {
 
-ngOnDestroy(): void {
+          this.notificaciones.set({
+            vencidas: Number(response?.vencidas || 0),
+            por_vencer: Number(response?.por_vencer || 0),
+            total: Number(response?.total || 0),
+            notificaciones: response?.notificaciones || []
+          });
 
+        },
 
-this.refreshSubscription?.unsubscribe();
+        error: (error) => {
+          console.error(
+            'Error al cargar las notificaciones:',
+            error
+          );
 
+          this.notificaciones.set({
+            vencidas: 0,
+            por_vencer: 0,
+            total: 0,
+            notificaciones: []
+          });
+        }
+      });
+  }
 
-}
+  abrirNotificaciones(): void {
 
-// =========================================================
-// CARGAR NOTIFICACIONES
-// =========================================================
+    const data = this.notificaciones();
 
-cargarNotificaciones(): void {
-
-
-if (this.cargandoNotificaciones()) {
-  return;
-}
-
-this.cargandoNotificaciones.set(true);
-
-this.notificacionService.obtenerNotificaciones()
-  .subscribe({
-
-    next: (response: ResumenNotificaciones) => {
-
-      this.notificaciones.set({
-
-        vencidas: Number(response?.vencidas || 0),
-
-        por_vencer: Number(response?.por_vencer || 0),
-
-        total: Number(response?.total || 0),
-
-        notificaciones:
-          Array.isArray(response?.notificaciones)
-            ? response.notificaciones
-            : []
-
+    if (!data.total) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Sin notificaciones',
+        text: 'No hay cuotas vencidas ni cuotas próximas a vencer.',
+        confirmButtonColor: '#f5b700'
       });
 
-      this.cargandoNotificaciones.set(false);
-
-    },
-
-    error: (error) => {
-
-      console.error(
-        'Error al cargar notificaciones:',
-        error
-      );
-
-      this.cargandoNotificaciones.set(false);
-
+      return;
     }
 
-  });
+    const contenido = data.notificaciones
+      .map((notificacion) => {
 
+        const clase =
+          notificacion.tipo === 'VENCIDA'
+            ? 'color:#dc2626;'
+            : 'color:#d97706;';
 
-}
+        const estado =
+          notificacion.tipo === 'VENCIDA'
+            ? 'CUOTA VENCIDA'
+            : 'CUOTA POR VENCER';
 
-// =========================================================
-// ABRIR / CERRAR CAMPANA
-// =========================================================
+        const fecha = this.formatearFecha(
+          notificacion.fecha_vencimiento
+        );
 
-toggleNotificaciones(): void {
+        const saldo = Number(
+          notificacion.saldo_pendiente || 0
+        ).toFixed(2);
 
+        return `
+          <div style="
+            text-align:left;
+            padding:12px;
+            margin-bottom:8px;
+            border:1px solid #e5e7eb;
+            border-radius:8px;
+            background:#fff;
+          ">
 
-this.mostrarNotificaciones.update(
-  visible => !visible
-);
+            <div style="
+              font-weight:700;
+              ${clase}
+              margin-bottom:5px;
+            ">
+              ${estado}
+            </div>
 
-// Si se abre, refrescamos para tener datos actualizados
-if (this.mostrarNotificaciones()) {
-  this.cargarNotificaciones();
-}
+            <div style="
+              font-weight:600;
+              color:#1f2937;
+            ">
+              ${notificacion.alumno_nombre}
+            </div>
 
+            <div style="
+              font-size:13px;
+              color:#64748b;
+            ">
+              DNI: ${notificacion.alumno_dni}
+            </div>
 
-}
+            <div style="
+              font-size:13px;
+              color:#475569;
+              margin-top:4px;
+            ">
+              Cuota:
+              ${
+                notificacion.numero_cuota !== null
+                  ? notificacion.numero_cuota
+                  : 'Certificación'
+              }
+            </div>
 
-// =========================================================
-// IR A MATRÍCULA
-// =========================================================
+            <div style="
+              font-size:13px;
+              color:#475569;
+            ">
+              Vencimiento: ${fecha}
+            </div>
 
-abrirNotificacion(
-notificacion: Notificacion
-): void {
+            <div style="
+              font-size:13px;
+              color:#475569;
+            ">
+              Saldo pendiente: S/ ${saldo}
+            </div>
 
-
-this.mostrarNotificaciones.set(false);
-
-this.router.navigate([
-  '/admin/matriculas',
-  notificacion.matricula_id
-]);
-
-
-}
-
-// =========================================================
-// COLOR SEGÚN TIPO
-// =========================================================
-
-obtenerClaseNotificacion(
-tipo: string
-): string {
-
-
-return tipo === 'VENCIDA'
-  ? 'notificacion-vencida'
-  : 'notificacion-por-vencer';
-
-
-}
-
-// =========================================================
-// TEXTO DE FECHA
-// =========================================================
-
-formatearFecha(
-fecha: string
-): string {
-
-
-if (!fecha) {
-  return '';
-}
-
-const fechaObj = new Date(
-  `${fecha}T00:00:00`
-);
-
-return fechaObj.toLocaleDateString(
-  'es-PE',
-  {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }
-);
-
-
-}
-
-// =========================================================
-// FORMATEAR MONTO
-// =========================================================
-
-formatearMonto(
-monto: number
-): string {
-
-
-return Number(monto || 0)
-  .toLocaleString(
-    'es-PE',
-    {
-      style: 'currency',
-      currency: 'PEN'
-    }
-  );
-
-
-}
-
-// =========================================================
-// CERRAR SESIÓN
-// =========================================================
-
-onLogout(): void {
-
-
-Swal.fire({
-
-  title: '¿Cerrar sesión?',
-
-  text:
-    '¿Está seguro de que desea salir del sistema PROEDSO?',
-
-  icon: 'question',
-
-  showCancelButton: true,
-
-  confirmButtonColor: '#f5b700',
-
-  cancelButtonColor: '#1e222b',
-
-  confirmButtonText: 'Sí, salir',
-
-  cancelButtonText: 'Cancelar',
-
-  reverseButtons: true
-
-}).then((result) => {
-
-  if (result.isConfirmed) {
-
-    this.authService.logout();
+          </div>
+        `;
+      })
+      .join('');
 
     Swal.fire({
-
-      icon: 'success',
-
-      title: 'Sesión finalizada',
-
-      text:
-        'Has cerrado sesión de forma segura.',
-
-      timer: 1300,
-
-      showConfirmButton: false
-
+      title: 'Notificaciones',
+      html: `
+        <div style="
+          max-height:450px;
+          overflow-y:auto;
+          padding:4px;
+        ">
+          ${contenido}
+        </div>
+      `,
+      width: 550,
+      confirmButtonColor: '#f5b700',
+      confirmButtonText: 'Cerrar'
     });
-
-    this.router.navigate(['/login']);
-
   }
 
-});
+  formatearFecha(fecha: string): string {
 
+    if (!fecha) {
+      return '-';
+    }
 
+    const partes = String(fecha).split('-');
+
+    if (partes.length !== 3) {
+      return fecha;
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  onLogout(): void {
+
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: '¿Está seguro de que desea salir del sistema PROEDSO?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#f5b700',
+      cancelButtonColor: '#1e222b',
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+        this.authService.logout();
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Sesión finalizada',
+          text: 'Has cerrado sesión de forma segura.',
+          timer: 1300,
+          showConfirmButton: false
+        });
+
+        this.router.navigate(['/login']);
+      }
+
+    });
+  }
 }
 
-}
