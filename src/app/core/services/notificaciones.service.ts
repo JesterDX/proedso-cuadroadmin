@@ -50,7 +50,7 @@ export class NotificacionService {
 
   private http = inject(HttpClient);
 
-  private readonly API_URL = 'http://localhost:3000/api/notificaciones';
+  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/notificaciones';
 
   /**
    * Obtiene las notificaciones de cuotas:
@@ -61,7 +61,7 @@ export class NotificacionService {
    */
   obtenerNotificaciones(): Observable<ResumenNotificaciones> {
     return this.http.get<ResumenNotificaciones>(
-      this.API_URL
+      this.apiUrl
     );
   }
 }
