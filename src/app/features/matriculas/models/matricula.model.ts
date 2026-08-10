@@ -75,7 +75,6 @@ export interface CuotaCronogramaPayload {
   monto: number;
 }
 
-
 // ==========================================================
 // PAYLOAD PARA CREAR / ACTUALIZAR MATRÍCULA
 // ==========================================================
@@ -133,12 +132,11 @@ export interface MatriculaPayload {
   costo_certificacion?: number | null;
 
   // ========================================================
-  // CUOTAS
+  // CRONOGRAMA CONFIRMADO
   // ========================================================
 
-  cuotas?: CuotaCronogramaPayload[];
+  cronograma_confirmado?: CuotaCronogramaPayload[];
 }
-
 
 // ==========================================================
 // RESPUESTA DE PREVISUALIZACIÓN DE CUOTAS
