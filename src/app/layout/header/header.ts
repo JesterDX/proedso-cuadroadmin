@@ -1,4 +1,4 @@
-typescript
+
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
