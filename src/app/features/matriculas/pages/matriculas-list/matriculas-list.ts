@@ -1157,19 +1157,19 @@ const payload = {
   // FECHA CUOTA
   // ==========================================================
 
-  getFechaCuota(
-    cuota: any
-  ): string | null {
+getFechaCuota(
+  cuota: any
+): string | null {
 
-    return (
-      cuota?.fecha_vencimiento ??
-      cuota?.fecha_pago ??
-      cuota?.fecha_programada ??
-      cuota?.fecha ??
-      null
-    );
+  return (
+    cuota?.fecha_vencimiento ??
+    cuota?.fecha_programada ??
+    cuota?.fecha_pago ??
+    cuota?.fecha ??
+    null
+  );
 
-  }
+}
 
   // ==========================================================
   // FECHA INPUT
@@ -1195,54 +1195,50 @@ const payload = {
   // EDITAR FECHA CUOTA
   // ==========================================================
 
-  editarFechaCuota(
-    cuota: any,
-    nuevaFecha: string
-  ): void {
+editarFechaCuota(
+  cuota: any,
+  nuevaFecha: string
+): void {
 
-    if (!nuevaFecha) {
-      return;
-    }
+  if (!nuevaFecha) {
+    return;
+  }
 
-    if (
-      cuota.fecha_vencimiento !== undefined
-    ) {
+  // ========================================================
+  // LA FECHA EDITADA SE CONVIERTE EN LA FECHA OFICIAL
+  // DEL CRONOGRAMA
+  // ========================================================
 
-      cuota.fecha_vencimiento =
-        nuevaFecha;
+  cuota.fecha_vencimiento =
+    nuevaFecha;
 
-    } else if (
-      cuota.fecha_pago !== undefined
-    ) {
+  cuota.fecha_programada =
+    nuevaFecha;
 
-      cuota.fecha_pago =
-        nuevaFecha;
+  // Por compatibilidad, si existe alguno de estos campos
+  // también lo sincronizamos.
 
-    } else if (
-      cuota.fecha_programada !== undefined
-    ) {
+  if (
+    cuota.fecha_pago !== undefined
+  ) {
 
-      cuota.fecha_programada =
-        nuevaFecha;
-
-    } else if (
-      cuota.fecha !== undefined
-    ) {
-
-      cuota.fecha =
-        nuevaFecha;
-
-    } else {
-
-      cuota.fecha_vencimiento =
-        nuevaFecha;
-
-    }
-
-    this.cd.detectChanges();
+    cuota.fecha_pago =
+      nuevaFecha;
 
   }
 
+  if (
+    cuota.fecha !== undefined
+  ) {
+
+    cuota.fecha =
+      nuevaFecha;
+
+  }
+
+  this.cd.detectChanges();
+
+}
   // ==========================================================
   // MONTO CUOTA
   // ==========================================================
