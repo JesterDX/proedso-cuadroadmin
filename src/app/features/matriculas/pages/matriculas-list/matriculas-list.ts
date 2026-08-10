@@ -1374,6 +1374,21 @@ export class MatriculasList implements OnInit {
   abrirModalEditar(
     matricula: Matricula
   ): void {
+      console.log('========================================');
+  console.log('📝 EDITANDO MATRÍCULA');
+  console.log('========================================');
+  console.log('MATRÍCULA COMPLETA:', matricula);
+  console.log('monto_total:', matricula.monto_total);
+  console.log('cuota_inicial:', matricula.cuota_inicial);
+  console.log(
+    'certificacion_incluida:',
+    matricula.certificacion_incluida
+  );
+  console.log(
+    'costo_certificacion:',
+    matricula.costo_certificacion
+  );
+  console.log('========================================');
 
     this.modoModal = 'editar';
 
