@@ -50,19 +50,20 @@ export class NotificacionService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'https://proedso-back-wtdl.onrender.com/api/notificaciones';
+  private apiUrl =
+    'https://proedso-back-wtdl.onrender.com/api/notificaciones/pagos';
 
   /**
    * Obtiene las notificaciones de cuotas:
    *
    * - Cuotas vencidas con saldo pendiente.
-   * - Cuotas que vencen dentro de los próximos 5 días
-   *   y que todavía tienen saldo pendiente.
+   * - Cuotas que vencen dentro de los próximos 5 días.
+   * - Que todavía tienen saldo pendiente.
    */
   obtenerNotificaciones(): Observable<ResumenNotificaciones> {
+
     return this.http.get<ResumenNotificaciones>(
       this.apiUrl
     );
   }
 }
-
