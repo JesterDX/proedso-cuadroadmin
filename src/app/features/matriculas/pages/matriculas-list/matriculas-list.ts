@@ -677,7 +677,11 @@ const payload = {
 
   costo_certificacion:
     this.form.costo_certificacion ??
-    null
+    null,
+  cuotas_personalizadas:
+  this.previewCuotas.length > 0
+    ? this.previewCuotas
+    : null
 
 };
 
