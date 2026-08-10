@@ -97,6 +97,7 @@ export class MatriculasList implements OnInit {
   matriculasOriginal: Matricula[] = [];
 
   matriculasPaginadas: Matricula[] = [];
+  
 
   // ==========================================================
   // CATÁLOGOS
@@ -206,6 +207,7 @@ export class MatriculasList implements OnInit {
   previewCuotasLoading = false;
 
   previewCuotasError = '';
+  cronogramaConfirmado: CuotaCronogramaPayload[] = [];
 
   previewCuotas: CuotaCronograma[] = [];
 
@@ -677,11 +679,7 @@ const payload = {
 
   costo_certificacion:
     this.form.costo_certificacion ??
-    null,
-  cuotas_personalizadas:
-  this.previewCuotas.length > 0
-    ? this.previewCuotas
-    : []
+    null
 
 };
 
