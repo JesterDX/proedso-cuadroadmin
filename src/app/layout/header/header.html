@@ -8,9 +8,61 @@
 
   <div class="header-right">
 
-    <button class="action-btn" title="Notificaciones">
-      <lucide-angular [img]="icons.bell" class="btn-icon"></lucide-angular>
-      <span class="notification-badge"></span> </button>
+<button
+  class="action-btn"
+  title="Notificaciones"
+  (click)="abrirNotificaciones()"
+>
+  <lucide-angular
+    [img]="icons.bell"
+    class="btn-icon">
+  </lucide-angular>
+
+  @if (notificaciones().total > 0) {
+    <span class="notification-badge">
+      {{ notificaciones().total }}
+    </span>
+  }
+</button>
+
+<div class="header-divider"></div>
+
+<div class="header-profile-section">
+
+  <div class="user-info">
+
+    <span class="user-name">
+      {{ usuarioLogueado()?.nombres }}
+      {{ usuarioLogueado()?.apellidos }}
+    </span>
+
+    <span class="user-role">
+      {{ usuarioLogueado()?.rol }}
+    </span>
+
+  </div>
+
+  <div class="avatar-container">
+    <lucide-angular
+      [img]="icons.user"
+      class="user-avatar-icon">
+    </lucide-angular>
+  </div>
+
+</div>
+
+<button
+  class="btn-logout-header"
+  (click)="onLogout()"
+  title="Cerrar Sesión"
+>
+  <lucide-angular
+    [img]="icons.logout"
+    class="logout-icon">
+  </lucide-angular>
+</button>
+
+
 
     <div class="header-divider"></div>
 
