@@ -444,7 +444,12 @@ export class MatriculasList implements OnInit {
 
           this.matriculas =
             resp.matriculas?.data ?? [];
-
+            console.log('========================================');
+            console.log('📋 MATRÍCULAS DEL LISTADO');
+            console.log('========================================');
+            console.log(this.matriculas);
+            console.log('PRIMERA MATRÍCULA:', this.matriculas[0]);
+            console.log('========================================');
           this.matriculasOriginal =
             [...this.matriculas];
 
