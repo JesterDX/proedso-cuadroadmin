@@ -1,7 +1,6 @@
-
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface NotificacionCuota {
   matricula_id: number;
@@ -40,7 +39,16 @@ export interface ResumenNotificaciones {
   por_vencer: number;
   total: number;
 
+  cantidad_alumnos: number;
+  cantidad_alumnos_vencidos: number;
+  cantidad_alumnos_por_vencer: number;
+
   notificaciones: NotificacionCuota[];
+}
+
+interface RespuestaNotificaciones {
+  ok: boolean;
+  data: ResumenNotificaciones;
 }
 
 @Injectable({
@@ -62,9 +70,10 @@ export class NotificacionService {
    */
   obtenerNotificaciones(): Observable<ResumenNotificaciones> {
 
-    return this.http.get<ResumenNotificaciones>(
-      this.apiUrl
-    );
+    return this.http
+      .get<RespuestaNotificaciones>(this.apiUrl)
+      .pipe(
+        map(respuesta => respuesta.data)
+      );
   }
 }
-
