@@ -64,34 +64,5 @@
 
 
 
-    <div class="header-divider"></div>
-
-    <div class="header-profile-section">
-
-      <div class="user-info">
-
-        <span class="user-name">
-          {{ usuarioLogueado()?.nombres }}
-          {{ usuarioLogueado()?.apellidos }}
-        </span>
-
-        <span class="user-role">
-          {{ usuarioLogueado()?.rol }}
-        </span>
-
-      </div>
-
-      <div class="avatar-container">
-        <lucide-angular [img]="icons.user" class="user-avatar-icon">
-        </lucide-angular>
-      </div>
-
-    </div>
-
-
-    <button class="btn-logout-header" (click)="onLogout()" title="Cerrar Sesión">
-      <lucide-angular [img]="icons.logout" class="logout-icon"></lucide-angular>
-    </button>
-
   </div>
 </header>
