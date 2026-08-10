@@ -625,41 +625,61 @@ export class MatriculasList implements OnInit {
 
     this.cd.detectChanges();
 
-    // ========================================================
-    // PAYLOAD
-    // ========================================================
+const payload = {
 
-    const payload = {
+  plan_curso_id:
+    Number(this.form.plan_curso_id),
 
-      plan_curso_id:
-        Number(this.form.plan_curso_id),
+  // ==================================================
+  // FECHAS
+  // ==================================================
 
-      fecha_matricula:
-        this.form.fecha_matricula,
+  fecha_matricula:
+    this.form.fecha_matricula,
 
-      monto_total:
-        this.form.monto_total ?? null,
+  fecha_inicio:
+    this.form.fecha_inicio ||
+    null,
 
-      cuota_inicial:
-        this.form.cuota_inicial ?? null,
+  fecha_fin_estimada:
+    this.form.fecha_fin_estimada ||
+    null,
 
-      modalidad_pago:
-        this.form.modalidad_pago ??
-        'MENSUAL',
+  // ==================================================
+  // DATOS FINANCIEROS
+  // ==================================================
 
-      maquinas_seleccionadas:
-        [
-          ...this.maquinasSeleccionadas
-        ],
+  monto_total:
+    this.form.monto_total ?? null,
 
-      certificacion_incluida:
-        this.form.certificacion_incluida ?? true,
+  cuota_inicial:
+    this.form.cuota_inicial ?? null,
 
-      costo_certificacion:
-        this.form.costo_certificacion ??
-        null
+  modalidad_pago:
+    this.form.modalidad_pago ??
+    'MENSUAL',
 
-    };
+  // ==================================================
+  // MÁQUINAS
+  // ==================================================
+
+  maquinas_seleccionadas:
+    [
+      ...this.maquinasSeleccionadas
+    ],
+
+  // ==================================================
+  // CERTIFICACIÓN
+  // ==================================================
+
+  certificacion_incluida:
+    this.form.certificacion_incluida ?? true,
+
+  costo_certificacion:
+    this.form.costo_certificacion ??
+    null
+
+};
 
     // ========================================================
     // LOG REQUEST
@@ -791,33 +811,57 @@ export class MatriculasList implements OnInit {
           // EXTRAER CUOTAS
           // ==================================================
 
-          let cuotas: CuotaCronograma[] = [];
+            
+            
+            let cuotas: CuotaCronograma[] = [];
+            
+            if (
+              Array.isArray(
+                (data as any).cronograma
+              )
+            ) {
+            
+              cuotas =
+                (data as any).cronograma;
+            
+              console.log(
+                '📋 CRONOGRAMA COMPLETO:',
+                cuotas
+              );
+            
+            } else if (
+              Array.isArray(
+                (data as any).cuotas
+              )
+            ) {
+            
+              cuotas =
+                (data as any).cuotas;
+            
+              console.log(
+                '📋 CUOTAS EXTRAÍDAS:',
+                cuotas
+              );
+            
+            } else if (
+              Array.isArray(data)
+            ) {
+            
+              cuotas =
+                data as unknown as CuotaCronograma[];
+            
+              console.log(
+                '📋 RESPUESTA COMO ARRAY:',
+                cuotas
+              );
+            
+            }
+            
+            console.log(
+              '📏 CANTIDAD DE ELEMENTOS:',
+              cuotas.length
+            );
 
-          if (Array.isArray(data)) {
-
-            cuotas =
-              data as unknown as CuotaCronograma[];
-
-          } else if (
-            Array.isArray(
-              (data as any).cuotas
-            )
-          ) {
-
-            cuotas =
-              (data as any).cuotas;
-
-          }
-
-          console.log(
-            '📋 CUOTAS EXTRAÍDAS:',
-            cuotas
-          );
-
-          console.log(
-            '📏 CANTIDAD DE CUOTAS:',
-            cuotas.length
-          );
 
           // ==================================================
           // PRECIO
