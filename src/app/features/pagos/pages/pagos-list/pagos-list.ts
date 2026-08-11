@@ -670,9 +670,19 @@ export class PagosList implements OnInit {
 
   formatFecha(f: string | Date) {
     if (!f) return '-';
+  
+    if (typeof f === 'string') {
+      const fecha = f.substring(0, 10);
+      const partes = fecha.split('-');
+  
+      if (partes.length === 3) {
+        const [anio, mes, dia] = partes;
+        return `${dia}/${mes}/${anio}`;
+      }
+    }
+  
     return new Date(f).toLocaleDateString('es-PE');
   }
-
   getTotalDeuda() {
     return this.cuotasDetalle.reduce((a, b) => a + Number(b.saldo_pendiente || 0), 0);
   }
