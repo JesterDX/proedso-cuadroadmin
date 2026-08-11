@@ -99,7 +99,7 @@ export class MatriculasList implements OnInit {
 
   matriculasPaginadas: Matricula[] = [];
   
-
+  nombreFiltro: string = '';
   // ==========================================================
   // CATÁLOGOS
   // ==========================================================
