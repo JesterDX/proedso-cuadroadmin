@@ -635,32 +635,62 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
   &--reserva { background: $c-surface; color: $c-warning; }
 }
 
+
 // --- Toolbar ---
 .toolbar--filters {
   display: grid;
-  grid-template-columns: 2fr 160px 180px auto auto;
-  gap: 16px;
+
+  // Alumno ocupa la mayor parte del espacio
+  grid-template-columns:
+    minmax(420px, 1fr)
+    150px
+    170px
+    auto
+    auto;
+
+  gap: 12px;
+
   align-items: center;
 
   input,
   select {
+    width: 100%;
     height: 40px;
+
+    box-sizing: border-box;
+
     border: 1px solid $c-border;
     border-radius: $radius-sm;
+
     padding: 0 12px;
+
     background: $c-surface;
+
     font-family: $font-sans;
     font-size: 0.875rem;
+
     color: $c-text-main;
+
     outline: none;
-    transition: border-color 0.2s;
+
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
 
     &:focus {
       border-color: $c-text-main;
-      box-shadow: 0 0 0 1px $c-text-main;
+
+      box-shadow:
+        0 0 0 1px $c-text-main;
     }
   }
+
+  // El buscador del alumno ocupa todo el espacio disponible
+  input[type="text"] {
+    min-width: 420px;
+  }
 }
+
 
 // --- Pagination (Sharp & Flat) ---
 .pagination {
@@ -710,7 +740,9 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
 // RESPONSIVE MEDIA QUERIES
 // ==========================================================================
 
+```scss
 @media (max-width: 980px) {
+
   .modal-card--split {
     grid-template-columns: 1fr;
     height: min(92vh, 920px);
@@ -718,17 +750,106 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
 
   .modal-side {
     padding: 24px;
-    
+
     .side-summary {
       flex-direction: row;
       flex-wrap: wrap;
-      
+
       &__item {
         flex: 1;
         min-width: 140px;
       }
     }
   }
+
+  .catalog-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar--filters {
+    grid-template-columns:
+      minmax(300px, 1fr)
+      150px
+      170px
+      auto
+      auto;
+
+    gap: 12px;
+
+    input[type="text"] {
+      min-width: 300px;
+    }
+  }
+}
+
+```scss
+@media (max-width: 980px) {
+
+  .modal-card--split {
+    grid-template-columns: 1fr;
+    height: min(92vh, 920px);
+  }
+
+  .modal-side {
+    padding: 24px;
+
+    .side-summary {
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      &__item {
+        flex: 1;
+        min-width: 140px;
+      }
+    }
+  }
+
+  .catalog-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar--filters {
+    grid-template-columns:
+      minmax(300px, 1fr)
+      150px
+      170px
+      auto
+      auto;
+
+    gap: 12px;
+
+    input[type="text"] {
+      min-width: 300px;
+    }
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .machine-selector,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-backdrop {
+    padding: 16px;
+  }
+
+  .toolbar--filters {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar--filters input[type="text"] {
+    min-width: 0;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 
   .catalog-summary {
     grid-template-columns: 1fr;
