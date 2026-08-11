@@ -513,6 +513,16 @@ $shadow-focus: 0 0 0 2px $c-surface, 0 0 0 4px $c-text-main;
   }
 }
 
+.filter-box--alumno {
+  flex: 1 1 420px;
+  min-width: 350px;
+}
+
+.filter-box--alumno input {
+  width: 100%;
+  min-width: 0;
+}
+
 .machine-empty {
   padding: 16px;
   border: 1px dashed $c-border-hover;
