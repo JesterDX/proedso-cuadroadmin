@@ -2757,7 +2757,7 @@ guardarMatricula(): void {
 
     const texto =
       (
-        this.search ||
+        this.nombreFiltro ||
         ''
       )
         .toLowerCase()
