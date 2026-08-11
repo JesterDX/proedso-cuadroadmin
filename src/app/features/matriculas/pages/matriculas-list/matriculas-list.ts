@@ -31,6 +31,7 @@ import {
   Matricula,
   MatriculaPayload,
   CuotaCronograma,
+  CuotaCronogramaPayload,
   PrevisualizacionCuotasData
 } from '../../models/matricula.model';
 
