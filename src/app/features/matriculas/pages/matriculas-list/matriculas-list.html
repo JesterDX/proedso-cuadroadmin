@@ -49,16 +49,16 @@
 
   <div class="toolbar--filters">
 
-<div class="filter-box">
-  <label>Buscar alumno</label>
-
-  <input
-    type="text"
-    [(ngModel)]="nombreFiltro"
-    (ngModelChange)="buscar()"
-    placeholder="Escribe el nombre del alumno..."
-  />
-</div>
+  <div class="filter-box">
+    <label>Buscar alumno</label>
+  
+    <input
+      type="text"
+      [(ngModel)]="nombreFiltro"
+      (ngModelChange)="buscar()"
+      placeholder="Escribe el nombre del alumno..."
+    />
+  </div>
 
 <select
   [(ngModel)]="anioFiltro"
