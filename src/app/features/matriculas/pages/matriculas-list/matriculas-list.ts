@@ -1742,9 +1742,7 @@ guardarMatricula(): void {
     // ======================================================
 
     cronograma_confirmado:
-      this.previewCuotas.length > 0
-        ? this.previewCuotas
-        : null
+      this.previewCuotas
 
   };
 
