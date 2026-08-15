@@ -39,7 +39,7 @@ export interface Homologado {
 
   monto_pagado?: number;
 
-  saldo_pendiente?: number;
+  saldo_pendiente: number;
 
   estado_pago?: string;
 
@@ -217,23 +217,25 @@ export class HomologadosListComponent
   // FORMATEAR
   // ==========================================================
 
-  private formatearHomologado(
-    homologado: Homologado
-  ): Homologado {
+private formatearHomologado(
+  homologado: Homologado
+): Homologado {
 
-    return {
+  return {
 
-      ...homologado,
+    ...homologado,
 
-      fecha_registro_texto:
-        this.formatearFecha(
-          homologado.fecha_registro
-        )
+    saldo_pendiente:
+      Number(homologado.saldo_pendiente ?? 0),
 
-    };
+    fecha_registro_texto:
+      this.formatearFecha(
+        homologado.fecha_registro
+      )
 
-  }
+  };
 
+}
 
   // ==========================================================
   // FECHA
