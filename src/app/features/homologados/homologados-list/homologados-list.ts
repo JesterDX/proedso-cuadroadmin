@@ -50,6 +50,10 @@ export interface Homologado {
   fecha_registro?: string;
 
   fecha_registro_texto?: string;
+    
+
+  saldo_pendiente?: number;
+
 
 }
 
