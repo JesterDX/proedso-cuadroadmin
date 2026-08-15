@@ -497,13 +497,44 @@ private formatearHomologado(
   // IMPORTAR
   // ==========================================================
 
-  importarSheets(): void {
+importarSheets(): void {
 
-    console.log(
-      'Importar Google Sheets'
-    );
-
+  if (this.loading) {
+    return;
   }
+
+  this.loading = true;
+
+  this.service.importarSheets().subscribe({
+
+    next: (resp: any) => {
+
+      console.log(
+        'Respuesta importación Google Sheets:',
+        resp
+      );
+
+      this.loading = false;
+
+      // Recargar la tabla después de importar
+      this.cargarHomologados();
+
+    },
+
+    error: (err) => {
+
+      console.error(
+        'Error importando desde Google Sheets:',
+        err
+      );
+
+      this.loading = false;
+
+    }
+
+  });
+
+}
 
 
   // ==========================================================
