@@ -9,85 +9,62 @@ export class HomologadosService {
 
   private http = inject(HttpClient);
 
-  // URL directa, exactamente igual a como la usas en PagosService
-  private readonly api = 'https://proedso-back-wtdl.onrender.com/api/homologaciones';
+  private readonly api =
+    'https://proedso-back-wtdl.onrender.com/api/homologaciones';
 
-  //=========================================
-  // LISTAR HOMOLOGACIONES
-  //=========================================
+  // =========================================================
+  // LISTAR TODAS LAS HOMOLOGACIONES
+  // =========================================================
+
   listar(): Observable<any> {
-    return this.http.get(this.api);
+    return this.http.get<any>(this.api);
   }
 
-  //=========================================
-  // OBTENER HOMOLOGACIÓN
-  //=========================================
-  /*
-  obtener(id:number):Observable<any>{
-    return this.http.get(`${this.api}/${id}`);
-  }
-  */
+  // =========================================================
+  // OBTENER UNA HOMOLOGACIÓN
+  // =========================================================
 
-  //=========================================
-  // CREAR HOMOLOGACIÓN
-  //=========================================
-  /*
-  crear(data:any):Observable<any>{
-    return this.http.post(this.api, data);
+  obtener(id: number): Observable<any> {
+    return this.http.get<any>(`${this.api}/${id}`);
   }
-  */
 
-  //=========================================
-  // ACTUALIZAR HOMOLOGACIÓN
-  //=========================================
-  /*
-  actualizar(id:number,data:any):Observable<any>{
-    return this.http.put(`${this.api}/${id}`, data);
+  // =========================================================
+  // CREAR
+  // =========================================================
+
+  crear(data: any): Observable<any> {
+    return this.http.post<any>(this.api, data);
   }
-  */
 
-  //=========================================
-  // REGISTRAR PAGO
-  //=========================================
-  /*
-  registrarPago(id:number, data:any):Observable<any>{
-    return this.http.post(`${this.api}/${id}/pago`, data);
+  // =========================================================
+  // ACTUALIZAR
+  // =========================================================
+
+  actualizar(id: number, data: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.api}/${id}`,
+      data
+    );
   }
-  */
 
-  //=========================================
-  // CAMBIAR ESTADO
-  //=========================================
-  /*
-  actualizarEstado(id:number, estado:string):Observable<any>{
-    return this.http.put(`${this.api}/${id}/estado`, { estado });
-  }
-  */
-
-  //=========================================
+  // =========================================================
   // ELIMINAR
-  //=========================================
-  /*
-  eliminar(id:number):Observable<any>{
-    return this.http.delete(`${this.api}/${id}`);
-  }
-  */
+  // =========================================================
 
-  //=========================================
-  // OBTENER MÁQUINAS
-  //=========================================
-  /*
-  obtenerMaquinas():Observable<any>{
-    return this.http.get('https://proedso-back-wtdl.onrender.com/api/maquinas');
+  eliminar(id: number): Observable<any> {
+    return this.http.delete<any>(
+      `${this.api}/${id}`
+    );
   }
-  */
 
-  //=========================================
-  // BUSCAR ALUMNOS
-  //=========================================
-  /*
-  buscarAlumnos(texto:string):Observable<any>{
-    return this.http.get(`https://proedso-back-wtdl.onrender.com/api/alumnos?buscar=${texto}`);
+  // =========================================================
+  // IMPORTAR DESDE GOOGLE SHEETS
+  // =========================================================
+
+  importarSheets(): Observable<any> {
+    return this.http.post<any>(
+      `${this.api}/importar-sheets`,
+      {}
+    );
   }
-  */
 }
