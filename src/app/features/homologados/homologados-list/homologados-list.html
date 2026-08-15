@@ -427,7 +427,150 @@
   </div>
 
 
+<!-- ========================================================= -->
+<!-- PAGINACIÓN -->
+<!-- ========================================================= -->
 
+<div
+  class="paginacion"
+  *ngIf="homologadosFiltrados.length > 0"
+>
+
+  <!-- INFORMACIÓN -->
+
+  <div class="paginacion-info">
+
+    Mostrando
+
+    <strong>
+      {{
+        ((paginaActual - 1) * itemsPorPagina) + 1
+      }}
+    </strong>
+
+    -
+    
+    <strong>
+      {{
+        Math.min(
+          paginaActual * itemsPorPagina,
+          homologadosFiltrados.length
+        )
+      }}
+    </strong>
+
+    de
+
+    <strong>
+      {{ homologadosFiltrados.length }}
+    </strong>
+
+  </div>
+
+
+  <!-- CONTROLES -->
+
+  <div class="paginacion-controles">
+
+
+    <!-- PRIMERA -->
+
+    <button
+      type="button"
+      class="pagina-btn pagina-extremo"
+      [disabled]="paginaActual === 1"
+      (click)="primeraPagina()"
+      title="Primera página"
+    >
+
+      <i class="bi bi-chevron-double-left"></i>
+
+    </button>
+
+
+    <!-- ANTERIOR -->
+
+    <button
+      type="button"
+      class="pagina-btn"
+      [disabled]="paginaActual === 1"
+      (click)="paginaAnterior()"
+      title="Página anterior"
+    >
+
+      <i class="bi bi-chevron-left"></i>
+
+    </button>
+
+
+    <!-- PÁGINAS -->
+
+    <ng-container
+      *ngFor="let pagina of paginasVisibles"
+    >
+
+      <!-- NÚMERO -->
+
+      <button
+        *ngIf="pagina !== '...'"
+        type="button"
+        class="pagina-btn"
+        [class.activa]="paginaActual === pagina"
+        (click)="cambiarPagina(+pagina)"
+      >
+
+        {{ pagina }}
+
+      </button>
+
+
+      <!-- ELLIPSIS -->
+
+      <span
+        *ngIf="pagina === '...'"
+        class="pagina-ellipsis"
+      >
+
+        ...
+
+      </span>
+
+    </ng-container>
+
+
+    <!-- SIGUIENTE -->
+
+    <button
+      type="button"
+      class="pagina-btn"
+      [disabled]="paginaActual === totalPaginas"
+      (click)="paginaSiguiente()"
+      title="Página siguiente"
+    >
+
+      <i class="bi bi-chevron-right"></i>
+
+    </button>
+
+
+    <!-- ÚLTIMA -->
+
+    <button
+      type="button"
+      class="pagina-btn pagina-extremo"
+      [disabled]="paginaActual === totalPaginas"
+      (click)="ultimaPagina()"
+      title="Última página"
+    >
+
+      <i class="bi bi-chevron-double-right"></i>
+
+    </button>
+
+
+  </div>
+
+</div>
 
 
 </div>
