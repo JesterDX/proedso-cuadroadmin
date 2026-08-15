@@ -110,6 +110,17 @@ export class HomologadosListComponent
 
 
   // ==========================================================
+  // OPCIONES DE FILTROS
+  // ==========================================================
+
+  estados: string[] = [];
+
+  documentos: string[] = [];
+
+  vendedores: string[] = [];
+
+
+  // ==========================================================
   // PAGINACIÓN
   // ==========================================================
 
@@ -157,7 +168,22 @@ export class HomologadosListComponent
 
   cargarHomologados(): void {
 
+    /*
+     * Evitamos peticiones duplicadas.
+     *
+     * Si ya estamos cargando y no se trata de una importación,
+     * no volvemos a disparar la petición.
+     */
+
+    if (this.loading) {
+
+      return;
+
+    }
+
+
     this.loading = true;
+
 
     this.service.listar()
       .subscribe({
@@ -170,8 +196,18 @@ export class HomologadosListComponent
           );
 
 
+          // ====================================================
+          // CARGAR DATOS
+          // ====================================================
+
+          const datos =
+            Array.isArray(resp?.data)
+              ? resp.data
+              : [];
+
+
           this.homologados =
-            (resp?.data ?? []).map(
+            datos.map(
               (homologado: Homologado) =>
                 this.formatearHomologado(
                   homologado
@@ -179,10 +215,23 @@ export class HomologadosListComponent
             );
 
 
-          this.aplicarFiltros(
-            false
-          );
+          // ====================================================
+          // ACTUALIZAR OPCIONES
+          // ====================================================
 
+          this.generarOpcionesFiltros();
+
+
+          // ====================================================
+          // APLICAR FILTROS
+          // ====================================================
+
+          this.aplicarFiltros(false);
+
+
+          // ====================================================
+          // FINALIZAR CARGA
+          // ====================================================
 
           this.loading = false;
 
@@ -203,6 +252,12 @@ export class HomologadosListComponent
           this.homologados = [];
 
           this.homologadosFiltrados = [];
+
+          this.estados = [];
+
+          this.documentos = [];
+
+          this.vendedores = [];
 
           this.paginaActual = 1;
 
@@ -235,6 +290,16 @@ export class HomologadosListComponent
           homologado.saldo_pendiente ?? 0
         ),
 
+      monto_total:
+        Number(
+          homologado.monto_total ?? 0
+        ),
+
+      monto_pagado:
+        Number(
+          homologado.monto_pagado ?? 0
+        ),
+
       fecha_registro_texto:
         this.formatearFecha(
           homologado.fecha_registro
@@ -254,7 +319,9 @@ export class HomologadosListComponent
   ): string {
 
     if (!fecha) {
+
       return '';
+
     }
 
 
@@ -268,7 +335,9 @@ export class HomologadosListComponent
 
 
     if (partes.length !== 3) {
+
       return '';
+
     }
 
 
@@ -285,11 +354,141 @@ export class HomologadosListComponent
 
 
   // ==========================================================
+  // GENERAR OPCIONES DE FILTROS
+  // ==========================================================
+
+  private generarOpcionesFiltros(): void {
+
+    // --------------------------------------------------------
+    // ESTADOS
+    // --------------------------------------------------------
+
+    this.estados =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.estado
+        )
+      );
+
+
+    // --------------------------------------------------------
+    // DOCUMENTOS
+    // --------------------------------------------------------
+
+    this.documentos =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.estado_documento
+        )
+      );
+
+
+    // --------------------------------------------------------
+    // VENDEDORES
+    // --------------------------------------------------------
+
+    this.vendedores =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.vendedor
+        )
+      );
+
+
+    // --------------------------------------------------------
+    // VALIDAR SELECCIONES ACTUALES
+    // --------------------------------------------------------
+
+    if (
+      this.estadoSeleccionado &&
+      !this.estados.includes(
+        this.estadoSeleccionado
+      )
+    ) {
+
+      this.estadoSeleccionado = '';
+
+    }
+
+
+    if (
+      this.documentoSeleccionado &&
+      !this.documentos.includes(
+        this.documentoSeleccionado
+      )
+    ) {
+
+      this.documentoSeleccionado = '';
+
+    }
+
+
+    if (
+      this.vendedorSeleccionado &&
+      !this.vendedores.includes(
+        this.vendedorSeleccionado
+      )
+    ) {
+
+      this.vendedorSeleccionado = '';
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // OBTENER VALORES ÚNICOS
+  // ==========================================================
+
+  private obtenerValoresUnicos(
+    valores: (string | undefined)[]
+  ): string[] {
+
+    return Array.from(
+
+      new Set(
+
+        valores
+
+          .filter(
+            (
+              valor
+            ): valor is string =>
+              !!valor &&
+              valor.trim() !== ''
+          )
+
+          .map(
+            valor =>
+              valor.trim()
+          )
+
+      )
+
+    ).sort(
+      (
+        a,
+        b
+      ) =>
+        a.localeCompare(
+          b,
+          'es',
+          {
+            sensitivity: 'base'
+          }
+        )
+    );
+
+  }
+
+
+  // ==========================================================
   // FILTROS
   // ==========================================================
 
   aplicarFiltros(
-    reiniciarPagina: boolean = true
+    reiniciarPagina = true
   ): void {
 
     const texto =
@@ -300,32 +499,54 @@ export class HomologadosListComponent
 
     this.homologadosFiltrados =
       this.homologados.filter(
-        (h: Homologado) => {
+        (
+          h: Homologado
+        ) => {
 
-          // ------------------------------------------
+          // --------------------------------------------------
           // BÚSQUEDA
-          // ------------------------------------------
+          // --------------------------------------------------
 
           const coincideBusqueda =
 
             !texto ||
 
-            (h.alumno ?? '')
+            (
+              h.alumno ?? ''
+            )
               .toLowerCase()
-              .includes(texto) ||
+              .includes(
+                texto
+              ) ||
 
-            String(h.dni ?? '')
+            String(
+              h.dni ?? ''
+            )
               .toLowerCase()
-              .includes(texto) ||
+              .includes(
+                texto
+              ) ||
 
-            (h.curso_equipo ?? '')
+            (
+              h.curso_equipo ?? ''
+            )
               .toLowerCase()
-              .includes(texto);
+              .includes(
+                texto
+              ) ||
+
+            (
+              h.celular ?? ''
+            )
+              .toLowerCase()
+              .includes(
+                texto
+              );
 
 
-          // ------------------------------------------
+          // --------------------------------------------------
           // ESTADO
-          // ------------------------------------------
+          // --------------------------------------------------
 
           const coincideEstado =
 
@@ -335,9 +556,9 @@ export class HomologadosListComponent
               this.estadoSeleccionado;
 
 
-          // ------------------------------------------
+          // --------------------------------------------------
           // DOCUMENTO
-          // ------------------------------------------
+          // --------------------------------------------------
 
           const coincideDocumento =
 
@@ -347,9 +568,9 @@ export class HomologadosListComponent
               this.documentoSeleccionado;
 
 
-          // ------------------------------------------
+          // --------------------------------------------------
           // VENDEDOR
-          // ------------------------------------------
+          // --------------------------------------------------
 
           const coincideVendedor =
 
@@ -375,9 +596,9 @@ export class HomologadosListComponent
       );
 
 
-    // --------------------------------------------
+    // --------------------------------------------------------
     // REINICIAR PAGINA
-    // --------------------------------------------
+    // --------------------------------------------------------
 
     if (reiniciarPagina) {
 
@@ -386,9 +607,9 @@ export class HomologadosListComponent
     }
 
 
-    // --------------------------------------------
+    // --------------------------------------------------------
     // ASEGURAR PAGINA VALIDA
-    // --------------------------------------------
+    // --------------------------------------------------------
 
     this.validarPaginaActual();
 
@@ -396,7 +617,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // EVENTOS FILTROS
+  // EVENTOS DE FILTROS
   // ==========================================================
 
   buscar(): void {
@@ -428,7 +649,26 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // TOTAL PAGINAS
+  // LIMPIAR FILTROS
+  // ==========================================================
+
+  limpiarFiltros(): void {
+
+    this.busqueda = '';
+
+    this.estadoSeleccionado = '';
+
+    this.documentoSeleccionado = '';
+
+    this.vendedorSeleccionado = '';
+
+    this.aplicarFiltros();
+
+  }
+
+
+  // ==========================================================
+  // TOTAL PÁGINAS
   // ==========================================================
 
   get totalPaginas(): number {
@@ -450,14 +690,16 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // REGISTROS PAGINA ACTUAL
+  // HOMOLOGADOS DE LA PÁGINA ACTUAL
   // ==========================================================
 
   get homologadosPagina(): Homologado[] {
 
     const inicio =
 
-      (this.paginaActual - 1) *
+      (
+        this.paginaActual - 1
+      ) *
       this.itemsPorPagina;
 
 
@@ -488,15 +730,26 @@ export class HomologadosListComponent
       this.maxPaginasVisibles;
 
 
-    // --------------------------------------------
-    // Pocas páginas
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // POCAS PÁGINAS
+    // --------------------------------------------------------
 
-    if (total <= max + 2) {
+    if (
+      total <= max + 2
+    ) {
 
       return Array.from(
-        { length: total },
-        (_, i) => i + 1
+
+        {
+          length: total
+        },
+
+        (
+          _,
+          index
+        ) =>
+          index + 1
+
       );
 
     }
@@ -506,16 +759,12 @@ export class HomologadosListComponent
       (number | string)[] = [];
 
 
-    // --------------------------------------------
-    // Primera página
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // PRIMERA
+    // --------------------------------------------------------
 
     paginas.push(1);
 
-
-    // --------------------------------------------
-    // Ventana central
-    // --------------------------------------------
 
     let inicio =
       Math.max(
@@ -531,11 +780,13 @@ export class HomologadosListComponent
       );
 
 
-    // --------------------------------------------
-    // Ajustar extremos
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // CERCA DEL PRINCIPIO
+    // --------------------------------------------------------
 
-    if (actual <= 3) {
+    if (
+      actual <= 3
+    ) {
 
       inicio = 2;
 
@@ -544,29 +795,39 @@ export class HomologadosListComponent
     }
 
 
-    if (actual >= total - 2) {
+    // --------------------------------------------------------
+    // CERCA DEL FINAL
+    // --------------------------------------------------------
 
-      inicio = total - 3;
+    if (
+      actual >= total - 2
+    ) {
 
-      fin = total - 1;
+      inicio =
+        total - 3;
+
+      fin =
+        total - 1;
 
     }
 
 
-    // --------------------------------------------
-    // Separador inicial
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // ELLIPSIS INICIAL
+    // --------------------------------------------------------
 
-    if (inicio > 2) {
+    if (
+      inicio > 2
+    ) {
 
       paginas.push('...');
 
     }
 
 
-    // --------------------------------------------
-    // Páginas centrales
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // PÁGINAS CENTRALES
+    // --------------------------------------------------------
 
     for (
       let pagina = inicio;
@@ -574,27 +835,33 @@ export class HomologadosListComponent
       pagina++
     ) {
 
-      paginas.push(pagina);
+      paginas.push(
+        pagina
+      );
 
     }
 
 
-    // --------------------------------------------
-    // Separador final
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // ELLIPSIS FINAL
+    // --------------------------------------------------------
 
-    if (fin < total - 1) {
+    if (
+      fin < total - 1
+    ) {
 
       paginas.push('...');
 
     }
 
 
-    // --------------------------------------------
-    // Última página
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // ÚLTIMA
+    // --------------------------------------------------------
 
-    paginas.push(total);
+    paginas.push(
+      total
+    );
 
 
     return paginas;
@@ -603,7 +870,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // CAMBIAR PAGINA
+  // CAMBIAR PÁGINA
   // ==========================================================
 
   cambiarPagina(
@@ -611,9 +878,13 @@ export class HomologadosListComponent
   ): void {
 
     if (
+
       pagina < 1 ||
+
       pagina > this.totalPaginas ||
+
       pagina === this.paginaActual
+
     ) {
 
       return;
@@ -621,7 +892,8 @@ export class HomologadosListComponent
     }
 
 
-    this.paginaActual = pagina;
+    this.paginaActual =
+      pagina;
 
 
     this.scrollTablaArriba();
@@ -630,7 +902,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // PAGINA ANTERIOR
+  // ANTERIOR
   // ==========================================================
 
   paginaAnterior(): void {
@@ -649,7 +921,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // PAGINA SIGUIENTE
+  // SIGUIENTE
   // ==========================================================
 
   paginaSiguiente(): void {
@@ -669,31 +941,46 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // PRIMERA PAGINA
+  // PRIMERA
   // ==========================================================
 
   primeraPagina(): void {
 
-    this.cambiarPagina(1);
+    if (
+      this.paginaActual !== 1
+    ) {
+
+      this.cambiarPagina(
+        1
+      );
+
+    }
 
   }
 
 
   // ==========================================================
-  // ÚLTIMA PAGINA
+  // ÚLTIMA
   // ==========================================================
 
   ultimaPagina(): void {
 
-    this.cambiarPagina(
+    if (
+      this.paginaActual !==
       this.totalPaginas
-    );
+    ) {
+
+      this.cambiarPagina(
+        this.totalPaginas
+      );
+
+    }
 
   }
 
 
   // ==========================================================
-  // VALIDAR PAGINA
+  // VALIDAR PÁGINA
   // ==========================================================
 
   private validarPaginaActual(): void {
@@ -721,7 +1008,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // SCROLL TABLA
+  // SCROLL
   // ==========================================================
 
   private scrollTablaArriba(): void {
@@ -733,6 +1020,19 @@ export class HomologadosListComponent
       behavior: 'smooth'
 
     });
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR REGISTROS POR PÁGINA
+  // ==========================================================
+
+  cambiarItemsPorPagina(): void {
+
+    this.paginaActual = 1;
+
+    this.validarPaginaActual();
 
   }
 
@@ -793,7 +1093,8 @@ export class HomologadosListComponent
   importarSheets(): void {
 
     if (
-      this.cargandoImportacion
+      this.cargandoImportacion ||
+      this.loading
     ) {
 
       return;
@@ -808,7 +1109,9 @@ export class HomologadosListComponent
       .importarSheets()
       .subscribe({
 
-        next: (resp: any) => {
+        next: (
+          resp: any
+        ) => {
 
           console.log(
             'Importación Google Sheets:',
@@ -816,20 +1119,26 @@ export class HomologadosListComponent
           );
 
 
+          /*
+           * Primero liberamos el estado de importación.
+           */
+
           this.cargandoImportacion = false;
 
 
-          // ----------------------------------------
-          // IMPORTACIÓN TERMINÓ
-          // AHORA RECARGAMOS TODO
-          // ----------------------------------------
+          /*
+           * Después hacemos UNA sola petición
+           * para traer nuevamente todos los registros.
+           */
 
-          this.cargarHomologados();
+          this.recargarDespuesDeImportar();
 
         },
 
 
-        error: (err: any) => {
+        error: (
+          err: any
+        ) => {
 
           console.error(
             'Error importando Google Sheets:',
@@ -839,6 +1148,8 @@ export class HomologadosListComponent
 
           this.cargandoImportacion = false;
 
+          this.cd.detectChanges();
+
         }
 
       });
@@ -847,14 +1158,55 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // ACTUALIZAR
+  // RECARGAR DESPUÉS DE IMPORTACIÓN
+  // ==========================================================
+
+  private recargarDespuesDeImportar(): void {
+
+    /*
+     * Limpiamos la página para que el usuario
+     * vea inmediatamente los nuevos registros.
+     */
+
+    this.paginaActual = 1;
+
+
+    this.cargarHomologados();
+
+  }
+
+
+  // ==========================================================
+  // ACTUALIZAR TODO
   // ==========================================================
 
   actualizar(): void {
 
-    // --------------------------------------------
-    // NO bloqueamos una actualización
-    // --------------------------------------------
+    /*
+     * Si ya existe una petición activa,
+     * no hacemos otra.
+     */
+
+    if (
+      this.loading ||
+      this.cargandoImportacion
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+     * Conservamos los filtros actuales.
+     *
+     * cargarHomologados() vuelve a generar:
+     *
+     * - datos
+     * - filtros
+     * - paginación
+     * - opciones de selects
+     */
 
     this.cargarHomologados();
 
