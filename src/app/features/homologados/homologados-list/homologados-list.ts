@@ -50,7 +50,7 @@ export interface Homologado {
   fecha_registro?: string;
 
   fecha_registro_texto?: string;
-    
+
 }
 
 
@@ -93,6 +93,8 @@ export class HomologadosListComponent
 
   loading = false;
 
+  cargandoImportacion = false;
+
 
   // ==========================================================
   // FILTROS
@@ -115,6 +117,12 @@ export class HomologadosListComponent
 
   itemsPorPagina = 15;
 
+  readonly maxPaginasVisibles = 5;
+
+
+  // ==========================================================
+  // UTILIDADES TEMPLATE
+  // ==========================================================
 
   Math = Math;
 
@@ -144,17 +152,12 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // CARGAR
+  // CARGAR HOMOLOGADOS
   // ==========================================================
 
   cargarHomologados(): void {
 
-    if (this.loading) {
-      return;
-    }
-
     this.loading = true;
-
 
     this.service.listar()
       .subscribe({
@@ -168,16 +171,17 @@ export class HomologadosListComponent
 
 
           this.homologados =
-            (resp?.data ?? [])
-              .map(
-                (homologado: Homologado) =>
-                  this.formatearHomologado(
-                    homologado
-                  )
-              );
+            (resp?.data ?? []).map(
+              (homologado: Homologado) =>
+                this.formatearHomologado(
+                  homologado
+                )
+            );
 
 
-          this.aplicarFiltros();
+          this.aplicarFiltros(
+            false
+          );
 
 
           this.loading = false;
@@ -200,6 +204,7 @@ export class HomologadosListComponent
 
           this.homologadosFiltrados = [];
 
+          this.paginaActual = 1;
 
           this.loading = false;
 
@@ -214,31 +219,34 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // FORMATEAR
+  // FORMATEAR HOMOLOGADO
   // ==========================================================
 
-private formatearHomologado(
-  homologado: Homologado
-): Homologado {
+  private formatearHomologado(
+    homologado: Homologado
+  ): Homologado {
 
-  return {
+    return {
 
-    ...homologado,
+      ...homologado,
 
-    saldo_pendiente:
-      Number(homologado.saldo_pendiente ?? 0),
+      saldo_pendiente:
+        Number(
+          homologado.saldo_pendiente ?? 0
+        ),
 
-    fecha_registro_texto:
-      this.formatearFecha(
-        homologado.fecha_registro
-      )
+      fecha_registro_texto:
+        this.formatearFecha(
+          homologado.fecha_registro
+        )
 
-  };
+    };
 
-}
+  }
+
 
   // ==========================================================
-  // FECHA
+  // FORMATEAR FECHA
   // ==========================================================
 
   private formatearFecha(
@@ -280,7 +288,9 @@ private formatearHomologado(
   // FILTROS
   // ==========================================================
 
-  aplicarFiltros(): void {
+  aplicarFiltros(
+    reiniciarPagina: boolean = true
+  ): void {
 
     const texto =
       this.busqueda
@@ -292,6 +302,9 @@ private formatearHomologado(
       this.homologados.filter(
         (h: Homologado) => {
 
+          // ------------------------------------------
+          // BÚSQUEDA
+          // ------------------------------------------
 
           const coincideBusqueda =
 
@@ -302,12 +315,17 @@ private formatearHomologado(
               .includes(texto) ||
 
             String(h.dni ?? '')
+              .toLowerCase()
               .includes(texto) ||
 
             (h.curso_equipo ?? '')
               .toLowerCase()
               .includes(texto);
 
+
+          // ------------------------------------------
+          // ESTADO
+          // ------------------------------------------
 
           const coincideEstado =
 
@@ -317,6 +335,10 @@ private formatearHomologado(
               this.estadoSeleccionado;
 
 
+          // ------------------------------------------
+          // DOCUMENTO
+          // ------------------------------------------
+
           const coincideDocumento =
 
             !this.documentoSeleccionado ||
@@ -324,6 +346,10 @@ private formatearHomologado(
             h.estado_documento ===
               this.documentoSeleccionado;
 
+
+          // ------------------------------------------
+          // VENDEDOR
+          // ------------------------------------------
 
           const coincideVendedor =
 
@@ -349,13 +375,28 @@ private formatearHomologado(
       );
 
 
-    this.paginaActual = 1;
+    // --------------------------------------------
+    // REINICIAR PAGINA
+    // --------------------------------------------
+
+    if (reiniciarPagina) {
+
+      this.paginaActual = 1;
+
+    }
+
+
+    // --------------------------------------------
+    // ASEGURAR PAGINA VALIDA
+    // --------------------------------------------
+
+    this.validarPaginaActual();
 
   }
 
 
   // ==========================================================
-  // EVENTOS
+  // EVENTOS FILTROS
   // ==========================================================
 
   buscar(): void {
@@ -387,24 +428,30 @@ private formatearHomologado(
 
 
   // ==========================================================
-  // PAGINACIÓN
+  // TOTAL PAGINAS
   // ==========================================================
 
   get totalPaginas(): number {
 
-    return (
+    return Math.max(
+
+      1,
 
       Math.ceil(
 
         this.homologadosFiltrados.length /
         this.itemsPorPagina
 
-      ) || 1
+      )
 
     );
 
   }
 
+
+  // ==========================================================
+  // REGISTROS PAGINA ACTUAL
+  // ==========================================================
 
   get homologadosPagina(): Homologado[] {
 
@@ -425,21 +472,267 @@ private formatearHomologado(
   }
 
 
+  // ==========================================================
+  // PAGINACIÓN INTELIGENTE
+  // ==========================================================
+
+  get paginasVisibles(): (number | string)[] {
+
+    const total =
+      this.totalPaginas;
+
+    const actual =
+      this.paginaActual;
+
+    const max =
+      this.maxPaginasVisibles;
+
+
+    // --------------------------------------------
+    // Pocas páginas
+    // --------------------------------------------
+
+    if (total <= max + 2) {
+
+      return Array.from(
+        { length: total },
+        (_, i) => i + 1
+      );
+
+    }
+
+
+    const paginas:
+      (number | string)[] = [];
+
+
+    // --------------------------------------------
+    // Primera página
+    // --------------------------------------------
+
+    paginas.push(1);
+
+
+    // --------------------------------------------
+    // Ventana central
+    // --------------------------------------------
+
+    let inicio =
+      Math.max(
+        2,
+        actual - 1
+      );
+
+
+    let fin =
+      Math.min(
+        total - 1,
+        actual + 1
+      );
+
+
+    // --------------------------------------------
+    // Ajustar extremos
+    // --------------------------------------------
+
+    if (actual <= 3) {
+
+      inicio = 2;
+
+      fin = 4;
+
+    }
+
+
+    if (actual >= total - 2) {
+
+      inicio = total - 3;
+
+      fin = total - 1;
+
+    }
+
+
+    // --------------------------------------------
+    // Separador inicial
+    // --------------------------------------------
+
+    if (inicio > 2) {
+
+      paginas.push('...');
+
+    }
+
+
+    // --------------------------------------------
+    // Páginas centrales
+    // --------------------------------------------
+
+    for (
+      let pagina = inicio;
+      pagina <= fin;
+      pagina++
+    ) {
+
+      paginas.push(pagina);
+
+    }
+
+
+    // --------------------------------------------
+    // Separador final
+    // --------------------------------------------
+
+    if (fin < total - 1) {
+
+      paginas.push('...');
+
+    }
+
+
+    // --------------------------------------------
+    // Última página
+    // --------------------------------------------
+
+    paginas.push(total);
+
+
+    return paginas;
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR PAGINA
+  // ==========================================================
+
   cambiarPagina(
     pagina: number
   ): void {
 
     if (
-
-      pagina >= 1 &&
-
-      pagina <= this.totalPaginas
-
+      pagina < 1 ||
+      pagina > this.totalPaginas ||
+      pagina === this.paginaActual
     ) {
 
-      this.paginaActual = pagina;
+      return;
 
     }
+
+
+    this.paginaActual = pagina;
+
+
+    this.scrollTablaArriba();
+
+  }
+
+
+  // ==========================================================
+  // PAGINA ANTERIOR
+  // ==========================================================
+
+  paginaAnterior(): void {
+
+    if (
+      this.paginaActual > 1
+    ) {
+
+      this.cambiarPagina(
+        this.paginaActual - 1
+      );
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // PAGINA SIGUIENTE
+  // ==========================================================
+
+  paginaSiguiente(): void {
+
+    if (
+      this.paginaActual <
+      this.totalPaginas
+    ) {
+
+      this.cambiarPagina(
+        this.paginaActual + 1
+      );
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // PRIMERA PAGINA
+  // ==========================================================
+
+  primeraPagina(): void {
+
+    this.cambiarPagina(1);
+
+  }
+
+
+  // ==========================================================
+  // ÚLTIMA PAGINA
+  // ==========================================================
+
+  ultimaPagina(): void {
+
+    this.cambiarPagina(
+      this.totalPaginas
+    );
+
+  }
+
+
+  // ==========================================================
+  // VALIDAR PAGINA
+  // ==========================================================
+
+  private validarPaginaActual(): void {
+
+    if (
+      this.paginaActual >
+      this.totalPaginas
+    ) {
+
+      this.paginaActual =
+        this.totalPaginas;
+
+    }
+
+
+    if (
+      this.paginaActual < 1
+    ) {
+
+      this.paginaActual = 1;
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // SCROLL TABLA
+  // ==========================================================
+
+  private scrollTablaArriba(): void {
+
+    window.scrollTo({
+
+      top: 0,
+
+      behavior: 'smooth'
+
+    });
 
   }
 
@@ -494,47 +787,63 @@ private formatearHomologado(
 
 
   // ==========================================================
-  // IMPORTAR
+  // IMPORTAR GOOGLE SHEETS
   // ==========================================================
 
-importarSheets(): void {
+  importarSheets(): void {
 
-  if (this.loading) {
-    return;
-  }
+    if (
+      this.cargandoImportacion
+    ) {
 
-  this.loading = true;
-
-  this.service.importarSheets().subscribe({
-
-    next: (resp: any) => {
-
-      console.log(
-        'Respuesta importación Google Sheets:',
-        resp
-      );
-
-      this.loading = false;
-
-      // Recargar la tabla después de importar
-      this.cargarHomologados();
-
-    },
-
-    error: (err) => {
-
-      console.error(
-        'Error importando desde Google Sheets:',
-        err
-      );
-
-      this.loading = false;
+      return;
 
     }
 
-  });
 
-}
+    this.cargandoImportacion = true;
+
+
+    this.service
+      .importarSheets()
+      .subscribe({
+
+        next: (resp: any) => {
+
+          console.log(
+            'Importación Google Sheets:',
+            resp
+          );
+
+
+          this.cargandoImportacion = false;
+
+
+          // ----------------------------------------
+          // IMPORTACIÓN TERMINÓ
+          // AHORA RECARGAMOS TODO
+          // ----------------------------------------
+
+          this.cargarHomologados();
+
+        },
+
+
+        error: (err: any) => {
+
+          console.error(
+            'Error importando Google Sheets:',
+            err
+          );
+
+
+          this.cargandoImportacion = false;
+
+        }
+
+      });
+
+  }
 
 
   // ==========================================================
@@ -542,6 +851,10 @@ importarSheets(): void {
   // ==========================================================
 
   actualizar(): void {
+
+    // --------------------------------------------
+    // NO bloqueamos una actualización
+    // --------------------------------------------
 
     this.cargarHomologados();
 
