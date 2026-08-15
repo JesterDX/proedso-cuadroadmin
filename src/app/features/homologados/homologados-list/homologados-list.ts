@@ -1,523 +1,70 @@
-import { 
-  Component, 
-  OnInit, 
-  ChangeDetectorRef 
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import { 
-  CommonModule 
-} from '@angular/common';
-
-import { 
-  FormsModule 
-} from '@angular/forms';
-
-
-import { HomologadosService } from '../homologado-service/homologacion-service';
-
-
-
-@Component({
-
-  selector: 'app-homologados-list',
-
-  standalone: true,
-
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-
-  templateUrl: './homologados-list.html',
-
-  styleUrl: './homologados-list.scss'
-
+@Injectable({
+  providedIn: 'root'
 })
+export class HomologadosService {
 
+  private http = inject(HttpClient);
 
-export class HomologadosListComponent implements OnInit {
+  private readonly api =
+    'https://proedso-back-wtdl.onrender.com/api/homologaciones';
 
+  // =========================================================
+  // LISTAR TODAS LAS HOMOLOGACIONES
+  // =========================================================
 
-  homologados:any[] = [];
-
-  homologadosFiltrados:any[] = [];
-
-
-  loading:boolean = false;
-
-
-  busqueda:string = "";
-
-
-  estadoSeleccionado:string = "";
-
-  documentoSeleccionado:string = "";
-
-  vendedorSeleccionado:string = "";
-
-
-
-  paginaActual:number = 1;
-
-  itemsPorPagina:number = 15;
-
-
-
-  Math = Math;
-
-
-
-  constructor(
-
-    private service: HomologadosService,
-
-    private cd: ChangeDetectorRef
-
-  ){}
-
-
-
-
-
-  ngOnInit():void{
-
-    this.cargarHomologados();
-
+  listar(): Observable<any> {
+    return this.http.get<any>(this.api);
   }
 
+  // =========================================================
+  // OBTENER UNA HOMOLOGACIÓN
+  // =========================================================
 
-
-
-
-
-  cargarHomologados():void{
-
-
-    this.loading = true;
-
-
-    this.service.listar()
-    .subscribe({
-
-
-
-      next:(resp:any)=>{
-
-
-        console.log(
-          "Respuesta homologaciones:",
-          resp
-        );
-
-
-
-        this.homologados = (resp.data ?? []).map((h: any) => {
-
-          if (h.fecha_registro) {
-        
-            const fecha = String(h.fecha_registro).substring(0, 10);
-        
-            const [anio, mes, dia] = fecha.split("-");
-        
-            h.fecha_registro_texto = `${dia}/${mes}/${anio}`;
-        
-          } else {
-        
-            h.fecha_registro_texto = "";
-        
-          }
-        
-          return h;
-        
-        });
-
-
-
-        this.aplicarFiltros();
-
-
-
-        this.loading = false;
-
-
-
-        this.cd.detectChanges();
-
-
-
-      },
-
-
-
-
-      error:(err)=>{
-
-
-        console.error(
-          "Error cargando homologaciones:",
-          err
-        );
-
-
-        this.homologados = [];
-
-        this.homologadosFiltrados = [];
-
-        this.loading = false;
-
-
-
-        this.cd.detectChanges();
-
-
-      }
-
-
-
-    });
-
-
-
+  obtener(id: number): Observable<any> {
+    return this.http.get<any>(`${this.api}/${id}`);
   }
 
-
-
-
-
-
-
-  aplicarFiltros():void{
-
-
-    this.homologadosFiltrados = 
-
-    this.homologados.filter((h)=>{
-
-
-
-      const texto = 
-
-      this.busqueda
-      .toLowerCase()
-      .trim();
-
-
-
-
-      const coincideBusqueda =
-
-      !texto ||
-
-      h.alumno
-      ?.toLowerCase()
-      .includes(texto)
-
-      ||
-
-      h.dni
-      ?.toString()
-      .includes(texto)
-
-      ||
-
-      h.curso_equipo
-      ?.toLowerCase()
-      .includes(texto);
-
-
-
-
-
-
-      const coincideEstado =
-
-      !this.estadoSeleccionado ||
-
-      h.estado === this.estadoSeleccionado;
-
-
-
-
-
-
-      const coincideDocumento =
-
-      !this.documentoSeleccionado ||
-
-      h.estado_documento === this.documentoSeleccionado;
-
-
-
-
-
-
-      const coincideVendedor =
-
-      !this.vendedorSeleccionado ||
-
-      h.vendedor === this.vendedorSeleccionado;
-
-
-
-
-
-
-      return (
-
-        coincideBusqueda &&
-
-        coincideEstado &&
-
-        coincideDocumento &&
-
-        coincideVendedor
-
-      );
-
-
-
-    });
-
-
-
-
-    this.paginaActual = 1;
-
-
-
+  // =========================================================
+  // CREAR
+  // =========================================================
+
+  crear(data: any): Observable<any> {
+    return this.http.post<any>(this.api, data);
   }
 
-
-
-
-
-
-
-
-  buscar():void{
-
-    this.aplicarFiltros();
-
-  }
-
-
-
-
-
-
-
-  filtrarEstado():void{
-
-    this.aplicarFiltros();
-
-  }
-
-
-
-
-
-
-
-  filtrarDocumento():void{
-
-    this.aplicarFiltros();
-
-  }
-
-
-
-
-
-
-
-  filtrarVendedor():void{
-
-    this.aplicarFiltros();
-
-  }
-
-
-
-
-
-
-
-  get totalPaginas():number{
-
-
-    return Math.ceil(
-
-      this.homologadosFiltrados.length /
-
-      this.itemsPorPagina
-
-    ) || 1;
-
-
-
-  }
-
-
-
-
-
-
-
-
-  get homologadosPagina():any[]{
-
-
-
-    const inicio =
-
-    (
-
-      this.paginaActual - 1
-
-    ) *
-
-    this.itemsPorPagina;
-
-
-
-
-    return this.homologadosFiltrados.slice(
-
-      inicio,
-
-      inicio + this.itemsPorPagina
-
+  // =========================================================
+  // ACTUALIZAR
+  // =========================================================
+
+  actualizar(id: number, data: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.api}/${id}`,
+      data
     );
-
-
-
   }
 
+  // =========================================================
+  // ELIMINAR
+  // =========================================================
 
-
-
-
-
-
-
-  cambiarPagina(pagina:number):void{
-
-
-
-    if(
-
-      pagina >= 1 &&
-
-      pagina <= this.totalPaginas
-
-    ){
-
-      this.paginaActual = pagina;
-
-    }
-
-
-
-  }
-
-
-
-
-
-
-
-
-  abrirNuevo():void{
-
-
-    console.log(
-      "Nuevo homologado"
+  eliminar(id: number): Observable<any> {
+    return this.http.delete<any>(
+      `${this.api}/${id}`
     );
-
-
   }
 
+  // =========================================================
+  // IMPORTAR DESDE GOOGLE SHEETS
+  // =========================================================
 
-
-
-
-
-
-  editar(item:any):void{
-
-
-    console.log(
-      "Editar",
-      item
+  importarSheets(): Observable<any> {
+    return this.http.post<any>(
+      `${this.api}/importar-sheets`,
+      {}
     );
-
-
   }
-
-
-
-
-
-
-
-  eliminar(item:any):void{
-
-
-    console.log(
-      "Eliminar",
-      item
-    );
-
-
-  }
-
-
-
-
-
-
-
-  verPagos(item:any):void{
-
-
-    console.log(
-      "Pagos",
-      item
-    );
-
-
-  }
-
-
-
-
-
-
-
-  importarSheets():void{
-
-
-    console.log(
-      "Importar Google Sheets"
-    );
-
-
-  }
-
-
-
-
-
-
-
-  actualizar():void{
-
-
-    this.cargarHomologados();
-
-
-  }
-
-
-
 }
