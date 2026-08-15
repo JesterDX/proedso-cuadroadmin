@@ -1,9 +1,9 @@
 <div class="container-fluid py-4">
 
 
-  <!-- ============================= -->
-  <!-- HEADER MODULO -->
-  <!-- ============================= -->
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
 
   <div class="header-modulo mb-4">
 
@@ -21,13 +21,17 @@
     </div>
 
 
-
     <div class="acciones">
 
 
-      <button 
-      class="btn btn-primary"
-      (click)="abrirNuevo()">
+      <!-- NUEVO -->
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="loading || cargandoImportacion"
+        (click)="abrirNuevo()"
+      >
 
         <i class="bi bi-plus-lg"></i>
 
@@ -36,160 +40,248 @@
       </button>
 
 
+      <!-- IMPORTAR -->
 
-      <button 
-      class="btn btn-success"
-      (click)="importarSheets()">
+      <button
+        type="button"
+        class="btn btn-success"
+        [disabled]="loading || cargandoImportacion"
+        (click)="importarSheets()"
+      >
 
-        <i class="bi bi-file-earmark-arrow-up"></i>
+        <i
+          class="bi"
+          [class.bi-file-earmark-arrow-up]="!cargandoImportacion"
+          [class.bi-arrow-repeat]="cargandoImportacion"
+          [class.spin]="cargandoImportacion"
+        ></i>
 
-        Importar Sheets
+        <span>
+          {{
+            cargandoImportacion
+              ? 'Importando...'
+              : 'Importar Sheets'
+          }}
+        </span>
 
       </button>
 
 
+      <!-- ACTUALIZAR -->
 
-      <button 
-      class="btn btn-outline-primary"
-      (click)="actualizar()">
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        [disabled]="loading || cargandoImportacion"
+        (click)="actualizar()"
+      >
 
-        <i class="bi bi-arrow-clockwise"></i>
+        <i
+          class="bi"
+          [class.bi-arrow-clockwise]="!loading"
+          [class.bi-arrow-repeat]="loading"
+          [class.spin]="loading"
+        ></i>
 
-        Actualizar
+        <span>
+          {{
+            loading
+              ? 'Actualizando...'
+              : 'Actualizar'
+          }}
+        </span>
 
       </button>
 
 
     </div>
-
 
   </div>
 
 
 
-
-
-  <!-- ============================= -->
+  <!-- ===================================================== -->
   <!-- FILTROS -->
-  <!-- ============================= -->
-
+  <!-- ===================================================== -->
 
   <div class="filtros mb-4">
 
 
-    <div class="busqueda">
+    <!-- BÚSQUEDA -->
 
+    <div class="busqueda">
 
       <i class="bi bi-search"></i>
 
-
       <input
-
-      class="form-control"
-
-      placeholder="Buscar alumno, DNI, curso..."
-
-      [(ngModel)]="busqueda"
-
-      (input)="buscar()">
-
+        type="text"
+        class="form-control"
+        placeholder="Buscar alumno, DNI, celular o curso..."
+        [(ngModel)]="busqueda"
+        (input)="buscar()"
+      >
 
     </div>
 
 
+    <!-- ESTADO -->
 
-
-    <select 
-    class="form-select"
-    [(ngModel)]="estadoSeleccionado"
-    (change)="filtrarEstado()">
+    <select
+      class="form-select"
+      [(ngModel)]="estadoSeleccionado"
+      (change)="filtrarEstado()"
+    >
 
       <option value="">
         Todos los estados
       </option>
 
+      <option
+        *ngFor="let estado of estados"
+        [value]="estado"
+      >
+        {{ estado }}
+      </option>
+
     </select>
 
 
+    <!-- DOCUMENTO -->
 
-
-
-    <select 
-    class="form-select"
-    [(ngModel)]="documentoSeleccionado"
-    (change)="filtrarDocumento()">
+    <select
+      class="form-select"
+      [(ngModel)]="documentoSeleccionado"
+      (change)="filtrarDocumento()"
+    >
 
       <option value="">
         Todos los documentos
       </option>
 
-    </select>
-
-
-
-
-
-    <select 
-    class="form-select"
-    [(ngModel)]="vendedorSeleccionado"
-    (change)="filtrarVendedor()">
-
-      <option value="">
-        Todos los vendedores
+      <option
+        *ngFor="let documento of documentos"
+        [value]="documento"
+      >
+        {{ documento }}
       </option>
 
     </select>
 
 
+    <!-- VENDEDOR -->
+
+    <select
+      class="form-select"
+      [(ngModel)]="vendedorSeleccionado"
+      (change)="filtrarVendedor()"
+    >
+
+      <option value="">
+        Todos los vendedores
+      </option>
+
+      <option
+        *ngFor="let vendedor of vendedores"
+        [value]="vendedor"
+      >
+        {{ vendedor }}
+      </option>
+
+    </select>
+
+
+    <!-- LIMPIAR -->
+
+    <button
+      type="button"
+      class="btn-limpiar"
+      *ngIf="
+        busqueda ||
+        estadoSeleccionado ||
+        documentoSeleccionado ||
+        vendedorSeleccionado
+      "
+      (click)="limpiarFiltros()"
+    >
+
+      <i class="bi bi-x-circle"></i>
+
+      Limpiar
+
+    </button>
+
+
   </div>
 
 
 
-
-
-
-
-  <!-- ============================= -->
-  <!-- INFORMACION TABLA -->
-  <!-- ============================= -->
-
+  <!-- ===================================================== -->
+  <!-- INFORMACIÓN -->
+  <!-- ===================================================== -->
 
   <div class="tabla-info">
 
-    <span>
 
-      Total homologaciones:
+    <div class="tabla-info-left">
+
+      <span>
+        Total homologaciones:
+      </span>
 
       <strong>
-        {{homologadosFiltrados.length}}
+        {{ homologadosFiltrados.length }}
       </strong>
 
+    </div>
 
-    </span>
+
+    <div
+      class="tabla-loading"
+      *ngIf="loading"
+    >
+
+      <i class="bi bi-arrow-repeat spin"></i>
+
+      Actualizando datos...
+
+    </div>
 
 
   </div>
 
 
 
-
-
-
-
-  <!-- ============================= -->
+  <!-- ===================================================== -->
   <!-- TABLA -->
-  <!-- ============================= -->
-
+  <!-- ===================================================== -->
 
   <div class="table-responsive tabla-homologados">
 
 
-    <table class="table align-middle">
+    <!-- LOADING -->
+
+    <div
+      class="estado-tabla"
+      *ngIf="loading"
+    >
+
+      <div class="spinner-tabla"></div>
+
+      <span>
+        Cargando homologaciones...
+      </span>
+
+    </div>
 
 
+    <!-- TABLA -->
+
+    <table
+      class="table align-middle"
+      *ngIf="!loading && homologadosPagina.length > 0"
+    >
 
       <thead>
-
 
         <tr>
 
@@ -223,354 +315,447 @@
 
         </tr>
 
-
       </thead>
-
-
-
-
 
 
       <tbody>
 
+        <tr
+          *ngFor="
+            let h of homologadosPagina;
+            let i = index
+          "
+        >
 
+          <!-- NÚMERO -->
 
-        <tr *ngFor="let h of homologadosPagina">
+          <td class="numero">
 
+            {{
+              ((paginaActual - 1) * itemsPorPagina) +
+              i +
+              1
+            }}
 
-
-          <td>
-            {{h.id}}
           </td>
 
 
-
+          <!-- FECHA -->
 
           <td>
-            {{ h.fecha_registro_texto }}
+            {{ h.fecha_registro_texto || '—' }}
           </td>
 
 
-
-
+          <!-- ALUMNO -->
 
           <td>
 
             <div class="alumno">
 
-              {{h.alumno}}
+              {{ h.alumno || 'Sin nombre' }}
 
             </div>
 
+          </td>
+
+
+          <!-- DNI -->
+
+          <td>
+            {{ h.dni || '—' }}
+          </td>
+
+
+          <!-- CELULAR -->
+
+          <td>
+            {{ h.celular || '—' }}
+          </td>
+
+
+          <!-- CURSO -->
+
+          <td>
+            {{ h.curso_equipo || '—' }}
+          </td>
+
+
+          <!-- VENDEDOR -->
+
+          <td>
+            {{ h.vendedor || '—' }}
+          </td>
+
+
+          <!-- TOTAL -->
+
+          <td class="monto">
+
+            S/
+
+            {{
+              h.monto_total
+                | number:'1.2-2'
+            }}
 
           </td>
 
 
+          <!-- PAGADO -->
 
+          <td class="monto">
 
+            S/
 
-          <td>
-            {{h.dni}}
+            {{
+              h.monto_pagado
+                | number:'1.2-2'
+            }}
+
           </td>
 
 
-
-
-
-          <td>
-            {{h.celular}}
-          </td>
-
-
-
-
+          <!-- SALDO -->
 
           <td>
-            {{h.curso_equipo}}
-          </td>
-
-
-
-
-
-          <td>
-            {{h.vendedor}}
-          </td>
-
-
-
-
-
-          <td>
-            S/ {{h.monto_total}}
-          </td>
-
-
-
-
-
-          <td>
-            S/ {{h.monto_pagado}}
-          </td>
-
-
-
-
-
-          <td>
-
 
             <span
+              [class.saldo-ok]="
+                h.saldo_pendiente === 0
+              "
+              [class.saldo-pendiente]="
+                h.saldo_pendiente > 0
+              "
+            >
 
-            [class.saldo-ok]="h.saldo_pendiente==0"
+              S/
 
-            [class.saldo-pendiente]="h.saldo_pendiente>0">
-
-
-              S/ {{h.saldo_pendiente}}
-
+              {{
+                h.saldo_pendiente
+                  | number:'1.2-2'
+              }}
 
             </span>
 
-
           </td>
 
 
-
-
-
-
+          <!-- ESTADO PAGO -->
 
           <td>
 
             <span class="badge pago">
 
-              {{h.estado_pago}}
+              {{ h.estado_pago || '—' }}
 
             </span>
-
 
           </td>
 
 
-
-
-
-
+          <!-- DOCUMENTO -->
 
           <td>
 
             <span class="badge documento">
 
-              {{h.estado_documento}}
+              {{ h.estado_documento || '—' }}
 
             </span>
-
 
           </td>
 
 
-
-
-
-
+          <!-- ESTADO -->
 
           <td>
 
             <span class="badge estado">
 
-              {{h.estado}}
+              {{ h.estado || '—' }}
 
             </span>
 
-
           </td>
 
 
-
-
-
-
-
+          <!-- ACCIONES -->
 
           <td>
 
-
             <button
+              type="button"
+              class="btn-menu"
+              title="Más opciones"
+            >
 
-            class="btn-menu">
-
-
-              ⋮
-
+              <i class="bi bi-three-dots-vertical"></i>
 
             </button>
 
-
           </td>
-
-
-
-
 
         </tr>
 
-
-
       </tbody>
-
-
 
     </table>
 
 
-  </div>
+    <!-- =================================================== -->
+    <!-- SIN RESULTADOS -->
+    <!-- =================================================== -->
 
-
-<!-- ========================================================= -->
-<!-- PAGINACIÓN -->
-<!-- ========================================================= -->
-
-<div
-  class="paginacion"
-  *ngIf="homologadosFiltrados.length > 0"
->
-
-  <!-- INFORMACIÓN -->
-
-  <div class="paginacion-info">
-
-    Mostrando
-
-    <strong>
-      {{
-        ((paginaActual - 1) * itemsPorPagina) + 1
-      }}
-    </strong>
-
-    -
-    
-    <strong>
-      {{
-        Math.min(
-          paginaActual * itemsPorPagina,
-          homologadosFiltrados.length
-        )
-      }}
-    </strong>
-
-    de
-
-    <strong>
-      {{ homologadosFiltrados.length }}
-    </strong>
-
-  </div>
-
-
-  <!-- CONTROLES -->
-
-  <div class="paginacion-controles">
-
-
-    <!-- PRIMERA -->
-
-    <button
-      type="button"
-      class="pagina-btn pagina-extremo"
-      [disabled]="paginaActual === 1"
-      (click)="primeraPagina()"
-      title="Primera página"
+    <div
+      class="estado-tabla vacio"
+      *ngIf="
+        !loading &&
+        homologadosFiltrados.length === 0
+      "
     >
 
-      <i class="bi bi-chevron-double-left"></i>
+      <div class="icono-vacio">
 
-    </button>
+        <i class="bi bi-inbox"></i>
 
+      </div>
 
-    <!-- ANTERIOR -->
+      <strong>
+        No se encontraron homologaciones
+      </strong>
 
-    <button
-      type="button"
-      class="pagina-btn"
-      [disabled]="paginaActual === 1"
-      (click)="paginaAnterior()"
-      title="Página anterior"
-    >
-
-      <i class="bi bi-chevron-left"></i>
-
-    </button>
-
-
-    <!-- PÁGINAS -->
-
-    <ng-container
-      *ngFor="let pagina of paginasVisibles"
-    >
-
-      <!-- NÚMERO -->
+      <span>
+        No existen registros que coincidan con los filtros.
+      </span>
 
       <button
-        *ngIf="pagina !== '...'"
         type="button"
-        class="pagina-btn"
-        [class.activa]="paginaActual === pagina"
-        (click)="cambiarPagina(+pagina)"
+        class="btn-vacio"
+        *ngIf="
+          busqueda ||
+          estadoSeleccionado ||
+          documentoSeleccionado ||
+          vendedorSeleccionado
+        "
+        (click)="limpiarFiltros()"
       >
 
-        {{ pagina }}
+        Limpiar filtros
+
+      </button>
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- ===================================================== -->
+  <!-- PAGINACIÓN -->
+  <!-- ===================================================== -->
+
+  <div
+    class="paginacion"
+    *ngIf="
+      !loading &&
+      homologadosFiltrados.length > 0
+    "
+  >
+
+
+    <!-- INFORMACIÓN -->
+
+    <div class="paginacion-info">
+
+      Mostrando
+
+      <strong>
+        {{
+          ((paginaActual - 1) * itemsPorPagina) + 1
+        }}
+      </strong>
+
+      -
+
+      <strong>
+
+        {{
+          Math.min(
+            paginaActual * itemsPorPagina,
+            homologadosFiltrados.length
+          )
+        }}
+
+      </strong>
+
+      de
+
+      <strong>
+        {{ homologadosFiltrados.length }}
+      </strong>
+
+    </div>
+
+
+
+    <!-- REGISTROS POR PÁGINA -->
+
+    <div class="paginacion-tamano">
+
+      <span>
+        Mostrar
+      </span>
+
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="itemsPorPagina"
+        (change)="cambiarItemsPorPagina()"
+      >
+
+        <option [ngValue]="10">
+          10
+        </option>
+
+        <option [ngValue]="15">
+          15
+        </option>
+
+        <option [ngValue]="25">
+          25
+        </option>
+
+        <option [ngValue]="50">
+          50
+        </option>
+
+        <option [ngValue]="100">
+          100
+        </option>
+
+      </select>
+
+      <span>
+        por página
+      </span>
+
+    </div>
+
+
+
+    <!-- CONTROLES -->
+
+    <div class="paginacion-controles">
+
+
+      <!-- PRIMERA -->
+
+      <button
+        type="button"
+        class="pagina-btn pagina-extremo"
+        [disabled]="paginaActual === 1"
+        (click)="primeraPagina()"
+        title="Primera página"
+      >
+
+        <i class="bi bi-chevron-double-left"></i>
 
       </button>
 
 
-      <!-- ELLIPSIS -->
+      <!-- ANTERIOR -->
 
-      <span
-        *ngIf="pagina === '...'"
-        class="pagina-ellipsis"
+      <button
+        type="button"
+        class="pagina-btn"
+        [disabled]="paginaActual === 1"
+        (click)="paginaAnterior()"
+        title="Página anterior"
       >
 
-        ...
+        <i class="bi bi-chevron-left"></i>
 
-      </span>
-
-    </ng-container>
+      </button>
 
 
-    <!-- SIGUIENTE -->
+      <!-- PÁGINAS -->
 
-    <button
-      type="button"
-      class="pagina-btn"
-      [disabled]="paginaActual === totalPaginas"
-      (click)="paginaSiguiente()"
-      title="Página siguiente"
-    >
-
-      <i class="bi bi-chevron-right"></i>
-
-    </button>
+      <ng-container
+        *ngFor="let pagina of paginasVisibles"
+      >
 
 
-    <!-- ÚLTIMA -->
+        <!-- NÚMERO -->
 
-    <button
-      type="button"
-      class="pagina-btn pagina-extremo"
-      [disabled]="paginaActual === totalPaginas"
-      (click)="ultimaPagina()"
-      title="Última página"
-    >
+        <button
+          *ngIf="pagina !== '...'"
+          type="button"
+          class="pagina-btn"
+          [class.activa]="
+            paginaActual === pagina
+          "
+          (click)="cambiarPagina(+pagina)"
+        >
 
-      <i class="bi bi-chevron-double-right"></i>
+          {{ pagina }}
 
-    </button>
+        </button>
+
+
+        <!-- ELLIPSIS -->
+
+        <span
+          *ngIf="pagina === '...'"
+          class="pagina-ellipsis"
+        >
+
+          ...
+
+        </span>
+
+
+      </ng-container>
+
+
+      <!-- SIGUIENTE -->
+
+      <button
+        type="button"
+        class="pagina-btn"
+        [disabled]="
+          paginaActual === totalPaginas
+        "
+        (click)="paginaSiguiente()"
+        title="Página siguiente"
+      >
+
+        <i class="bi bi-chevron-right"></i>
+
+      </button>
+
+
+      <!-- ÚLTIMA -->
+
+      <button
+        type="button"
+        class="pagina-btn pagina-extremo"
+        [disabled]="
+          paginaActual === totalPaginas
+        "
+        (click)="ultimaPagina()"
+        title="Última página"
+      >
+
+        <i class="bi bi-chevron-double-right"></i>
+
+      </button>
+
+
+    </div>
 
 
   </div>
-
-</div>
 
 
 </div>
