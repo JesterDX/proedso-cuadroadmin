@@ -1640,53 +1640,82 @@ editarFechaCuota(
 // ==========================================================
 // GUARDAR MATRÍCULA
 // ==========================================================
+// ==========================================================
+// GUARDAR MATRÍCULA
+// ==========================================================
 
 guardarMatricula(): void {
 
   const errores =
     this.validarFormulario();
 
-  if (
-    errores.length > 0
-  ) {
+  if (errores.length > 0) {
 
     Swal.fire({
-
       icon: 'warning',
-
       title: 'Faltan datos',
-
-      html:
-        errores
-          .map(
-            (e) => `• ${e}`
-          )
-          .join('<br>'),
-
-      confirmButtonText:
-        'Entendido'
-
+      html: errores
+        .map((e) => `• ${e}`)
+        .join('<br>'),
+      confirmButtonText: 'Entendido'
     });
 
     return;
-
   }
+
+
+  // ========================================================
+  // 🔥 DEBUG MÁQUINAS
+  // ========================================================
+
+  console.log('');
+  console.log('========================================');
+  console.log('🚜 DEBUG MÁQUINAS ANTES DE GUARDAR');
+  console.log('========================================');
+
+  console.log(
+    '🚜 this.maquinasSeleccionadas:',
+    this.maquinasSeleccionadas
+  );
+
+  console.log(
+    '🚜 ¿ES ARRAY?:',
+    Array.isArray(
+      this.maquinasSeleccionadas
+    )
+  );
+
+  console.log(
+    '🚜 CANTIDAD:',
+    Array.isArray(
+      this.maquinasSeleccionadas
+    )
+      ? this.maquinasSeleccionadas.length
+      : 'NO ES ARRAY'
+  );
+
+  console.log('========================================');
+
 
   // ========================================================
   // SINCRONIZAR MÁQUINAS
   // ========================================================
 
   this.form.maquinas_seleccionadas =
-    [
-      ...this.maquinasSeleccionadas
-    ];
+    Array.isArray(
+      this.maquinasSeleccionadas
+    )
+      ? [
+          ...this.maquinasSeleccionadas
+        ]
+      : [];
+
 
   // ========================================================
   // PAYLOAD
   // ========================================================
 
-  const payload:
-    MatriculaPayload = {
+  const payload: MatriculaPayload = {
 
     alumno_id:
       this.form.alumno_id,
@@ -1701,21 +1730,23 @@ guardarMatricula(): void {
       this.form.fecha_matricula,
 
     fecha_inicio:
-      this.form.fecha_inicio ||
-      null,
+      this.form.fecha_inicio || null,
 
     fecha_fin_estimada:
-      this.form.fecha_fin_estimada ||
-      null,
+      this.form.fecha_fin_estimada || null,
 
     notas:
-      this.form.notas ||
-      '',
+      this.form.notas || '',
 
+    // 🚜 MÁQUINAS
     maquinas_seleccionadas:
-      [
-        ...this.maquinasSeleccionadas
-      ],
+      Array.isArray(
+        this.maquinasSeleccionadas
+      )
+        ? [
+            ...this.maquinasSeleccionadas
+          ]
+        : [],
 
     modalidad_pago:
       this.form.modalidad_pago ||
@@ -1737,49 +1768,41 @@ guardarMatricula(): void {
       this.form.costo_certificacion ??
       null,
 
-    // ======================================================
-    // CRONOGRAMA CONFIRMADO
-    // ======================================================
-
     cronograma_confirmado:
-      this.previewCuotas
+      this.previewCuotas || []
 
   };
 
+
   // ========================================================
-  // LOG CRONOGRAMA
+  // 🔥 DEBUG PAYLOAD
   // ========================================================
 
   console.log('');
   console.log('========================================');
-  console.log('🔥 GUARDANDO MATRÍCULA');
+  console.log('🔥 PAYLOAD FINAL');
   console.log('========================================');
 
   console.log(
-    '📦 PAYLOAD COMPLETO:',
-    payload
-  );
-
-  console.log(
-    '📅 CRONOGRAMA CONFIRMADO:',
-    payload.cronograma_confirmado
-  );
-
-  console.log(
-    '📏 CANTIDAD CRONOGRAMA:',
-    payload.cronograma_confirmado?.length ?? 0
-  );
-
-  console.log(
-    '📋 CRONOGRAMA JSON:',
     JSON.stringify(
-      payload.cronograma_confirmado,
+      payload,
       null,
       2
     )
   );
 
+  console.log(
+    '🚜 MÁQUINAS EN PAYLOAD:',
+    payload.maquinas_seleccionadas
+  );
+
+  console.log(
+    '🚜 CANTIDAD MÁQUINAS:',
+    payload.maquinas_seleccionadas?.length ?? 0
+  );
+
   console.log('========================================');
+
 
   // ========================================================
   // GUARDAR
