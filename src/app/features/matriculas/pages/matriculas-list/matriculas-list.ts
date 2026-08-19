@@ -1620,16 +1620,26 @@ editarFechaCuota(
 
     }
 
+    // ==========================================================
+    // CERTIFICACIÓN
+    // ==========================================================
+    
     if (
-      this.form.costo_certificacion === null ||
-      this.form.costo_certificacion === undefined ||
-      Number(this.form.costo_certificacion) < 0
+      this.form.certificacion_incluida
     ) {
-
-      errores.push(
-        'Debes indicar el costo de certificación.'
-      );
-
+    
+      if (
+        this.form.costo_certificacion === null ||
+        this.form.costo_certificacion === undefined ||
+        Number(this.form.costo_certificacion) <= 0
+      ) {
+    
+        errores.push(
+          'Debes indicar un costo de certificación válido.'
+        );
+    
+      }
+    
     }
 
     return errores;
