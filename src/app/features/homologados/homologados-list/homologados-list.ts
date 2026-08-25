@@ -25,11 +25,7 @@ export interface Homologado {
 
   id?: number;
 
-  google_id?: number;
-
   alumno?: string;
-
-  alumno_id?: number | null;
 
   dni?: string | number;
 
@@ -39,13 +35,9 @@ export interface Homologado {
 
   vendedor?: string;
 
-  tipo_homologacion?: string;
-
   monto_total?: number;
 
   monto_pagado?: number;
-
-  monto_indicado?: number;
 
   saldo_pendiente: number;
 
@@ -59,35 +51,7 @@ export interface Homologado {
 
   fecha_registro_texto?: string;
 
-  fecha_envio?: string | null;
-
-  observaciones?: string;
-
-  observaciones_admin?: string;
-
-  cantidad_pagos?: number;
-
-  tiene_boleta?: boolean;
-
 }
-
-
-// ============================================================
-// TIPO DE CAMPO EDITABLE
-// ============================================================
-
-type CampoEditable =
-  | 'alumno'
-  | 'dni'
-  | 'celular'
-  | 'curso_equipo'
-  | 'vendedor'
-  | 'monto_total'
-  | 'estado_documento'
-  | 'estado'
-  | 'fecha_registro'
-  | 'observaciones'
-  | 'observaciones_admin';
 
 
 // ============================================================
@@ -133,21 +97,6 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // EDICIÓN INLINE
-  // ==========================================================
-
-  editandoId: number | null = null;
-
-  editandoCampo: CampoEditable | null = null;
-
-  valorEdicion: any = '';
-
-  valorAnterior: any = '';
-
-  guardandoEdicion = false;
-
-
-  // ==========================================================
   // FILTROS
   // ==========================================================
 
@@ -169,28 +118,6 @@ export class HomologadosListComponent
   documentos: string[] = [];
 
   vendedores: string[] = [];
-
-
-  // ==========================================================
-  // ESTADOS PERMITIDOS
-  // ==========================================================
-
-  readonly estadosDocumento = [
-    'PENDIENTE',
-    'EN PREPARACION',
-    'EN EMPRESA DE ENVIOS',
-    'RECOGIDO',
-    'INACTIVO'
-  ];
-
-
-  readonly estadosHomologacion = [
-    'REGISTRADO',
-    'EN PREPARACION',
-    'EN EMPRESA DE ENVIOS',
-    'RECOGIDO',
-    'INACTIVO'
-  ];
 
 
   // ==========================================================
@@ -241,6 +168,13 @@ export class HomologadosListComponent
 
   cargarHomologados(): void {
 
+    /*
+     * Evitamos peticiones duplicadas.
+     *
+     * Si ya estamos cargando y no se trata de una importación,
+     * no volvemos a disparar la petición.
+     */
+
     if (this.loading) {
 
       return;
@@ -262,6 +196,10 @@ export class HomologadosListComponent
           );
 
 
+          // ====================================================
+          // CARGAR DATOS
+          // ====================================================
+
           const datos =
             Array.isArray(resp?.data)
               ? resp.data
@@ -277,11 +215,26 @@ export class HomologadosListComponent
             );
 
 
+          // ====================================================
+          // ACTUALIZAR OPCIONES
+          // ====================================================
+
           this.generarOpcionesFiltros();
+
+
+          // ====================================================
+          // APLICAR FILTROS
+          // ====================================================
 
           this.aplicarFiltros(false);
 
+
+          // ====================================================
+          // FINALIZAR CARGA
+          // ====================================================
+
           this.loading = false;
+
 
           this.cd.detectChanges();
 
@@ -309,6 +262,7 @@ export class HomologadosListComponent
           this.paginaActual = 1;
 
           this.loading = false;
+
 
           this.cd.detectChanges();
 
@@ -405,6 +359,10 @@ export class HomologadosListComponent
 
   private generarOpcionesFiltros(): void {
 
+    // --------------------------------------------------------
+    // ESTADOS
+    // --------------------------------------------------------
+
     this.estados =
       this.obtenerValoresUnicos(
         this.homologados.map(
@@ -412,6 +370,10 @@ export class HomologadosListComponent
         )
       );
 
+
+    // --------------------------------------------------------
+    // DOCUMENTOS
+    // --------------------------------------------------------
 
     this.documentos =
       this.obtenerValoresUnicos(
@@ -421,6 +383,10 @@ export class HomologadosListComponent
       );
 
 
+    // --------------------------------------------------------
+    // VENDEDORES
+    // --------------------------------------------------------
+
     this.vendedores =
       this.obtenerValoresUnicos(
         this.homologados.map(
@@ -428,6 +394,10 @@ export class HomologadosListComponent
         )
       );
 
+
+    // --------------------------------------------------------
+    // VALIDAR SELECCIONES ACTUALES
+    // --------------------------------------------------------
 
     if (
       this.estadoSeleccionado &&
@@ -533,6 +503,10 @@ export class HomologadosListComponent
           h: Homologado
         ) => {
 
+          // --------------------------------------------------
+          // BÚSQUEDA
+          // --------------------------------------------------
+
           const coincideBusqueda =
 
             !texto ||
@@ -570,6 +544,10 @@ export class HomologadosListComponent
               );
 
 
+          // --------------------------------------------------
+          // ESTADO
+          // --------------------------------------------------
+
           const coincideEstado =
 
             !this.estadoSeleccionado ||
@@ -578,6 +556,10 @@ export class HomologadosListComponent
               this.estadoSeleccionado;
 
 
+          // --------------------------------------------------
+          // DOCUMENTO
+          // --------------------------------------------------
+
           const coincideDocumento =
 
             !this.documentoSeleccionado ||
@@ -585,6 +567,10 @@ export class HomologadosListComponent
             h.estado_documento ===
               this.documentoSeleccionado;
 
+
+          // --------------------------------------------------
+          // VENDEDOR
+          // --------------------------------------------------
 
           const coincideVendedor =
 
@@ -610,12 +596,20 @@ export class HomologadosListComponent
       );
 
 
+    // --------------------------------------------------------
+    // REINICIAR PAGINA
+    // --------------------------------------------------------
+
     if (reiniciarPagina) {
 
       this.paginaActual = 1;
 
     }
 
+
+    // --------------------------------------------------------
+    // ASEGURAR PAGINA VALIDA
+    // --------------------------------------------------------
 
     this.validarPaginaActual();
 
@@ -696,7 +690,7 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // HOMOLOGADOS DE LA PÁGINA
+  // HOMOLOGADOS DE LA PÁGINA ACTUAL
   // ==========================================================
 
   get homologadosPagina(): Homologado[] {
@@ -736,6 +730,10 @@ export class HomologadosListComponent
       this.maxPaginasVisibles;
 
 
+    // --------------------------------------------------------
+    // POCAS PÁGINAS
+    // --------------------------------------------------------
+
     if (
       total <= max + 2
     ) {
@@ -761,6 +759,10 @@ export class HomologadosListComponent
       (number | string)[] = [];
 
 
+    // --------------------------------------------------------
+    // PRIMERA
+    // --------------------------------------------------------
+
     paginas.push(1);
 
 
@@ -778,6 +780,10 @@ export class HomologadosListComponent
       );
 
 
+    // --------------------------------------------------------
+    // CERCA DEL PRINCIPIO
+    // --------------------------------------------------------
+
     if (
       actual <= 3
     ) {
@@ -788,6 +794,10 @@ export class HomologadosListComponent
 
     }
 
+
+    // --------------------------------------------------------
+    // CERCA DEL FINAL
+    // --------------------------------------------------------
 
     if (
       actual >= total - 2
@@ -802,6 +812,10 @@ export class HomologadosListComponent
     }
 
 
+    // --------------------------------------------------------
+    // ELLIPSIS INICIAL
+    // --------------------------------------------------------
+
     if (
       inicio > 2
     ) {
@@ -810,6 +824,10 @@ export class HomologadosListComponent
 
     }
 
+
+    // --------------------------------------------------------
+    // PÁGINAS CENTRALES
+    // --------------------------------------------------------
 
     for (
       let pagina = inicio;
@@ -824,6 +842,10 @@ export class HomologadosListComponent
     }
 
 
+    // --------------------------------------------------------
+    // ELLIPSIS FINAL
+    // --------------------------------------------------------
+
     if (
       fin < total - 1
     ) {
@@ -832,6 +854,10 @@ export class HomologadosListComponent
 
     }
 
+
+    // --------------------------------------------------------
+    // ÚLTIMA
+    // --------------------------------------------------------
 
     paginas.push(
       total
@@ -866,10 +892,9 @@ export class HomologadosListComponent
     }
 
 
-    this.cancelarEdicion();
-
     this.paginaActual =
       pagina;
+
 
     this.scrollTablaArriba();
 
@@ -1000,742 +1025,14 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // CAMBIAR REGISTROS
+  // CAMBIAR REGISTROS POR PÁGINA
   // ==========================================================
 
   cambiarItemsPorPagina(): void {
 
-    this.cancelarEdicion();
-
     this.paginaActual = 1;
 
     this.validarPaginaActual();
-
-  }
-
-
-  // ==========================================================
-  // ==========================================================
-  // EDICIÓN INLINE TIPO EXCEL
-  // ==========================================================
-  // ==========================================================
-
-
-  /**
-   * Inicia la edición de una celda.
-   *
-   * Se utiliza doble clic para evitar
-   * editar accidentalmente al seleccionar.
-   */
-  iniciarEdicion(
-    item: Homologado,
-    campo: CampoEditable
-  ): void {
-
-    if (
-      !item.id ||
-      this.guardandoEdicion ||
-      this.loading ||
-      this.cargandoImportacion
-    ) {
-
-      return;
-
-    }
-
-
-    // Si ya estamos editando otra celda,
-    // primero cancelamos.
-    if (
-      this.editandoId !== null
-    ) {
-
-      if (
-        this.editandoId === item.id &&
-        this.editandoCampo === campo
-      ) {
-
-        return;
-
-      }
-
-
-      this.cancelarEdicion();
-
-    }
-
-
-    this.editandoId =
-      item.id;
-
-    this.editandoCampo =
-      campo;
-
-
-    const valorActual =
-      this.obtenerValorCampo(
-        item,
-        campo
-      );
-
-
-    this.valorAnterior =
-      this.clonarValor(
-        valorActual
-      );
-
-
-    this.valorEdicion =
-      this.clonarValor(
-        valorActual
-      );
-
-
-    this.cd.detectChanges();
-
-
-    /*
-     * Enfocamos automáticamente el input.
-     *
-     * Se hace con setTimeout porque Angular
-     * necesita primero pintar la celda editable.
-     */
-
-    setTimeout(() => {
-
-      const elemento =
-        document.querySelector(
-          '.celda-editando input, .celda-editando select, .celda-editando textarea'
-        ) as
-          | HTMLInputElement
-          | HTMLSelectElement
-          | HTMLTextAreaElement
-          | null;
-
-
-      if (elemento) {
-
-        elemento.focus();
-
-        if (
-          elemento instanceof
-          HTMLInputElement ||
-          elemento instanceof
-          HTMLTextAreaElement
-        ) {
-
-          elemento.select();
-
-        }
-
-      }
-
-    });
-
-  }
-
-
-  // ==========================================================
-  // OBTENER VALOR
-  // ==========================================================
-
-  private obtenerValorCampo(
-    item: Homologado,
-    campo: CampoEditable
-  ): any {
-
-    if (
-      campo === 'fecha_registro'
-    ) {
-
-      return item.fecha_registro
-        ? String(
-            item.fecha_registro
-          ).substring(0, 10)
-        : '';
-
-    }
-
-
-    return item[campo];
-
-  }
-
-
-  // ==========================================================
-  // CLONAR VALOR
-  // ==========================================================
-
-  private clonarValor(
-    valor: any
-  ): any {
-
-    if (
-      valor === null ||
-      valor === undefined
-    ) {
-
-      return '';
-
-    }
-
-
-    return valor;
-
-  }
-
-
-  // ==========================================================
-  // CANCELAR EDICIÓN
-  // ==========================================================
-
-  cancelarEdicion(): void {
-
-    if (
-      this.guardandoEdicion
-    ) {
-
-      return;
-
-    }
-
-
-    this.editandoId = null;
-
-    this.editandoCampo = null;
-
-    this.valorEdicion = '';
-
-    this.valorAnterior = '';
-
-  }
-
-
-  // ==========================================================
-  // TECLA EN INPUT
-  // ==========================================================
-
-  manejarTeclaEdicion(
-    event: KeyboardEvent
-  ): void {
-
-    if (
-      event.key === 'Escape'
-    ) {
-
-      event.preventDefault();
-
-      this.cancelarEdicion();
-
-      return;
-
-    }
-
-
-    if (
-      event.key === 'Enter'
-    ) {
-
-      event.preventDefault();
-
-      this.guardarEdicion();
-
-    }
-
-  }
-
-
-  // ==========================================================
-  // BLUR
-  // ==========================================================
-
-  manejarBlurEdicion(): void {
-
-    /*
-     * Guardamos al salir de la celda,
-     * estilo Excel.
-     */
-
-    if (
-      !this.guardandoEdicion
-    ) {
-
-      setTimeout(() => {
-
-        if (
-          this.editandoId !== null
-        ) {
-
-          this.guardarEdicion();
-
-        }
-
-      }, 80);
-
-    }
-
-  }
-
-
-  // ==========================================================
-  // GUARDAR EDICIÓN
-  // ==========================================================
-
-  guardarEdicion(): void {
-
-    if (
-      this.editandoId === null ||
-      this.editandoCampo === null ||
-      this.guardandoEdicion
-    ) {
-
-      return;
-
-    }
-
-
-    const item =
-      this.homologados.find(
-        h =>
-          h.id ===
-          this.editandoId
-      );
-
-
-    if (!item) {
-
-      this.cancelarEdicion();
-
-      return;
-
-    }
-
-
-    const campo =
-      this.editandoCampo;
-
-
-    const nuevoValor =
-      this.normalizarValorParaGuardar(
-        campo,
-        this.valorEdicion
-      );
-
-
-    const valorOriginal =
-      this.normalizarValorParaGuardar(
-        campo,
-        this.valorAnterior
-      );
-
-
-    /*
-     * Si no cambió nada,
-     * simplemente cerramos la edición.
-     */
-
-    if (
-      this.valoresIguales(
-        nuevoValor,
-        valorOriginal
-      )
-    ) {
-
-      this.cancelarEdicion();
-
-      return;
-
-    }
-
-
-    /*
-     * Validaciones frontend.
-     */
-
-    const error =
-      this.validarValor(
-        campo,
-        nuevoValor
-      );
-
-
-    if (error) {
-
-      console.warn(
-        error
-      );
-
-      /*
-       * Volvemos al valor anterior.
-       */
-
-      this.valorEdicion =
-        this.valorAnterior;
-
-      return;
-
-    }
-
-
-    this.guardandoEdicion = true;
-
-
-    /*
-     * Guardamos temporalmente la información
-     * por si necesitamos restaurarla.
-     */
-
-    const id =
-      item.id;
-
-
-    this.service
-      .actualizar(
-        id,
-        {
-          [campo]:
-            nuevoValor
-        }
-      )
-      .subscribe({
-
-        next: (
-          resp: any
-        ) => {
-
-          console.log(
-            'Homologación actualizada:',
-            resp
-          );
-
-
-          const actualizado =
-            resp?.data;
-
-
-          if (
-            actualizado
-          ) {
-
-            this.actualizarItemLocal(
-              item,
-              actualizado
-            );
-
-          }
-          else {
-
-            /*
-             * Fallback por si el backend
-             * no devuelve data.
-             */
-
-            this.aplicarValorLocal(
-              item,
-              campo,
-              nuevoValor
-            );
-
-          }
-
-
-          this.guardandoEdicion = false;
-
-          this.editandoId = null;
-
-          this.editandoCampo = null;
-
-          this.valorEdicion = '';
-
-          this.valorAnterior = '';
-
-
-          /*
-           * Los filtros pueden haber cambiado
-           * si se editó estado/vendedor.
-           */
-
-          this.generarOpcionesFiltros();
-
-          this.aplicarFiltros(false);
-
-          this.cd.detectChanges();
-
-        },
-
-
-        error: (
-          err: any
-        ) => {
-
-          console.error(
-            'Error actualizando homologación:',
-            err
-          );
-
-
-          /*
-           * Restaurar valor anterior.
-           */
-
-          this.aplicarValorLocal(
-            item,
-            campo,
-            this.valorAnterior
-          );
-
-
-          this.guardandoEdicion = false;
-
-          this.cd.detectChanges();
-
-        }
-
-      });
-
-  }
-
-
-  // ==========================================================
-  // NORMALIZAR VALOR
-  // ==========================================================
-
-  private normalizarValorParaGuardar(
-    campo: CampoEditable,
-    valor: any
-  ): any {
-
-    if (
-      valor === null ||
-      valor === undefined
-    ) {
-
-      return '';
-
-    }
-
-
-    if (
-      campo === 'monto_total'
-    ) {
-
-      const numero =
-        Number(
-          String(valor)
-            .replace(',', '.')
-        );
-
-
-      return Number.isFinite(numero)
-        ? numero
-        : NaN;
-
-    }
-
-
-    if (
-      campo === 'dni'
-    ) {
-
-      return String(
-        valor
-      ).trim();
-
-    }
-
-
-    return String(
-      valor
-    ).trim();
-
-  }
-
-
-  // ==========================================================
-  // VALIDAR VALOR
-  // ==========================================================
-
-  private validarValor(
-    campo: CampoEditable,
-    valor: any
-  ): string | null {
-
-    if (
-      campo === 'monto_total'
-    ) {
-
-      if (
-        !Number.isFinite(
-          Number(valor)
-        )
-      ) {
-
-        return 'El monto total no es válido.';
-
-      }
-
-
-      if (
-        Number(valor) < 0
-      ) {
-
-        return 'El monto total no puede ser negativo.';
-
-      }
-
-    }
-
-
-    if (
-      campo === 'alumno' &&
-      !String(valor).trim()
-    ) {
-
-      return 'El nombre del alumno no puede estar vacío.';
-
-    }
-
-
-    if (
-      campo === 'curso_equipo' &&
-      !String(valor).trim()
-    ) {
-
-      return 'El curso/equipo no puede estar vacío.';
-
-    }
-
-
-    return null;
-
-  }
-
-
-  // ==========================================================
-  // COMPARAR VALORES
-  // ==========================================================
-
-  private valoresIguales(
-    a: any,
-    b: any
-  ): boolean {
-
-    if (
-      typeof a === 'number' ||
-      typeof b === 'number'
-    ) {
-
-      return Number(a) === Number(b);
-
-    }
-
-
-    return String(a ?? '') ===
-      String(b ?? '');
-
-  }
-
-
-  // ==========================================================
-  // ACTUALIZAR ITEM LOCAL
-  // ==========================================================
-
-  private actualizarItemLocal(
-    item: Homologado,
-    actualizado: Homologado
-  ): void {
-
-    Object.assign(
-      item,
-      this.formatearHomologado(
-        actualizado
-      )
-    );
-
-  }
-
-
-  // ==========================================================
-  // APLICAR VALOR LOCAL
-  // ==========================================================
-
-  private aplicarValorLocal(
-    item: Homologado,
-    campo: CampoEditable,
-    valor: any
-  ): void {
-
-    if (
-      campo === 'fecha_registro'
-    ) {
-
-      item.fecha_registro =
-        String(valor || '');
-
-      item.fecha_registro_texto =
-        this.formatearFecha(
-          item.fecha_registro
-        );
-
-      return;
-
-    }
-
-
-    (item as any)[campo] =
-      valor;
-
-
-    if (
-      campo === 'monto_total'
-    ) {
-
-      item.monto_total =
-        Number(valor);
-
-    }
-
-  }
-
-
-  // ==========================================================
-  // ESTÁ EDITANDO
-  // ==========================================================
-
-  estaEditando(
-    item: Homologado,
-    campo: CampoEditable
-  ): boolean {
-
-    return (
-
-      this.editandoId === item.id &&
-
-      this.editandoCampo === campo
-
-    );
-
-  }
-
-
-  // ==========================================================
-  // ESTÁ GUARDANDO
-  // ==========================================================
-
-  estaGuardando(
-    item: Homologado,
-    campo: CampoEditable
-  ): boolean {
-
-    return (
-
-      this.guardandoEdicion &&
-
-      this.editandoId === item.id &&
-
-      this.editandoCampo === campo
-
-    );
 
   }
 
@@ -1822,7 +1119,17 @@ export class HomologadosListComponent
           );
 
 
+          /*
+           * Primero liberamos el estado de importación.
+           */
+
           this.cargandoImportacion = false;
+
+
+          /*
+           * Después hacemos UNA sola petición
+           * para traer nuevamente todos los registros.
+           */
 
           this.recargarDespuesDeImportar();
 
@@ -1856,7 +1163,13 @@ export class HomologadosListComponent
 
   private recargarDespuesDeImportar(): void {
 
+    /*
+     * Limpiamos la página para que el usuario
+     * vea inmediatamente los nuevos registros.
+     */
+
     this.paginaActual = 1;
+
 
     this.cargarHomologados();
 
@@ -1869,6 +1182,11 @@ export class HomologadosListComponent
 
   actualizar(): void {
 
+    /*
+     * Si ya existe una petición activa,
+     * no hacemos otra.
+     */
+
     if (
       this.loading ||
       this.cargandoImportacion
@@ -1879,7 +1197,16 @@ export class HomologadosListComponent
     }
 
 
-    this.cancelarEdicion();
+    /*
+     * Conservamos los filtros actuales.
+     *
+     * cargarHomologados() vuelve a generar:
+     *
+     * - datos
+     * - filtros
+     * - paginación
+     * - opciones de selects
+     */
 
     this.cargarHomologados();
 
