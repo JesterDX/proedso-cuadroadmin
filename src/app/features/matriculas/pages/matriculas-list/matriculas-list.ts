@@ -2294,24 +2294,22 @@ guardarMatricula(): void {
   // ==========================================================
   // NOMBRE ALUMNO
   // ==========================================================
-
   getNombreAlumno(
     alumnoId: number
   ): string {
-
+  
     const alumno =
       this.alumnos.find(
         (a) =>
           Number(a.id) ===
           Number(alumnoId)
       );
-
+  
     return alumno
-      ? `${alumno.nombres ?? ''} ${alumno.apellidos ?? ''}`.trim()
+      ? `${alumno.apellidos ?? ''} ${alumno.nombres ?? ''}`.trim()
       : '-';
-
+  
   }
-
   // ==========================================================
   // NOMBRE ESTADO
   // ==========================================================
