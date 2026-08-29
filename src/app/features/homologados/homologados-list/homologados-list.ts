@@ -93,8 +93,8 @@ export class HomologadosListComponent
 
   loading = false;
 
-  cargandoImportacion = false;
-
+  cargandoImportacion = false; 
+    
 
   // ==========================================================
   // FILTROS
@@ -106,7 +106,9 @@ export class HomologadosListComponent
 
   documentoSeleccionado = '';
 
-  vendedorSeleccionado = '';
+  vendedorSeleccionado = ''; 
+  estadoPagoSeleccionado = '';
+
 
 
   // ==========================================================
@@ -119,6 +121,7 @@ export class HomologadosListComponent
 
   vendedores: string[] = [];
 
+  estadosPago: string[] = [];
 
   // ==========================================================
   // PAGINACIÓN
@@ -356,87 +359,120 @@ export class HomologadosListComponent
   // ==========================================================
   // GENERAR OPCIONES DE FILTROS
   // ==========================================================
+private generarOpcionesFiltros(): void {
 
-  private generarOpcionesFiltros(): void {
+  // --------------------------------------------------------
+  // ESTADOS
+  // --------------------------------------------------------
 
-    // --------------------------------------------------------
-    // ESTADOS
-    // --------------------------------------------------------
-
-    this.estados =
-      this.obtenerValoresUnicos(
-        this.homologados.map(
-          h => h.estado
-        )
-      );
-
-
-    // --------------------------------------------------------
-    // DOCUMENTOS
-    // --------------------------------------------------------
-
-    this.documentos =
-      this.obtenerValoresUnicos(
-        this.homologados.map(
-          h => h.estado_documento
-        )
-      );
-
-
-    // --------------------------------------------------------
-    // VENDEDORES
-    // --------------------------------------------------------
-
-    this.vendedores =
-      this.obtenerValoresUnicos(
-        this.homologados.map(
-          h => h.vendedor
-        )
-      );
-
-
-    // --------------------------------------------------------
-    // VALIDAR SELECCIONES ACTUALES
-    // --------------------------------------------------------
-
-    if (
-      this.estadoSeleccionado &&
-      !this.estados.includes(
-        this.estadoSeleccionado
+  this.estados =
+    this.obtenerValoresUnicos(
+      this.homologados.map(
+        h => h.estado
       )
-    ) {
-
-      this.estadoSeleccionado = '';
-
-    }
+    );
 
 
-    if (
-      this.documentoSeleccionado &&
-      !this.documentos.includes(
-        this.documentoSeleccionado
+  // --------------------------------------------------------
+  // ESTADOS DE PAGO
+  // --------------------------------------------------------
+
+  this.estadosPago =
+    this.obtenerValoresUnicos(
+      this.homologados.map(
+        h => h.estado_pago
       )
-    ) {
-
-      this.documentoSeleccionado = '';
-
-    }
+    );
 
 
-    if (
-      this.vendedorSeleccionado &&
-      !this.vendedores.includes(
-        this.vendedorSeleccionado
+  // --------------------------------------------------------
+  // DOCUMENTOS
+  // --------------------------------------------------------
+
+  this.documentos =
+    this.obtenerValoresUnicos(
+      this.homologados.map(
+        h => h.estado_documento
       )
-    ) {
+    );
 
-      this.vendedorSeleccionado = '';
 
-    }
+  // --------------------------------------------------------
+  // VENDEDORES
+  // --------------------------------------------------------
+
+  this.vendedores =
+    this.obtenerValoresUnicos(
+      this.homologados.map(
+        h => h.vendedor
+      )
+    );
+
+
+  // --------------------------------------------------------
+  // VALIDAR ESTADO
+  // --------------------------------------------------------
+
+  if (
+    this.estadoSeleccionado &&
+    !this.estados.includes(
+      this.estadoSeleccionado
+    )
+  ) {
+
+    this.estadoSeleccionado = '';
 
   }
 
 
+  // --------------------------------------------------------
+  // VALIDAR ESTADO DE PAGO
+  // --------------------------------------------------------
+
+  if (
+    this.estadoPagoSeleccionado &&
+    !this.estadosPago.includes(
+      this.estadoPagoSeleccionado
+    )
+  ) {
+
+    this.estadoPagoSeleccionado = '';
+
+  }
+
+
+  // --------------------------------------------------------
+  // VALIDAR DOCUMENTO
+  // --------------------------------------------------------
+
+  if (
+    this.documentoSeleccionado &&
+    !this.documentos.includes(
+      this.documentoSeleccionado
+    )
+  ) {
+
+    this.documentoSeleccionado = '';
+
+  }
+
+
+  // --------------------------------------------------------
+  // VALIDAR VENDEDOR
+  // --------------------------------------------------------
+
+  if (
+    this.vendedorSeleccionado &&
+    !this.vendedores.includes(
+      this.vendedorSeleccionado
+    )
+  ) {
+
+    this.vendedorSeleccionado = '';
+
+  }
+
+}
   // ==========================================================
   // OBTENER VALORES ÚNICOS
   // ==========================================================
@@ -556,6 +592,14 @@ export class HomologadosListComponent
               this.estadoSeleccionado;
 
 
+          const coincideEstadoPago =
+
+          !this.estadoPagoSeleccionado ||
+        
+          h.estado_pago ===
+            this.estadoPagoSeleccionado;
+
+
           // --------------------------------------------------
           // DOCUMENTO
           // --------------------------------------------------
@@ -579,17 +623,18 @@ export class HomologadosListComponent
             h.vendedor ===
               this.vendedorSeleccionado;
 
-
           return (
-
+          
             coincideBusqueda &&
-
+          
             coincideEstado &&
-
+          
+            coincideEstadoPago &&
+          
             coincideDocumento &&
-
+          
             coincideVendedor
-
+          
           );
 
         }
@@ -633,6 +678,12 @@ export class HomologadosListComponent
 
   }
 
+  filtrarEstadoPago(): void {
+
+    this.aplicarFiltros();
+
+  }
+
 
   filtrarDocumento(): void {
 
@@ -653,19 +704,20 @@ export class HomologadosListComponent
   // ==========================================================
 
   limpiarFiltros(): void {
-
+  
     this.busqueda = '';
-
+  
     this.estadoSeleccionado = '';
-
+  
+    this.estadoPagoSeleccionado = '';
+  
     this.documentoSeleccionado = '';
-
+  
     this.vendedorSeleccionado = '';
-
+  
     this.aplicarFiltros();
-
+  
   }
-
 
   // ==========================================================
   // TOTAL PÁGINAS
