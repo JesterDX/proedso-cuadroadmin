@@ -169,6 +169,7 @@ getEmptyForm(): AlumnoPayload {
     this.alumnoEditandoId = alumno.id;
 
     this.form = {
+      tipo_documento: 'DNI',
       dni: alumno.dni,
       nombres: alumno.nombres,
       apellidos: alumno.apellidos,
