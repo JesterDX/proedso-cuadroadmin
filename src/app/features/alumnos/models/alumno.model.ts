@@ -1,5 +1,6 @@
 export interface Alumno {
   id: number;
+  tipo_documento: string;
   dni: string;
   nombres: string;
   apellidos: string;
@@ -18,6 +19,7 @@ export interface Alumno {
 }
 
 export interface AlumnoPayload {
+  tipo_documento: string;
   dni: string;
   nombres: string;
   apellidos: string;
