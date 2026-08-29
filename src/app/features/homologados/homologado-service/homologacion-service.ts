@@ -1,22 +1,48 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
+
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  Observable
+} from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomologadosService {
 
-  private readonly http = inject(HttpClient);
+
+  // ==========================================================
+  // HTTP
+  // ==========================================================
+
+  private readonly http =
+    inject(HttpClient);
+
+
+  // ==========================================================
+  // API
+  // ==========================================================
 
   private readonly api =
     'https://proedso-back-wtdl.onrender.com/api/homologaciones';
 
 
-  // ============================================================
+  // ==========================================================
   // LISTAR HOMOLOGACIONES
+  //
   // GET /api/homologaciones
-  // ============================================================
+  //
+  // SOLO CONSULTA LA BD.
+  // NO IMPORTA SHEETS.
+  // NO MODIFICA DATOS.
+  // ==========================================================
 
   listar(): Observable<any> {
 
@@ -27,10 +53,11 @@ export class HomologadosService {
   }
 
 
-  // ============================================================
+  // ==========================================================
   // OBTENER HOMOLOGACIÓN
+  //
   // GET /api/homologaciones/:id
-  // ============================================================
+  // ==========================================================
 
   obtener(
     id: number
@@ -43,10 +70,11 @@ export class HomologadosService {
   }
 
 
-  // ============================================================
+  // ==========================================================
   // CREAR HOMOLOGACIÓN
+  //
   // POST /api/homologaciones
-  // ============================================================
+  // ==========================================================
 
   crear(
     data: any
@@ -60,10 +88,11 @@ export class HomologadosService {
   }
 
 
-  // ============================================================
+  // ==========================================================
   // ACTUALIZAR HOMOLOGACIÓN
+  //
   // PUT /api/homologaciones/:id
-  // ============================================================
+  // ==========================================================
 
   actualizar(
     id: number,
@@ -78,10 +107,11 @@ export class HomologadosService {
   }
 
 
-  // ============================================================
+  // ==========================================================
   // ELIMINAR HOMOLOGACIÓN
+  //
   // DELETE /api/homologaciones/:id
-  // ============================================================
+  // ==========================================================
 
   eliminar(
     id: number
@@ -94,10 +124,22 @@ export class HomologadosService {
   }
 
 
-  // ============================================================
+  // ==========================================================
   // IMPORTAR GOOGLE SHEETS
+  //
   // POST /api/homologaciones/importar-sheets
-  // ============================================================
+  //
+  // IMPORTANTE:
+  //
+  // Esta es la ÚNICA función del frontend
+  // que llama a la importación.
+  //
+  // El backend decide:
+  //
+  // - qué registros son nuevos
+  // - cuáles ya existen
+  // - qué datos deben conservarse
+  // ==========================================================
 
   importarSheets(): Observable<any> {
 
