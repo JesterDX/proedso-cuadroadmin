@@ -361,6 +361,8 @@ getEmptyForm(): AlumnoPayload {
     formData.append('dni', this.form.dni.trim());
     formData.append('nombres', this.form.nombres.trim());
     formData.append('apellidos', this.form.apellidos.trim());
+    formData.append('tipo_documento',this.form.tipo_documento || 'DNI');
+    formData.append('dni',this.form.dni.trim());
 
     if (this.form.fecha_nacimiento) formData.append('fecha_nacimiento', this.form.fecha_nacimiento);
     if (this.form.telefono) formData.append('telefono', this.form.telefono.trim());
