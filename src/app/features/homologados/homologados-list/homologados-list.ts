@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectorRef,
   Component,
@@ -25,7 +26,11 @@ export interface Homologado {
 
   id?: number;
 
+  google_id?: number;
+
   alumno?: string;
+
+  alumno_id?: number | null;
 
   dni?: string | number;
 
@@ -39,17 +44,29 @@ export interface Homologado {
 
   monto_pagado?: number;
 
-  saldo_pendiente: number;
+  monto_indicado?: number;
+
+  saldo_pendiente?: number;
 
   estado_pago?: string;
 
   estado_documento?: string;
 
+  fecha_envio?: string | null;
+
   estado?: string;
+
+  observaciones?: string;
+
+  observaciones_admin?: string;
 
   fecha_registro?: string;
 
   fecha_registro_texto?: string;
+
+  cantidad_pagos?: number;
+
+  tiene_boleta?: boolean;
 
 }
 
@@ -93,8 +110,8 @@ export class HomologadosListComponent
 
   loading = false;
 
-  cargandoImportacion = false; 
-    
+  cargandoImportacion = false;
+
 
   // ==========================================================
   // FILTROS
@@ -104,11 +121,11 @@ export class HomologadosListComponent
 
   estadoSeleccionado = '';
 
-  documentoSeleccionado = '';
-
-  vendedorSeleccionado = ''; 
   estadoPagoSeleccionado = '';
 
+  documentoSeleccionado = '';
+
+  vendedorSeleccionado = '';
 
 
   // ==========================================================
@@ -117,11 +134,12 @@ export class HomologadosListComponent
 
   estados: string[] = [];
 
+  estadosPago: string[] = [];
+
   documentos: string[] = [];
 
   vendedores: string[] = [];
 
-  estadosPago: string[] = [];
 
   // ==========================================================
   // PAGINACIÓN
@@ -166,17 +184,20 @@ export class HomologadosListComponent
 
 
   // ==========================================================
-  // CARGAR HOMOLOGADOS
+  // CARGAR DESDE BASE DE DATOS
+  //
+  // IMPORTANTE:
+  //
+  // Esta función NO importa Google Sheets.
+  //
+  // Solamente consulta:
+  //
+  // GET /api/homologaciones
+  //
+  // Por lo tanto NO modifica ningún registro.
   // ==========================================================
 
   cargarHomologados(): void {
-
-    /*
-     * Evitamos peticiones duplicadas.
-     *
-     * Si ya estamos cargando y no se trata de una importación,
-     * no volvemos a disparar la petición.
-     */
 
     if (this.loading) {
 
@@ -188,20 +209,17 @@ export class HomologadosListComponent
     this.loading = true;
 
 
-    this.service.listar()
+    this.service
+      .listar()
       .subscribe({
 
         next: (resp: any) => {
 
           console.log(
-            'Respuesta homologaciones:',
+            'Homologaciones desde BD:',
             resp
           );
 
-
-          // ====================================================
-          // CARGAR DATOS
-          // ====================================================
 
           const datos =
             Array.isArray(resp?.data)
@@ -211,30 +229,28 @@ export class HomologadosListComponent
 
           this.homologados =
             datos.map(
-              (homologado: Homologado) =>
+              (
+                homologado: Homologado
+              ) =>
                 this.formatearHomologado(
                   homologado
                 )
             );
 
 
-          // ====================================================
-          // ACTUALIZAR OPCIONES
-          // ====================================================
+          // --------------------------------------------------
+          // GENERAR FILTROS
+          // --------------------------------------------------
 
           this.generarOpcionesFiltros();
 
 
-          // ====================================================
+          // --------------------------------------------------
           // APLICAR FILTROS
-          // ====================================================
+          // --------------------------------------------------
 
           this.aplicarFiltros(false);
 
-
-          // ====================================================
-          // FINALIZAR CARGA
-          // ====================================================
 
           this.loading = false;
 
@@ -257,6 +273,8 @@ export class HomologadosListComponent
           this.homologadosFiltrados = [];
 
           this.estados = [];
+
+          this.estadosPago = [];
 
           this.documentos = [];
 
@@ -288,19 +306,29 @@ export class HomologadosListComponent
 
       ...homologado,
 
-      saldo_pendiente:
-        Number(
-          homologado.saldo_pendiente ?? 0
+      monto_total:
+        this.numeroSeguro(
+          homologado.monto_total
         ),
 
-      monto_total:
-        Number(
-          homologado.monto_total ?? 0
+      monto_indicado:
+        this.numeroSeguro(
+          homologado.monto_indicado
         ),
 
       monto_pagado:
-        Number(
-          homologado.monto_pagado ?? 0
+        this.numeroSeguro(
+          homologado.monto_pagado
+        ),
+
+      saldo_pendiente:
+        this.numeroSeguro(
+          homologado.saldo_pendiente
+        ),
+
+      cantidad_pagos:
+        this.numeroSeguro(
+          homologado.cantidad_pagos
         ),
 
       fecha_registro_texto:
@@ -309,6 +337,24 @@ export class HomologadosListComponent
         )
 
     };
+
+  }
+
+
+  // ==========================================================
+  // CONVERTIR NÚMERO
+  // ==========================================================
+
+  private numeroSeguro(
+    valor: any
+  ): number {
+
+    const numero =
+      Number(valor);
+
+    return Number.isFinite(numero)
+      ? numero
+      : 0;
 
   }
 
@@ -359,120 +405,95 @@ export class HomologadosListComponent
   // ==========================================================
   // GENERAR OPCIONES DE FILTROS
   // ==========================================================
-private generarOpcionesFiltros(): void {
 
-  // --------------------------------------------------------
-  // ESTADOS
-  // --------------------------------------------------------
+  private generarOpcionesFiltros(): void {
 
-  this.estados =
-    this.obtenerValoresUnicos(
-      this.homologados.map(
-        h => h.estado
+    this.estados =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.estado
+        )
+      );
+
+
+    this.estadosPago =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.estado_pago
+        )
+      );
+
+
+    this.documentos =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.estado_documento
+        )
+      );
+
+
+    this.vendedores =
+      this.obtenerValoresUnicos(
+        this.homologados.map(
+          h => h.vendedor
+        )
+      );
+
+
+    // --------------------------------------------------------
+    // VALIDAR FILTROS EXISTENTES
+    // --------------------------------------------------------
+
+    if (
+      this.estadoSeleccionado &&
+      !this.estados.includes(
+        this.estadoSeleccionado
       )
-    );
+    ) {
+
+      this.estadoSeleccionado = '';
+
+    }
 
 
-  // --------------------------------------------------------
-  // ESTADOS DE PAGO
-  // --------------------------------------------------------
-
-  this.estadosPago =
-    this.obtenerValoresUnicos(
-      this.homologados.map(
-        h => h.estado_pago
+    if (
+      this.estadoPagoSeleccionado &&
+      !this.estadosPago.includes(
+        this.estadoPagoSeleccionado
       )
-    );
+    ) {
+
+      this.estadoPagoSeleccionado = '';
+
+    }
 
 
-  // --------------------------------------------------------
-  // DOCUMENTOS
-  // --------------------------------------------------------
-
-  this.documentos =
-    this.obtenerValoresUnicos(
-      this.homologados.map(
-        h => h.estado_documento
+    if (
+      this.documentoSeleccionado &&
+      !this.documentos.includes(
+        this.documentoSeleccionado
       )
-    );
+    ) {
+
+      this.documentoSeleccionado = '';
+
+    }
 
 
-  // --------------------------------------------------------
-  // VENDEDORES
-  // --------------------------------------------------------
-
-  this.vendedores =
-    this.obtenerValoresUnicos(
-      this.homologados.map(
-        h => h.vendedor
+    if (
+      this.vendedorSeleccionado &&
+      !this.vendedores.includes(
+        this.vendedorSeleccionado
       )
-    );
+    ) {
 
+      this.vendedorSeleccionado = '';
 
-  // --------------------------------------------------------
-  // VALIDAR ESTADO
-  // --------------------------------------------------------
-
-  if (
-    this.estadoSeleccionado &&
-    !this.estados.includes(
-      this.estadoSeleccionado
-    )
-  ) {
-
-    this.estadoSeleccionado = '';
+    }
 
   }
 
 
-  // --------------------------------------------------------
-  // VALIDAR ESTADO DE PAGO
-  // --------------------------------------------------------
-
-  if (
-    this.estadoPagoSeleccionado &&
-    !this.estadosPago.includes(
-      this.estadoPagoSeleccionado
-    )
-  ) {
-
-    this.estadoPagoSeleccionado = '';
-
-  }
-
-
-  // --------------------------------------------------------
-  // VALIDAR DOCUMENTO
-  // --------------------------------------------------------
-
-  if (
-    this.documentoSeleccionado &&
-    !this.documentos.includes(
-      this.documentoSeleccionado
-    )
-  ) {
-
-    this.documentoSeleccionado = '';
-
-  }
-
-
-  // --------------------------------------------------------
-  // VALIDAR VENDEDOR
-  // --------------------------------------------------------
-
-  if (
-    this.vendedorSeleccionado &&
-    !this.vendedores.includes(
-      this.vendedorSeleccionado
-    )
-  ) {
-
-    this.vendedorSeleccionado = '';
-
-  }
-
-}
   // ==========================================================
   // OBTENER VALORES ÚNICOS
   // ==========================================================
@@ -520,7 +541,7 @@ private generarOpcionesFiltros(): void {
 
 
   // ==========================================================
-  // FILTROS
+  // APLICAR FILTROS
   // ==========================================================
 
   aplicarFiltros(
@@ -577,6 +598,14 @@ private generarOpcionesFiltros(): void {
               .toLowerCase()
               .includes(
                 texto
+              ) ||
+
+            (
+              h.vendedor ?? ''
+            )
+              .toLowerCase()
+              .includes(
+                texto
               );
 
 
@@ -592,12 +621,16 @@ private generarOpcionesFiltros(): void {
               this.estadoSeleccionado;
 
 
+          // --------------------------------------------------
+          // ESTADO DE PAGO
+          // --------------------------------------------------
+
           const coincideEstadoPago =
 
-          !this.estadoPagoSeleccionado ||
-        
-          h.estado_pago ===
-            this.estadoPagoSeleccionado;
+            !this.estadoPagoSeleccionado ||
+
+            h.estado_pago ===
+              this.estadoPagoSeleccionado;
 
 
           // --------------------------------------------------
@@ -623,27 +656,24 @@ private generarOpcionesFiltros(): void {
             h.vendedor ===
               this.vendedorSeleccionado;
 
+
           return (
-          
+
             coincideBusqueda &&
-          
+
             coincideEstado &&
-          
+
             coincideEstadoPago &&
-          
+
             coincideDocumento &&
-          
+
             coincideVendedor
-          
+
           );
 
         }
       );
 
-
-    // --------------------------------------------------------
-    // REINICIAR PAGINA
-    // --------------------------------------------------------
 
     if (reiniciarPagina) {
 
@@ -651,10 +681,6 @@ private generarOpcionesFiltros(): void {
 
     }
 
-
-    // --------------------------------------------------------
-    // ASEGURAR PAGINA VALIDA
-    // --------------------------------------------------------
 
     this.validarPaginaActual();
 
@@ -677,6 +703,7 @@ private generarOpcionesFiltros(): void {
     this.aplicarFiltros();
 
   }
+
 
   filtrarEstadoPago(): void {
 
@@ -704,20 +731,21 @@ private generarOpcionesFiltros(): void {
   // ==========================================================
 
   limpiarFiltros(): void {
-  
+
     this.busqueda = '';
-  
+
     this.estadoSeleccionado = '';
-  
+
     this.estadoPagoSeleccionado = '';
-  
+
     this.documentoSeleccionado = '';
-  
+
     this.vendedorSeleccionado = '';
-  
+
     this.aplicarFiltros();
-  
+
   }
+
 
   // ==========================================================
   // TOTAL PÁGINAS
@@ -742,7 +770,7 @@ private generarOpcionesFiltros(): void {
 
 
   // ==========================================================
-  // HOMOLOGADOS DE LA PÁGINA ACTUAL
+  // HOMOLOGADOS DE LA PÁGINA
   // ==========================================================
 
   get homologadosPagina(): Homologado[] {
@@ -782,10 +810,6 @@ private generarOpcionesFiltros(): void {
       this.maxPaginasVisibles;
 
 
-    // --------------------------------------------------------
-    // POCAS PÁGINAS
-    // --------------------------------------------------------
-
     if (
       total <= max + 2
     ) {
@@ -811,10 +835,6 @@ private generarOpcionesFiltros(): void {
       (number | string)[] = [];
 
 
-    // --------------------------------------------------------
-    // PRIMERA
-    // --------------------------------------------------------
-
     paginas.push(1);
 
 
@@ -832,10 +852,6 @@ private generarOpcionesFiltros(): void {
       );
 
 
-    // --------------------------------------------------------
-    // CERCA DEL PRINCIPIO
-    // --------------------------------------------------------
-
     if (
       actual <= 3
     ) {
@@ -846,10 +862,6 @@ private generarOpcionesFiltros(): void {
 
     }
 
-
-    // --------------------------------------------------------
-    // CERCA DEL FINAL
-    // --------------------------------------------------------
 
     if (
       actual >= total - 2
@@ -864,10 +876,6 @@ private generarOpcionesFiltros(): void {
     }
 
 
-    // --------------------------------------------------------
-    // ELLIPSIS INICIAL
-    // --------------------------------------------------------
-
     if (
       inicio > 2
     ) {
@@ -876,10 +884,6 @@ private generarOpcionesFiltros(): void {
 
     }
 
-
-    // --------------------------------------------------------
-    // PÁGINAS CENTRALES
-    // --------------------------------------------------------
 
     for (
       let pagina = inicio;
@@ -894,10 +898,6 @@ private generarOpcionesFiltros(): void {
     }
 
 
-    // --------------------------------------------------------
-    // ELLIPSIS FINAL
-    // --------------------------------------------------------
-
     if (
       fin < total - 1
     ) {
@@ -906,10 +906,6 @@ private generarOpcionesFiltros(): void {
 
     }
 
-
-    // --------------------------------------------------------
-    // ÚLTIMA
-    // --------------------------------------------------------
 
     paginas.push(
       total
@@ -1002,9 +998,7 @@ private generarOpcionesFiltros(): void {
       this.paginaActual !== 1
     ) {
 
-      this.cambiarPagina(
-        1
-      );
+      this.cambiarPagina(1);
 
     }
 
@@ -1140,6 +1134,20 @@ private generarOpcionesFiltros(): void {
 
   // ==========================================================
   // IMPORTAR GOOGLE SHEETS
+  //
+  // IMPORTANTE:
+  //
+  // Esta acción SÍ llama al backend de importación.
+  //
+  // El backend se encarga de:
+  //
+  // - crear nuevos registros
+  // - NO reemplazar pagos existentes
+  // - NO reemplazar monto_pagado
+  // - NO reemplazar saldo pendiente real
+  // - NO reemplazar estado de pago real
+  //
+  // Luego solamente volvemos a consultar la BD.
   // ==========================================================
 
   importarSheets(): void {
@@ -1166,22 +1174,17 @@ private generarOpcionesFiltros(): void {
         ) => {
 
           console.log(
-            'Importación Google Sheets:',
+            'Resultado importación:',
             resp
           );
 
 
-          /*
-           * Primero liberamos el estado de importación.
-           */
-
           this.cargandoImportacion = false;
 
 
-          /*
-           * Después hacemos UNA sola petición
-           * para traer nuevamente todos los registros.
-           */
+          // ------------------------------------------------
+          // TRAER DATOS ACTUALES DESDE BD
+          // ------------------------------------------------
 
           this.recargarDespuesDeImportar();
 
@@ -1200,6 +1203,7 @@ private generarOpcionesFiltros(): void {
 
           this.cargandoImportacion = false;
 
+
           this.cd.detectChanges();
 
         }
@@ -1215,13 +1219,7 @@ private generarOpcionesFiltros(): void {
 
   private recargarDespuesDeImportar(): void {
 
-    /*
-     * Limpiamos la página para que el usuario
-     * vea inmediatamente los nuevos registros.
-     */
-
     this.paginaActual = 1;
-
 
     this.cargarHomologados();
 
@@ -1229,15 +1227,16 @@ private generarOpcionesFiltros(): void {
 
 
   // ==========================================================
-  // ACTUALIZAR TODO
+  // ACTUALIZAR
+  //
+  // IMPORTANTE:
+  //
+  // NO IMPORTA SHEETS.
+  //
+  // SOLO CONSULTA LA BD.
   // ==========================================================
 
   actualizar(): void {
-
-    /*
-     * Si ya existe una petición activa,
-     * no hacemos otra.
-     */
 
     if (
       this.loading ||
@@ -1249,19 +1248,9 @@ private generarOpcionesFiltros(): void {
     }
 
 
-    /*
-     * Conservamos los filtros actuales.
-     *
-     * cargarHomologados() vuelve a generar:
-     *
-     * - datos
-     * - filtros
-     * - paginación
-     * - opciones de selects
-     */
-
     this.cargarHomologados();
 
   }
 
 }
+
