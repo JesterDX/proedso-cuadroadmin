@@ -60,22 +60,22 @@ export class AlumnosList implements OnInit {
     this.generarAnios();
     this.cargarAlumnos();
   }
-
-  getEmptyForm(): AlumnoPayload {
-    return {
-      dni: '',
-      nombres: '',
-      apellidos: '',
-      fecha_nacimiento: null,
-      telefono: '',
-      correo: '',
-      direccion: '',
-      observaciones: '',
-      seguro_alumno: '',
-      anio_ingreso: new Date().getFullYear(),
-      mes_ingreso: this.meses[new Date().getMonth()]
-    };
-  }
+getEmptyForm(): AlumnoPayload {
+  return {
+    tipo_documento: 'DNI',
+    dni: '',
+    nombres: '',
+    apellidos: '',
+    fecha_nacimiento: null,
+    telefono: '',
+    correo: '',
+    direccion: '',
+    observaciones: '',
+    seguro_alumno: '',
+    anio_ingreso: new Date().getFullYear(),
+    mes_ingreso: this.meses[new Date().getMonth()]
+  };
+}
 
   generarAnios(): void {
     const actual = new Date().getFullYear();
