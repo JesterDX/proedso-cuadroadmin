@@ -1,68 +1,157 @@
 <header class="main-header">
+
+  <!-- ======================================================
+       IZQUIERDA
+       ====================================================== -->
+
   <div class="header-left">
-    <div class="search-box">
-      <lucide-angular [img]="icons.search" class="search-icon"></lucide-angular>
-      <input type="text" placeholder="Buscar en PROEDSO..." class="search-input">
-    </div>
+
+    <button
+      type="button"
+      class="header-icon-button"
+      title="Buscar"
+      aria-label="Buscar"
+    >
+
+      <lucide-icon
+        [img]="icons.search"
+        [size]="20"
+      />
+
+    </button>
+
   </div>
+
+
+  <!-- ======================================================
+       DERECHA
+       ====================================================== -->
 
   <div class="header-right">
 
-<button
-  class="action-btn"
-  title="Notificaciones"
-  (click)="abrirNotificaciones()"
->
-  <lucide-angular
-    [img]="icons.bell"
-    class="btn-icon">
-  </lucide-angular>
 
-  @if (notificaciones().total > 0) {
-    <span class="notification-badge">
-      {{ notificaciones().total }}
-    </span>
-  }
-</button>
+    <!-- ====================================================
+         EXPORTAR EXCEL
+         ==================================================== -->
 
-<div class="header-divider"></div>
+    <button
+      type="button"
+      class="excel-button"
+      title="Exportar notificaciones a Excel"
+      (click)="exportarExcel()"
+    >
 
-<div class="header-profile-section">
+      <lucide-icon
+        [img]="icons.download"
+        [size]="18"
+      />
 
-  <div class="user-info">
+      <span>
+        Exportar Excel
+      </span>
 
-    <span class="user-name">
-      {{ usuarioLogueado()?.nombres }}
-      {{ usuarioLogueado()?.apellidos }}
-    </span>
+    </button>
 
-    <span class="user-role">
-      {{ usuarioLogueado()?.rol }}
-    </span>
+
+    <!-- ====================================================
+         NOTIFICACIONES
+         ==================================================== -->
+
+    <button
+      type="button"
+      class="notification-button"
+      title="Notificaciones"
+      aria-label="Notificaciones"
+      (click)="abrirNotificaciones()"
+    >
+
+      <lucide-icon
+        [img]="icons.bell"
+        [size]="21"
+      />
+
+
+      <!-- ================================================
+           BADGE
+           ================================================ -->
+
+      @if (notificaciones().total > 0) {
+
+        <span class="notification-badge">
+
+          {{
+            notificaciones().total > 99
+              ? '99+'
+              : notificaciones().total
+          }}
+
+        </span>
+
+      }
+
+    </button>
+
+
+    <!-- ====================================================
+         USUARIO
+         ==================================================== -->
+
+    <div class="user-container">
+
+      <div class="user-avatar">
+
+        <lucide-icon
+          [img]="icons.user"
+          [size]="22"
+        />
+
+      </div>
+
+
+      <div class="user-information">
+
+        <span class="user-name">
+
+          {{
+            usuarioLogueado()?.nombre
+            || 'Usuario'
+          }}
+
+        </span>
+
+        <span class="user-role">
+
+          {{
+            usuarioLogueado()?.rol
+            || 'Usuario'
+          }}
+
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         LOGOUT
+         ==================================================== -->
+
+    <button
+      type="button"
+      class="logout-button"
+      title="Cerrar sesión"
+      aria-label="Cerrar sesión"
+      (click)="onLogout()"
+    >
+
+      <lucide-icon
+        [img]="icons.logout"
+        [size]="19"
+      />
+
+    </button>
 
   </div>
 
-  <div class="avatar-container">
-    <lucide-angular
-      [img]="icons.user"
-      class="user-avatar-icon">
-    </lucide-angular>
-  </div>
-
-</div>
-
-<button
-  class="btn-logout-header"
-  (click)="onLogout()"
-  title="Cerrar Sesión"
->
-  <lucide-angular
-    [img]="icons.logout"
-    class="logout-icon">
-  </lucide-angular>
-</button>
-
-
-
-  </div>
 </header>
