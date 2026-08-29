@@ -40,7 +40,7 @@ export interface Matricula {
   // CERTIFICACIÓN
   // ========================================================
 
-  certificacion_incluida?: boolean;
+  certificacionIncluida?: boolean;
 
   costo_certificacion?: number | null;
 }
@@ -127,7 +127,7 @@ export interface MatriculaPayload {
   // CERTIFICACIÓN
   // ========================================================
 
-  certificacion_incluida?: boolean;
+  certificacionIncluida?: boolean;
 
   costo_certificacion?: number | null;
 
