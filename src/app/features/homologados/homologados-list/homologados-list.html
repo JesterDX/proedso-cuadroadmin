@@ -1,3 +1,4 @@
+
 <div class="container-fluid py-4">
 
 
@@ -6,7 +7,6 @@
   <!-- ===================================================== -->
 
   <div class="header-modulo mb-4">
-
 
     <div class="header-info">
 
@@ -57,11 +57,13 @@
         ></i>
 
         <span>
+
           {{
             cargandoImportacion
               ? 'Importando...'
               : 'Importar Sheets'
           }}
+
         </span>
 
       </button>
@@ -84,15 +86,16 @@
         ></i>
 
         <span>
+
           {{
             loading
               ? 'Actualizando...'
               : 'Actualizar'
           }}
+
         </span>
 
       </button>
-
 
     </div>
 
@@ -140,7 +143,9 @@
         *ngFor="let estado of estados"
         [value]="estado"
       >
+
         {{ estado }}
+
       </option>
 
     </select>
@@ -153,18 +158,20 @@
       [(ngModel)]="estadoPagoSeleccionado"
       (change)="filtrarEstadoPago()"
     >
-    
+
       <option value="">
         Todos los estados de pago
       </option>
-    
+
       <option
         *ngFor="let estadoPago of estadosPago"
         [value]="estadoPago"
       >
+
         {{ estadoPago }}
+
       </option>
-    
+
     </select>
 
 
@@ -184,7 +191,9 @@
         *ngFor="let documento of documentos"
         [value]="documento"
       >
+
         {{ documento }}
+
       </option>
 
     </select>
@@ -206,7 +215,9 @@
         *ngFor="let vendedor of vendedores"
         [value]="vendedor"
       >
+
         {{ vendedor }}
+
       </option>
 
     </select>
@@ -220,6 +231,7 @@
       *ngIf="
         busqueda ||
         estadoSeleccionado ||
+        estadoPagoSeleccionado ||
         documentoSeleccionado ||
         vendedorSeleccionado
       "
@@ -232,7 +244,6 @@
 
     </button>
 
-
   </div>
 
 
@@ -242,7 +253,6 @@
   <!-- ===================================================== -->
 
   <div class="tabla-info">
-
 
     <div class="tabla-info-left">
 
@@ -267,7 +277,6 @@
       Actualizando datos...
 
     </div>
-
 
   </div>
 
@@ -300,7 +309,10 @@
 
     <table
       class="table align-middle"
-      *ngIf="!loading && homologadosPagina.length > 0"
+      *ngIf="
+        !loading &&
+        homologadosPagina.length > 0
+      "
     >
 
       <thead>
@@ -365,7 +377,9 @@
           <!-- FECHA -->
 
           <td>
+
             {{ h.fecha_registro_texto || '—' }}
+
           </td>
 
 
@@ -385,28 +399,36 @@
           <!-- DNI -->
 
           <td>
+
             {{ h.dni || '—' }}
+
           </td>
 
 
           <!-- CELULAR -->
 
           <td>
+
             {{ h.celular || '—' }}
+
           </td>
 
 
           <!-- CURSO -->
 
           <td>
+
             {{ h.curso_equipo || '—' }}
+
           </td>
 
 
           <!-- VENDEDOR -->
 
           <td>
+
             {{ h.vendedor || '—' }}
+
           </td>
 
 
@@ -444,10 +466,10 @@
 
             <span
               [class.saldo-ok]="
-                h.saldo_pendiente === 0
+                (h.saldo_pendiente ?? 0) <= 0
               "
               [class.saldo-pendiente]="
-                h.saldo_pendiente > 0
+                (h.saldo_pendiente ?? 0) > 0
               "
             >
 
@@ -467,7 +489,18 @@
 
           <td>
 
-            <span class="badge pago">
+            <span
+              class="badge pago"
+              [class.pago-pendiente]="
+                h.estado_pago === 'PENDIENTE'
+              "
+              [class.pago-parcial]="
+                h.estado_pago === 'PARCIAL'
+              "
+              [class.pago-completo]="
+                h.estado_pago === 'PAGADO'
+              "
+            >
 
               {{ h.estado_pago || '—' }}
 
@@ -557,6 +590,7 @@
         *ngIf="
           busqueda ||
           estadoSeleccionado ||
+          estadoPagoSeleccionado ||
           documentoSeleccionado ||
           vendedorSeleccionado
         "
@@ -568,7 +602,6 @@
       </button>
 
     </div>
-
 
   </div>
 
@@ -594,9 +627,11 @@
       Mostrando
 
       <strong>
+
         {{
           ((paginaActual - 1) * itemsPorPagina) + 1
         }}
+
       </strong>
 
       -
@@ -615,7 +650,9 @@
       de
 
       <strong>
+
         {{ homologadosFiltrados.length }}
+
       </strong>
 
     </div>
@@ -707,9 +744,6 @@
         *ngFor="let pagina of paginasVisibles"
       >
 
-
-        <!-- NÚMERO -->
-
         <button
           *ngIf="pagina !== '...'"
           type="button"
@@ -725,8 +759,6 @@
         </button>
 
 
-        <!-- ELLIPSIS -->
-
         <span
           *ngIf="pagina === '...'"
           class="pagina-ellipsis"
@@ -735,7 +767,6 @@
           ...
 
         </span>
-
 
       </ng-container>
 
@@ -773,11 +804,9 @@
 
       </button>
 
-
     </div>
-
 
   </div>
 
-
 </div>
+
