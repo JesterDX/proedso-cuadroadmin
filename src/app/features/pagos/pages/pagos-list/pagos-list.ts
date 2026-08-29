@@ -163,89 +163,347 @@ export class PagosList implements OnInit {
   // ======================
   // FILTRO + PAGINACIÓN
   // ======================
-  filtrar(reset = true) {
-    if (reset) {
-      this.paginaActual = 1;
-    }
+// ======================
+// FILTRO + PAGINACIÓN + AGRUPACIÓN
+// ======================
+filtrar(reset = true) {
 
-    const search = this.search.toLowerCase().trim();
+  if (reset) {
+    this.paginaActual = 1;
+  }
 
-    const filtrados = this.alumnos.filter(a => {
-      const cumpleBusqueda =
-        !search ||
-        a.alumno?.toLowerCase().includes(search) ||
-        a.plan_nombre?.toLowerCase().includes(search);
+  const search = this.search.toLowerCase().trim();
 
-      const cumpleEstado =
-        !this.estado ||
-        (this.estado === 'PAGADO' && !a.tiene_deuda) ||
-        (this.estado === 'PENDIENTE' && a.tiene_deuda);
+  const filtrados = this.alumnos.filter(a => {
 
-      let cumpleFecha = true;
+    // ======================
+    // BÚSQUEDA
+    // ======================
+    const cumpleBusqueda =
+      !search ||
+      a.alumno?.toLowerCase().includes(search) ||
+      a.plan_nombre?.toLowerCase().includes(search);
 
-      if (a.fecha_matricula) {
-        const fecha = new Date(a.fecha_matricula);
+    // ======================
+    // ESTADO
+    // ======================
+    const cumpleEstado =
+      !this.estado ||
+      (this.estado === 'PAGADO' && !a.tiene_deuda) ||
+      (this.estado === 'PENDIENTE' && a.tiene_deuda);
+
+    // ======================
+    // FECHA PARA FILTROS
+    // PRIORIDAD:
+    // 1. fecha_inicio
+    // 2. fecha_matricula
+    // ======================
+    const fechaAgrupacion =
+      a.fecha_inicio ||
+      a.fecha_matricula ||
+      null;
+
+    let cumpleFecha = true;
+
+    if (fechaAgrupacion) {
+
+      const fecha = new Date(fechaAgrupacion);
+
+      if (!isNaN(fecha.getTime())) {
+
         const mes = fecha.getMonth() + 1;
         const anio = fecha.getFullYear();
 
-        if (this.mesMatricula && mes !== Number(this.mesMatricula)) {
+        if (
+          this.mesMatricula &&
+          mes !== Number(this.mesMatricula)
+        ) {
           cumpleFecha = false;
         }
-        if (this.anioMatricula && anio !== Number(this.anioMatricula)) {
+
+        if (
+          this.anioMatricula &&
+          anio !== Number(this.anioMatricula)
+        ) {
           cumpleFecha = false;
         }
+
       }
 
-      return cumpleBusqueda && cumpleEstado && cumpleFecha;
-    });
+    }
 
-    filtrados.sort((a, b) =>
-      a.alumno.localeCompare(b.alumno, 'es', { sensitivity: 'base' })
+    return (
+      cumpleBusqueda &&
+      cumpleEstado &&
+      cumpleFecha
+    );
+  });
+
+
+  // ======================
+  // ORDENAR ALUMNOS
+  // ======================
+  filtrados.sort((a, b) => {
+
+    const fechaA =
+      a.fecha_inicio ||
+      a.fecha_matricula ||
+      null;
+
+    const fechaB =
+      b.fecha_inicio ||
+      b.fecha_matricula ||
+      null;
+
+    // Los que no tienen ninguna fecha van al final
+    if (!fechaA && !fechaB) return 0;
+    if (!fechaA) return 1;
+    if (!fechaB) return -1;
+
+    const tiempoA = new Date(fechaA).getTime();
+    const tiempoB = new Date(fechaB).getTime();
+
+    // Más reciente primero
+    if (tiempoA !== tiempoB) {
+      return tiempoB - tiempoA;
+    }
+
+    // Si tienen misma fecha, ordenar por nombre
+    return (a.alumno || '').localeCompare(
+      b.alumno || '',
+      'es',
+      {
+        sensitivity: 'base'
+      }
     );
 
-    this.totalPaginas = Math.ceil(filtrados.length / this.itemsPorPagina);
+  });
 
-    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-    const fin = inicio + this.itemsPorPagina;
-    const paginaActualData = filtrados.slice(inicio, fin);
 
-    this.alumnosFiltrados = filtrados;
+  // ======================
+  // PAGINACIÓN
+  // ======================
+  this.totalPaginas = Math.ceil(
+    filtrados.length / this.itemsPorPagina
+  );
 
-    this.paginas = Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  // Evitar página 0 cuando no hay resultados
+  if (this.totalPaginas === 0) {
+    this.totalPaginas = 1;
+  }
 
-    const meses = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
+  const inicio =
+    (this.paginaActual - 1) *
+    this.itemsPorPagina;
 
-    const grupos: any = {};
+  const fin =
+    inicio +
+    this.itemsPorPagina;
 
-    paginaActualData.forEach(alumno => {
-      const fecha = new Date(alumno.fecha_matricula);
-      const anio = fecha.getFullYear();
-      const mes = fecha.getMonth();
-      const key = `${anio}-${mes}`;
+  const paginaActualData =
+    filtrados.slice(inicio, fin);
+
+  this.alumnosFiltrados = filtrados;
+
+  this.paginas = Array.from(
+    {
+      length: this.totalPaginas
+    },
+    (_, i) => i + 1
+  );
+
+
+  // ======================
+  // MESES
+  // ======================
+  const meses = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre'
+  ];
+
+
+  // ======================
+  // AGRUPACIÓN
+  // ======================
+  const grupos: {
+    [key: string]: {
+      anio: number | null;
+      mesNumero: number | null;
+      mes: string;
+      fechaReferencia: string | null;
+      alumnos: any[];
+    }
+  } = {};
+
+
+  paginaActualData.forEach(alumno => {
+
+    // ==================================================
+    // FECHA PRINCIPAL:
+    // fecha_inicio
+    //
+    // SI NO EXISTE:
+    // fecha_matricula
+    // ==================================================
+    const fechaReferencia =
+      alumno.fecha_inicio ||
+      alumno.fecha_matricula ||
+      null;
+
+
+    // ==================================================
+    // SIN FECHA
+    // ==================================================
+    if (!fechaReferencia) {
+
+      const key = 'SIN_FECHA';
 
       if (!grupos[key]) {
+
         grupos[key] = {
-          anio,
-          mesNumero: mes,
-          mes: `${meses[mes]} ${anio}`,
+          anio: null,
+          mesNumero: null,
+          mes: 'Sin fecha',
+          fechaReferencia: null,
           alumnos: []
         };
+
       }
+
       grupos[key].alumnos.push(alumno);
-    });
 
-    this.gruposPaginados = Object.values(grupos).sort((a: any, b: any) => {
-      if (a.anio !== b.anio) {
-        return b.anio - a.anio;
+      return;
+    }
+
+
+    // ==================================================
+    // CON FECHA
+    // ==================================================
+    const fecha =
+      new Date(fechaReferencia);
+
+
+    if (isNaN(fecha.getTime())) {
+
+      const key = 'SIN_FECHA';
+
+      if (!grupos[key]) {
+
+        grupos[key] = {
+          anio: null,
+          mesNumero: null,
+          mes: 'Sin fecha',
+          fechaReferencia: null,
+          alumnos: []
+        };
+
       }
-      return b.mesNumero - a.mesNumero;
-    });
 
-    this.cd.detectChanges();
-  }
+      grupos[key].alumnos.push(alumno);
+
+      return;
+    }
+
+
+    const anio =
+      fecha.getFullYear();
+
+    const mes =
+      fecha.getMonth();
+
+
+    // ==================================================
+    // CLAVE DEL GRUPO
+    // ==================================================
+    const key =
+      `${anio}-${mes}`;
+
+
+    // ==================================================
+    // CREAR GRUPO
+    // ==================================================
+    if (!grupos[key]) {
+
+      grupos[key] = {
+
+        anio,
+
+        mesNumero: mes,
+
+        mes:
+          `${meses[mes]} ${anio}`,
+
+        fechaReferencia,
+
+        alumnos: []
+
+      };
+
+    }
+
+
+    // ==================================================
+    // AGREGAR ALUMNO
+    // ==================================================
+    grupos[key].alumnos.push(alumno);
+
+  });
+
+
+  // ======================
+  // ORDENAR GRUPOS
+  // ======================
+  this.gruposPaginados =
+    Object.values(grupos)
+      .sort((a: any, b: any) => {
+
+        // Sin fecha siempre al final
+        if (
+          a.anio === null &&
+          b.anio !== null
+        ) {
+          return 1;
+        }
+
+        if (
+          a.anio !== null &&
+          b.anio === null
+        ) {
+          return -1;
+        }
+
+        if (
+          a.anio === null &&
+          b.anio === null
+        ) {
+          return 0;
+        }
+
+
+        // Año más reciente
+        if (a.anio !== b.anio) {
+          return b.anio - a.anio;
+        }
+
+
+        // Mes más reciente
+        return b.mesNumero - a.mesNumero;
+
+      });
+
+
+  this.cd.detectChanges();
+}
 
   cambiarPagina(p: number) {
     if (p < 1 || p > this.totalPaginas) return;
