@@ -351,7 +351,7 @@ export class MatriculasList implements OnInit {
       // CERTIFICACIÓN
       // ==================================================
 
-      certificacion_incluida: true,
+      certificacionIncluida: true,
 
       costo_certificacion: null
 
@@ -675,8 +675,8 @@ const payload = {
   // CERTIFICACIÓN
   // ==================================================
 
-  certificacion_incluida:
-    this.form.certificacion_incluida ?? true,
+  certificacionIncluida:
+    this.form.certificacionIncluida ?? true,
 
   costo_certificacion:
     this.form.costo_certificacion ??
@@ -730,7 +730,7 @@ const payload = {
 
     console.log(
       '🎓 CERTIFICACIÓN:',
-      payload.certificacion_incluida
+      payload.certificacionIncluida
     );
 
     console.log(
@@ -1491,8 +1491,8 @@ editarFechaCuota(
         matricula.cuota_inicial ??
         null,
 
-      certificacion_incluida:
-        matricula.certificacion_incluida ??
+      certificacionIncluida:
+        matricula.certificacionIncluida ??
         true,
 
       costo_certificacion:
@@ -1625,7 +1625,7 @@ editarFechaCuota(
     // ==========================================================
     
     if (
-      this.form.certificacion_incluida
+      this.form.certificacionIncluida
     ) {
     
       if (
@@ -1770,8 +1770,8 @@ guardarMatricula(): void {
       this.form.cuota_inicial ??
       null,
 
-    certificacion_incluida:
-      this.form.certificacion_incluida ??
+    certificacionIncluida:
+      this.form.certificacionIncluida ??
       true,
 
     costo_certificacion:
