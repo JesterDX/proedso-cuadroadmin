@@ -248,8 +248,27 @@
 
             <div class="form-grid">
               <div class="form-field">
-                <label for="dni">DNI *</label>
-                <input id="dni" type="text" [(ngModel)]="form.dni" />
+                <label for="tipo_documento">Tipo de documento *</label>
+              
+                <select
+                  id="tipo_documento"
+                  [(ngModel)]="form.tipo_documento"
+                >
+                  <option value="DNI">DNI</option>
+                  <option value="CE">CE</option>
+                </select>
+              </div>
+              
+              <div class="form-field">
+                <label for="dni">
+                  {{ form.tipo_documento === 'CE' ? 'Número de CE *' : 'Número de DNI *' }}
+                </label>
+              
+                <input
+                  id="dni"
+                  type="text"
+                  [(ngModel)]="form.dni"
+                />
               </div>
 
               <div class="form-field">
