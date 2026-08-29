@@ -146,6 +146,28 @@
     </select>
 
 
+    <!-- ESTADO DE PAGO -->
+
+    <select
+      class="form-select"
+      [(ngModel)]="estadoPagoSeleccionado"
+      (change)="filtrarEstadoPago()"
+    >
+    
+      <option value="">
+        Todos los estados de pago
+      </option>
+    
+      <option
+        *ngFor="let estadoPago of estadosPago"
+        [value]="estadoPago"
+      >
+        {{ estadoPago }}
+      </option>
+    
+    </select>
+
+
     <!-- DOCUMENTO -->
 
     <select
