@@ -1,138 +1,122 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { PlanCurso } from '../models/plan-curso.model';
-import { PlanMaquina } from '../models/plan-maquina.model';
+import {
+  PlanCurso,
+  PlanCursoPayload
+} from '../models/plan-curso.model';
 
+
+// ============================================================
+// RESPUESTA API
+// ============================================================
+
+interface ApiResponse<T> {
+  ok: boolean;
+  message?: string;
+  data: T;
+}
+
+
+// ============================================================
+// SERVICE
+// ============================================================
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlanesCursoService {
 
+  private readonly http = inject(HttpClient);
 
-  private http = inject(HttpClient);
-
-
-  private apiUrl =
-    'https://proedso-back-wtdl.onrender.com/api/planes-curso';
+  private readonly apiUrl =
+    '/api/planes-curso';
 
 
+  // ==========================================================
+  // LISTAR PLANES
+  // ==========================================================
 
-  listarActivos() {
+  listar(): Observable<ApiResponse<PlanCurso[]>> {
 
-    return this.http
-      .get<{ ok:boolean; data:PlanCurso[] }>(
-        `${this.apiUrl}/activos`
-      )
-      .pipe(
-        map(r => r.data)
-      );
+    return this.http.get<
+      ApiResponse<PlanCurso[]>
+    >(this.apiUrl);
 
   }
 
 
+  // ==========================================================
+  // OBTENER PLAN POR ID
+  // ==========================================================
 
-  crear(data:any){
+  obtenerPorId(
+    id: number
+  ): Observable<ApiResponse<PlanCurso>> {
 
-    return this.http.post(
-      this.apiUrl,
-      data
-    );
-
-  }
-
-
-
-actualizar(id:number,data:any){
-
-  return this.http.put(
-    `${this.apiUrl}/${id}`,
-    data
-  );
-
-}
-
-
-
-  cambiarEstado(id:number){
-
-    return this.http.patch(
-      `${this.apiUrl}/${id}/estado`,
-      {}
-    );
-
-  }
-
-
-
-  listarTiposCurso(){
-
-    return this.http.get<any>(
-      'https://proedso-back-wtdl.onrender.com/api/tipos-curso/activos'
-    );
-
-  }
-
-
-
-
-  obtenerPorId(id:number){
-
-    return this.http.get<any>(
+    return this.http.get<
+      ApiResponse<PlanCurso>
+    >(
       `${this.apiUrl}/${id}`
     );
 
   }
 
 
+  // ==========================================================
+  // CREAR PLAN
+  // ==========================================================
 
+  crear(
+    payload: PlanCursoPayload
+  ): Observable<ApiResponse<PlanCurso>> {
 
-  obtenerMaquinas(id:number){
-
-    return this.http.get<{
-      ok:boolean,
-      data:PlanMaquina[]
-    }>(
-      `${this.apiUrl}/${id}/maquinas`
+    return this.http.post<
+      ApiResponse<PlanCurso>
+    >(
+      this.apiUrl,
+      payload
     );
 
   }
 
-  crearCompleto(data: any) {
 
-  return this.http.post<any>(
-    `${this.apiUrl}/completo`,
-    data
-  );
+  // ==========================================================
+  // ACTUALIZAR PLAN
+  // ==========================================================
 
-}
+  actualizar(
+    id: number,
+    payload: PlanCursoPayload
+  ): Observable<ApiResponse<PlanCurso>> {
 
-
-
-
-
-  // =====================================
-  // GUARDAR CONFIGURACIÓN DEL PLAN
-  // =====================================
-
-  guardarConfiguracion(
-    id:number,
-    maquinas:PlanMaquina[]
-  ){
-
-    return this.http.put<any>(
-
-      `${this.apiUrl}/${id}/configuracion`,
-
-      {
-        maquinas
-      }
-
+    return this.http.put<
+      ApiResponse<PlanCurso>
+    >(
+      `${this.apiUrl}/${id}`,
+      payload
     );
 
   }
 
+
+  // ==========================================================
+  // CAMBIAR ESTADO
+  // ==========================================================
+
+  cambiarEstado(
+    id: number,
+    activo: boolean
+  ): Observable<ApiResponse<PlanCurso>> {
+
+    return this.http.patch<
+      ApiResponse<PlanCurso>
+    >(
+      `${this.apiUrl}/${id}/estado`,
+      { activo }
+    );
+
+  }
 
 }
