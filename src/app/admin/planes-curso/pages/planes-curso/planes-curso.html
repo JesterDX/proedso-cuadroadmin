@@ -1,64 +1,599 @@
-<div class="header-actions">
+<section class="planes-page">
 
-  <h2>Planes de Curso</h2>
+  <!-- ====================================================== -->
+  <!-- HEADER -->
+  <!-- ====================================================== -->
 
-  <button
-    class="btn-primary"
-    (click)="nuevo()">
+  <div class="page-header">
 
-    ➕ Nuevo Plan
+    <div class="page-title">
 
-  </button>
+      <div class="title-icon">
+        <i class="lucide lucide-book-open"></i>
+      </div>
 
-</div>
+      <div>
+        <h1>Planes de Curso</h1>
 
-<hr>
+        <p>
+          Administra los planes, máquinas, horas y precios de capacitación.
+        </p>
+      </div>
 
-<div *ngIf="loading">Cargando...</div>
+    </div>
 
-<table *ngIf="!loading">
 
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Código</th>
-      <th>Nombre</th>
-      <th>Versión</th>
-      <th>Tipo Curso</th>
-      <th>Activo</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
+    <button
+      type="button"
+      class="btn-primary"
+      routerLink="/admin/planes-curso/nuevo"
+    >
 
-  <tbody>
+      <i class="lucide lucide-plus"></i>
 
-    <tr *ngFor="let p of planes">
+      Nuevo plan
 
-      <td>{{ p.id }}</td>
-      <td>{{ p.codigo }}</td>
-      <td>{{ p.nombre }}</td>
-      <td>{{ p.version }}</td>
-      <td>{{ p.tipo_curso_nombre }}</td>
-      <td>{{ p.activo ? 'Sí' : 'No' }}</td>
+    </button>
 
-      <td>
+  </div>
 
-        <button (click)="configurar(p)">
-          Configurar
+
+  <!-- ====================================================== -->
+  <!-- FILTROS -->
+  <!-- ====================================================== -->
+
+  <div class="filters-card">
+
+    <div class="search-box">
+
+      <i class="lucide lucide-search"></i>
+
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        (ngModelChange)="aplicarFiltros()"
+        placeholder="Buscar por código, nombre o tipo..."
+      />
+
+      @if (busqueda) {
+
+        <button
+          type="button"
+          class="clear-search"
+          (click)="busqueda = ''; aplicarFiltros()"
+          title="Limpiar búsqueda"
+        >
+          <i class="lucide lucide-x"></i>
         </button>
 
-        <button (click)="editar(p)">
-          Editar
+      }
+
+    </div>
+
+
+    <div class="status-filters">
+
+      <button
+        type="button"
+        [class.active]="filtroEstado === 'TODOS'"
+        (click)="cambiarFiltroEstado('TODOS')"
+      >
+        Todos
+      </button>
+
+      <button
+        type="button"
+        [class.active]="filtroEstado === 'ACTIVOS'"
+        (click)="cambiarFiltroEstado('ACTIVOS')"
+      >
+        Activos
+      </button>
+
+      <button
+        type="button"
+        [class.active]="filtroEstado === 'INACTIVOS'"
+        (click)="cambiarFiltroEstado('INACTIVOS')"
+      >
+        Inactivos
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ====================================================== -->
+  <!-- CONTENIDO -->
+  <!-- ====================================================== -->
+
+  <div class="content-card">
+
+
+    <!-- ==================================================== -->
+    <!-- CARGANDO -->
+    <!-- ==================================================== -->
+
+    @if (cargando) {
+
+      <div class="loading-state">
+
+        <div class="spinner"></div>
+
+        <p>
+          Cargando planes de curso...
+        </p>
+
+      </div>
+
+    }
+
+
+    <!-- ==================================================== -->
+    <!-- ERROR -->
+    <!-- ==================================================== -->
+
+    @else if (error) {
+
+      <div class="empty-state">
+
+        <div class="empty-icon error-icon">
+
+          <i class="lucide lucide-circle-alert"></i>
+
+        </div>
+
+        <h3>
+          No se pudieron cargar los planes
+        </h3>
+
+        <p>
+          Ocurrió un error al consultar la información.
+        </p>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cargarPlanes()"
+        >
+
+          <i class="lucide lucide-refresh-cw"></i>
+
+          Intentar nuevamente
+
         </button>
 
-        <button (click)="cambiarEstado(p.id)">
-          {{ p.activo ? 'Desactivar' : 'Activar' }}
-        </button>
+      </div>
 
-      </td>
+    }
 
-    </tr>
 
-  </tbody>
+    <!-- ==================================================== -->
+    <!-- SIN RESULTADOS -->
+    <!-- ==================================================== -->
 
-</table>
+    @else if (planesFiltrados.length === 0) {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+
+          <i class="lucide lucide-book-open"></i>
+
+        </div>
+
+        <h3>
+          No hay planes de curso
+        </h3>
+
+        @if (busqueda || filtroEstado !== 'TODOS') {
+
+          <p>
+            No encontramos planes que coincidan con los filtros.
+          </p>
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="busqueda = ''; cambiarFiltroEstado('TODOS')"
+          >
+
+            Limpiar filtros
+
+          </button>
+
+        } @else {
+
+          <p>
+            Aún no has registrado ningún plan de curso.
+          </p>
+
+          <button
+            type="button"
+            class="btn-primary"
+            routerLink="/admin/planes-curso/nuevo"
+          >
+
+            <i class="lucide lucide-plus"></i>
+
+            Crear primer plan
+
+          </button>
+
+        }
+
+      </div>
+
+    }
+
+
+    <!-- ==================================================== -->
+    <!-- TABLA -->
+    <!-- ==================================================== -->
+
+    @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Código</th>
+
+              <th>Plan de curso</th>
+
+              <th>Tipo</th>
+
+              <th>Duración</th>
+
+              <th>Máquinas</th>
+
+              <th>Vigencia</th>
+
+              <th>Estado</th>
+
+              <th class="actions-column">
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              plan of planesPaginados;
+              track trackById($index, plan)
+            ) {
+
+              <tr>
+
+                <!-- ======================================== -->
+                <!-- CÓDIGO -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <span class="codigo">
+                    {{ plan.codigo }}
+                  </span>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- NOMBRE -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <div class="plan-info">
+
+                    <strong>
+                      {{ plan.nombre }}
+                    </strong>
+
+                    <span>
+                      Versión {{ plan.version }}
+                    </span>
+
+                  </div>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- TIPO -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <div class="tipo-info">
+
+                    <span class="tipo-name">
+                      {{ plan.tipo_curso_nombre || '-' }}
+                    </span>
+
+                    @if (plan.tipo_curso_codigo) {
+
+                      <span class="tipo-code">
+                        {{ plan.tipo_curso_codigo }}
+                      </span>
+
+                    }
+
+                  </div>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- DURACIÓN -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  @if (plan.duracion_meses) {
+
+                    <span class="data-value">
+
+                      {{ plan.duracion_meses }}
+
+                      {{
+                        plan.duracion_meses === 1
+                          ? 'mes'
+                          : 'meses'
+                      }}
+
+                    </span>
+
+                  } @else {
+
+                    <span class="muted">
+                      -
+                    </span>
+
+                  }
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- MÁQUINAS -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <div class="machine-count">
+
+                    <i class="lucide lucide-truck"></i>
+
+                    <span>
+                      {{ plan.cantidad_maquinas || 0 }}
+                    </span>
+
+                  </div>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- VIGENCIA -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <div class="vigencia">
+
+                    @if (plan.vigente_desde) {
+
+                      <span>
+                        {{ plan.vigente_desde | date:'dd/MM/yyyy' }}
+                      </span>
+
+                    } @else {
+
+                      <span>
+                        Sin inicio
+                      </span>
+
+                    }
+
+                    @if (plan.vigente_hasta) {
+
+                      <small>
+                        hasta
+                        {{ plan.vigente_hasta | date:'dd/MM/yyyy' }}
+                      </small>
+
+                    } @else {
+
+                      <small>
+                        Sin fecha fin
+                      </small>
+
+                    }
+
+                  </div>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- ESTADO -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <span
+                    class="status-badge"
+                    [class.active]="plan.activo"
+                    [class.inactive]="!plan.activo"
+                  >
+
+                    <span class="status-dot"></span>
+
+                    {{
+                      plan.activo
+                        ? 'Activo'
+                        : 'Inactivo'
+                    }}
+
+                  </span>
+
+                </td>
+
+
+                <!-- ======================================== -->
+                <!-- ACCIONES -->
+                <!-- ======================================== -->
+
+                <td>
+
+                  <div class="actions">
+
+                    <a
+                      class="action-button"
+                      [routerLink]="[
+                        '/admin/planes-curso/configurar',
+                        plan.id
+                      ]"
+                      title="Configurar plan"
+                    >
+
+                      <i class="lucide lucide-settings"></i>
+
+                    </a>
+
+
+                    <button
+                      type="button"
+                      class="action-button"
+                      [class.activate]="!plan.activo"
+                      [class.deactivate]="plan.activo"
+                      (click)="cambiarEstado(plan)"
+                      [title]="
+                        plan.activo
+                          ? 'Desactivar plan'
+                          : 'Activar plan'
+                      "
+                    >
+
+                      @if (plan.activo) {
+
+                        <i class="lucide lucide-eye-off"></i>
+
+                      } @else {
+
+                        <i class="lucide lucide-eye"></i>
+
+                      }
+
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <!-- ================================================== -->
+      <!-- FOOTER TABLA -->
+      <!-- ================================================== -->
+
+      <div class="table-footer">
+
+        <span class="results-info">
+
+          Mostrando
+
+          <strong>
+            {{
+              planesPaginados.length
+            }}
+          </strong>
+
+          de
+
+          <strong>
+            {{
+              planesFiltrados.length
+            }}
+          </strong>
+
+          planes
+
+        </span>
+
+
+        @if (totalPaginas > 1) {
+
+          <div class="pagination">
+
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="paginaActual === 1"
+              (click)="anteriorPagina()"
+            >
+
+              <i class="lucide lucide-chevron-left"></i>
+
+            </button>
+
+
+            @for (
+              pagina of [].constructor(totalPaginas);
+              let i = $index;
+              track i
+            ) {
+
+              <button
+                type="button"
+                class="page-number"
+                [class.active]="paginaActual === i + 1"
+                (click)="cambiarPagina(i + 1)"
+              >
+
+                {{ i + 1 }}
+
+              </button>
+
+            }
+
+
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="paginaActual === totalPaginas"
+              (click)="siguientePagina()"
+            >
+
+              <i class="lucide lucide-chevron-right"></i>
+
+            </button>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </div>
+
+</section>
