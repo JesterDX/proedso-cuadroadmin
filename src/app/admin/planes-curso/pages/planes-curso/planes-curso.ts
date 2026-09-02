@@ -1,185 +1,472 @@
 import {
   Component,
-  inject,
   OnInit,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
-import { PlanesCursoService } from '../../services/planes-curso-admin';
-import { PlanCurso } from '../../models/plan-curso.model';
+import Swal from 'sweetalert2';
+
+import {
+  PlanCurso
+} from '../../models/plan-curso.model';
+
+import {
+  PlanesCursoService
+} from '../../services/planes-curso-admin.service';
+
 
 @Component({
   selector: 'app-planes-curso',
   standalone: true,
+
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    FormsModule
   ],
-  templateUrl: './planes-curso.html',
-  styleUrl: './planes-curso.scss'
-})
-export class PlanesCursoComponent implements OnInit {
 
-  private fb = inject(FormBuilder);
-  private service = inject(PlanesCursoService);
-  private router = inject(Router);
-  private cd = inject(ChangeDetectorRef);
+  templateUrl: './planes-curso-list.html',
+  styleUrl: './planes-curso-list.scss'
+})
+export class PlanesCursoListComponent
+  implements OnInit {
+
+
+  // ==========================================================
+  // INYECCIONES
+  // ==========================================================
+
+  private readonly planesCursoService =
+    inject(PlanesCursoService);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
+
+
+  // ==========================================================
+  // DATOS
+  // ==========================================================
 
   planes: PlanCurso[] = [];
-  tiposCurso: any[] = [];
 
-  loading = false;
-  modoEdicion = false;
-  idEditando: number | null = null;
+  planesFiltrados: PlanCurso[] = [];
 
-  form = this.fb.group({
-    codigo: ['', Validators.required],
-    nombre: ['', Validators.required],
-    version: ['', Validators.required],
-    tipo_curso_id: [null as number | null, Validators.required],
-    permite_eleccion_personalizada: [false],
-    vigente_desde: ['', Validators.required],
-    vigente_hasta: ['', Validators.required],
-    observaciones: ['']
-  });
+
+  // ==========================================================
+  // ESTADOS
+  // ==========================================================
+
+  cargando = false;
+
+  error = false;
+
+
+  // ==========================================================
+  // BÚSQUEDA
+  // ==========================================================
+
+  busqueda = '';
+
+
+  // ==========================================================
+  // FILTRO ESTADO
+  // ==========================================================
+
+  filtroEstado:
+    'TODOS' |
+    'ACTIVOS' |
+    'INACTIVOS' = 'TODOS';
+
+
+  // ==========================================================
+  // PAGINACIÓN
+  // ==========================================================
+
+  paginaActual = 1;
+
+  itemsPorPagina = 8;
+
+
+  // ==========================================================
+  // INIT
+  // ==========================================================
 
   ngOnInit(): void {
-    this.listarActivos();
-    this.cargarTipos();
+
+    this.cargarPlanes();
+
   }
 
-  cargarTipos(): void {
 
-    this.service.listarTiposCurso().subscribe({
+  // ==========================================================
+  // CARGAR PLANES
+  // ==========================================================
 
-      next: (res) => {
+  cargarPlanes(): void {
 
-        this.tiposCurso = res.data || [];
+    this.cargando = true;
 
-        this.cd.detectChanges();
+    this.error = false;
 
-      },
 
-      error: (err) => {
+    this.planesCursoService
+      .listar()
+      .subscribe({
 
-        console.error(err);
+        next: (response) => {
 
-        this.cd.detectChanges();
+          if (response.ok) {
 
+            this.planes =
+              response.data ?? [];
+
+            this.aplicarFiltros();
+
+          } else {
+
+            this.planes = [];
+
+            this.planesFiltrados = [];
+
+          }
+
+          this.cargando = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Error al cargar planes de curso:',
+            err
+          );
+
+          this.error = true;
+
+          this.planes = [];
+
+          this.planesFiltrados = [];
+
+          this.cargando = false;
+
+          this.cdr.detectChanges();
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text:
+              'No se pudieron cargar los planes de curso.'
+          });
+
+        }
+
+      });
+
+  }
+
+
+  // ==========================================================
+  // APLICAR FILTROS
+  // ==========================================================
+
+  aplicarFiltros(): void {
+
+    const texto =
+      this.busqueda
+        .trim()
+        .toLowerCase();
+
+
+    this.planesFiltrados =
+      this.planes.filter(
+        (plan) => {
+
+          // -----------------------------------------------
+          // BÚSQUEDA
+          // -----------------------------------------------
+
+          const coincideBusqueda =
+            !texto ||
+
+            plan.codigo
+              ?.toLowerCase()
+              .includes(texto) ||
+
+            plan.nombre
+              ?.toLowerCase()
+              .includes(texto) ||
+
+            plan.tipo_curso_nombre
+              ?.toLowerCase()
+              .includes(texto);
+
+
+          // -----------------------------------------------
+          // ESTADO
+          // -----------------------------------------------
+
+          const coincideEstado =
+
+            this.filtroEstado === 'TODOS'
+
+              ? true
+
+              : this.filtroEstado === 'ACTIVOS'
+                ? plan.activo
+                : !plan.activo;
+
+
+          return Boolean(
+            coincideBusqueda &&
+            coincideEstado
+          );
+
+        }
+      );
+
+
+    // Volver a primera página
+    this.paginaActual = 1;
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR FILTRO ESTADO
+  // ==========================================================
+
+  cambiarFiltroEstado(
+    estado:
+      'TODOS' |
+      'ACTIVOS' |
+      'INACTIVOS'
+  ): void {
+
+    this.filtroEstado = estado;
+
+    this.aplicarFiltros();
+
+  }
+
+
+  // ==========================================================
+  // PLANES PAGINADOS
+  // ==========================================================
+
+  get planesPaginados(): PlanCurso[] {
+
+    const inicio =
+      (this.paginaActual - 1) *
+      this.itemsPorPagina;
+
+    const fin =
+      inicio +
+      this.itemsPorPagina;
+
+    return this.planesFiltrados.slice(
+      inicio,
+      fin
+    );
+
+  }
+
+
+  // ==========================================================
+  // TOTAL PÁGINAS
+  // ==========================================================
+
+  get totalPaginas(): number {
+
+    return Math.ceil(
+      this.planesFiltrados.length /
+      this.itemsPorPagina
+    );
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR PÁGINA
+  // ==========================================================
+
+  cambiarPagina(
+    pagina: number
+  ): void {
+
+    if (
+      pagina < 1 ||
+      pagina > this.totalPaginas
+    ) {
+      return;
+    }
+
+    this.paginaActual = pagina;
+
+  }
+
+
+  // ==========================================================
+  // SIGUIENTE
+  // ==========================================================
+
+  siguientePagina(): void {
+
+    if (
+      this.paginaActual <
+      this.totalPaginas
+    ) {
+
+      this.paginaActual++;
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // ANTERIOR
+  // ==========================================================
+
+  anteriorPagina(): void {
+
+    if (
+      this.paginaActual > 1
+    ) {
+
+      this.paginaActual--;
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR ESTADO
+  // ==========================================================
+
+  cambiarEstado(
+    plan: PlanCurso
+  ): void {
+
+    const nuevoEstado =
+      !plan.activo;
+
+
+    Swal.fire({
+
+      icon:
+        nuevoEstado
+          ? 'question'
+          : 'warning',
+
+      title:
+        nuevoEstado
+          ? '¿Activar plan?'
+          : '¿Desactivar plan?',
+
+      text:
+        nuevoEstado
+          ? `¿Deseas activar "${plan.nombre}"?`
+          : `¿Deseas desactivar "${plan.nombre}"?`,
+
+      showCancelButton: true,
+
+      confirmButtonText:
+        nuevoEstado
+          ? 'Sí, activar'
+          : 'Sí, desactivar',
+
+      cancelButtonText:
+        'Cancelar'
+
+    }).then((result) => {
+
+      if (!result.isConfirmed) {
+        return;
       }
 
-    });
 
-  }
-  nuevo(): void {
+      this.planesCursoService
+        .cambiarEstado(
+          plan.id,
+          nuevoEstado
+        )
+        .subscribe({
 
-  this.router.navigate([
-    '/admin/planes-curso/nuevo'
-  ]);
+          next: (response) => {
 
-}
+            if (response.ok) {
 
-  listarActivos(): void {
+              plan.activo =
+                nuevoEstado;
 
-    this.loading = true;
+              this.aplicarFiltros();
 
-    this.cd.detectChanges();
+              Swal.fire({
 
-    this.service.listarActivos().subscribe({
+                icon: 'success',
 
-      next: (data) => {
+                title: 'Listo',
 
-        this.planes = data || [];
+                text:
+                  nuevoEstado
+                    ? 'Plan activado correctamente.'
+                    : 'Plan desactivado correctamente.',
 
-        this.loading = false;
+                timer: 1800,
 
-        this.cd.detectChanges();
+                showConfirmButton: false
 
-      },
+              });
 
-      error: (err) => {
+              this.cdr.detectChanges();
 
-        console.error(err);
+            }
 
-        this.loading = false;
+          },
 
-        this.cd.detectChanges();
+          error: (err) => {
 
-      }
+            console.error(
+              'Error al cambiar estado:',
+              err
+            );
 
-    });
+            Swal.fire({
 
-  }
+              icon: 'error',
 
+              title: 'Error',
 
-  configurar(plan: PlanCurso): void {
+              text:
+                'No se pudo cambiar el estado del plan.'
 
-    this.router.navigate([
-      '/admin/planes-curso/configurar',
-      plan.id
-    ]);
+            });
 
-  }
+          }
 
-  editar(plan: PlanCurso): void {
-
-    this.modoEdicion = true;
-
-    this.idEditando = plan.id;
-
-    this.form.patchValue({
-      codigo: plan.codigo,
-      nombre: plan.nombre,
-      version: plan.version?.toString(),
-      tipo_curso_id: plan.tipo_curso_id,
-      permite_eleccion_personalizada:
-        plan.permite_eleccion_personalizada,
-      vigente_desde: plan.vigente_desde,
-      vigente_hasta: plan.vigente_hasta,
-      observaciones: plan.observaciones
-    });
-
-    this.cd.detectChanges();
-
-  }
-
-  cambiarEstado(id: number): void {
-
-    this.service.cambiarEstado(id).subscribe({
-
-      next: () => {
-
-        this.listarActivos();
-
-        this.cd.detectChanges();
-
-      },
-
-      error: (err) => {
-
-        console.error(err);
-
-        this.cd.detectChanges();
-
-      }
+        });
 
     });
 
   }
 
-  reset(): void {
 
-    this.form.reset();
+  // ==========================================================
+  // TRACK BY
+  // ==========================================================
 
-    this.modoEdicion = false;
+  trackById(
+    index: number,
+    plan: PlanCurso
+  ): number {
 
-    this.idEditando = null;
-
-    this.cd.detectChanges();
+    return plan.id;
 
   }
 
