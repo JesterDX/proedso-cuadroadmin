@@ -16,11 +16,11 @@ import {
 
 import {
   PlanesCursoService
-} from '../../services/planes-curso-admin.service';
+} from '../../services/planes-curso-admin';
 
 
 @Component({
-  selector: 'app-planes-curso',
+  selector: 'app-planes-curso-list',
   standalone: true,
 
   imports: [
@@ -28,8 +28,8 @@ import {
     FormsModule
   ],
 
-  templateUrl: './planes-curso-list.html',
-  styleUrl: './planes-curso-list.scss'
+  templateUrl: './planes-curso.html',
+  styleUrl: './planes-curso.scss'
 })
 export class PlanesCursoListComponent
   implements OnInit {
