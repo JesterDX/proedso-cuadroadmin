@@ -7,6 +7,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import Swal from 'sweetalert2';
 
@@ -25,13 +26,14 @@ import {
 
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
 
   templateUrl: './planes-curso.html',
   styleUrl: './planes-curso.scss'
 })
-export class PlanesCursoListComponent
+export class PlanesCursoComponent
   implements OnInit {
 
 
@@ -111,7 +113,6 @@ export class PlanesCursoListComponent
 
     this.error = false;
 
-
     this.planesCursoService
       .listar()
       .subscribe({
@@ -186,10 +187,6 @@ export class PlanesCursoListComponent
       this.planes.filter(
         (plan) => {
 
-          // -----------------------------------------------
-          // BÚSQUEDA
-          // -----------------------------------------------
-
           const coincideBusqueda =
             !texto ||
 
@@ -205,10 +202,6 @@ export class PlanesCursoListComponent
               ?.toLowerCase()
               .includes(texto);
 
-
-          // -----------------------------------------------
-          // ESTADO
-          // -----------------------------------------------
 
           const coincideEstado =
 
@@ -230,7 +223,6 @@ export class PlanesCursoListComponent
       );
 
 
-    // Volver a primera página
     this.paginaActual = 1;
 
   }
@@ -302,7 +294,9 @@ export class PlanesCursoListComponent
       pagina < 1 ||
       pagina > this.totalPaginas
     ) {
+
       return;
+
     }
 
     this.paginaActual = pagina;
@@ -387,7 +381,9 @@ export class PlanesCursoListComponent
     }).then((result) => {
 
       if (!result.isConfirmed) {
+
         return;
+
       }
 
 
