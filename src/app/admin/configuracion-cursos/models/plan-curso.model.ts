@@ -3,6 +3,7 @@
 // ============================================================
 
 export interface PlanMaquina {
+
   id?: number;
 
   maquina_id: number;
@@ -22,6 +23,7 @@ export interface PlanMaquina {
 // ============================================================
 
 export interface PlanHoraPractica {
+
   id?: number;
 
   maquina_id: number;
@@ -37,8 +39,17 @@ export interface PlanHoraPractica {
 // ============================================================
 // PRECIO DEL PLAN
 // ============================================================
+//
+// Se mantiene este modelo porque el backend todavía devuelve
+// información de plan_precios y el sistema actual puede utilizarla.
+//
+// IMPORTANTE:
+// El formulario de configuración NO permitirá editar estos
+// montos. Solo necesitamos cantidad_cuotas.
+//
 
 export interface PlanPrecio {
+
   id?: number;
 
   nombre: string;
@@ -91,13 +102,13 @@ export interface PlanCurso {
 
   nombre: string;
 
-  version: number;
+  version?: number;
 
   permite_eleccion_personalizada: boolean;
 
-  vigente_desde: string | null;
+  vigente_desde?: string | null;
 
-  vigente_hasta: string | null;
+  vigente_hasta?: string | null;
 
   activo: boolean;
 
@@ -114,32 +125,34 @@ export interface PlanCurso {
 // ============================================================
 // PAYLOAD
 // ============================================================
+//
+// Este es el objeto que realmente enviamos al backend.
+//
+// Ya NO enviamos:
+// - codigo
+// - version
+// - fechas de vigencia
+// - activo
+// - precios
+//
+// El backend se encarga del código, vigencia y precio base.
+//
 
 export interface PlanCursoPayload {
 
   tipo_curso_id: number;
 
-  codigo: string;
-
   nombre: string;
 
-  version?: number;
+  permite_eleccion_personalizada: boolean;
 
-  permite_eleccion_personalizada?: boolean;
-
-  vigente_desde?: string | null;
-
-  vigente_hasta?: string | null;
-
-  activo?: boolean;
+  cantidad_cuotas: number;
 
   observaciones?: string | null;
 
   maquinas: PlanMaquina[];
 
   horas_practica: PlanHoraPractica[];
-
-  precios: PlanPrecio[];
 }
 
 
@@ -156,5 +169,4 @@ export interface MaquinaDisponible {
   activo: boolean;
 
   orden_visual?: number;
-
 }
