@@ -18,7 +18,7 @@ import {
 
 import Swal from 'sweetalert2';
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 import { AuthService } from '../../auth/services/auth.service';
 
@@ -27,6 +27,7 @@ import {
   ResumenNotificaciones,
   NotificacionCuota
 } from '../../core/services/notificaciones.service';
+
 
 @Component({
   selector: 'app-header',
@@ -81,6 +82,31 @@ export class HeaderComponent implements OnInit {
     logout: LogOut,
 
     download: Download
+
+  };
+
+
+  // ==========================================================
+  // COLORES EXCEL
+  // ==========================================================
+
+  private readonly EXCEL_COLORS = {
+
+    azul: '00184',
+
+    amarillo: 'FFCF15',
+
+    blanco: 'FFFFFF',
+
+    grisClaro: 'F3F4F6',
+
+    grisTexto: '374151',
+
+    rojo: 'DC2626',
+
+    rojoClaro: 'FEE2E2',
+
+    amarilloClaro: 'FEF3C7'
 
   };
 
@@ -216,10 +242,6 @@ export class HeaderComponent implements OnInit {
       this.notificaciones();
 
 
-    // --------------------------------------------------------
-    // SIN NOTIFICACIONES
-    // --------------------------------------------------------
-
     if (!data.total) {
 
       Swal.fire({
@@ -231,17 +253,14 @@ export class HeaderComponent implements OnInit {
         text:
           'No hay cuotas vencidas ni cuotas próximas a vencer.',
 
-        confirmButtonColor: '#f5b700'
+        confirmButtonColor:
+          `#${this.EXCEL_COLORS.amarillo}`
 
       });
 
       return;
     }
 
-
-    // --------------------------------------------------------
-    // CONTENIDO
-    // --------------------------------------------------------
 
     const contenido =
       data.notificaciones
@@ -303,14 +322,12 @@ export class HeaderComponent implements OnInit {
                   ${estado}
                 </div>
 
-
                 <div style="
                   font-weight:600;
                   color:#1f2937;
                 ">
                   ${nombreCompleto}
                 </div>
-
 
                 <div style="
                   font-size:13px;
@@ -319,7 +336,6 @@ export class HeaderComponent implements OnInit {
                   DNI:
                   ${notificacion.alumno_dni ?? '-'}
                 </div>
-
 
                 ${
                   notificacion.alumno_telefono
@@ -335,7 +351,6 @@ export class HeaderComponent implements OnInit {
                     : ''
                 }
 
-
                 ${
                   notificacion.alumno_correo
                     ? `
@@ -350,24 +365,18 @@ export class HeaderComponent implements OnInit {
                     : ''
                 }
 
-
                 <div style="
                   font-size:13px;
                   color:#475569;
                   margin-top:4px;
                 ">
                   Cuota:
-
                   ${
                     notificacion.numero_cuota !== null
-
                       ? notificacion.numero_cuota
-
                       : 'Certificación'
                   }
-
                 </div>
-
 
                 <div style="
                   font-size:13px;
@@ -376,7 +385,6 @@ export class HeaderComponent implements OnInit {
                   Vencimiento:
                   ${fecha}
                 </div>
-
 
                 <div style="
                   font-size:13px;
@@ -389,15 +397,12 @@ export class HeaderComponent implements OnInit {
               </div>
 
             `;
+
           }
         )
 
         .join('');
 
-
-    // --------------------------------------------------------
-    // MODAL
-    // --------------------------------------------------------
 
     Swal.fire({
 
@@ -419,7 +424,8 @@ export class HeaderComponent implements OnInit {
 
       width: 550,
 
-      confirmButtonColor: '#f5b700',
+      confirmButtonColor:
+        `#${this.EXCEL_COLORS.amarillo}`,
 
       confirmButtonText: 'Cerrar'
 
@@ -432,7 +438,7 @@ export class HeaderComponent implements OnInit {
   // EXPORTAR EXCEL
   // ==========================================================
 
-  exportarExcel(): void {
+  async exportarExcel(): Promise<void> {
 
     const data =
       this.notificaciones();
@@ -456,7 +462,8 @@ export class HeaderComponent implements OnInit {
         text:
           'No existen notificaciones para exportar.',
 
-        confirmButtonColor: '#f5b700'
+        confirmButtonColor:
+          `#${this.EXCEL_COLORS.amarillo}`
 
       });
 
@@ -465,7 +472,7 @@ export class HeaderComponent implements OnInit {
 
 
     // --------------------------------------------------------
-    // ALERTA DE CARGA
+    // LOADING
     // --------------------------------------------------------
 
     Swal.fire({
@@ -488,638 +495,1343 @@ export class HeaderComponent implements OnInit {
     });
 
 
-    // --------------------------------------------------------
-    // PEQUEÑO DELAY PARA QUE EL LOADING SE RENDERICE
-    // --------------------------------------------------------
+    try {
 
-    setTimeout(() => {
+      // ======================================================
+      // CREAR LIBRO
+      // ======================================================
 
-      try {
-
-        // ====================================================
-        // CREAR LIBRO
-        // ====================================================
-
-        const workbook =
-          XLSX.utils.book_new();
+      const workbook =
+        new ExcelJS.Workbook();
 
 
-        // ====================================================
-        // FECHA ACTUAL
-        // ====================================================
+      workbook.creator =
+        'PROEDSO';
 
-        const fechaActual =
-          new Date();
+      workbook.lastModifiedBy =
+        'PROEDSO';
 
-        const fechaTexto =
-          this.formatearFechaExcel(
-            fechaActual
-          );
+      workbook.created =
+        new Date();
 
+      workbook.modified =
+        new Date();
 
-        // ====================================================
-        // HOJA 1 - RESUMEN
-        // ====================================================
+      workbook.properties = {
 
-        const resumenData = [
+        title:
+          'Reporte de Notificaciones de Pagos',
 
-          [
-            'REPORTE DE NOTIFICACIONES DE PAGOS'
-          ],
+        subject:
+          'Notificaciones de pagos PROEDSO',
 
-          [],
+        company:
+          'PROEDSO',
 
-          [
-            'Fecha de generación',
-            fechaTexto
-          ],
+        category:
+          'Reportes administrativos',
 
-          [],
+        keywords:
+          'PROEDSO, pagos, cuotas, notificaciones'
 
-          [
-            'RESUMEN'
-          ],
-
-          [
-            'Indicador',
-            'Cantidad'
-          ],
-
-          [
-            'Total de notificaciones',
-            data.total
-          ],
-
-          [
-            'Cuotas vencidas',
-            data.vencidas
-          ],
-
-          [
-            'Cuotas por vencer',
-            data.por_vencer
-          ],
-
-          [
-            'Alumnos con notificaciones',
-            data.cantidad_alumnos ?? 0
-          ],
-
-          [
-            'Alumnos con cuotas vencidas',
-            data.cantidad_alumnos_vencidos ?? 0
-          ],
-
-          [
-            'Alumnos con cuotas por vencer',
-            data.cantidad_alumnos_por_vencer ?? 0
-          ]
-
-        ];
+      };
 
 
-        const worksheetResumen =
-          XLSX.utils.aoa_to_sheet(
-            resumenData
-          );
+      // ======================================================
+      // FECHA ACTUAL
+      // ======================================================
+
+      const fechaActual =
+        new Date();
 
 
-        // ====================================================
-        // ESTILOS / ANCHOS RESUMEN
-        // ====================================================
-
-        worksheetResumen['A1'].s = {
-
-          font: {
-            bold: true,
-            sz: 16
-          }
-
-        };
-
-
-        worksheetResumen['A5'].s = {
-
-          font: {
-            bold: true,
-            sz: 13
-          }
-
-        };
-
-
-        worksheetResumen['A6'].s = {
-
-          font: {
-            bold: true
-          }
-
-        };
-
-
-        worksheetResumen['B6'].s = {
-
-          font: {
-            bold: true
-          }
-
-        };
-
-
-        worksheetResumen['!cols'] = [
-
-          {
-            wch: 38
-          },
-
-          {
-            wch: 20
-          }
-
-        ];
-
-
-        XLSX.utils.book_append_sheet(
-
-          workbook,
-
-          worksheetResumen,
-
-          'Resumen'
-
+      const fechaTexto =
+        this.formatearFechaExcel(
+          fechaActual
         );
 
 
-        // ====================================================
-        // PREPARAR DETALLE
-        // ====================================================
+      // ======================================================
+      // HOJA 1 - RESUMEN
+      // ======================================================
 
-        const detalleExcel =
-          data.notificaciones.map(
+      const worksheetResumen =
+        workbook.addWorksheet(
+          'Resumen',
+          {
+            views: [
+              {
+                showGridLines: false
+              }
+            ]
+          }
+        );
 
+
+      // ------------------------------------------------------
+      // ANCHOS
+      // ------------------------------------------------------
+
+      worksheetResumen.columns = [
+
+        {
+          width: 38
+        },
+
+        {
+          width: 22
+        }
+
+      ];
+
+
+      // ------------------------------------------------------
+      // TÍTULO
+      // ------------------------------------------------------
+
+      worksheetResumen.mergeCells(
+        'A1:B2'
+      );
+
+
+      const titulo =
+        worksheetResumen.getCell(
+          'A1'
+        );
+
+
+      titulo.value =
+        'REPORTE DE NOTIFICACIONES DE PAGOS';
+
+
+      titulo.font = {
+
+        name: 'Arial',
+
+        size: 18,
+
+        bold: true,
+
+        color: {
+          argb:
+            this.EXCEL_COLORS.blanco
+        }
+
+      };
+
+
+      titulo.fill = {
+
+        type: 'pattern',
+
+        pattern: 'solid',
+
+        fgColor: {
+          argb:
+            this.EXCEL_COLORS.azul
+        }
+
+      };
+
+
+      titulo.alignment = {
+
+        vertical: 'middle',
+
+        horizontal: 'center'
+
+      };
+
+
+      // ------------------------------------------------------
+      // FECHA
+      // ------------------------------------------------------
+
+      worksheetResumen.mergeCells(
+        'A3:B3'
+      );
+
+
+      const fechaCell =
+        worksheetResumen.getCell(
+          'A3'
+        );
+
+
+      fechaCell.value =
+        `Fecha de generación: ${fechaTexto}`;
+
+
+      fechaCell.font = {
+
+        name: 'Arial',
+
+        size: 10,
+
+        italic: true,
+
+        color: {
+          argb:
+            this.EXCEL_COLORS.grisTexto
+        }
+
+      };
+
+
+      fechaCell.alignment = {
+
+        horizontal: 'center',
+
+        vertical: 'middle'
+
+      };
+
+
+      // ------------------------------------------------------
+      // LÍNEA AMARILLA
+      // ------------------------------------------------------
+
+      worksheetResumen.mergeCells(
+        'A4:B4'
+      );
+
+
+      worksheetResumen.getCell(
+        'A4'
+      ).fill = {
+
+        type: 'pattern',
+
+        pattern: 'solid',
+
+        fgColor: {
+          argb:
+            this.EXCEL_COLORS.amarillo
+        }
+
+      };
+
+
+      // ------------------------------------------------------
+      // SECCIÓN RESUMEN
+      // ------------------------------------------------------
+
+      worksheetResumen.mergeCells(
+        'A6:B6'
+      );
+
+
+      const resumenTitulo =
+        worksheetResumen.getCell(
+          'A6'
+        );
+
+
+      resumenTitulo.value =
+        'RESUMEN';
+
+
+      resumenTitulo.font = {
+
+        name: 'Arial',
+
+        size: 13,
+
+        bold: true,
+
+        color: {
+          argb:
+            this.EXCEL_COLORS.blanco
+        }
+
+      };
+
+
+      resumenTitulo.fill = {
+
+        type: 'pattern',
+
+        pattern: 'solid',
+
+        fgColor: {
+          argb:
+            this.EXCEL_COLORS.azul
+        }
+
+      };
+
+
+      resumenTitulo.alignment = {
+
+        horizontal: 'left',
+
+        vertical: 'middle'
+
+      };
+
+
+      // ------------------------------------------------------
+      // ENCABEZADOS
+      // ------------------------------------------------------
+
+      worksheetResumen.getRow(
+        7
+      ).values = [
+
+        'Indicador',
+
+        'Cantidad'
+
+      ];
+
+
+      this.estilizarEncabezado(
+        worksheetResumen.getRow(7)
+      );
+
+
+      // ------------------------------------------------------
+      // DATOS
+      // ------------------------------------------------------
+
+      const resumenRows = [
+
+        [
+          'Total de notificaciones',
+          data.total
+        ],
+
+        [
+          'Cuotas vencidas',
+          data.vencidas
+        ],
+
+        [
+          'Cuotas por vencer',
+          data.por_vencer
+        ],
+
+        [
+          'Alumnos con notificaciones',
+          data.cantidad_alumnos ?? 0
+        ],
+
+        [
+          'Alumnos con cuotas vencidas',
+          data.cantidad_alumnos_vencidos ?? 0
+        ],
+
+        [
+          'Alumnos con cuotas por vencer',
+          data.cantidad_alumnos_por_vencer ?? 0
+        ]
+
+      ];
+
+
+      resumenRows.forEach(
+        (
+          row,
+          index
+        ) => {
+
+          const excelRow =
+            worksheetResumen.addRow(
+              row
+            );
+
+
+          excelRow.eachCell(
             (
-              item: NotificacionCuota
+              cell
             ) => {
 
-              const nombre =
-                `${item.alumno_nombres ?? ''} ${item.alumno_apellidos ?? ''}`
-                  .trim();
+              cell.font = {
+
+                name: 'Arial',
+
+                size: 10,
+
+                color: {
+                  argb:
+                    this.EXCEL_COLORS.grisTexto
+                }
+
+              };
+
+              cell.alignment = {
+
+                vertical: 'middle'
+
+              };
+
+              cell.border =
+                this.bordeSuave();
+
+            });
 
 
-              const estado =
-                item.tipo === 'VENCIDA'
+          if (
+            index % 2 === 0
+          ) {
 
-                  ? 'VENCIDA'
+            excelRow.eachCell(
+              (
+                cell
+              ) => {
 
-                  : 'POR VENCER';
+                cell.fill = {
+
+                  type: 'pattern',
+
+                  pattern: 'solid',
+
+                  fgColor: {
+                    argb:
+                      'F8FAFC'
+                  }
+
+                };
+
+              }
+            );
+
+          }
+
+        }
+      );
 
 
-              const cuota =
-                item.numero_cuota !== null
+      // ------------------------------------------------------
+      // DESTACAR CANTIDADES
+      // ------------------------------------------------------
 
-                  ? item.numero_cuota
+      for (
+        let row = 8;
+        row <= 13;
+        row++
+      ) {
 
-                  : 'Certificación';
+        const cell =
+          worksheetResumen.getCell(
+            `B${row}`
+          );
 
 
-              return {
+        cell.font = {
 
-                'ESTADO':
-                  estado,
+          name: 'Arial',
 
-                'N° DOCUMENTO':
-                  item.alumno_dni ?? '',
+          size: 12,
 
-                'APELLIDOS':
-                  item.alumno_apellidos ?? '',
+          bold: true,
 
-                'NOMBRES':
-                  item.alumno_nombres ?? '',
+          color: {
+            argb:
+              this.EXCEL_COLORS.azul
+          }
 
-                'ALUMNO':
-                  nombre,
+        };
 
-                'TELÉFONO':
-                  item.alumno_telefono ?? '',
 
-                'CORREO':
-                  item.alumno_correo ?? '',
+        cell.alignment = {
 
-                'MATRÍCULA ID':
-                  item.matricula_id,
+          horizontal: 'center',
 
-                'ALUMNO ID':
-                  item.alumno_id,
+          vertical: 'middle'
 
-                'CUOTA ID':
-                  item.cuota_id,
+        };
 
-                'N° CUOTA':
-                  cuota,
+      }
 
-                'CÓDIGO CONCEPTO':
-                  item.concepto_codigo ?? '',
 
-                'CONCEPTO':
-                  item.concepto_nombre ?? '',
+      // ------------------------------------------------------
+      // RESALTAR VENCIDAS
+      // ------------------------------------------------------
 
-                'FECHA VENCIMIENTO':
-                  this.formatearFecha(
-                    item.fecha_vencimiento
-                  ),
+      worksheetResumen.getCell(
+        'A9'
+      ).font = {
 
-                'DÍAS':
-                  item.dias,
+        name: 'Arial',
 
-                'MONTO PROGRAMADO':
-                  Number(
-                    item.monto_programado || 0
-                  ),
+        bold: true,
 
-                'MONTO PAGADO':
-                  Number(
-                    item.monto_pagado || 0
-                  ),
+        color: {
+          argb:
+            this.EXCEL_COLORS.rojo
+        }
 
-                'SALDO PENDIENTE':
-                  Number(
-                    item.saldo_pendiente || 0
-                  )
+      };
+
+
+      worksheetResumen.getCell(
+        'A9'
+      ).fill = {
+
+        type: 'pattern',
+
+        pattern: 'solid',
+
+        fgColor: {
+          argb:
+            this.EXCEL_COLORS.rojoClaro
+        }
+
+      };
+
+
+      // ------------------------------------------------------
+      // RESALTAR POR VENCER
+      // ------------------------------------------------------
+
+      worksheetResumen.getCell(
+        'A10'
+      ).font = {
+
+        name: 'Arial',
+
+        bold: true,
+
+        color: {
+          argb:
+            '92400E'
+        }
+
+      };
+
+
+      worksheetResumen.getCell(
+        'A10'
+      ).fill = {
+
+        type: 'pattern',
+
+        pattern: 'solid',
+
+        fgColor: {
+          argb:
+            this.EXCEL_COLORS.amarilloClaro
+        }
+
+      };
+
+
+      // ======================================================
+      // DATOS PARA LAS HOJAS
+      // ======================================================
+
+      const detalleExcel =
+        data.notificaciones.map(
+          (
+            item: NotificacionCuota
+          ) =>
+            this.convertirParaExcel(
+              item
+            )
+        );
+
+
+      // ======================================================
+      // HOJA DETALLE
+      // ======================================================
+
+      this.crearHojaNotificaciones(
+        workbook,
+        'Detalle de cuotas',
+        detalleExcel
+      );
+
+
+      // ======================================================
+      // HOJA VENCIDAS
+      // ======================================================
+
+      const vencidas =
+        data.notificaciones
+
+          .filter(
+            item =>
+              item.tipo === 'VENCIDA'
+          )
+
+          .map(
+            item =>
+              this.convertirParaExcel(
+                item
+              )
+          );
+
+
+      this.crearHojaNotificaciones(
+        workbook,
+        'Vencidas',
+        vencidas
+      );
+
+
+      // ======================================================
+      // HOJA POR VENCER
+      // ======================================================
+
+      const porVencer =
+        data.notificaciones
+
+          .filter(
+            item =>
+              item.tipo === 'POR_VENCER'
+          )
+
+          .map(
+            item =>
+              this.convertirParaExcel(
+                item
+              )
+          );
+
+
+      this.crearHojaNotificaciones(
+        workbook,
+        'Por vencer',
+        porVencer
+      );
+
+
+      // ======================================================
+      // NOMBRE DEL ARCHIVO
+      // ======================================================
+
+      const nombreArchivo =
+        `Reporte_Notificaciones_${this.formatearNombreFecha(
+          fechaActual
+        )}.xlsx`;
+
+
+      // ======================================================
+      // GENERAR BUFFER
+      // ======================================================
+
+      const buffer =
+        await workbook.xlsx.writeBuffer();
+
+
+      // ======================================================
+      // DESCARGAR ARCHIVO
+      // ======================================================
+
+      const blob =
+        new Blob(
+          [
+            buffer
+          ],
+          {
+            type:
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          }
+        );
+
+
+      const url =
+        window.URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          'a'
+        );
+
+
+      link.href =
+        url;
+
+      link.download =
+        nombreArchivo;
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      document.body.removeChild(
+        link
+      );
+
+
+      window.URL.revokeObjectURL(
+        url
+      );
+
+
+      // ======================================================
+      // CERRAR LOADING
+      // ======================================================
+
+      Swal.close();
+
+
+      // ======================================================
+      // CONFIRMACIÓN
+      // ======================================================
+
+      Swal.fire({
+
+        icon: 'success',
+
+        title: 'Reporte generado',
+
+        html: `
+
+          <div style="
+            text-align:center;
+          ">
+
+            <p>
+              El archivo Excel fue generado
+              correctamente.
+            </p>
+
+            <p style="
+              color:#64748b;
+              font-size:13px;
+            ">
+
+              <strong>
+                ${data.notificaciones.length}
+              </strong>
+
+              registros exportados.
+
+            </p>
+
+          </div>
+
+        `,
+
+        confirmButtonColor:
+          `#${this.EXCEL_COLORS.amarillo}`,
+
+        confirmButtonText: 'Aceptar'
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        'Error generando Excel:',
+        error
+      );
+
+
+      Swal.close();
+
+
+      Swal.fire({
+
+        icon: 'error',
+
+        title: 'Error al generar Excel',
+
+        text:
+          'No fue posible generar el archivo. Revise la consola para más detalles.',
+
+        confirmButtonColor:
+          '#dc2626'
+
+      });
+
+    }
+
+  }
+
+
+  // ==========================================================
+  // CREAR HOJA DE NOTIFICACIONES
+  // ==========================================================
+
+  private crearHojaNotificaciones(
+    workbook: ExcelJS.Workbook,
+    nombreHoja: string,
+    datos: Record<string, any>[]
+  ): void {
+
+    const worksheet =
+      workbook.addWorksheet(
+        nombreHoja,
+        {
+          views: [
+            {
+              showGridLines: false,
+
+              state: 'frozen',
+
+              ySplit: 1
+
+            }
+          ]
+        }
+      );
+
+
+    // --------------------------------------------------------
+    // COLUMNAS
+    // --------------------------------------------------------
+
+    const columnas = [
+
+      {
+        header: 'ESTADO',
+        key: 'ESTADO',
+        width: 18
+      },
+
+      {
+        header: 'N° DOCUMENTO',
+        key: 'N° DOCUMENTO',
+        width: 16
+      },
+
+      {
+        header: 'APELLIDOS',
+        key: 'APELLIDOS',
+        width: 25
+      },
+
+      {
+        header: 'NOMBRES',
+        key: 'NOMBRES',
+        width: 20
+      },
+
+      {
+        header: 'ALUMNO',
+        key: 'ALUMNO',
+        width: 32
+      },
+
+      {
+        header: 'TELÉFONO',
+        key: 'TELÉFONO',
+        width: 15
+      },
+
+      {
+        header: 'CORREO',
+        key: 'CORREO',
+        width: 32
+      },
+
+      {
+        header: 'MATRÍCULA ID',
+        key: 'MATRÍCULA ID',
+        width: 15
+      },
+
+      {
+        header: 'ALUMNO ID',
+        key: 'ALUMNO ID',
+        width: 12
+      },
+
+      {
+        header: 'CUOTA ID',
+        key: 'CUOTA ID',
+        width: 12
+      },
+
+      {
+        header: 'N° CUOTA',
+        key: 'N° CUOTA',
+        width: 12
+      },
+
+      {
+        header: 'CÓDIGO CONCEPTO',
+        key: 'CÓDIGO CONCEPTO',
+        width: 20
+      },
+
+      {
+        header: 'CONCEPTO',
+        key: 'CONCEPTO',
+        width: 30
+      },
+
+      {
+        header: 'FECHA VENCIMIENTO',
+        key: 'FECHA VENCIMIENTO',
+        width: 20
+      },
+
+      {
+        header: 'DÍAS',
+        key: 'DÍAS',
+        width: 10
+      },
+
+      {
+        header: 'MONTO PROGRAMADO',
+        key: 'MONTO PROGRAMADO',
+        width: 20
+      },
+
+      {
+        header: 'MONTO PAGADO',
+        key: 'MONTO PAGADO',
+        width: 18
+      },
+
+      {
+        header: 'SALDO PENDIENTE',
+        key: 'SALDO PENDIENTE',
+        width: 20
+      }
+
+    ];
+
+
+    worksheet.columns =
+      columnas;
+
+
+    // --------------------------------------------------------
+    // ENCABEZADO
+    // --------------------------------------------------------
+
+    const headerRow =
+      worksheet.getRow(
+        1
+      );
+
+
+    this.estilizarEncabezado(
+      headerRow
+    );
+
+
+    // --------------------------------------------------------
+    // FILAS
+    // --------------------------------------------------------
+
+    datos.forEach(
+      (
+        dato,
+        index
+      ) => {
+
+        const row =
+          worksheet.addRow(
+            dato
+          );
+
+
+        row.height =
+          22;
+
+
+        row.eachCell(
+          (
+            cell,
+            columnNumber
+          ) => {
+
+            cell.font = {
+
+              name: 'Arial',
+
+              size: 10,
+
+              color: {
+                argb:
+                  this.EXCEL_COLORS.grisTexto
+              }
+
+            };
+
+
+            cell.alignment = {
+
+              vertical: 'middle',
+
+              wrapText: true
+
+            };
+
+
+            cell.border =
+              this.bordeSuave();
+
+
+            // ----------------------------------------------
+            // FILAS ALTERNADAS
+            // ----------------------------------------------
+
+            if (
+              index % 2 === 0
+            ) {
+
+              cell.fill = {
+
+                type: 'pattern',
+
+                pattern: 'solid',
+
+                fgColor: {
+                  argb:
+                    'F8FAFC'
+                }
 
               };
 
             }
 
-          );
-
-
-        // ====================================================
-        // HOJA DETALLE
-        // ====================================================
-
-        const worksheetDetalle =
-          XLSX.utils.json_to_sheet(
-            detalleExcel
-          );
-
-
-        // ====================================================
-        // FILTRO
-        // ====================================================
-
-        if (
-          detalleExcel.length > 0
-        ) {
-
-          worksheetDetalle['!autofilter'] = {
-
-            ref:
-              `A1:R${detalleExcel.length + 1}`
-
-          };
-
-        }
-
-
-        // ====================================================
-        // CONGELAR ENCABEZADO
-        // ====================================================
-
-        worksheetDetalle['!freeze'] = {
-
-          xSplit: 0,
-
-          ySplit: 1
-
-        };
-
-
-        // ====================================================
-        // ANCHOS DE COLUMNAS
-        // ====================================================
-
-        worksheetDetalle['!cols'] = [
-
-          {
-            wch: 18
-          },
-
-          {
-            wch: 16
-          },
-
-          {
-            wch: 25
-          },
-
-          {
-            wch: 20
-          },
-
-          {
-            wch: 32
-          },
-
-          {
-            wch: 15
-          },
-
-          {
-            wch: 32
-          },
-
-          {
-            wch: 14
-          },
-
-          {
-            wch: 12
-          },
-
-          {
-            wch: 12
-          },
-
-          {
-            wch: 12
-          },
-
-          {
-            wch: 18
-          },
-
-          {
-            wch: 30
-          },
-
-          {
-            wch: 20
-          },
-
-          {
-            wch: 10
-          },
-
-          {
-            wch: 20
-          },
-
-          {
-            wch: 18
-          },
-
-          {
-            wch: 20
           }
 
-        ];
-
-
-        // ====================================================
-        // AGREGAR HOJA
-        // ====================================================
-
-        XLSX.utils.book_append_sheet(
-
-          workbook,
-
-          worksheetDetalle,
-
-          'Detalle de cuotas'
-
         );
 
 
-        // ====================================================
-        // HOJA 3 - VENCIDAS
-        // ====================================================
+        // ----------------------------------------------------
+        // ESTADO
+        // ----------------------------------------------------
 
-        const vencidas =
-          data.notificaciones
-
-            .filter(
-              item =>
-                item.tipo === 'VENCIDA'
-            )
-
-            .map(
-              item =>
-                this.convertirParaExcel(
-                  item
-                )
-            );
-
-
-        const worksheetVencidas =
-          XLSX.utils.json_to_sheet(
-            vencidas
+        const estadoCell =
+          row.getCell(
+            1
           );
 
 
-        worksheetVencidas['!cols'] =
-          worksheetDetalle['!cols'];
+        const estado =
+          String(
+            dato['ESTADO'] ?? ''
+          );
 
 
         if (
-          vencidas.length > 0
+          estado === 'VENCIDA'
         ) {
 
-          worksheetVencidas['!autofilter'] = {
+          estadoCell.font = {
 
-            ref:
-              `A1:R${vencidas.length + 1}`
+            name: 'Arial',
+
+            size: 10,
+
+            bold: true,
+
+            color: {
+              argb:
+                this.EXCEL_COLORS.rojo
+            }
+
+          };
+
+
+          estadoCell.fill = {
+
+            type: 'pattern',
+
+            pattern: 'solid',
+
+            fgColor: {
+              argb:
+                this.EXCEL_COLORS.rojoClaro
+            }
 
           };
 
         }
 
 
-        worksheetVencidas['!freeze'] = {
-
-          xSplit: 0,
-
-          ySplit: 1
-
-        };
-
-
-        XLSX.utils.book_append_sheet(
-
-          workbook,
-
-          worksheetVencidas,
-
-          'Vencidas'
-
-        );
-
-
-        // ====================================================
-        // HOJA 4 - POR VENCER
-        // ====================================================
-
-        const porVencer =
-          data.notificaciones
-
-            .filter(
-              item =>
-                item.tipo === 'POR_VENCER'
-            )
-
-            .map(
-              item =>
-                this.convertirParaExcel(
-                  item
-                )
-            );
-
-
-        const worksheetPorVencer =
-          XLSX.utils.json_to_sheet(
-            porVencer
-          );
-
-
-        worksheetPorVencer['!cols'] =
-          worksheetDetalle['!cols'];
-
-
         if (
-          porVencer.length > 0
+          estado === 'POR VENCER'
         ) {
 
-          worksheetPorVencer['!autofilter'] = {
+          estadoCell.font = {
 
-            ref:
-              `A1:R${porVencer.length + 1}`
+            name: 'Arial',
+
+            size: 10,
+
+            bold: true,
+
+            color: {
+              argb:
+                '92400E'
+            }
+
+          };
+
+
+          estadoCell.fill = {
+
+            type: 'pattern',
+
+            pattern: 'solid',
+
+            fgColor: {
+              argb:
+                this.EXCEL_COLORS.amarilloClaro
+            }
 
           };
 
         }
 
 
-        worksheetPorVencer['!freeze'] = {
+        // ----------------------------------------------------
+        // MONTOS
+        // ----------------------------------------------------
 
-          xSplit: 0,
+        for (
+          const columna of [
+            16,
+            17,
+            18
+          ]
+        ) {
 
-          ySplit: 1
+          const montoCell =
+            row.getCell(
+              columna
+            );
+
+
+          montoCell.numFmt =
+            '"S/ " #,##0.00';
+
+
+          montoCell.alignment = {
+
+            horizontal: 'right',
+
+            vertical: 'middle'
+
+          };
+
+        }
+
+
+        // ----------------------------------------------------
+        // DÍAS
+        // ----------------------------------------------------
+
+        row.getCell(
+          15
+        ).alignment = {
+
+          horizontal: 'center',
+
+          vertical: 'middle'
 
         };
-
-
-        XLSX.utils.book_append_sheet(
-
-          workbook,
-
-          worksheetPorVencer,
-
-          'Por vencer'
-
-        );
-
-
-        // ====================================================
-        // NOMBRE DEL ARCHIVO
-        // ====================================================
-
-        const nombreArchivo =
-          `Reporte_Notificaciones_${this.formatearNombreFecha(
-            fechaActual
-          )}.xlsx`;
-
-
-        // ====================================================
-        // DESCARGAR
-        // ====================================================
-
-        XLSX.writeFile(
-
-          workbook,
-
-          nombreArchivo
-
-        );
-
-
-        // ====================================================
-        // CERRAR LOADING
-        // ====================================================
-
-        Swal.close();
-
-
-        // ====================================================
-        // CONFIRMACIÓN
-        // ====================================================
-
-        Swal.fire({
-
-          icon: 'success',
-
-          title: 'Reporte generado',
-
-          html: `
-
-            <div style="
-              text-align:center;
-            ">
-
-              <p>
-                El archivo Excel fue generado
-                correctamente.
-              </p>
-
-              <p style="
-                color:#64748b;
-                font-size:13px;
-              ">
-
-                <strong>
-                  ${data.notificaciones.length}
-                </strong>
-
-                registros exportados.
-
-              </p>
-
-            </div>
-
-          `,
-
-          confirmButtonColor: '#f5b700',
-
-          confirmButtonText: 'Aceptar'
-
-        });
-
-
-      } catch (error) {
-
-        console.error(
-          'Error generando Excel:',
-          error
-        );
-
-
-        Swal.close();
-
-
-        Swal.fire({
-
-          icon: 'error',
-
-          title: 'Error al generar Excel',
-
-          text:
-            'No fue posible generar el archivo. Revise la consola para más detalles.',
-
-          confirmButtonColor: '#dc2626'
-
-        });
 
       }
 
-    }, 150);
+    );
+
+
+    // --------------------------------------------------------
+    // FILTRO
+    // --------------------------------------------------------
+
+    if (
+      datos.length > 0
+    ) {
+
+      worksheet.autoFilter = {
+
+        from: 'A1',
+
+        to:
+          `R${datos.length + 1}`
+
+      };
+
+    }
+
+
+    // --------------------------------------------------------
+    // ALTURA ENCABEZADO
+    // --------------------------------------------------------
+
+    headerRow.height =
+      30;
+
+  }
+
+
+  // ==========================================================
+  // ESTILIZAR ENCABEZADO
+  // ==========================================================
+
+  private estilizarEncabezado(
+    row: ExcelJS.Row
+  ): void {
+
+    row.height =
+      30;
+
+
+    row.eachCell(
+      (
+        cell
+      ) => {
+
+        cell.font = {
+
+          name: 'Arial',
+
+          size: 10,
+
+          bold: true,
+
+          color: {
+            argb:
+              this.EXCEL_COLORS.blanco
+          }
+
+        };
+
+
+        cell.fill = {
+
+          type: 'pattern',
+
+          pattern: 'solid',
+
+          fgColor: {
+            argb:
+              this.EXCEL_COLORS.azul
+          }
+
+        };
+
+
+        cell.alignment = {
+
+          horizontal: 'center',
+
+          vertical: 'middle',
+
+          wrapText: true
+
+        };
+
+
+        cell.border = {
+
+          top: {
+
+            style: 'thin',
+
+            color: {
+              argb:
+                this.EXCEL_COLORS.blanco
+            }
+
+          },
+
+          bottom: {
+
+            style: 'medium',
+
+            color: {
+              argb:
+                this.EXCEL_COLORS.amarillo
+            }
+
+          },
+
+          left: {
+
+            style: 'thin',
+
+            color: {
+              argb:
+                this.EXCEL_COLORS.blanco
+            }
+
+          },
+
+          right: {
+
+            style: 'thin',
+
+            color: {
+              argb:
+                this.EXCEL_COLORS.blanco
+            }
+
+          }
+
+        };
+
+      }
+
+    );
+
+  }
+
+
+  // ==========================================================
+  // BORDE SUAVE
+  // ==========================================================
+
+  private bordeSuave(): ExcelJS.Borders {
+
+    return {
+
+      top: {
+
+        style: 'thin',
+
+        color: {
+          argb:
+            'E5E7EB'
+        }
+
+      },
+
+      bottom: {
+
+        style: 'thin',
+
+        color: {
+          argb:
+            'E5E7EB'
+        }
+
+      },
+
+      left: {
+
+        style: 'thin',
+
+        color: {
+          argb:
+            'E5E7EB'
+        }
+
+      },
+
+      right: {
+
+        style: 'thin',
+
+        color: {
+          argb:
+            'E5E7EB'
+        }
+
+      }
+
+    };
 
   }
 
@@ -1260,13 +1972,19 @@ export class HeaderComponent implements OnInit {
     const dia =
       String(
         fecha.getDate()
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
 
 
     const mes =
       String(
         fecha.getMonth() + 1
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
 
 
     const anio =
@@ -1289,13 +2007,19 @@ export class HeaderComponent implements OnInit {
     const dia =
       String(
         fecha.getDate()
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
 
 
     const mes =
       String(
         fecha.getMonth() + 1
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
 
 
     const anio =
@@ -1328,10 +2052,10 @@ export class HeaderComponent implements OnInit {
         true,
 
       confirmButtonColor:
-        '#f5b700',
+        `#${this.EXCEL_COLORS.amarillo}`,
 
       cancelButtonColor:
-        '#1e222b',
+        `#${this.EXCEL_COLORS.azul}`,
 
       confirmButtonText:
         'Sí, salir',
