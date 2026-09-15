@@ -4,6 +4,7 @@ import {
   Input,
   OnInit,
   Output,
+  ChangeDetectorRef,
   inject
 } from '@angular/core';
 
@@ -57,6 +58,9 @@ export class ConfigurarPlanComponent implements OnInit {
   private readonly maquinasService =
     inject(MaquinasAdminService);
 
+  private readonly cd =
+    inject(ChangeDetectorRef);
+
 
   // ==========================================================
   // INPUTS
@@ -92,33 +96,12 @@ export class ConfigurarPlanComponent implements OnInit {
 
   guardando = false;
 
-
   maquinasDisponibles: Maquina[] = [];
 
 
   // ==========================================================
   // FORMULARIO
   // ==========================================================
-  //
-  // El código del plan ya NO se configura aquí.
-  //
-  // El backend lo genera automáticamente:
-  //
-  // PLAN-INDIVIDUAL-001
-  // PLAN-DOBLE-001
-  // PLAN-TRIPLE-001
-  // PLAN-MULTIPLE-001
-  //
-  // Tampoco configuramos:
-  // - versión
-  // - vigencia
-  // - estado
-  // - precios
-  //
-  // La cantidad de cuotas sí se configura porque el backend
-  // la utiliza para crear/actualizar el precio compatible
-  // con el sistema actual.
-  //
 
   formulario: PlanCursoPayload = {
 
@@ -235,6 +218,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
     this.cargarMaquinas();
 
+    this.cd.detectChanges();
+
   }
 
 
@@ -297,18 +282,6 @@ export class ConfigurarPlanComponent implements OnInit {
     plan: PlanCurso
   ): void {
 
-    // ----------------------------------------------------------
-    // CANTIDAD DE CUOTAS
-    // ----------------------------------------------------------
-    //
-    // El backend devuelve precios porque la tabla
-    // plan_precios sigue existiendo.
-    //
-    // Nosotros solamente usamos la cantidad de cuotas.
-    //
-    // No modificamos montos.
-    //
-
     const precioActivo =
       (plan.precios ?? [])
         .find(precio =>
@@ -325,10 +298,6 @@ export class ConfigurarPlanComponent implements OnInit {
           )
         : 1;
 
-
-    // ----------------------------------------------------------
-    // CONSTRUIR FORMULARIO
-    // ----------------------------------------------------------
 
     this.formulario = {
 
@@ -408,11 +377,9 @@ export class ConfigurarPlanComponent implements OnInit {
     };
 
 
-    // ----------------------------------------------------------
-    // ASEGURAR PRÁCTICAS
-    // ----------------------------------------------------------
-
     this.asegurarPracticasDeMaquinas();
+
+    this.cd.detectChanges();
 
   }
 
@@ -424,6 +391,8 @@ export class ConfigurarPlanComponent implements OnInit {
   private cargarMaquinas(): void {
 
     this.cargando = true;
+
+    this.cd.detectChanges();
 
 
     this.maquinasService
@@ -447,6 +416,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
           this.cargando = false;
 
+          this.cd.detectChanges();
+
         },
 
 
@@ -459,6 +430,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
           this.cargando = false;
+
+          this.cd.detectChanges();
 
 
           Swal.fire({
@@ -522,6 +495,8 @@ export class ConfigurarPlanComponent implements OnInit {
       this.quitarMaquina(
         maquina.id
       );
+
+      this.cd.detectChanges();
 
       return;
 
@@ -623,6 +598,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
     this.reordenarMaquinas();
 
+    this.cd.detectChanges();
+
   }
 
 
@@ -656,10 +633,6 @@ export class ConfigurarPlanComponent implements OnInit {
     );
 
 
-    // ----------------------------------------------------------
-    // ELIMINAR PRÁCTICA ASOCIADA
-    // ----------------------------------------------------------
-
     this.formulario.horas_practica =
       this.formulario.horas_practica
         .filter(
@@ -670,6 +643,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
     this.reordenarMaquinas();
+
+    this.cd.detectChanges();
 
   }
 
@@ -823,6 +798,8 @@ export class ConfigurarPlanComponent implements OnInit {
         ? horas
         : 0;
 
+    this.cd.detectChanges();
+
   }
 
 
@@ -863,6 +840,8 @@ export class ConfigurarPlanComponent implements OnInit {
       sesiones >= 1
         ? Math.floor(sesiones)
         : 1;
+
+    this.cd.detectChanges();
 
   }
 
@@ -913,14 +892,6 @@ export class ConfigurarPlanComponent implements OnInit {
   // ============================================================
   // ELIMINAR PRÁCTICA
   // ============================================================
-  //
-  // La práctica realmente debe existir para cada máquina
-  // seleccionada.
-  //
-  // Por eso no eliminamos manualmente la práctica desde la
-  // configuración. Si se quita la máquina, se elimina su
-  // práctica automáticamente.
-  //
 
   eliminarPracticaDeMaquina(
     maquinaId: number
@@ -975,6 +946,8 @@ export class ConfigurarPlanComponent implements OnInit {
         ? Math.floor(cuotas)
         : 1;
 
+    this.cd.detectChanges();
+
   }
 
 
@@ -1024,10 +997,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
   private validarFormulario(): boolean {
 
-    // ----------------------------------------------------------
-    // TIPO DE CURSO
-    // ----------------------------------------------------------
-
     if (!this.tipoCurso) {
 
       Swal.fire({
@@ -1046,10 +1015,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // ----------------------------------------------------------
-    // NOMBRE
-    // ----------------------------------------------------------
 
     if (
       !this.formulario.nombre ||
@@ -1072,10 +1037,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // ----------------------------------------------------------
-    // CUOTAS
-    // ----------------------------------------------------------
 
     if (
       !Number.isInteger(
@@ -1104,10 +1065,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // ----------------------------------------------------------
-    // MÁQUINAS
-    // ----------------------------------------------------------
 
     const cantidadPermitida =
       Number(
@@ -1145,10 +1102,6 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // ----------------------------------------------------------
-    // MÁQUINAS DUPLICADAS
-    // ----------------------------------------------------------
-
     const ids =
       this.formulario.maquinas
         .map(
@@ -1183,10 +1136,6 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // ----------------------------------------------------------
-    // PRÁCTICAS
-    // ----------------------------------------------------------
-
     for (
       const maquina
       of this.formulario.maquinas
@@ -1218,10 +1167,6 @@ export class ConfigurarPlanComponent implements OnInit {
       }
 
 
-      // --------------------------------------------------------
-      // HORAS
-      // --------------------------------------------------------
-
       if (
         Number(practica.horas) <= 0
       ) {
@@ -1244,10 +1189,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
       }
 
-
-      // --------------------------------------------------------
-      // SESIONES
-      // --------------------------------------------------------
 
       if (
         !Number.isInteger(
@@ -1295,37 +1236,12 @@ export class ConfigurarPlanComponent implements OnInit {
 
     return {
 
-      // --------------------------------------------------------
-      // TIPO
-      // --------------------------------------------------------
-
       tipo_curso_id:
         this.tipoCurso?.id ??
         this.formulario.tipo_curso_id,
 
-
-      // --------------------------------------------------------
-      // NOMBRE
-      // --------------------------------------------------------
-
       nombre:
         this.formulario.nombre.trim(),
-
-
-      // --------------------------------------------------------
-      // ELECCIÓN PERSONALIZADA
-      // --------------------------------------------------------
-      //
-      // OJO:
-      //
-      // Esto NO cambia la cantidad de máquinas.
-      //
-      // Si el tipo requiere 5:
-      //
-      // personalizada = true
-      //
-      // sigue significando exactamente 5 máquinas.
-      //
 
       permite_eleccion_personalizada:
         Boolean(
@@ -1333,21 +1249,11 @@ export class ConfigurarPlanComponent implements OnInit {
             .permite_eleccion_personalizada
         ),
 
-
-      // --------------------------------------------------------
-      // CUOTAS
-      // --------------------------------------------------------
-
       cantidad_cuotas:
         Number(
           this.formulario
             .cantidad_cuotas
         ),
-
-
-      // --------------------------------------------------------
-      // OBSERVACIONES
-      // --------------------------------------------------------
 
       observaciones:
         this.formulario
@@ -1355,21 +1261,10 @@ export class ConfigurarPlanComponent implements OnInit {
           ?.trim() ||
         null,
 
-
-      // --------------------------------------------------------
-      // MÁQUINAS
-      // --------------------------------------------------------
-
       maquinas:
         this.formulario.maquinas
           .map(
             maquina => ({
-
-              // No necesitamos enviar el ID de
-              // plan_maquinas al crear.
-              //
-              // Para actualizar también puede venir,
-              // pero el backend puede ignorarlo.
 
               id:
                 maquina.id,
@@ -1393,15 +1288,9 @@ export class ConfigurarPlanComponent implements OnInit {
             })
           ),
 
-
-      // --------------------------------------------------------
-      // HORAS DE PRÁCTICA
-      // --------------------------------------------------------
-
       horas_practica:
         this.formulario
           .horas_practica
-
           .filter(
             practica =>
               this.formulario.maquinas
@@ -1411,7 +1300,6 @@ export class ConfigurarPlanComponent implements OnInit {
                     practica.maquina_id
                 )
           )
-
           .map(
             practica => ({
 
@@ -1445,20 +1333,12 @@ export class ConfigurarPlanComponent implements OnInit {
 
   guardar(): void {
 
-    // ----------------------------------------------------------
-    // EVITAR DOBLE ENVÍO
-    // ----------------------------------------------------------
-
     if (this.guardando) {
 
       return;
 
     }
 
-
-    // ----------------------------------------------------------
-    // VALIDAR
-    // ----------------------------------------------------------
 
     if (
       !this.validarFormulario()
@@ -1468,10 +1348,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // ----------------------------------------------------------
-    // PAYLOAD
-    // ----------------------------------------------------------
 
     const payload =
       this.construirPayload();
@@ -1483,16 +1359,10 @@ export class ConfigurarPlanComponent implements OnInit {
     );
 
 
-    // ----------------------------------------------------------
-    // ESTADO
-    // ----------------------------------------------------------
-
     this.guardando = true;
 
+    this.cd.detectChanges();
 
-    // ----------------------------------------------------------
-    // OPERACIÓN
-    // ----------------------------------------------------------
 
     const operacion =
       this.modoEdicion &&
@@ -1510,15 +1380,13 @@ export class ConfigurarPlanComponent implements OnInit {
             );
 
 
-    // ----------------------------------------------------------
-    // SUSCRIPCIÓN
-    // ----------------------------------------------------------
-
     operacion.subscribe({
 
       next: response => {
 
         this.guardando = false;
+
+        this.cd.detectChanges();
 
 
         if (
@@ -1553,9 +1421,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
           text:
             this.modoEdicion
-
               ? 'Los cambios se guardaron correctamente.'
-
               : 'El nuevo plan se creó correctamente.',
 
           timer: 1800,
@@ -1569,6 +1435,8 @@ export class ConfigurarPlanComponent implements OnInit {
           response.data
         );
 
+        this.cd.detectChanges();
+
       },
 
 
@@ -1581,6 +1449,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
         this.guardando = false;
+
+        this.cd.detectChanges();
 
 
         Swal.fire({
