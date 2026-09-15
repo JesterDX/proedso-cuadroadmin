@@ -23,6 +23,9 @@ import { TipoCurso } from '../models/tipo-curso.model';
 import { PlanesCursoService } from '../services/planes-curso.service';
 
 import { Maquina } from '../../maquinas/model/maquina.model';
+
+import { MaquinasAdminService } from '../../maquinas/services/maquinas-admin.service';
+
 @Component({
   selector: 'app-configurar-plan',
   standalone: true,
