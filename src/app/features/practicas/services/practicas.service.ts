@@ -176,6 +176,12 @@ export class PracticasService {
   return this.http.get<any>(
     `${this.apiUrl}/lugares-practica`
   );
+      crearLugarPractica(payload: { nombre: string }): Observable<any> {
+  return this.http.post<any>(
+    `${this.apiUrl}/lugares-practica`,
+    payload
+  );
+}
 
 }
   obtenerPendientes() {
