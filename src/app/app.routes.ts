@@ -49,6 +49,18 @@ export const routes: Routes = [
           import('./admin/configuracion-cursos/tipos-curso/tipos-curso')
             .then(m => m.TiposCursoComponent)
       },
+      {
+        path: 'configurar-plan',
+        loadComponent: () =>
+          import('./admin/configuracion-cursos/configurar-plan/configurar-plan')
+            .then(m => m.ConfigurarPlanComponent)
+      },
+      {
+        path: 'configurar-plan/:id',
+        loadComponent: () =>
+          import('./admin/configuracion-cursos/configurar-plan/configurar-plan')
+            .then(m => m.ConfigurarPlanComponent)
+      },
       
       {
         path: 'admin/maquinas',
