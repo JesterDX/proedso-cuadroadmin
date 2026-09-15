@@ -46,8 +46,9 @@ export class PracticasService {
     'https://proedso-back-wtdl.onrender.com/api/practicas';
 
   // ==========================================
-  // EN USO — ya vive en el backend nuevo
+  // ALUMNOS DISPONIBLES
   // ==========================================
+
   listarAlumnosDisponibles(
     filtros?: FiltrosAlumnosDisponibles
   ): Observable<any> {
@@ -57,97 +58,159 @@ export class PracticasService {
     if (filtros?.anio) {
       params = params.set('anio', filtros.anio);
     }
+
     if (filtros?.mes) {
       params = params.set('mes', filtros.mes);
     }
+
     if (filtros?.cursoId) {
       params = params.set('cursoId', filtros.cursoId);
     }
+
     if (filtros?.maquinaId) {
       params = params.set('maquinaId', filtros.maquinaId);
     }
+
     if (filtros?.nombre) {
       params = params.set('nombre', filtros.nombre);
     }
 
-    return this.http.get(
+    return this.http.get<any>(
       `${this.apiUrl}/alumnos-disponibles`,
       { params }
     );
   }
 
   // ==========================================
-  // PENDIENTES — se van a redefinir cuando
-  // rehagamos service.js/controller.js/routes.js
-  // del backend (sesiones grupales, candado,
-  // PDF, etc). Se dejan las firmas para no
-  // romper los componentes que ya los llaman,
-  // pero el endpoint todavía no existe/cambia.
+  // FUNCIONES ANTIGUAS / COMPATIBILIDAD
   // ==========================================
 
   /** @deprecated pendiente de reemplazo por /sesiones-grupales */
-  listarPracticasOrdenadas(filtros?: any): Observable<any> {
+  listarPracticasOrdenadas(
+    filtros?: any
+  ): Observable<any> {
+
     let params = new HttpParams();
-    if (filtros?.mes) params = params.set('mes', filtros.mes);
-    if (filtros?.anio) params = params.set('anio', filtros.anio);
-    if (filtros?.tipoCurso) params = params.set('tipoCurso', filtros.tipoCurso);
-    return this.http.get(`${this.apiUrl}/ordenadas`, { params });
+
+    if (filtros?.mes) {
+      params = params.set('mes', filtros.mes);
+    }
+
+    if (filtros?.anio) {
+      params = params.set('anio', filtros.anio);
+    }
+
+    if (filtros?.tipoCurso) {
+      params = params.set('tipoCurso', filtros.tipoCurso);
+    }
+
+    return this.http.get<any>(
+      `${this.apiUrl}/ordenadas`,
+      { params }
+    );
   }
 
   /** @deprecated pendiente de reemplazo */
-  validarPracticas(matriculaId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/validar/${matriculaId}`);
+  validarPracticas(
+    matriculaId: number
+  ): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.apiUrl}/validar/${matriculaId}`
+    );
   }
 
   /** @deprecated se va a reemplazar por crearSesionGrupal(payload) */
-  crearAsignacion(matriculaId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/asignaciones`, { matriculaId });
+  crearAsignacion(
+    matriculaId: number
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.apiUrl}/asignaciones`,
+      {
+        matriculaId
+      }
+    );
   }
 
   /** @deprecated pendiente de reemplazo por listarSesionesGrupales() */
   listarAsignaciones(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/asignaciones`);
+
+    return this.http.get<any>(
+      `${this.apiUrl}/asignaciones`
+    );
   }
 
   /** @deprecated pendiente de reemplazo */
-  listarSesiones(asignacionId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sesiones/${asignacionId}`);
+  listarSesiones(
+    asignacionId: number
+  ): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.apiUrl}/sesiones/${asignacionId}`
+    );
   }
 
   /** se mantiene, sirve como base de "expedientes" */
-  obtenerDetallePracticas(matriculaId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/detalle/${matriculaId}`);
+  obtenerDetallePracticas(
+    matriculaId: number
+  ): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.apiUrl}/detalle/${matriculaId}`
+    );
   }
 
   /** @deprecated pendiente de reemplazo, ahora será por sesión grupal */
-  registrarAsistencia(sesionId: number, payload: any): Observable<any> {
-    return this.http.put(
+  registrarAsistencia(
+    sesionId: number,
+    payload: any
+  ): Observable<any> {
+
+    return this.http.put<any>(
       `${this.apiUrl}/sesiones/${sesionId}/asistencia`,
       payload
     );
   }
 
-  crearSesionGrupal(payload: any) {
-    return this.http.post(
+  // ==========================================
+  // SESIONES GRUPALES
+  // ==========================================
+
+  crearSesionGrupal(
+    payload: any
+  ): Observable<any> {
+
+    return this.http.post<any>(
       `${this.apiUrl}/sesion-grupal`,
       payload
     );
   }
 
-  obtenerSesion(id: number) {
+  obtenerSesion(
+    id: number
+  ): Observable<any> {
+
     return this.http.get<any>(
       `${this.apiUrl}/sesion-grupal/${id}`
     );
   }
 
-  guardarSesion(id: number, data: any) {
+  guardarSesion(
+    id: number,
+    data: any
+  ): Observable<any> {
+
     return this.http.put<any>(
       `${this.apiUrl}/sesion-grupal/${id}`,
       data
     );
   }
 
-  obtenerSesionGrupal(id: number) {
+  obtenerSesionGrupal(
+    id: number
+  ): Observable<any> {
+
     return this.http.get<any>(
       `${this.apiUrl}/sesion-grupal/${id}`
     );
@@ -156,7 +219,8 @@ export class PracticasService {
   guardarCronograma(
     id: number,
     detalle: any[]
-  ) {
+  ): Observable<any> {
+
     return this.http.put<any>(
       `${this.apiUrl}/sesiones-grupales/${id}/cronograma`,
       {
@@ -164,30 +228,51 @@ export class PracticasService {
       }
     );
   }
+
   obtenerUltimaSesionPendiente(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/sesion-grupal/ultima-pendiente`);
+
+    return this.http.get<any>(
+      `${this.apiUrl}/sesion-grupal/ultima-pendiente`
+    );
   }
+
   obtenerHistorialSesiones(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/sesiones-grupales/historial`);
+
+    return this.http.get<any>(
+      `${this.apiUrl}/sesiones-grupales/historial`
+    );
   }
 
-    obtenerLugaresPractica() {
+  // ==========================================
+  // LUGARES DE PRÁCTICA
+  // ==========================================
 
-  return this.http.get<any>(
-    `${this.apiUrl}/lugares-practica`
-  );
-      crearLugarPractica(payload: { nombre: string }): Observable<any> {
-  return this.http.post<any>(
-    `${this.apiUrl}/lugares-practica`,
-    payload
-  );
-}
+  obtenerLugaresPractica(): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.apiUrl}/lugares-practica`
+    );
+  }
+
+  crearLugarPractica(
+    payload: { nombre: string }
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.apiUrl}/lugares-practica`,
+      payload
+    );
+  }
+
+  // ==========================================
+  // PENDIENTES
+  // ==========================================
+
+  obtenerPendientes(): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.apiUrl}/pendientes`
+    );
+  }
 
 }
-  obtenerPendientes() {
-  return this.http.get<any>(
-    `${this.apiUrl}/pendientes`
-  );
-}
-
-} // <--- ESTA LLAVE CIERRA LA CLASE
