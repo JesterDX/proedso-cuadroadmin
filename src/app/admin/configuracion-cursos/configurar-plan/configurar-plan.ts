@@ -16,15 +16,13 @@ import {
   PlanMaquina,
   PlanHoraPractica,
   PlanPrecio
-} from '../../models/plan-curso.model';
+} from '../models/plan-curso.model';
 
-import { TipoCurso } from '../../models/tipo-curso.model';
+import { TipoCurso } from '../models/tipo-curso.model';
 
-import { PlanesCursoService } from '../../services/planes-curso.service';
-import { MaquinasAdminService } from '../../services/maquinas-admin.service';
+import { PlanesCursoService } from '../services/planes-curso.service';
 
-import { Maquina } from '../../../maquinas/models/maquina.model';
-
+import { Maquina } from '../../maquinas/model/maquina.model';
 @Component({
   selector: 'app-configurar-plan',
   standalone: true,
