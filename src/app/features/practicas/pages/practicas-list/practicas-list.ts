@@ -16,7 +16,6 @@ import {
   MaquinaAlumno,
   FiltrosAlumnosDisponibles
 } from '../../services/practicas.service';
-// 👆 ajusta la ruta al service según dónde quede en tu proyecto
 
 interface GrupoMes {
   mes: number;
@@ -53,6 +52,8 @@ const NOMBRES_MES = [
 export class PracticasListComponent implements OnInit, OnDestroy {
 
   private practicasService = inject(PracticasService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   // ==========================================
   // FILTROS
@@ -63,24 +64,20 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   filtroCurso: number | null = null;
   filtroMaquina: number | null = null;
   filtroNombre = '';
-  private cdr = inject(ChangeDetectorRef);
-  private router = inject(Router);
-  meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
 
-  // TODO: cargar desde catálogo real cuando exista el endpoint
+  meses = NOMBRES_MES.map((nombre, i) => ({ id: i + 1, nombre }));
   cursos: any[] = [];
   maquinas: any[] = [];
 
   lugaresPractica: any[] = [];
   lugarPracticaId: number | null = null;
+
   // ==========================================
   // ESTADO
   // ==========================================
   loadingLista = false;
   errorCarga = '';
   gruposPorAnio: GrupoAnio[] = [];
-
-  // se acumula con cada carga para no perder años ya vistos al filtrar
   aniosDisponibles: number[] = [];
 
   // clave: `${matriculaId}_${maquinaId}`
@@ -92,21 +89,19 @@ export class PracticasListComponent implements OnInit, OnDestroy {
   private filtrosChange$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
-ngOnInit(): void {
+  ngOnInit(): void {
+    this.cargarLugaresPractica();
 
-  this.cargarLugaresPractica();
+    this.filtrosChange$
+      .pipe(
+        debounceTime(350),
+        switchMap(() => this.buscarAlumnos()),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
 
-  this.filtrosChange$
-    .pipe(
-      debounceTime(350),
-      switchMap(() => this.buscarAlumnos()),
-      takeUntil(this.destroy$)
-    )
-    .subscribe();
-
-  this.filtrosChange$.next();
-
-}
+    this.filtrosChange$.next();
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -120,6 +115,106 @@ ngOnInit(): void {
   onNombreChange(valor: string): void {
     this.filtroNombre = valor;
     this.filtrosChange$.next();
+  }
+
+  // ==========================================
+  // MANEJO DE LUGARES DE PRÁCTICA
+  // ==========================================
+  cargarLugaresPractica(idSeleccionar?: number): void {
+    this.practicasService.obtenerLugaresPractica().subscribe({
+      next: (resp: any) => {
+        this.lugaresPractica = resp.data ?? resp;
+
+        if (this.lugaresPractica.length > 0) {
+          if (idSeleccionar) {
+            this.lugarPracticaId = idSeleccionar;
+          } else if (!this.lugarPracticaId) {
+            this.lugarPracticaId = this.lugaresPractica[0].id;
+          }
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los lugares de práctica.'
+        });
+      }
+    });
+  }
+
+  onLugarPracticaChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+
+    if (target.value === '__NUEVO_LUGAR__') {
+      this.crearNuevoLugarPractica();
+    }
+  }
+
+  crearNuevoLugarPractica(): void {
+    Swal.fire({
+      title: 'Nuevo Lugar de Práctica',
+      input: 'text',
+      inputLabel: 'Nombre de la sede o lugar de práctica',
+      inputPlaceholder: 'Ej. Cantera Central, Sede Laredo...',
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#2563eb',
+      inputValidator: (value) => {
+        if (!value || !value.trim()) {
+          return 'Debes ingresar un nombre válido para el lugar de práctica';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const nombreLugar = result.value.trim();
+
+        Swal.fire({
+          title: 'Guardando...',
+          text: 'Registrando el nuevo lugar de práctica',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        this.practicasService.crearLugarPractica({ nombre: nombreLugar }).subscribe({
+          next: (resp: any) => {
+            const nuevoLugar = resp.data ?? resp;
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Lugar creado!',
+              text: `El lugar "${nombreLugar}" ha sido guardado exitosamente.`,
+              timer: 2000,
+              showConfirmButton: false
+            });
+
+            this.cargarLugaresPractica(nuevoLugar.id);
+          },
+          error: (err) => {
+            console.error('❌ Error al crear lugar de práctica:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.error?.error ?? err.error?.message ?? 'No se pudo guardar el lugar de práctica.'
+            });
+
+            if (this.lugaresPractica.length > 0) {
+              this.lugarPracticaId = this.lugaresPractica[0].id;
+            }
+          }
+        });
+      } else {
+        if (this.lugaresPractica.length > 0) {
+          this.lugarPracticaId = this.lugaresPractica[0].id;
+        }
+      }
+    });
   }
 
   // ==========================================
@@ -140,24 +235,24 @@ ngOnInit(): void {
     return this.practicasService.listarAlumnosDisponibles(filtros).pipe(
       switchMap((resp: any) => {
         const alumnos: AlumnoDisponible[] = resp?.data ?? [];
-      
+
         this.agruparPorAnioYMes(alumnos);
         this.actualizarAniosDisponibles(alumnos);
         this.selecciones.clear();
-      
+
         this.loadingLista = false;
         this.cdr.detectChanges();
-      
+
         return of(alumnos);
       }),
       catchError((err) => {
         console.error('❌ listarAlumnosDisponibles:', err);
-      
+
         this.errorCarga = 'No se pudo cargar la lista de alumnos.';
         this.gruposPorAnio = [];
         this.loadingLista = false;
         this.cdr.detectChanges();
-      
+
         return of([]);
       })
     );
@@ -265,22 +360,9 @@ ngOnInit(): void {
     this.selecciones.set(key, actual);
   }
 
-  actualizarSesiones(
-    alumno: AlumnoDisponible,
-    maquina: MaquinaAlumno,
-    valor: number
-  ): void {
-    const key = this.clave(
-      alumno.matricula_id,
-      maquina.maquina_id
-    );
-
-    const actual =
-      this.selecciones.get(key) ??
-      {
-        seleccionado: true,
-        sesionesAAsignar: 1
-      };
+  actualizarSesiones(alumno: AlumnoDisponible, maquina: MaquinaAlumno, valor: number): void {
+    const key = this.clave(alumno.matricula_id, maquina.maquina_id);
+    const actual = this.selecciones.get(key) ?? { seleccionado: true, sesionesAAsignar: 1 };
 
     let sesiones = Number(valor);
 
@@ -294,11 +376,8 @@ ngOnInit(): void {
         title: 'Sesiones insuficientes',
         html: `
           <b>${alumno.alumno}</b><br><br>
-          Máquina:
-          <b>${maquina.maquina}</b><br><br>
-          Solo dispone de
-          <b>${maquina.sesiones_restantes}</b>
-          sesiones restantes.
+          Máquina: <b>${maquina.maquina}</b><br><br>
+          Solo dispone de <b>${maquina.sesiones_restantes}</b> sesiones restantes.
         `
       });
 
@@ -347,119 +426,75 @@ ngOnInit(): void {
   // ==========================================
   // ACCIÓN PRINCIPAL: GENERAR SESIÓN
   // ==========================================
-generarSesionPractica(): void {
-  const detalle: any[] = [];
+  generarSesionPractica(): void {
+    const detalle: any[] = [];
 
-  // 1. Recolectar alumnos y máquinas seleccionadas
-  this.gruposPorAnio.forEach(grupo => {
-    grupo.meses.forEach(mes => {
-      mes.alumnos.forEach(alumno => {
-        alumno.maquinas.forEach(maquina => {
-          if (this.estaSeleccionada(alumno, maquina)) {
-            detalle.push({
-              matriculaId: alumno.matricula_id,
-              matriculaMaquinaId: maquina.matricula_maquina_id,
-              maquinaId: maquina.maquina_id,
-              sesiones: this.sesionesSeleccionadas(alumno, maquina)
-            });
-          }
+    this.gruposPorAnio.forEach(grupo => {
+      grupo.meses.forEach(mes => {
+        mes.alumnos.forEach(alumno => {
+          alumno.maquinas.forEach(maquina => {
+            if (this.estaSeleccionada(alumno, maquina)) {
+              detalle.push({
+                matriculaId: alumno.matricula_id,
+                matriculaMaquinaId: maquina.matricula_maquina_id,
+                maquinaId: maquina.maquina_id,
+                sesiones: this.sesionesSeleccionadas(alumno, maquina)
+              });
+            }
+          });
         });
       });
     });
-  });
 
-  // Validación previa
-  if (detalle.length === 0) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Sin alumnos',
-      text: 'Debes seleccionar al menos un alumno y máquina para generar la sesión.'
-    });
-    return;
-  }
+    if (detalle.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin alumnos',
+        text: 'Debes seleccionar al menos un alumno y máquina para generar la sesión.'
+      });
+      return;
+    }
 
-  const payload = {
-  
-    fecha: this.fechaSesion,
-  
-    lugarPracticaId: this.lugarPracticaId,
-  
-    detalle
-  
-  };
+    const payload = {
+      fecha: this.fechaSesion,
+      lugarPracticaId: this.lugarPracticaId,
+      detalle
+    };
 
-  console.log('🚀 Enviando Payload:', payload);
+    console.log('🚀 Enviando Payload:', payload);
 
-  // 2. Petición al backend
-  this.practicasService.crearSesionGrupal(payload).subscribe({
-    next: (resp: any) => {
-      console.log('✅ Respuesta del servidor:', resp);
+    this.practicasService.crearSesionGrupal(payload).subscribe({
+      next: (resp: any) => {
+        const idSesion = resp?.data?.id ?? resp?.data ?? resp?.id;
 
-      // Obtenemos el ID de forma segura según la estructura devuelta
-      const idSesion = resp?.data?.id ?? resp?.data ?? resp?.id;
+        if (!idSesion) {
+          console.error('❌ No se encontró un ID válido en la respuesta:', resp);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de respuesta',
+            text: 'La sesión se creó pero no se recibió un ID válido para el cronograma.'
+          });
+          return;
+        }
 
-      if (!idSesion) {
-        console.error('❌ No se encontró un ID válido en la respuesta:', resp);
+        Swal.fire({
+          icon: 'success',
+          title: 'Sesión creada',
+          text: 'Ahora organizarás el cronograma.',
+          confirmButtonText: 'Ir al cronograma',
+          confirmButtonColor: '#2563eb'
+        }).then(() => {
+          this.router.navigate(['/practicas/cronograma', idSesion]);
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error HTTP al crear sesión:', err);
         Swal.fire({
           icon: 'error',
-          title: 'Error de respuesta',
-          text: 'La sesión se creó pero no se recibió un ID válido para el cronograma.'
+          title: 'Error',
+          text: err.error?.error ?? err.error?.message ?? 'No se pudo crear la sesión.'
         });
-        return;
       }
-
-      // 3. Confirmación y navegación
-      Swal.fire({
-        icon: 'success',
-        title: 'Sesión creada',
-        text: 'Ahora organizarás el cronograma.',
-        confirmButtonText: 'Ir al cronograma',
-        confirmButtonColor: '#2563eb'
-      }).then(() => {
-        console.log(`➡️ Redirigiendo a /practicas/cronograma/${idSesion}`);
-        this.router.navigate(['/practicas/cronograma', idSesion]);
-      });
-    },
-    error: (err) => {
-      console.error('❌ Error HTTP al crear sesión:', err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: err.error?.error ?? err.error?.message ?? 'No se pudo crear la sesión.'
-      });
-    }
-  });
-}
-  cargarLugaresPractica(): void {
-
-  this.practicasService.obtenerLugaresPractica().subscribe({
-
-    next: (resp: any) => {
-
-      this.lugaresPractica = resp.data ?? resp;
-
-      if (this.lugaresPractica.length > 0) {
-
-        this.lugarPracticaId = this.lugaresPractica[0].id;
-
-      }
-
-    },
-
-    error: (err) => {
-
-      console.error(err);
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudieron cargar los lugares de práctica.'
-      });
-
-    }
-
-  });
-
-}
-
+    });
+  }
 }
