@@ -1,164 +1,170 @@
-<div class="page">
+<div class="tipos-curso-page">
 
   <!-- ====================================================== -->
-  <!-- HEADER -->
+  <!-- HEADER                                                  -->
   <!-- ====================================================== -->
 
-  <div class="page-header">
+  <header class="page-header">
 
-    <div>
+    <div class="header-content">
 
-      <div class="eyebrow">
-        CONFIGURACIÓN ACADÉMICA
+      <div class="header-icon">
+        ⚙
       </div>
 
-      <h2>
-        Tipos y planes de curso
-      </h2>
+      <div>
 
-      <p>
-        Administra los tipos de curso y configura sus planes de prácticas.
-      </p>
+        <span class="eyebrow">
+          CONFIGURACIÓN ACADÉMICA
+        </span>
+
+        <h1>
+          Tipos y planes de curso
+        </h1>
+
+        <p>
+          Gestiona los tipos de curso, sus máquinas asociadas
+          y los planes académicos disponibles.
+        </p>
+
+      </div>
 
     </div>
 
+
     <button
-      class="btn-primary"
-      (click)="nuevo()">
+      type="button"
+      class="btn btn-primary"
+      (click)="crearTipoCurso()"
+    >
+      <span class="btn-icon">
+        +
+      </span>
 
-      <span class="btn-icon">+</span>
-
-      Nuevo tipo
+      Nuevo tipo de curso
 
     </button>
 
-  </div>
+  </header>
+
 
 
   <!-- ====================================================== -->
-  <!-- MASTER DETAIL -->
+  <!-- CONTENIDO PRINCIPAL                                    -->
   <!-- ====================================================== -->
 
-  <div class="workspace">
+  <div class="content-layout">
 
 
     <!-- ==================================================== -->
-    <!-- PANEL IZQUIERDO -->
+    <!-- COLUMNA IZQUIERDA: TIPOS DE CURSO                    -->
     <!-- ==================================================== -->
 
-    <aside class="master-panel">
+    <section class="card types-card">
 
-      <div class="panel-header">
+
+      <!-- HEADER -->
+
+      <div class="card-header">
 
         <div>
 
-          <strong>
+          <h2>
             Tipos de curso
-          </strong>
+          </h2>
 
-          <span>
-            {{ tiposCurso.length }} registrados
-          </span>
+          <p>
+            Selecciona un tipo para consultar sus máquinas
+            y planes asociados.
+          </p>
 
         </div>
+
+
+        <span class="count-badge">
+
+          {{ tiposCurso.length }}
+
+        </span>
 
       </div>
 
 
-      <!-- BUSCADOR -->
+
+      <!-- ================================================= -->
+      <!-- BUSCADOR                                          -->
+      <!-- ================================================= -->
 
       <div class="search-box">
 
         <span class="search-icon">
-          ⌕
+          🔎
         </span>
+
 
         <input
           type="text"
-          [(ngModel)]="busqueda"
+          [(ngModel)]="textoBusqueda"
           placeholder="Buscar tipo de curso..."
-        >
+        />
 
       </div>
 
 
-      <!-- LISTA -->
 
-      <div class="type-list">
+      <!-- ================================================= -->
+      <!-- LISTA                                             -->
+      <!-- ================================================= -->
 
-        @if (cargandoTipos) {
-
-          <div class="empty-list">
-
-            <div class="spinner"></div>
-
-            <span>
-              Cargando tipos...
-            </span>
-
-          </div>
-
-        }
-
-        @else if (tiposFiltrados.length === 0) {
-
-          <div class="empty-list">
-
-            <span class="empty-icon">
-              ◌
-            </span>
-
-            <strong>
-              Sin resultados
-            </strong>
-
-            <small>
-              No encontramos tipos de curso.
-            </small>
-
-          </div>
-
-        }
-
-        @else {
-
-          @for (
-            tipo of tiposFiltrados;
-            track tipo.id
-          ) {
-
-            <button
-              class="type-item"
-              [class.selected]="
-                tipoSeleccionado?.id === tipo.id
-              "
-              (click)="seleccionarTipo(tipo)"
-            >
-
-              <div class="type-main">
-
-                <div class="type-avatar">
-                  {{ tipo.codigo.substring(0, 2) }}
-                </div>
-
-                <div class="type-info">
-
-                  <strong>
-                    {{ tipo.nombre }}
-                  </strong>
-
-                  <span>
-                    {{ tipo.codigo }}
-                  </span>
-
-                </div>
-
-              </div>
+      <div class="types-list">
 
 
-              <div class="type-meta">
+        @for (
+          tipo of tiposCursoFiltrados;
+          track tipo.id
+        ) {
 
-                <span class="machine-count">
+
+          <button
+            type="button"
+
+            class="type-item"
+
+            [class.selected]="
+              tipoCursoSeleccionado?.id === tipo.id
+            "
+
+            (click)="
+              seleccionarTipoCurso(tipo)
+            "
+          >
+
+
+            <!-- ICONO -->
+
+            <div class="type-item-icon">
+              ⚙
+            </div>
+
+
+
+            <!-- INFORMACIÓN -->
+
+            <div class="type-item-content">
+
+              <strong>
+                {{ tipo.nombre }}
+              </strong>
+
+
+              <span>
+                {{ tipo.codigo }}
+              </span>
+
+
+              <div class="type-item-meta">
+
+                <span>
 
                   {{ tipo.cantidad_maquinas }}
 
@@ -170,138 +176,588 @@
 
                 </span>
 
-                <span
-                  class="status-dot"
-                  [class.inactive]="!tipo.activo"
-                  [title]="
-                    tipo.activo
-                      ? 'Activo'
-                      : 'Inactivo'
-                  "
-                ></span>
 
-              </div>
-
-            </button>
-
-          }
-
-        }
-
-      </div>
+                <span>
+                  •
+                </span>
 
 
-      <!-- FOOTER PANEL -->
+                <span>
 
-      <div class="master-footer">
-
-        <button
-          class="btn-new-small"
-          (click)="nuevo()">
-
-          <span>+</span>
-
-          Crear tipo de curso
-
-        </button>
-
-      </div>
-
-    </aside>
-
-
-    <!-- ==================================================== -->
-    <!-- PANEL DERECHO -->
-    <!-- ==================================================== -->
-
-    <section class="detail-panel">
-
-
-      @if (!tipoSeleccionado) {
-
-        <div class="detail-empty">
-
-          <div class="empty-illustration">
-            ◎
-          </div>
-
-          <h3>
-            Selecciona un tipo de curso
-          </h3>
-
-          <p>
-            Selecciona un tipo en el panel izquierdo
-            para consultar y administrar sus planes.
-          </p>
-
-        </div>
-
-      }
-
-      @else {
-
-        <!-- ================================================ -->
-        <!-- INFORMACIÓN DEL TIPO -->
-        <!-- ================================================ -->
-
-        <div class="detail-header">
-
-          <div class="detail-title">
-
-            <div class="detail-avatar">
-              {{ tipoSeleccionado.codigo.substring(0, 2) }}
-            </div>
-
-            <div>
-
-              <div class="detail-code">
-
-                {{ tipoSeleccionado.codigo }}
-
-                <span
-                  class="status-badge"
-                  [class.inactive]="
-                    !tipoSeleccionado.activo
-                  "
-                >
+                  {{ tipo.duracion_meses }}
 
                   {{
-                    tipoSeleccionado.activo
-                      ? 'Activo'
-                      : 'Inactivo'
+                    tipo.duracion_meses === 1
+                      ? 'mes'
+                      : 'meses'
                   }}
 
                 </span>
 
               </div>
 
-              <h3>
-                {{ tipoSeleccionado.nombre }}
-              </h3>
+            </div>
+
+
+
+            <!-- ESTADO -->
+
+            <span
+              class="status-badge"
+
+              [class.active]="tipo.activo"
+
+              [class.inactive]="!tipo.activo"
+            >
+
+              {{
+                tipo.activo
+                  ? 'Activo'
+                  : 'Inactivo'
+              }}
+
+            </span>
+
+
+
+            <!-- FLECHA -->
+
+            <span class="type-arrow">
+              →
+            </span>
+
+
+          </button>
+
+
+        }
+
+
+        <!-- ================================================= -->
+        <!-- SIN RESULTADOS                                    -->
+        <!-- ================================================= -->
+
+        @if (
+          tiposCursoFiltrados.length === 0
+        ) {
+
+
+          <div class="empty-state compact">
+
+            <div class="empty-icon">
+              🔎
+            </div>
+
+
+            <h3>
+              No se encontraron tipos
+            </h3>
+
+
+            <p>
+              Intenta realizar otra búsqueda.
+            </p>
+
+          </div>
+
+
+        }
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================== -->
+    <!-- COLUMNA DERECHA                                      -->
+    <!-- ==================================================== -->
+
+    <section class="details-column">
+
+
+      <!-- ================================================= -->
+      <!-- SIN SELECCIÓN                                     -->
+      <!-- ================================================= -->
+
+      @if (
+        !tipoCursoSeleccionado
+      ) {
+
+
+        <div class="card empty-selection">
+
+          <div class="empty-selection-icon">
+            ⚙
+          </div>
+
+
+          <h2>
+            Selecciona un tipo de curso
+          </h2>
+
+
+          <p>
+
+            Selecciona un tipo de curso de la lista
+            para consultar las máquinas asociadas
+            y los planes configurados.
+
+          </p>
+
+        </div>
+
+
+      } @else {
+
+
+        <!-- ================================================= -->
+        <!-- INFORMACIÓN DEL TIPO                              -->
+        <!-- ================================================= -->
+
+        <section class="card">
+
+
+          <!-- HEADER -->
+
+          <div class="card-header">
+
+            <div class="section-heading">
+
+              <span class="section-number">
+                01
+              </span>
+
+
+              <div>
+
+                <span class="eyebrow">
+                  TIPO DE CURSO
+                </span>
+
+
+                <h2>
+                  {{ tipoCursoSeleccionado.nombre }}
+                </h2>
+
+
+                <p>
+                  Código:
+                  <strong>
+                    {{ tipoCursoSeleccionado.codigo }}
+                  </strong>
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- ACCIONES -->
+
+            <div class="card-actions">
+
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+
+                (click)="
+                  editarTipoCurso(
+                    tipoCursoSeleccionado
+                  )
+                "
+              >
+                Editar
+              </button>
+
+
+              <button
+                type="button"
+
+                class="btn btn-secondary btn-sm"
+
+                (click)="
+                  cambiarEstadoTipoCurso(
+                    tipoCursoSeleccionado
+                  )
+                "
+              >
+
+                {{
+                  tipoCursoSeleccionado.activo
+                    ? 'Desactivar'
+                    : 'Activar'
+                }}
+
+              </button>
 
             </div>
 
           </div>
 
 
-          <div class="detail-actions">
+
+          <!-- INFORMACIÓN -->
+
+          <div class="type-summary-grid">
+
+
+            <!-- CÓDIGO -->
+
+            <div class="summary-item">
+
+              <span>
+                Código
+              </span>
+
+              <strong>
+                {{ tipoCursoSeleccionado.codigo }}
+              </strong>
+
+            </div>
+
+
+
+            <!-- DURACIÓN -->
+
+            <div class="summary-item">
+
+              <span>
+                Duración
+              </span>
+
+              <strong>
+
+                {{ tipoCursoSeleccionado.duracion_meses }}
+
+                {{
+                  tipoCursoSeleccionado.duracion_meses === 1
+                    ? 'mes'
+                    : 'meses'
+                }}
+
+              </strong>
+
+            </div>
+
+
+
+            <!-- MÁQUINAS -->
+
+            <div class="summary-item">
+
+              <span>
+                Máquinas permitidas
+              </span>
+
+              <strong>
+
+                {{ tipoCursoSeleccionado.cantidad_maquinas }}
+
+                {{
+                  tipoCursoSeleccionado.cantidad_maquinas === 1
+                    ? 'máquina'
+                    : 'máquinas'
+                }}
+
+              </strong>
+
+            </div>
+
+
+
+            <!-- ESTADO -->
+
+            <div class="summary-item">
+
+              <span>
+                Estado
+              </span>
+
+
+              <strong
+                [class.text-success]="
+                  tipoCursoSeleccionado.activo
+                "
+
+                [class.text-danger]="
+                  !tipoCursoSeleccionado.activo
+                "
+              >
+
+                {{
+                  tipoCursoSeleccionado.activo
+                    ? 'Activo'
+                    : 'Inactivo'
+                }}
+
+              </strong>
+
+            </div>
+
+
+          </div>
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- MÁQUINAS ASOCIADAS                                -->
+        <!-- ================================================= -->
+
+        <section class="card">
+
+
+          <!-- HEADER -->
+
+          <div class="card-header">
+
+            <div class="section-heading">
+
+              <span class="section-number">
+                02
+              </span>
+
+
+              <div>
+
+                <h2>
+                  Máquinas asociadas
+                </h2>
+
+
+                <p>
+
+                  Máquinas configuradas para este tipo
+                  de curso.
+
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- CONTADOR -->
+
+            <div class="counter-badge">
+
+              {{ maquinasAsociadas.length }}
+
+              /
+
+              {{ tipoCursoSeleccionado.cantidad_maquinas }}
+
+            </div>
+
+          </div>
+
+
+
+          <!-- ================================================= -->
+          <!-- REGLA                                            -->
+          <!-- ================================================= -->
+
+          <div class="info-alert">
+
+            <span class="alert-icon">
+              ⓘ
+            </span>
+
+
+            <div>
+
+              <strong>
+                Cantidad de máquinas
+              </strong>
+
+
+              <p>
+
+                Este tipo de curso requiere exactamente
+
+                <strong>
+                  {{ tipoCursoSeleccionado.cantidad_maquinas }}
+                </strong>
+
+                {{
+                  tipoCursoSeleccionado.cantidad_maquinas === 1
+                    ? 'máquina.'
+                    : 'máquinas.'
+                }}
+
+                Las combinaciones pueden variar según
+                el plan configurado.
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- ================================================= -->
+          <!-- LISTA DE MÁQUINAS                                 -->
+          <!-- ================================================= -->
+
+          @if (
+            maquinasAsociadas.length > 0
+          ) {
+
+
+            <div class="machines-grid">
+
+
+              @for (
+                maquina of maquinasAsociadas;
+                track maquina.id
+              ) {
+
+
+                <div class="machine-card">
+
+
+                  <!-- ICONO -->
+
+                  <div class="machine-icon">
+                    ⚙
+                  </div>
+
+
+
+                  <!-- INFO -->
+
+                  <div class="machine-card-content">
+
+                    <strong>
+                      {{ maquina.nombre }}
+                    </strong>
+
+
+                    <span>
+
+                      Máquina #{{ maquina.id }}
+
+                    </span>
+
+
+                  </div>
+
+
+
+                  <!-- ESTADO -->
+
+                  <span
+                    class="machine-status"
+
+                    [class.active]="maquina.activo"
+
+                    [class.inactive]="!maquina.activo"
+                  >
+
+                    {{
+                      maquina.activo
+                        ? 'Disponible'
+                        : 'Inactiva'
+                    }}
+
+                  </span>
+
+
+                </div>
+
+
+              }
+
+            </div>
+
+
+          } @else {
+
+
+            <div class="empty-state compact">
+
+              <div class="empty-icon">
+                ⚙
+              </div>
+
+
+              <h3>
+                No hay máquinas asociadas
+              </h3>
+
+
+              <p>
+
+                Actualmente no hay máquinas asociadas
+                a este tipo de curso.
+
+              </p>
+
+            </div>
+
+
+          }
+
+
+        </section>
+
+
+
+        <!-- ================================================= -->
+        <!-- PLANES                                            -->
+        <!-- ================================================= -->
+
+        <section class="card">
+
+
+          <!-- HEADER -->
+
+          <div class="card-header">
+
+
+            <div class="section-heading">
+
+              <span class="section-number">
+                03
+              </span>
+
+
+              <div>
+
+                <h2>
+                  Planes de curso
+                </h2>
+
+
+                <p>
+
+                  Consulta y administra los planes
+                  asociados a este tipo de curso.
+
+                </p>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- NUEVO PLAN -->
 
             <button
-              class="btn-secondary"
-              (click)="editar(tipoSeleccionado)"
+              type="button"
+
+              class="btn btn-primary btn-sm"
+
+              (click)="crearPlan()"
             >
 
-              Editar tipo
-
-            </button>
-
-            <button
-              class="btn-primary"
-              (click)="nuevoPlan()"
-              [disabled]="!tipoSeleccionado.activo"
-            >
-
-              <span>+</span>
+              <span>
+                +
+              </span>
 
               Nuevo plan
 
@@ -309,490 +765,374 @@
 
           </div>
 
-        </div>
 
 
-        <!-- ================================================ -->
-        <!-- RESUMEN -->
-        <!-- ================================================ -->
+          <!-- ================================================= -->
+          <!-- SIN PLANES                                       -->
+          <!-- ================================================= -->
 
-        <div class="summary-grid">
-
-          <div class="summary-card">
-
-            <span>
-              Duración
-            </span>
-
-            <strong>
-
-              {{ tipoSeleccionado.duracion_meses }}
-
-              <small>
-                meses
-              </small>
-
-            </strong>
-
-          </div>
+          @if (
+            planesCurso.length === 0
+          ) {
 
 
-          <div class="summary-card">
+            <div class="empty-state">
 
-            <span>
-              Máquinas
-            </span>
-
-            <strong>
-
-              {{ tipoSeleccionado.cantidad_maquinas }}
-
-              <small>
-                {{
-                  tipoSeleccionado.cantidad_maquinas === 1
-                    ? 'máquina'
-                    : 'máquinas'
-                }}
-              </small>
-
-            </strong>
-
-          </div>
+              <div class="empty-icon">
+                📋
+              </div>
 
 
-          <div class="summary-card">
-
-            <span>
-              Planes
-            </span>
-
-            <strong>
-
-              {{ planesDelTipo.length }}
-
-              <small>
-                configurados
-              </small>
-
-            </strong>
-
-          </div>
+              <h3>
+                No hay planes configurados
+              </h3>
 
 
-          <div class="summary-card">
+              <p>
 
-            <span>
-              Estado
-            </span>
+                Este tipo de curso todavía no tiene
+                planes configurados.
 
-            <strong
-              class="summary-status"
-              [class.inactive]="
-                !tipoSeleccionado.activo
-              "
-            >
-
-              {{
-                tipoSeleccionado.activo
-                  ? 'Disponible'
-                  : 'Inactivo'
-              }}
-
-            </strong>
-
-          </div>
-
-        </div>
+              </p>
 
 
-        <!-- ================================================ -->
-        <!-- PLANES -->
-        <!-- ================================================ -->
+              <button
+                type="button"
 
-        <div class="section-heading">
+                class="btn btn-primary"
 
-          <div>
+                (click)="crearPlan()"
+              >
 
-            <h3>
-              Planes de prácticas
-            </h3>
+                Crear primer plan
 
-            <p>
-              Configura máquinas, horas de práctica y precios.
-            </p>
+              </button>
 
-          </div>
-
-          <span class="plan-count">
-            {{ planesDelTipo.length }}
-          </span>
-
-        </div>
-
-
-        @if (cargandoPlanes) {
-
-          <div class="loading-box">
-
-            <div class="spinner"></div>
-
-            <span>
-              Cargando planes...
-            </span>
-
-          </div>
-
-        }
-
-        @else if (planesDelTipo.length === 0) {
-
-          <div class="plans-empty">
-
-            <div class="empty-plan-icon">
-              +
             </div>
 
-            <h4>
-              Este tipo aún no tiene planes
-            </h4>
 
-            <p>
-              Crea el primer plan para definir
-              máquinas, horas de práctica y precios.
-            </p>
-
-            <button
-              class="btn-primary"
-              (click)="nuevoPlan()"
-              [disabled]="!tipoSeleccionado.activo"
-            >
-
-              Crear primer plan
-
-            </button>
-
-          </div>
-
-        }
-
-        @else {
-
-          <div class="plans-grid">
-
-            @for (
-              plan of planesDelTipo;
-              track plan.id
-            ) {
-
-              <article class="plan-card">
-
-                <div class="plan-card-header">
-
-                  <div class="plan-code">
-                    {{ plan.codigo }}
-                  </div>
-
-                  <span
-                    class="status-badge"
-                    [class.inactive]="!plan.activo"
-                  >
-
-                    {{
-                      plan.activo
-                        ? 'Activo'
-                        : 'Inactivo'
-                    }}
-
-                  </span>
-
-                </div>
+          } @else {
 
 
-                <div class="plan-card-body">
+            <!-- ================================================= -->
+            <!-- LISTA DE PLANES                                  -->
+            <!-- ================================================= -->
 
-                  <h4>
-                    {{ plan.nombre }}
-                  </h4>
-
-                  @if (plan.observaciones) {
-
-                    <p class="plan-description">
-                      {{ plan.observaciones }}
-                    </p>
-
-                  }
+            <div class="plans-list">
 
 
-                  <div class="plan-stats">
+              @for (
+                plan of planesCurso;
+                track plan.id
+              ) {
+
+
+                <article class="plan-card">
+
+
+                  <!-- HEADER DEL PLAN -->
+
+                  <div class="plan-card-header">
+
 
                     <div>
+
+                      <span class="plan-code">
+
+                        {{ plan.codigo }}
+
+                      </span>
+
+
+                      <h3>
+
+                        {{ plan.nombre }}
+
+                      </h3>
+
+                    </div>
+
+
+
+                    <!-- ESTADO -->
+
+                    <span
+                      class="status-badge"
+
+                      [class.active]="plan.activo"
+
+                      [class.inactive]="!plan.activo"
+                    >
+
+                      {{
+                        plan.activo
+                          ? 'Activo'
+                          : 'Inactivo'
+                      }}
+
+                    </span>
+
+                  </div>
+
+
+
+                  <!-- DATOS DEL PLAN -->
+
+                  <div class="plan-info-grid">
+
+
+                    <!-- MÁQUINAS -->
+
+                    <div class="plan-info">
 
                       <span>
                         Máquinas
                       </span>
 
+
                       <strong>
-                        {{ plan.maquinas?.length ?? 0 }}
+
+                        {{
+                          plan.maquinas?.length ?? 0
+                        }}
+
+                        /
+
+                        {{
+                          tipoCursoSeleccionado.cantidad_maquinas
+                        }}
+
                       </strong>
 
                     </div>
 
 
-                    <div>
+
+                    <!-- CUOTAS -->
+
+                    <div class="plan-info">
+
+                      <span>
+                        Cuotas
+                      </span>
+
+
+                      <strong>
+
+                        {{
+                          obtenerCantidadCuotas(plan)
+                        }}
+
+                      </strong>
+
+                    </div>
+
+
+
+                    <!-- PRÁCTICAS -->
+
+                    <div class="plan-info">
 
                       <span>
                         Prácticas
                       </span>
 
+
                       <strong>
-                        {{ plan.horas_practica?.length ?? 0 }}
+
+                        {{
+                          plan.horas_practica?.length ?? 0
+                        }}
+
                       </strong>
 
                     </div>
 
 
-                    <div>
+
+                    <!-- ELECCIÓN -->
+
+                    <div class="plan-info">
 
                       <span>
-                        Precios
+                        Elección
                       </span>
 
+
                       <strong>
-                        {{ plan.precios?.length ?? 0 }}
+
+                        {{
+                          plan.permite_eleccion_personalizada
+                            ? 'Personalizada'
+                            : 'Predeterminada'
+                        }}
+
                       </strong>
+
+                    </div>
+
+
+                  </div>
+
+
+
+                  <!-- MÁQUINAS DEL PLAN -->
+
+                  @if (
+                    plan.maquinas &&
+                    plan.maquinas.length > 0
+                  ) {
+
+
+                    <div class="plan-machines">
+
+
+                      <span class="plan-machines-label">
+
+                        Máquinas asociadas
+
+                      </span>
+
+
+                      <div class="machine-tags">
+
+
+                        @for (
+                          maquina of plan.maquinas;
+                          track maquina.maquina_id
+                        ) {
+
+
+                          <span class="machine-tag">
+
+                            {{ maquina.maquina_nombre }}
+
+                          </span>
+
+
+                        }
+
+                      </div>
+
+                    </div>
+
+
+                  }
+
+
+
+                  <!-- ACCIONES -->
+
+                  <div class="plan-card-footer">
+
+
+                    <span class="plan-date">
+
+                      Plan configurado
+
+                    </span>
+
+
+                    <div class="plan-actions">
+
+
+                      <button
+                        type="button"
+
+                        class="btn btn-secondary btn-sm"
+
+                        (click)="
+                          editarPlan(plan)
+                        "
+                      >
+
+                        Editar
+
+                      </button>
+
+
+                      <button
+                        type="button"
+
+                        class="btn btn-secondary btn-sm"
+
+                        (click)="
+                          cambiarEstadoPlan(plan)
+                        "
+                      >
+
+                        {{
+                          plan.activo
+                            ? 'Desactivar'
+                            : 'Activar'
+                        }}
+
+                      </button>
 
                     </div>
 
                   </div>
 
-                </div>
+
+                </article>
 
 
-                <div class="plan-card-footer">
+              }
 
-                  <span>
-                    Versión {{ plan.version }}
-                  </span>
+            </div>
 
-                  <button
-                    class="btn-configure"
-                    (click)="configurarPlan(plan)"
-                  >
 
-                    Configurar
+          }
 
-                    <span>
-                      →
-                    </span>
+        </section>
 
-                  </button>
-
-                </div>
-
-              </article>
-
-            }
-
-          </div>
-
-        }
 
       }
 
     </section>
 
+
   </div>
 
-</div>
 
 
-<!-- ======================================================== -->
-<!-- MODAL TIPO DE CURSO                                      -->
-<!-- ======================================================== -->
+  <!-- ====================================================== -->
+  <!-- EDITOR DEL PLAN                                       -->
+  <!-- ====================================================== -->
 
-@if (mostrarFormulario) {
-
-  <div
-    class="modal-overlay"
-    (click)="cerrarFormulario()"
-  >
-
-    <div
-      class="modal-content"
-      (click)="$event.stopPropagation()"
-    >
-
-      <div class="modal-header">
-
-        <div>
-
-          <span class="modal-eyebrow">
-            {{ modoEdicion ? 'EDITAR' : 'NUEVO' }}
-          </span>
-
-          <h3>
-
-            {{
-              modoEdicion
-                ? 'Editar tipo de curso'
-                : 'Nuevo tipo de curso'
-            }}
-
-          </h3>
-
-        </div>
-
-        <button
-          class="btn-close"
-          (click)="cerrarFormulario()"
-        >
-          ×
-        </button>
-
-      </div>
+  @if (
+    mostrarEditorPlan
+  ) {
 
 
-      <div class="modal-body">
+    <div class="editor-overlay">
 
-        <div class="form-group">
-
-          <label>
-            Código
-          </label>
-
-          <input
-            type="text"
-            [(ngModel)]="nuevoTipo.codigo"
-            placeholder="Ej. IND"
-            maxlength="20"
-          >
-
-        </div>
+      <div class="editor-container">
 
 
-        <div class="form-group">
+        <app-configurar-plan
 
-          <label>
-            Nombre del tipo
-          </label>
+          [tipoCurso]="tipoCursoSeleccionado"
 
-          <input
-            type="text"
-            [(ngModel)]="nuevoTipo.nombre"
-            placeholder="Ej. Plan Individual"
-          >
+          [plan]="planSeleccionado"
 
-        </div>
+          (guardado)="
+            onPlanGuardado($event)
+          "
 
+          (cancelar)="
+            cerrarEditor()
+          "
 
-        <div class="form-row">
+        ></app-configurar-plan>
 
-          <div class="form-group">
-
-            <label>
-              Duración
-            </label>
-
-            <div class="input-with-suffix">
-
-              <input
-                type="number"
-                [(ngModel)]="nuevoTipo.duracion_meses"
-                min="1"
-              >
-
-              <span>
-                meses
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Máquinas
-            </label>
-
-            <div class="input-with-suffix">
-
-              <input
-                type="number"
-                [(ngModel)]="nuevoTipo.cantidad_maquinas"
-                min="1"
-              >
-
-              <span>
-                unidades
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="active-control">
-
-          <div>
-
-            <strong>
-              Tipo disponible
-            </strong>
-
-            <span>
-              Permitir utilizar este tipo en nuevos planes.
-            </span>
-
-          </div>
-
-          <label class="switch">
-
-            <input
-              type="checkbox"
-              [(ngModel)]="nuevoTipo.activo"
-            >
-
-            <span class="slider"></span>
-
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <div class="modal-footer">
-
-        <button
-          class="btn-secondary"
-          (click)="cerrarFormulario()"
-        >
-
-          Cancelar
-
-        </button>
-
-        <button
-          class="btn-primary"
-          (click)="guardarTipo()"
-        >
-
-          {{
-            modoEdicion
-              ? 'Guardar cambios'
-              : 'Crear tipo'
-          }}
-
-        </button>
 
       </div>
 
     </div>
 
-  </div>
 
-}
+  }
+
+
+</div>
