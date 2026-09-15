@@ -11,22 +11,11 @@ import { Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
 
-import {
-  TipoCurso
-} from '../models/tipo-curso.model';
+import { TipoCurso } from '../models/tipo-curso.model';
+import { PlanCurso } from '../models/plan-curso.model';
 
-import {
-  PlanCurso
-} from '../models/plan-curso.model';
-
-import {
-  TiposCursoService
-} from '../services/tipos-curso.service';
-
-import {
-  PlanesCursoService
-} from '../services/planes-curso.service';
-
+import { TiposCursoService } from '../services/tipos-curso.service';
+import { PlanesCursoService } from '../services/planes-curso.service';
 
 @Component({
   selector: 'app-tipos-curso',
@@ -42,27 +31,17 @@ import {
 })
 export class TiposCursoComponent implements OnInit {
 
-  private readonly tiposService =
-    inject(TiposCursoService);
-
-  private readonly planesService =
-    inject(PlanesCursoService);
-
-  private readonly router =
-    inject(Router);
-
-  private readonly cd =
-    inject(ChangeDetectorRef);
-
+  private readonly tiposService = inject(TiposCursoService);
+  private readonly planesService = inject(PlanesCursoService);
+  private readonly router = inject(Router);
+  private readonly cd = inject(ChangeDetectorRef);
 
   // ==========================================================
   // DATOS
   // ==========================================================
 
   tiposCurso: TipoCurso[] = [];
-
   planesCurso: PlanCurso[] = [];
-
 
   // ==========================================================
   // SELECCIÓN
@@ -70,64 +49,46 @@ export class TiposCursoComponent implements OnInit {
 
   tipoSeleccionado: TipoCurso | null = null;
 
-
   // ==========================================================
   // BUSCADOR
   // ==========================================================
 
   busqueda = '';
 
-
   // ==========================================================
   // CARGANDO
   // ==========================================================
 
   cargandoTipos = false;
-
   cargandoPlanes = false;
 
-
   // ==========================================================
-  // FORMULARIO TIPO
+  // FORMULARIO
   // ==========================================================
 
   mostrarFormulario = false;
-
   modoEdicion = false;
-
   idEditando: number | null = null;
 
-
   nuevoTipo: Omit<TipoCurso, 'id'> = {
-
     codigo: '',
-
     nombre: '',
-
     duracion_meses: 1,
-
     cantidad_maquinas: 1,
-
     activo: true
-
   };
-
 
   // ==========================================================
   // INIT
   // ==========================================================
 
   ngOnInit(): void {
-
     this.cargarTipos();
-
     this.cargarPlanes();
-
   }
 
-
   // ==========================================================
-  // TIPOS
+  // CARGAR TIPOS
   // ==========================================================
 
   cargarTipos(): void {
@@ -139,50 +100,33 @@ export class TiposCursoComponent implements OnInit {
 
         next: (resp: any) => {
 
-          this.tiposCurso =
-            resp?.data ?? [];
+          this.tiposCurso = resp?.data ?? [];
 
           this.cargandoTipos = false;
 
-          /*
-           * Si todavía no hay selección,
-           * seleccionamos el primer tipo activo.
-           */
-
           if (!this.tipoSeleccionado) {
 
-            const primero =
-              this.tiposCurso.find(
-                tipo => tipo.activo
-              );
+            const primero = this.tiposCurso.find(
+              tipo => tipo.activo
+            );
 
             if (primero) {
-
               this.seleccionarTipo(primero);
-
             }
 
-          }
-          else {
+          } else {
 
-            const actualizado =
-              this.tiposCurso.find(
-                tipo =>
-                  tipo.id ===
-                  this.tipoSeleccionado?.id
-              );
+            const actualizado = this.tiposCurso.find(
+              tipo =>
+                tipo.id === this.tipoSeleccionado?.id
+            );
 
             if (actualizado) {
-
-              this.tipoSeleccionado =
-                actualizado;
-
+              this.tipoSeleccionado = actualizado;
             }
-
           }
 
           this.cd.detectChanges();
-
         },
 
         error: (error) => {
@@ -194,15 +138,17 @@ export class TiposCursoComponent implements OnInit {
 
           this.cargandoTipos = false;
 
+          Swal.fire(
+            'Error',
+            'No se pudieron cargar los tipos de curso.',
+            'error'
+          );
         }
-
       });
-
   }
 
-
   // ==========================================================
-  // PLANES
+  // CARGAR PLANES
   // ==========================================================
 
   cargarPlanes(): void {
@@ -214,13 +160,11 @@ export class TiposCursoComponent implements OnInit {
 
         next: (resp) => {
 
-          this.planesCurso =
-            resp?.data ?? [];
+          this.planesCurso = resp?.data ?? [];
 
           this.cargandoPlanes = false;
 
           this.cd.detectChanges();
-
         },
 
         error: (error) => {
@@ -231,13 +175,9 @@ export class TiposCursoComponent implements OnInit {
           );
 
           this.cargandoPlanes = false;
-
         }
-
       });
-
   }
-
 
   // ==========================================================
   // TIPOS FILTRADOS
@@ -245,33 +185,19 @@ export class TiposCursoComponent implements OnInit {
 
   get tiposFiltrados(): TipoCurso[] {
 
-    const texto =
-      this.busqueda
-        .trim()
-        .toLowerCase();
+    const texto = this.busqueda
+      .trim()
+      .toLowerCase();
 
     if (!texto) {
-
       return this.tiposCurso;
-
     }
 
     return this.tiposCurso.filter(tipo =>
-
-      tipo.codigo
-        .toLowerCase()
-        .includes(texto)
-
-      ||
-
-      tipo.nombre
-        .toLowerCase()
-        .includes(texto)
-
+      tipo.codigo.toLowerCase().includes(texto) ||
+      tipo.nombre.toLowerCase().includes(texto)
     );
-
   }
-
 
   // ==========================================================
   // SELECCIONAR TIPO
@@ -281,30 +207,25 @@ export class TiposCursoComponent implements OnInit {
 
     this.tipoSeleccionado = tipo;
 
+    this.cd.detectChanges();
   }
 
-
   // ==========================================================
-  // PLANES DEL TIPO SELECCIONADO
+  // PLANES DEL TIPO
   // ==========================================================
 
   get planesDelTipo(): PlanCurso[] {
 
     if (!this.tipoSeleccionado) {
-
       return [];
-
     }
 
-    return this.planesCurso
-      .filter(
-        plan =>
-          plan.tipo_curso_id ===
-          this.tipoSeleccionado!.id
-      );
-
+    return this.planesCurso.filter(
+      plan =>
+        plan.tipo_curso_id ===
+        this.tipoSeleccionado!.id
+    );
   }
-
 
   // ==========================================================
   // NUEVO TIPO
@@ -313,27 +234,18 @@ export class TiposCursoComponent implements OnInit {
   nuevo(): void {
 
     this.modoEdicion = false;
-
     this.idEditando = null;
 
     this.nuevoTipo = {
-
       codigo: '',
-
       nombre: '',
-
       duracion_meses: 1,
-
       cantidad_maquinas: 1,
-
       activo: true
-
     };
 
     this.mostrarFormulario = true;
-
   }
-
 
   // ==========================================================
   // EDITAR TIPO
@@ -342,40 +254,26 @@ export class TiposCursoComponent implements OnInit {
   editar(tipo: TipoCurso): void {
 
     this.modoEdicion = true;
-
     this.idEditando = tipo.id;
 
     this.nuevoTipo = {
-
       codigo: tipo.codigo,
-
       nombre: tipo.nombre,
-
-      duracion_meses:
-        tipo.duracion_meses,
-
-      cantidad_maquinas:
-        tipo.cantidad_maquinas,
-
+      duracion_meses: tipo.duracion_meses,
+      cantidad_maquinas: tipo.cantidad_maquinas,
       activo: tipo.activo
-
     };
 
     this.mostrarFormulario = true;
-
   }
 
-
   // ==========================================================
-  // CERRAR
+  // CERRAR FORMULARIO
   // ==========================================================
 
   cerrarFormulario(): void {
-
     this.mostrarFormulario = false;
-
   }
-
 
   // ==========================================================
   // GUARDAR TIPO
@@ -395,7 +293,6 @@ export class TiposCursoComponent implements OnInit {
       );
 
       return;
-
     }
 
     if (
@@ -410,20 +307,16 @@ export class TiposCursoComponent implements OnInit {
       );
 
       return;
-
     }
-
 
     const payload = {
 
-      codigo:
-        this.nuevoTipo.codigo
-          .trim()
-          .toUpperCase(),
+      codigo: this.nuevoTipo.codigo
+        .trim()
+        .toUpperCase(),
 
-      nombre:
-        this.nuevoTipo.nombre
-          .trim(),
+      nombre: this.nuevoTipo.nombre
+        .trim(),
 
       duracion_meses:
         Number(this.nuevoTipo.duracion_meses),
@@ -433,9 +326,7 @@ export class TiposCursoComponent implements OnInit {
 
       activo:
         this.nuevoTipo.activo
-
     };
-
 
     const peticion =
       this.modoEdicion &&
@@ -450,13 +341,11 @@ export class TiposCursoComponent implements OnInit {
             payload
           );
 
-
     peticion.subscribe({
 
       next: () => {
 
         Swal.fire({
-
           icon: 'success',
 
           title: this.modoEdicion
@@ -470,13 +359,10 @@ export class TiposCursoComponent implements OnInit {
           timer: 1600,
 
           showConfirmButton: false
-
         });
 
         this.cerrarFormulario();
-
         this.cargarTipos();
-
       },
 
       error: (error) => {
@@ -492,13 +378,9 @@ export class TiposCursoComponent implements OnInit {
             'Ocurrió un error al guardar el tipo de curso.',
           'error'
         );
-
       }
-
     });
-
   }
-
 
   // ==========================================================
   // ACTIVAR / DESACTIVAR
@@ -506,9 +388,7 @@ export class TiposCursoComponent implements OnInit {
 
   desactivar(tipo: TipoCurso): void {
 
-    const nuevoEstado =
-      !tipo.activo;
-
+    const nuevoEstado = !tipo.activo;
 
     Swal.fire({
 
@@ -531,17 +411,13 @@ export class TiposCursoComponent implements OnInit {
           ? 'Sí, activar'
           : 'Sí, desactivar',
 
-      cancelButtonText:
-        'Cancelar'
+      cancelButtonText: 'Cancelar'
 
     }).then(resultado => {
 
       if (!resultado.isConfirmed) {
-
         return;
-
       }
-
 
       this.tiposService
         .cambiarEstado(
@@ -552,8 +428,7 @@ export class TiposCursoComponent implements OnInit {
 
           next: () => {
 
-            tipo.activo =
-              nuevoEstado;
+            tipo.activo = nuevoEstado;
 
             this.cd.detectChanges();
 
@@ -569,9 +444,7 @@ export class TiposCursoComponent implements OnInit {
               timer: 1300,
 
               showConfirmButton: false
-
             });
-
           },
 
           error: (error) => {
@@ -584,15 +457,10 @@ export class TiposCursoComponent implements OnInit {
                 'No se pudo cambiar el estado.',
               'error'
             );
-
           }
-
         });
-
     });
-
   }
-
 
   // ==========================================================
   // CREAR PLAN
@@ -601,9 +469,7 @@ export class TiposCursoComponent implements OnInit {
   nuevoPlan(): void {
 
     if (!this.tipoSeleccionado) {
-
       return;
-
     }
 
     this.router.navigate(
@@ -615,9 +481,7 @@ export class TiposCursoComponent implements OnInit {
         }
       }
     );
-
   }
-
 
   // ==========================================================
   // CONFIGURAR PLAN
@@ -628,9 +492,7 @@ export class TiposCursoComponent implements OnInit {
     this.router.navigate(
       ['/configurar-plan', plan.id]
     );
-
   }
-
 
   // ==========================================================
   // TRACK
@@ -642,9 +504,7 @@ export class TiposCursoComponent implements OnInit {
   ): number {
 
     return tipo.id;
-
   }
-
 
   trackPlan(
     _index: number,
@@ -652,7 +512,5 @@ export class TiposCursoComponent implements OnInit {
   ): number {
 
     return plan.id;
-
   }
-
 }
