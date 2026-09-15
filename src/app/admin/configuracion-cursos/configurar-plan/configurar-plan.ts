@@ -1,4 +1,3 @@
-
 import {
   Component,
   EventEmitter,
@@ -9,8 +8,20 @@ import {
   inject
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  CommonModule,
+  Location
+} from '@angular/common';
+
+import {
+  FormsModule
+} from '@angular/forms';
+
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
 import Swal from 'sweetalert2';
 
 import {
@@ -20,13 +31,26 @@ import {
   PlanHoraPractica
 } from '../models/plan-curso.model';
 
-import { TipoCurso } from '../models/tipo-curso.model';
+import {
+  TipoCurso
+} from '../models/tipo-curso.model';
 
-import { PlanesCursoService } from '../services/planes-curso.service';
+import {
+  PlanesCursoService
+} from '../services/planes-curso.service';
 
-import { Maquina } from '../../maquinas/model/maquina.model';
+import {
+  TiposCursoService
+} from '../services/tipos-curso.service';
 
-import { MaquinasAdminService } from '../../maquinas/services/maquinas-admin.service';
+import {
+  Maquina
+} from '../../maquinas/model/maquina.model';
+
+import {
+  MaquinasAdminService
+} from '../../maquinas/services/maquinas-admin.service';
+
 
 @Component({
   selector: 'app-configurar-plan',
@@ -49,8 +73,20 @@ export class ConfigurarPlanComponent implements OnInit {
   private readonly planesCursoService =
     inject(PlanesCursoService);
 
+  private readonly tiposCursoService =
+    inject(TiposCursoService);
+
   private readonly maquinasService =
     inject(MaquinasAdminService);
+
+  private readonly route =
+    inject(ActivatedRoute);
+
+  private readonly router =
+    inject(Router);
+
+  private readonly location =
+    inject(Location);
 
   private readonly cd =
     inject(ChangeDetectorRef);
@@ -84,7 +120,8 @@ export class ConfigurarPlanComponent implements OnInit {
   // ESTADO
   // ==========================================================
 
-  cargando = false;
+  cargando = true;
+
   guardando = false;
 
   maquinasDisponibles: Maquina[] = [];
@@ -118,35 +155,32 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================================
 
   get modoEdicion(): boolean {
+
     return this.plan !== null;
+
   }
 
 
   get tituloFormulario(): string {
+
     return this.modoEdicion
       ? 'Editar plan de curso'
       : 'Nuevo plan de curso';
+
   }
 
 
   get textoBotonGuardar(): string {
+
     return this.modoEdicion
       ? 'Guardar cambios'
       : 'Crear plan';
+
   }
 
 
   // ==========================================================
-  // TOTAL DE MÁQUINAS CONFIGURADAS
-  // ==========================================================
-  //
-  // IMPORTANTE:
-  // cantidad_maquinas NO limita esta pantalla.
-  //
-  // Aquí podemos configurar 1, 2, 5, 10, 11, etc.
-  //
-  // La cantidad_maquinas del tipo se utilizará después
-  // durante la matrícula del alumno.
+  // MÁQUINAS CONFIGURADAS
   // ==========================================================
 
   get cantidadMaquinasConfiguradas(): number {
@@ -156,27 +190,25 @@ export class ConfigurarPlanComponent implements OnInit {
   }
 
 
-  // ==========================================================
-  // MÁQUINAS NORMALES
-  // ==========================================================
-
   get cantidadMaquinasNormales(): number {
 
     return this.formulario.maquinas
-      .filter(maquina => !maquina.es_regalo)
+      .filter(
+        maquina =>
+          !maquina.es_regalo
+      )
       .length;
 
   }
 
 
-  // ==========================================================
-  // MÁQUINAS REGALO
-  // ==========================================================
-
   get cantidadMaquinasRegalo(): number {
 
     return this.formulario.maquinas
-      .filter(maquina => maquina.es_regalo)
+      .filter(
+        maquina =>
+          maquina.es_regalo
+      )
       .length;
 
   }
@@ -188,9 +220,392 @@ export class ConfigurarPlanComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.inicializarFormulario();
+    this.cargando = true;
 
-    this.cargarMaquinas();
+    this.cargarContextoDesdeRuta();
+
+  }
+
+
+  // ==========================================================
+  // RESOLVER CONTEXTO
+  // ==========================================================
+  //
+  // CASOS:
+  //
+  // 1. /configurar-plan?tipoCursoId=9
+  //    -> nuevo plan
+  //
+  // 2. /configurar-plan/1
+  //    -> editar plan 1
+  //
+  // 3. @Input()
+  //    -> también funciona
+  //
+  // ==========================================================
+
+  private cargarContextoDesdeRuta(): void {
+
+    // --------------------------------------------------------
+    // SI YA LLEGÓ POR INPUT
+    // --------------------------------------------------------
+
+    if (this.tipoCurso) {
+
+      if (this.plan) {
+
+        this.inicializarFormulario();
+
+      } else {
+
+        this.inicializarFormularioNuevo();
+
+      }
+
+      this.cargarMaquinas();
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // ID DEL PLAN
+    // --------------------------------------------------------
+
+    const planIdParam =
+      this.route.snapshot.paramMap.get('id');
+
+
+    // --------------------------------------------------------
+    // ID DEL TIPO PARA NUEVO PLAN
+    // --------------------------------------------------------
+
+    const tipoCursoIdParam =
+      this.route.snapshot.queryParamMap
+        .get('tipoCursoId');
+
+
+    // --------------------------------------------------------
+    // EDITAR PLAN
+    // --------------------------------------------------------
+
+    if (planIdParam) {
+
+      const planId =
+        Number(planIdParam);
+
+
+      if (
+        !Number.isInteger(planId) ||
+        planId <= 0
+      ) {
+
+        this.mostrarErrorContexto(
+          'El identificador del plan no es válido.'
+        );
+
+        return;
+
+      }
+
+
+      this.cargarPlanPorRuta(
+        planId
+      );
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // NUEVO PLAN
+    // --------------------------------------------------------
+
+    if (tipoCursoIdParam) {
+
+      const tipoCursoId =
+        Number(tipoCursoIdParam);
+
+
+      if (
+        !Number.isInteger(tipoCursoId) ||
+        tipoCursoId <= 0
+      ) {
+
+        this.mostrarErrorContexto(
+          'El identificador del tipo de curso no es válido.'
+        );
+
+        return;
+
+      }
+
+
+      this.cargarTipoPorRuta(
+        tipoCursoId
+      );
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // NO HAY CONTEXTO
+    // --------------------------------------------------------
+
+    this.mostrarErrorContexto(
+      'No se recibió el tipo de curso ni el plan.'
+    );
+
+  }
+
+
+  // ==========================================================
+  // CARGAR TIPO PARA NUEVO PLAN
+  // ==========================================================
+
+  private cargarTipoPorRuta(
+    tipoCursoId: number
+  ): void {
+
+    this.tiposCursoService
+      .listar()
+      .subscribe({
+
+        next: (resp: any) => {
+
+          const tipos =
+            resp?.data ?? [];
+
+          const tipoEncontrado =
+            tipos.find(
+              (tipo: TipoCurso) =>
+                Number(tipo.id) === tipoCursoId
+            );
+
+
+          if (!tipoEncontrado) {
+
+            this.mostrarErrorContexto(
+              'No se encontró el tipo de curso seleccionado.'
+            );
+
+            return;
+
+          }
+
+
+          this.tipoCurso =
+            tipoEncontrado;
+
+
+          this.inicializarFormularioNuevo();
+
+          this.cargarMaquinas();
+
+        },
+
+
+        error: error => {
+
+          console.error(
+            'Error obteniendo tipo de curso:',
+            error
+          );
+
+          this.mostrarErrorContexto(
+            'No se pudo cargar la información del tipo de curso.'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ==========================================================
+  // CARGAR PLAN PARA EDICIÓN
+  // ==========================================================
+
+  private cargarPlanPorRuta(
+    planId: number
+  ): void {
+
+    this.planesCursoService
+      .obtenerPorId(planId)
+      .subscribe({
+
+        next: (resp) => {
+
+          const plan =
+            resp?.data;
+
+
+          if (!plan) {
+
+            this.mostrarErrorContexto(
+              'No se encontró el plan solicitado.'
+            );
+
+            return;
+
+          }
+
+
+          this.plan =
+            plan;
+
+
+          const tipoCursoId =
+            Number(
+              plan.tipo_curso_id
+            );
+
+
+          if (
+            !Number.isInteger(tipoCursoId) ||
+            tipoCursoId <= 0
+          ) {
+
+            this.mostrarErrorContexto(
+              'El plan no tiene un tipo de curso válido.'
+            );
+
+            return;
+
+          }
+
+
+          this.cargarTipoParaPlan(
+            tipoCursoId
+          );
+
+        },
+
+
+        error: error => {
+
+          console.error(
+            'Error obteniendo plan:',
+            error
+          );
+
+          this.mostrarErrorContexto(
+            error?.error?.message ??
+            'No se pudo cargar el plan.'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ==========================================================
+  // CARGAR TIPO ASOCIADO AL PLAN
+  // ==========================================================
+
+  private cargarTipoParaPlan(
+    tipoCursoId: number
+  ): void {
+
+    this.tiposCursoService
+      .listar()
+      .subscribe({
+
+        next: (resp: any) => {
+
+          const tipos =
+            resp?.data ?? [];
+
+
+          const tipoEncontrado =
+            tipos.find(
+              (tipo: TipoCurso) =>
+                Number(tipo.id) === tipoCursoId
+            );
+
+
+          if (!tipoEncontrado) {
+
+            this.mostrarErrorContexto(
+              'No se encontró el tipo de curso asociado al plan.'
+            );
+
+            return;
+
+          }
+
+
+          this.tipoCurso =
+            tipoEncontrado;
+
+
+          this.inicializarFormulario();
+
+          this.cargarMaquinas();
+
+        },
+
+
+        error: error => {
+
+          console.error(
+            'Error obteniendo tipo asociado:',
+            error
+          );
+
+          this.mostrarErrorContexto(
+            'No se pudo cargar el tipo de curso asociado.'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ==========================================================
+  // NUEVO PLAN
+  // ==========================================================
+
+  private inicializarFormularioNuevo(): void {
+
+    if (!this.tipoCurso) {
+      return;
+    }
+
+
+    this.formulario = {
+
+      tipo_curso_id:
+        Number(
+          this.tipoCurso.id
+        ),
+
+      nombre: '',
+
+      permite_eleccion_personalizada:
+        false,
+
+      cantidad_cuotas:
+        1,
+
+      observaciones:
+        null,
+
+      maquinas: [],
+
+      horas_practica: []
+
+    };
+
 
     this.cd.detectChanges();
 
@@ -198,7 +613,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // INICIALIZAR FORMULARIO
+  // INICIALIZAR EDICIÓN
   // ==========================================================
 
   private inicializarFormulario(): void {
@@ -211,7 +626,9 @@ export class ConfigurarPlanComponent implements OnInit {
     this.formulario = {
 
       tipo_curso_id:
-        this.tipoCurso.id,
+        Number(
+          this.tipoCurso.id
+        ),
 
       nombre: '',
 
@@ -239,6 +656,9 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
+
+    this.cd.detectChanges();
+
   }
 
 
@@ -252,8 +672,9 @@ export class ConfigurarPlanComponent implements OnInit {
 
     const precioActivo =
       (plan.precios ?? [])
-        .find(precio =>
-          precio.activo === true
+        .find(
+          precio =>
+            precio.activo === true
         );
 
 
@@ -261,18 +682,22 @@ export class ConfigurarPlanComponent implements OnInit {
       Number(
         precioActivo?.cantidad_cuotas
       ) > 0
+
         ? Number(
             precioActivo?.cantidad_cuotas
           )
+
         : 1;
 
 
     this.formulario = {
 
       tipo_curso_id:
-        plan.tipo_curso_id ??
-        this.tipoCurso?.id ??
-        0,
+        Number(
+          plan.tipo_curso_id ??
+          this.tipoCurso?.id ??
+          0
+        ),
 
       nombre:
         plan.nombre ?? '',
@@ -291,56 +716,66 @@ export class ConfigurarPlanComponent implements OnInit {
 
       maquinas:
         (plan.maquinas ?? [])
-          .map(maquina => ({
+          .map(
+            maquina => ({
 
-            id:
-              maquina.id,
+              id:
+                maquina.id,
 
-            maquina_id:
-              maquina.maquina_id,
+              maquina_id:
+                Number(
+                  maquina.maquina_id
+                ),
 
-            maquina_nombre:
-              maquina.maquina_nombre,
+              maquina_nombre:
+                maquina.maquina_nombre,
 
-            orden:
-              maquina.orden ?? 1,
+              orden:
+                Number(
+                  maquina.orden ?? 1
+                ),
 
-            es_regalo:
-              Boolean(
-                maquina.es_regalo
-              ),
+              es_regalo:
+                Boolean(
+                  maquina.es_regalo
+                ),
 
-            obligatoria:
-              Boolean(
-                maquina.obligatoria
-              )
+              obligatoria:
+                Boolean(
+                  maquina.obligatoria
+                )
 
-          })),
+            })
+          ),
 
       horas_practica:
         (plan.horas_practica ?? [])
-          .map(practica => ({
+          .map(
+            practica => ({
 
-            id:
-              practica.id,
+              id:
+                practica.id,
 
-            maquina_id:
-              practica.maquina_id,
+              maquina_id:
+                Number(
+                  practica.maquina_id
+                ),
 
-            maquina_nombre:
-              practica.maquina_nombre,
+              maquina_nombre:
+                practica.maquina_nombre,
 
-            horas:
-              Number(
-                practica.horas ?? 0
-              ),
+              horas:
+                Number(
+                  practica.horas ?? 0
+                ),
 
-            sesiones_totales:
-              Number(
-                practica.sesiones_totales ?? 1
-              )
+              sesiones_totales:
+                Number(
+                  practica.sesiones_totales ?? 1
+                )
 
-          }))
+            })
+          )
 
     };
 
@@ -357,11 +792,6 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================================
 
   private cargarMaquinas(): void {
-
-    this.cargando = true;
-
-    this.cd.detectChanges();
-
 
     this.maquinasService
       .listarTodas()
@@ -381,7 +811,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
           this.asegurarPracticasDeMaquinas();
 
-
           this.cargando = false;
 
           this.cd.detectChanges();
@@ -392,15 +821,11 @@ export class ConfigurarPlanComponent implements OnInit {
         error: error => {
 
           console.error(
-            'Error al cargar máquinas:',
+            'Error cargando máquinas:',
             error
           );
 
-
           this.cargando = false;
-
-          this.cd.detectChanges();
-
 
           Swal.fire({
 
@@ -428,27 +853,18 @@ export class ConfigurarPlanComponent implements OnInit {
     maquinaId: number
   ): boolean {
 
-    return this.formulario.maquinas.some(
-      maquina =>
-        maquina.maquina_id === maquinaId
-    );
+    return this.formulario.maquinas
+      .some(
+        maquina =>
+          Number(maquina.maquina_id) ===
+          Number(maquinaId)
+      );
 
   }
 
 
   // ==========================================================
-  // AGREGAR / QUITAR MÁQUINA
-  // ==========================================================
-  //
-  // IMPORTANTE:
-  //
-  // NO existe límite basado en cantidad_maquinas.
-  //
-  // El administrador puede configurar todas las máquinas
-  // disponibles para el plan.
-  //
-  // La cantidad_maquinas del tipo se valida posteriormente
-  // durante la matrícula.
+  // AGREGAR / QUITAR
   // ==========================================================
 
   toggleMaquina(
@@ -459,13 +875,10 @@ export class ConfigurarPlanComponent implements OnInit {
       this.formulario.maquinas
         .findIndex(
           item =>
-            item.maquina_id === maquina.id
+            Number(item.maquina_id) ===
+            Number(maquina.id)
         );
 
-
-    // ----------------------------------------------------------
-    // QUITAR
-    // ----------------------------------------------------------
 
     if (index >= 0) {
 
@@ -477,10 +890,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // ----------------------------------------------------------
-    // AGREGAR
-    // ----------------------------------------------------------
 
     const nuevaMaquina: PlanMaquina = {
 
@@ -497,7 +906,8 @@ export class ConfigurarPlanComponent implements OnInit {
         false,
 
       obligatoria:
-        !this.formulario.permite_eleccion_personalizada
+        !this.formulario
+          .permite_eleccion_personalizada
 
     };
 
@@ -506,10 +916,6 @@ export class ConfigurarPlanComponent implements OnInit {
       nuevaMaquina
     );
 
-
-    // ----------------------------------------------------------
-    // CREAR PRÁCTICA
-    // ----------------------------------------------------------
 
     this.asegurarPractica(
       maquina.id,
@@ -525,37 +931,28 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // QUITAR MÁQUINA
+  // QUITAR
   // ==========================================================
 
   quitarMaquina(
     maquinaId: number
   ): void {
 
-    const index =
+    this.formulario.maquinas =
       this.formulario.maquinas
-        .findIndex(
+        .filter(
           maquina =>
-            maquina.maquina_id === maquinaId
+            Number(maquina.maquina_id) !==
+            Number(maquinaId)
         );
-
-
-    if (index < 0) {
-      return;
-    }
-
-
-    this.formulario.maquinas.splice(
-      index,
-      1
-    );
 
 
     this.formulario.horas_practica =
       this.formulario.horas_practica
         .filter(
           practica =>
-            practica.maquina_id !== maquinaId
+            Number(practica.maquina_id) !==
+            Number(maquinaId)
         );
 
 
@@ -597,7 +994,8 @@ export class ConfigurarPlanComponent implements OnInit {
       .horas_practica
       .find(
         practica =>
-          practica.maquina_id === maquinaId
+          Number(practica.maquina_id) ===
+          Number(maquinaId)
       );
 
   }
@@ -684,20 +1082,18 @@ export class ConfigurarPlanComponent implements OnInit {
     valor: number | string
   ): void {
 
-    const maquina =
-      this.formulario.maquinas
-        .find(
-          item =>
-            item.maquina_id === maquinaId
-        );
-
-
     const practica =
       this.asegurarPractica(
 
         maquinaId,
 
-        maquina?.maquina_nombre
+        this.formulario.maquinas
+          .find(
+            item =>
+              Number(item.maquina_id) ===
+              Number(maquinaId)
+          )
+          ?.maquina_nombre
 
       );
 
@@ -712,8 +1108,6 @@ export class ConfigurarPlanComponent implements OnInit {
         ? horas
         : 0;
 
-    this.cd.detectChanges();
-
   }
 
 
@@ -726,20 +1120,18 @@ export class ConfigurarPlanComponent implements OnInit {
     valor: number | string
   ): void {
 
-    const maquina =
-      this.formulario.maquinas
-        .find(
-          item =>
-            item.maquina_id === maquinaId
-        );
-
-
     const practica =
       this.asegurarPractica(
 
         maquinaId,
 
-        maquina?.maquina_nombre
+        this.formulario.maquinas
+          .find(
+            item =>
+              Number(item.maquina_id) ===
+              Number(maquinaId)
+          )
+          ?.maquina_nombre
 
       );
 
@@ -753,8 +1145,6 @@ export class ConfigurarPlanComponent implements OnInit {
       sesiones >= 1
         ? Math.floor(sesiones)
         : 1;
-
-    this.cd.detectChanges();
 
   }
 
@@ -818,13 +1208,11 @@ export class ConfigurarPlanComponent implements OnInit {
         ? Math.floor(cuotas)
         : 1;
 
-    this.cd.detectChanges();
-
   }
 
 
   // ==========================================================
-  // TRACKING
+  // TRACK
   // ==========================================================
 
   trackMaquina(
@@ -842,7 +1230,7 @@ export class ConfigurarPlanComponent implements OnInit {
     maquina: PlanMaquina
   ): number {
 
-    return (
+    return Number(
       maquina.id ??
       maquina.maquina_id
     );
@@ -855,7 +1243,7 @@ export class ConfigurarPlanComponent implements OnInit {
     practica: PlanHoraPractica
   ): number {
 
-    return (
+    return Number(
       practica.id ??
       practica.maquina_id
     );
@@ -938,15 +1326,6 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // --------------------------------------------------------
-    // MÁQUINAS
-    // --------------------------------------------------------
-    //
-    // Aquí NO comparamos contra cantidad_maquinas.
-    //
-    // La cantidad del tipo se utilizará en matrícula.
-    // --------------------------------------------------------
-
     if (
       this.formulario.maquinas.length === 0
     ) {
@@ -968,24 +1347,19 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // --------------------------------------------------------
-    // IDS ÚNICOS
-    // --------------------------------------------------------
-
     const ids =
       this.formulario.maquinas
         .map(
           maquina =>
-            maquina.maquina_id
+            Number(
+              maquina.maquina_id
+            )
         );
 
 
-    const idsUnicos =
-      new Set(ids);
-
-
     if (
-      idsUnicos.size !== ids.length
+      new Set(ids).size !==
+      ids.length
     ) {
 
       Swal.fire({
@@ -1004,10 +1378,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     }
 
-
-    // --------------------------------------------------------
-    // VALIDAR PRÁCTICAS
-    // --------------------------------------------------------
 
     for (
       const maquina
@@ -1095,13 +1465,6 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // --------------------------------------------------------
-    // VALIDAR REGALOS
-    // --------------------------------------------------------
-    //
-    // Un regalo nunca debe ser obligatorio.
-    // --------------------------------------------------------
-
     for (
       const maquina
       of this.formulario.maquinas
@@ -1138,7 +1501,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // CONSTRUIR PAYLOAD
+  // PAYLOAD
   // ==========================================================
 
   private construirPayload():
@@ -1147,8 +1510,10 @@ export class ConfigurarPlanComponent implements OnInit {
     return {
 
       tipo_curso_id:
-        this.tipoCurso?.id ??
-        this.formulario.tipo_curso_id,
+        Number(
+          this.tipoCurso?.id ??
+          this.formulario.tipo_curso_id
+        ),
 
       nombre:
         this.formulario.nombre.trim(),
@@ -1161,8 +1526,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
       cantidad_cuotas:
         Number(
-          this.formulario
-            .cantidad_cuotas
+          this.formulario.cantidad_cuotas
         ),
 
       observaciones:
@@ -1180,10 +1544,14 @@ export class ConfigurarPlanComponent implements OnInit {
                 maquina.id,
 
               maquina_id:
-                maquina.maquina_id,
+                Number(
+                  maquina.maquina_id
+                ),
 
               orden:
-                maquina.orden,
+                Number(
+                  maquina.orden
+                ),
 
               es_regalo:
                 Boolean(
@@ -1206,8 +1574,12 @@ export class ConfigurarPlanComponent implements OnInit {
               this.formulario.maquinas
                 .some(
                   maquina =>
-                    maquina.maquina_id ===
-                    practica.maquina_id
+                    Number(
+                      maquina.maquina_id
+                    ) ===
+                    Number(
+                      practica.maquina_id
+                    )
                 )
           )
           .map(
@@ -1217,7 +1589,9 @@ export class ConfigurarPlanComponent implements OnInit {
                 practica.id,
 
               maquina_id:
-                practica.maquina_id,
+                Number(
+                  practica.maquina_id
+                ),
 
               horas:
                 Number(
@@ -1265,8 +1639,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
     this.guardando = true;
 
-    this.cd.detectChanges();
-
 
     const operacion =
       this.modoEdicion &&
@@ -1290,12 +1662,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
         this.guardando = false;
 
-        this.cd.detectChanges();
 
-
-        if (
-          !response?.data
-        ) {
+        if (!response?.data) {
 
           Swal.fire({
 
@@ -1339,7 +1707,12 @@ export class ConfigurarPlanComponent implements OnInit {
           response.data
         );
 
-        this.cd.detectChanges();
+
+        // Si es una página por ruta,
+        // volvemos al listado.
+        this.router.navigate(
+          ['/admin/tipos-curso']
+        );
 
       },
 
@@ -1353,8 +1726,6 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
         this.guardando = false;
-
-        this.cd.detectChanges();
 
 
         Swal.fire({
@@ -1379,14 +1750,48 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // CANCELAR
+  // ERROR DE CONTEXTO
+  // ==========================================================
+
+  private mostrarErrorContexto(
+    mensaje: string
+  ): void {
+
+    this.cargando = false;
+
+    Swal.fire({
+
+      icon: 'error',
+
+      title:
+        'No se pudo cargar la configuración',
+
+      text:
+        mensaje
+
+    }).then(() => {
+
+      this.router.navigate(
+        ['/admin/tipos-curso']
+      );
+
+    });
+
+  }
+
+
+  // ==========================================================
+  // VOLVER
   // ==========================================================
 
   volver(): void {
 
     this.cancelar.emit();
 
+    this.router.navigate(
+      ['/admin/tipos-curso']
+    );
+
   }
 
 }
-
