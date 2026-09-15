@@ -46,7 +46,7 @@ export const routes: Routes = [
       {
         path: 'admin/tipos-curso',
         loadComponent: () =>
-          import('./admin/tipos-curso/pages/tipos-curso/tipos-curso')
+          import('./admin/configuracion-cursos/tipos-curso/tipos-curso')
             .then(m => m.TiposCursoComponent)
       },
       
