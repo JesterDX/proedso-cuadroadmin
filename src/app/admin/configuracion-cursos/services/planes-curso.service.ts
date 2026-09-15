@@ -1,6 +1,15 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
+
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  Observable
+} from 'rxjs';
 
 import {
   PlanCurso,
@@ -12,9 +21,12 @@ import {
 // RESPUESTA API
 // ============================================================
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
+
   ok: boolean;
+
   message?: string;
+
   data: T;
 }
 
@@ -28,7 +40,9 @@ interface ApiResponse<T> {
 })
 export class PlanesCursoService {
 
-  private readonly http = inject(HttpClient);
+  private readonly http =
+    inject(HttpClient);
+
 
   private readonly apiUrl =
     '/api/planes-curso';
@@ -38,12 +52,14 @@ export class PlanesCursoService {
   // LISTAR PLANES
   // ==========================================================
 
-  listar(): Observable<ApiResponse<PlanCurso[]>> {
+  listar():
+    Observable<ApiResponse<PlanCurso[]>> {
 
     return this.http.get<
       ApiResponse<PlanCurso[]>
-    >(this.apiUrl);
-
+    >(
+      this.apiUrl
+    );
   }
 
 
@@ -53,14 +69,14 @@ export class PlanesCursoService {
 
   obtenerPorId(
     id: number
-  ): Observable<ApiResponse<PlanCurso>> {
+  ):
+    Observable<ApiResponse<PlanCurso>> {
 
     return this.http.get<
       ApiResponse<PlanCurso>
     >(
       `${this.apiUrl}/${id}`
     );
-
   }
 
 
@@ -70,7 +86,8 @@ export class PlanesCursoService {
 
   crear(
     payload: PlanCursoPayload
-  ): Observable<ApiResponse<PlanCurso>> {
+  ):
+    Observable<ApiResponse<PlanCurso>> {
 
     return this.http.post<
       ApiResponse<PlanCurso>
@@ -78,7 +95,6 @@ export class PlanesCursoService {
       this.apiUrl,
       payload
     );
-
   }
 
 
@@ -89,7 +105,8 @@ export class PlanesCursoService {
   actualizar(
     id: number,
     payload: PlanCursoPayload
-  ): Observable<ApiResponse<PlanCurso>> {
+  ):
+    Observable<ApiResponse<PlanCurso>> {
 
     return this.http.put<
       ApiResponse<PlanCurso>
@@ -97,7 +114,6 @@ export class PlanesCursoService {
       `${this.apiUrl}/${id}`,
       payload
     );
-
   }
 
 
@@ -108,15 +124,17 @@ export class PlanesCursoService {
   cambiarEstado(
     id: number,
     activo: boolean
-  ): Observable<ApiResponse<PlanCurso>> {
+  ):
+    Observable<ApiResponse<PlanCurso>> {
 
     return this.http.patch<
       ApiResponse<PlanCurso>
     >(
       `${this.apiUrl}/${id}/estado`,
-      { activo }
+      {
+        activo
+      }
     );
-
   }
 
 }
