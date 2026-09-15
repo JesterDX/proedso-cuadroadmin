@@ -12,124 +12,78 @@
   </div>
 
   <div class="toolbar">
+    <!-- Fecha de práctica -->
     <div class="filter-box">
       <label>Fecha de práctica</label>
       <input type="date" [(ngModel)]="fechaSesion">
     </div>
+
+    <!-- Lugar de práctica -->
     <div class="filter-box">
-
-  <label>Lugar de práctica</label>
-
-  <select [(ngModel)]="lugarPracticaId">
-
-    <option
-      *ngFor="let lugar of lugaresPractica"
-      [ngValue]="lugar.id">
-
-      {{ lugar.nombre }}
-
-    </option>
-
-  </select>
-
-</div>
-
-    <div class="filter-box">
-      <label>Mes</label>
-<select 
- [(ngModel)]="filtroMes"
- (change)="onFiltroChange()">
-
-<option [ngValue]="null">
- Todos los meses
-</option>
-
-<option 
- *ngFor="let mes of meses"
- [ngValue]="mes.id">
-
-{{mes.nombre}}
-
-</option>
-
-</select>
+      <label>Lugar de práctica</label>
+      <select [(ngModel)]="lugarPracticaId" (change)="onLugarPracticaChange($event)">
+        <option *ngFor="let lugar of lugaresPractica" [ngValue]="lugar.id">
+          {{ lugar.nombre }}
+        </option>
+        <option value="__NUEVO_LUGAR__">
+          ➕ Agregar nuevo lugar...
+        </option>
+      </select>
     </div>
 
-<div class="filter-box">
-  <label>Año</label>
-  <select 
-    [(ngModel)]="filtroAnio"
-    (change)="onFiltroChange()">
+    <!-- Filtro Mes -->
+    <div class="filter-box">
+      <label>Mes</label>
+      <select [(ngModel)]="filtroMes" (change)="onFiltroChange()">
+        <option [ngValue]="null">Todos los meses</option>
+        <option *ngFor="let mes of meses" [ngValue]="mes.id">
+          {{mes.nombre}}
+        </option>
+      </select>
+    </div>
 
-    <option [ngValue]="null">
-      Todos los años
-    </option>
+    <!-- Filtro Año -->
+    <div class="filter-box">
+      <label>Año</label>
+      <select [(ngModel)]="filtroAnio" (change)="onFiltroChange()">
+        <option [ngValue]="null">Todos los años</option>
+        <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
 
-    <option 
-      *ngFor="let anio of aniosDisponibles" 
-      [ngValue]="anio">
+    <!-- Filtro Curso -->
+    <div class="filter-box">
+      <label>Curso</label>
+      <select [(ngModel)]="filtroCurso" (change)="onFiltroChange()">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let curso of cursos" [ngValue]="curso.id">
+          {{ curso.nombre }}
+        </option>
+      </select>
+    </div>
 
-      {{ anio }}
+    <!-- Filtro Máquina -->
+    <div class="filter-box">
+      <label>Máquina</label>
+      <select [(ngModel)]="filtroMaquina" (change)="onFiltroChange()">
+        <option [ngValue]="null">Todas</option>
+        <option *ngFor="let maquina of maquinas" [ngValue]="maquina.id">
+          {{ maquina.nombre }}
+        </option>
+      </select>
+    </div>
 
-    </option>
-
-  </select>
-</div>
-
-
-<div class="filter-box">
-  <label>Curso</label>
-  <select 
-    [(ngModel)]="filtroCurso"
-    (change)="onFiltroChange()">
-
-    <option [ngValue]="null">
-      Todos
-    </option>
-
-    <option 
-      *ngFor="let curso of cursos" 
-      [ngValue]="curso.id">
-
-      {{ curso.nombre }}
-
-    </option>
-
-  </select>
-</div>
-
-
-<div class="filter-box">
-  <label>Máquina</label>
-  <select 
-    [(ngModel)]="filtroMaquina"
-    (change)="onFiltroChange()">
-
-    <option [ngValue]="null">
-      Todas
-    </option>
-
-    <option 
-      *ngFor="let maquina of maquinas" 
-      [ngValue]="maquina.id">
-
-      {{ maquina.nombre }}
-
-    </option>
-
-  </select>
-</div>
-
-
-<div class="filter-box">
-  <label>Alumno</label>
-
-  <input 
-    type="text"
-    placeholder="Buscar alumno..."
-    [(ngModel)]="filtroNombre"
-    (ngModelChange)="onNombreChange($event)">
-</div>
+    <!-- Buscador Alumno -->
+    <div class="filter-box">
+      <label>Alumno</label>
+      <input 
+        type="text" 
+        placeholder="Buscar alumno..." 
+        [(ngModel)]="filtroNombre" 
+        (ngModelChange)="onNombreChange($event)">
+    </div>
 
     <span class="loading-indicator" *ngIf="loadingLista">⏳ Buscando...</span>
   </div>
@@ -137,6 +91,7 @@
 
 <p class="error-carga" *ngIf="errorCarga">⚠️ {{ errorCarga }}</p>
 
+<!-- LISTADO GRUPAL -->
 <section class="grupo-anio" *ngFor="let grupo of gruposPorAnio">
   <div class="grupo-anio-header">
     <h3>📁 Año {{ grupo.anio }}</h3>
@@ -149,9 +104,6 @@
       <span class="contador">{{ gm.alumnos.length }} alumno(s)</span>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- TABLA MINIMALISTA DE ALUMNOS -->
-    <!-- ========================================================= -->
     <div class="table-container">
       <table class="tabla-alumnos">
         <thead>
@@ -186,7 +138,7 @@
               </span>
             </td>
 
-            <!-- Columna: Máquinas (Lista limpia en celda) -->
+            <!-- Columna: Máquinas -->
             <td class="col-maquinas">
               <div class="maquina-row" *ngFor="let maquina of alumno.maquinas">
                 <div class="maquina-info">
@@ -227,7 +179,6 @@
         </tbody>
       </table>
     </div>
-
   </div>
 </section>
 
@@ -235,6 +186,7 @@
   No se encontraron alumnos con sesiones pendientes para los filtros seleccionados.
 </p>
 
+<!-- BARRA INFERIOR DE RESUMEN Y GENERACIÓN -->
 <footer class="resumen-bar" *ngIf="hayResultados">
   <div class="resumen-info">
     <span><strong>{{ totalAlumnosSeleccionados }}</strong> alumno(s) seleccionados</span>
