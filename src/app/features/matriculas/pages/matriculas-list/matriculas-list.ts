@@ -2787,8 +2787,10 @@ guardarMatricula(): void {
   // ==========================================================
   // BÚSQUEDA
   // ==========================================================
-
-  buscar(): void {
+private getFechaReferencia(m: Matricula): string | null {
+    return m.fecha_inicio || m.fecha_matricula || null;
+  }
+buscar(): void {
 
     const texto =
       (
@@ -2843,7 +2845,7 @@ guardarMatricula(): void {
     }
 
     // ========================================================
-    // AÑO
+    // AÑO (Prioriza fecha_inicio sobre fecha_matricula)
     // ========================================================
 
     if (
@@ -2854,8 +2856,11 @@ guardarMatricula(): void {
         filtradas.filter(
           (m) => {
 
+            const fechaRef =
+              this.getFechaReferencia(m);
+
             if (
-              !m.fecha_matricula
+              !fechaRef
             ) {
 
               return false;
@@ -2863,7 +2868,7 @@ guardarMatricula(): void {
             }
 
             const fecha =
-              m.fecha_matricula
+              fechaRef
                 .split('T')[0];
 
             const anio =
@@ -2882,7 +2887,7 @@ guardarMatricula(): void {
     }
 
     // ========================================================
-    // MES
+    // MES (Prioriza fecha_inicio sobre fecha_matricula)
     // ========================================================
 
     if (
@@ -2893,8 +2898,11 @@ guardarMatricula(): void {
         filtradas.filter(
           (m) => {
 
+            const fechaRef =
+              this.getFechaReferencia(m);
+
             if (
-              !m.fecha_matricula
+              !fechaRef
             ) {
 
               return false;
@@ -2902,7 +2910,7 @@ guardarMatricula(): void {
             }
 
             const fecha =
-              m.fecha_matricula
+              fechaRef
                 .split('T')[0];
 
             const mes =
