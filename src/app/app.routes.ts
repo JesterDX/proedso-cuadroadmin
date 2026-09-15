@@ -42,6 +42,7 @@ export const routes: Routes = [
           import('./features/dashboard/pages/dashboard/dashboard')
             .then(m => m.Dashboard)
       },
+      
       {
         path: 'admin/tipos-curso',
         loadComponent: () =>
@@ -50,28 +51,10 @@ export const routes: Routes = [
       },
       
       {
-        path: 'admin/planes-curso',
-        loadComponent: () =>
-          import('./admin/planes-curso/pages/planes-curso/planes-curso')
-            .then(m => m.PlanesCursoComponent)
-      },
-      {
         path: 'admin/maquinas',
         loadComponent: () =>
           import('./admin/maquinas/pages/maquinas/maquinas')
             .then(m => m.MaquinasComponent)
-      },
-      {
-        path: 'admin/planes-curso/nuevo',
-        loadComponent: () =>
-          import('./admin/planes-curso/pages/configurar-plan/configurar-plan')
-            .then(m => m.ConfigurarPlanComponent)
-      },
-      {
-        path: 'admin/planes-curso/configurar/:id',
-        loadComponent: () =>
-          import('./admin/planes-curso/pages/configurar-plan/configurar-plan')
-            .then(m => m.ConfigurarPlanComponent)
       },
 
    // Las agregaremos cuando existan
