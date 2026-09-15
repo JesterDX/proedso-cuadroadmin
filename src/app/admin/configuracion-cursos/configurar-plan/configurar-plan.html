@@ -28,12 +28,15 @@
         </h1>
 
         <p class="subtitle">
-          Configura máquinas, horas de práctica y precios del plan.
+          Configura las máquinas, prácticas y cuotas del plan.
         </p>
 
       </div>
 
     </div>
+
+
+    <!-- ACCIONES SUPERIORES -->
 
     <div class="header-actions">
 
@@ -46,6 +49,7 @@
         Cancelar
       </button>
 
+
       <button
         type="button"
         class="btn btn-primary"
@@ -54,10 +58,15 @@
       >
 
         @if (guardando) {
+
           <span class="spinner"></span>
+
           Guardando...
+
         } @else {
+
           {{ textoBotonGuardar }}
+
         }
 
       </button>
@@ -85,15 +94,16 @@
 
   } @else {
 
+
     <!-- ==================================================== -->
-    <!-- INFORMACIÓN DEL TIPO DE CURSO                         -->
+    <!-- 01. TIPO DE CURSO                                    -->
     <!-- ==================================================== -->
 
     <section class="card">
 
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             01
@@ -116,7 +126,12 @@
       </div>
 
 
+      <!-- RESUMEN DEL TIPO -->
+
       <div class="type-course-summary">
+
+
+        <!-- NOMBRE -->
 
         <div class="summary-item">
 
@@ -125,11 +140,13 @@
           </span>
 
           <strong>
-            {{ tipoCurso?.nombre }}
+            {{ tipoCurso?.nombre || '—' }}
           </strong>
 
         </div>
 
+
+        <!-- CÓDIGO -->
 
         <div class="summary-item">
 
@@ -138,11 +155,13 @@
           </span>
 
           <strong>
-            {{ tipoCurso?.codigo }}
+            {{ tipoCurso?.codigo || '—' }}
           </strong>
 
         </div>
 
+
+        <!-- DURACIÓN -->
 
         <div class="summary-item">
 
@@ -151,22 +170,74 @@
           </span>
 
           <strong>
+
             {{ tipoCurso?.duracion_meses ?? 0 }}
-            {{ (tipoCurso?.duracion_meses ?? 0) === 1 ? 'mes' : 'meses' }}
+
+            {{
+              (tipoCurso?.duracion_meses ?? 0) === 1
+                ? 'mes'
+                : 'meses'
+            }}
+
           </strong>
 
         </div>
 
 
+        <!-- CANTIDAD DE MÁQUINAS -->
+
         <div class="summary-item">
 
           <span class="summary-label">
-            Máquinas
+            Máquinas requeridas
           </span>
 
           <strong>
-            {{ tipoCurso?.cantidad_maquinas ?? 0 }}
+
+            {{ cantidadMaquinasPermitidas }}
+
+            {{
+              cantidadMaquinasPermitidas === 1
+                ? 'máquina'
+                : 'máquinas'
+            }}
+
           </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- REGLA -->
+
+      <div class="info-alert">
+
+        <span class="alert-icon">
+          ⓘ
+        </span>
+
+        <div>
+
+          <strong>
+            Cantidad fija de máquinas
+          </strong>
+
+          <p>
+
+            Este tipo de curso requiere exactamente
+            <strong>
+              {{ cantidadMaquinasPermitidas }}
+            </strong>
+            {{
+              cantidadMaquinasPermitidas === 1
+                ? 'máquina.'
+                : 'máquinas.'
+            }}
+
+            La elección personalizada no cambia esta cantidad.
+
+          </p>
 
         </div>
 
@@ -175,15 +246,16 @@
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- DATOS GENERALES                                       -->
+    <!-- 02. DATOS GENERALES                                  -->
     <!-- ==================================================== -->
 
     <section class="card">
 
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             02
@@ -208,37 +280,18 @@
 
       <div class="form-grid">
 
-        <!-- Código -->
 
-        <div class="form-field">
+        <!-- ================================================= -->
+        <!-- NOMBRE                                            -->
+        <!-- ================================================= -->
 
-          <label>
-            Código del plan
-            <span class="required">*</span>
-          </label>
-
-          <input
-            type="text"
-            [(ngModel)]="formulario.codigo"
-            placeholder="Ej. IND-3M-01"
-            maxlength="50"
-          />
-
-          <small>
-            Código interno para identificar el plan.
-          </small>
-
-        </div>
-
-
-        <!-- Nombre -->
-
-        <div class="form-field">
+        <div class="form-field full-width">
 
           <label>
             Nombre del plan
             <span class="required">*</span>
           </label>
+
 
           <input
             type="text"
@@ -247,6 +300,7 @@
             maxlength="150"
           />
 
+
           <small>
             Nombre que se mostrará en el sistema.
           </small>
@@ -254,91 +308,100 @@
         </div>
 
 
-        <!-- Versión -->
+
+        <!-- ================================================= -->
+        <!-- CANTIDAD DE CUOTAS                                -->
+        <!-- ================================================= -->
 
         <div class="form-field">
 
           <label>
-            Versión
+            Cantidad de cuotas
+            <span class="required">*</span>
           </label>
+
 
           <input
             type="number"
-            [(ngModel)]="formulario.version"
             min="1"
             step="1"
+            [ngModel]="formulario.cantidad_cuotas"
+            (ngModelChange)="actualizarCantidadCuotas($event)"
           />
+
+
+          <small>
+            Cantidad de cuotas utilizada por el plan.
+          </small>
 
         </div>
 
 
-        <!-- Estado -->
+
+        <!-- ================================================= -->
+        <!-- ELECCIÓN PERSONALIZADA                            -->
+        <!-- ================================================= -->
 
         <div class="form-field">
 
           <label>
-            Estado
+            Elección de máquinas
           </label>
+
 
           <label class="switch-field">
 
             <input
               type="checkbox"
-              [(ngModel)]="formulario.activo"
+              [(ngModel)]="formulario.permite_eleccion_personalizada"
             />
+
 
             <span class="switch"></span>
 
+
             <span>
-              {{ formulario.activo ? 'Activo' : 'Inactivo' }}
+
+              {{
+                formulario.permite_eleccion_personalizada
+                  ? 'Personalizada'
+                  : 'Predeterminada'
+              }}
+
             </span>
 
           </label>
 
-        </div>
 
+          <small>
 
-        <!-- Fecha inicio -->
+            {{
+              formulario.permite_eleccion_personalizada
 
-        <div class="form-field">
+                ? 'El alumno podrá elegir entre las máquinas configuradas para este plan.'
 
-          <label>
-            Vigente desde
-          </label>
+                : 'El alumno utilizará la configuración definida para este plan.'
 
-          <input
-            type="date"
-            [(ngModel)]="formulario.vigente_desde"
-          />
+            }}
 
-        </div>
-
-
-        <!-- Fecha fin -->
-
-        <div class="form-field">
-
-          <label>
-            Vigente hasta
-          </label>
-
-          <input
-            type="date"
-            [(ngModel)]="formulario.vigente_hasta"
-          />
+          </small>
 
         </div>
 
       </div>
 
 
-      <!-- Observaciones -->
+
+      <!-- ================================================= -->
+      <!-- OBSERVACIONES                                     -->
+      <!-- ================================================= -->
 
       <div class="form-field full-width">
 
         <label>
           Observaciones
         </label>
+
 
         <textarea
           [(ngModel)]="formulario.observaciones"
@@ -350,42 +413,22 @@
       </div>
 
 
-      <!-- Elección personalizada -->
-
-      <div class="checkbox-row">
-
-        <label class="checkbox-field">
-
-          <input
-            type="checkbox"
-            [(ngModel)]="formulario.permite_eleccion_personalizada"
-          />
-
-          <span>
-            Permitir elección personalizada de máquinas
-          </span>
-
-        </label>
-
-        <small>
-          Permite que el alumno pueda seleccionar máquinas
-          diferentes a la configuración predeterminada.
-        </small>
-
-      </div>
-
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- MÁQUINAS                                              -->
+    <!-- 03. MÁQUINAS                                        -->
     <!-- ==================================================== -->
 
     <section class="card">
 
+
+      <!-- HEADER -->
+
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             03
@@ -398,7 +441,8 @@
             </h2>
 
             <p>
-              Selecciona las máquinas incluidas en este plan.
+              Selecciona exactamente las máquinas requeridas
+              por el tipo de curso.
             </p>
 
           </div>
@@ -406,10 +450,17 @@
         </div>
 
 
-        <div class="counter-badge">
+        <!-- CONTADOR -->
+
+        <div
+          class="counter-badge"
+          [class.complete]="maquinasCompletas"
+        >
 
           {{ cantidadMaquinasSeleccionadas }}
+
           /
+
           {{ cantidadMaquinasPermitidas }}
 
         </div>
@@ -417,24 +468,62 @@
       </div>
 
 
-      <!-- Aviso -->
+
+      <!-- ================================================= -->
+      <!-- AVISO                                             -->
+      <!-- ================================================= -->
 
       <div class="info-alert">
+
 
         <span class="alert-icon">
           ⓘ
         </span>
 
+
         <div>
 
           <strong>
-            Máquinas requeridas
+            Selección obligatoria
           </strong>
 
+
           <p>
-            Este tipo de curso requiere
-            {{ cantidadMaquinasPermitidas }}
-            máquina(s).
+
+            Debes seleccionar exactamente
+
+            <strong>
+              {{ cantidadMaquinasPermitidas }}
+            </strong>
+
+            {{
+              cantidadMaquinasPermitidas === 1
+                ? 'máquina.'
+                : 'máquinas.'
+            }}
+
+            <span *ngIf="maquinasRestantes > 0">
+
+              Faltan
+              <strong>
+                {{ maquinasRestantes }}
+              </strong>
+
+              {{
+                maquinasRestantes === 1
+                  ? 'máquina.'
+                  : 'máquinas.'
+              }}
+
+            </span>
+
+
+            <span *ngIf="maquinasCompletas">
+
+              ✓ Cantidad completada.
+
+            </span>
+
           </p>
 
         </div>
@@ -442,32 +531,58 @@
       </div>
 
 
-      <!-- Lista de máquinas -->
+
+      <!-- ================================================= -->
+      <!-- LISTA DE MÁQUINAS                                 -->
+      <!-- ================================================= -->
 
       <div class="machines-grid">
+
 
         @for (
           maquina of maquinasDisponibles;
           track trackMaquina($index, maquina)
         ) {
 
+
           <button
             type="button"
             class="machine-option"
-            [class.selected]="estaMaquinaSeleccionada(maquina.id)"
+
+            [class.selected]="
+              estaMaquinaSeleccionada(
+                maquina.id
+              )
+            "
+
+            [class.disabled]="
+              !estaMaquinaSeleccionada(maquina.id) &&
+              cantidadMaquinasSeleccionadas >=
+                cantidadMaquinasPermitidas
+            "
+
             (click)="toggleMaquina(maquina)"
           >
+
+
+            <!-- CHECK -->
 
             <span class="machine-check">
 
               @if (
-                estaMaquinaSeleccionada(maquina.id)
+                estaMaquinaSeleccionada(
+                  maquina.id
+                )
               ) {
+
                 ✓
+
               }
 
             </span>
 
+
+            <!-- CONTENIDO -->
 
             <span class="machine-content">
 
@@ -475,11 +590,13 @@
                 {{ maquina.nombre }}
               </strong>
 
+
               <small>
                 Máquina #{{ maquina.id }}
               </small>
 
             </span>
+
 
           </button>
 
@@ -488,17 +605,70 @@
       </div>
 
 
-      <!-- Máquinas seleccionadas -->
 
-      @if (formulario.maquinas.length > 0) {
+      <!-- ================================================= -->
+      <!-- SIN MÁQUINAS                                     -->
+      <!-- ================================================= -->
+
+      @if (
+        maquinasDisponibles.length === 0
+      ) {
+
+        <div class="empty-state">
+
+          <span class="empty-icon">
+            ⚙
+          </span>
+
+
+          <h3>
+            No hay máquinas disponibles
+          </h3>
+
+
+          <p>
+            No se encontraron máquinas configuradas
+            en el catálogo.
+          </p>
+
+        </div>
+
+      }
+
+
+
+      <!-- ================================================= -->
+      <!-- MÁQUINAS SELECCIONADAS                            -->
+      <!-- ================================================= -->
+
+      @if (
+        formulario.maquinas.length > 0
+      ) {
+
 
         <div class="selected-machines">
 
+
+          <!-- HEADER -->
+
           <div class="selected-header">
 
-            <h3>
-              Máquinas seleccionadas
-            </h3>
+            <div>
+
+              <h3>
+                Máquinas seleccionadas
+              </h3>
+
+
+              <small>
+
+                Ordenadas según su configuración
+                dentro del plan.
+
+              </small>
+
+            </div>
+
 
             <span>
               {{ formulario.maquinas.length }}
@@ -507,18 +677,36 @@
           </div>
 
 
+
+          <!-- LISTA -->
+
           <div class="selected-list">
+
 
             @for (
               maquina of formulario.maquinas;
-              track trackPlanMaquina($index, maquina)
+
+              track trackPlanMaquina(
+                $index,
+                maquina
+              )
             ) {
+
 
               <div class="selected-machine">
 
+
+                <!-- ORDEN -->
+
                 <div class="machine-order">
+
                   {{ maquina.orden }}
+
                 </div>
+
+
+
+                <!-- INFORMACIÓN -->
 
                 <div class="machine-info">
 
@@ -526,12 +714,43 @@
                     {{ maquina.maquina_nombre }}
                   </strong>
 
+
                   <span>
-                    {{ maquina.obligatoria ? 'Obligatoria' : 'Opcional' }}
+
+                    {{
+                      maquina.obligatoria
+                        ? 'Obligatoria'
+                        : 'Opcional'
+                    }}
+
                   </span>
 
                 </div>
 
+
+
+                <!-- OBLIGATORIA -->
+
+                <label
+                  class="checkbox-inline"
+                  (click)="$event.stopPropagation()"
+                >
+
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="maquina.obligatoria"
+                  />
+
+
+                  <span>
+                    Obligatoria
+                  </span>
+
+                </label>
+
+
+
+                <!-- REGALO -->
 
                 <label
                   class="checkbox-inline"
@@ -543,6 +762,7 @@
                     [(ngModel)]="maquina.es_regalo"
                   />
 
+
                   <span>
                     Regalo
                   </span>
@@ -550,14 +770,24 @@
                 </label>
 
 
+
+                <!-- QUITAR -->
+
                 <button
                   type="button"
                   class="btn-icon danger"
+
                   title="Quitar máquina"
-                  (click)="quitarMaquina(maquina.maquina_id)"
+
+                  (click)="
+                    quitarMaquina(
+                      maquina.maquina_id
+                    )
+                  "
                 >
                   ×
                 </button>
+
 
               </div>
 
@@ -572,19 +802,24 @@
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- HORAS DE PRÁCTICA                                    -->
+    <!-- 04. HORAS DE PRÁCTICA                               -->
     <!-- ==================================================== -->
 
     <section class="card">
 
+
+      <!-- HEADER -->
+
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             04
           </span>
+
 
           <div class="section-title">
 
@@ -592,8 +827,10 @@
               Horas de práctica
             </h2>
 
+
             <p>
-              Define las horas y sesiones prácticas por máquina.
+              Define las horas y sesiones prácticas
+              para cada máquina.
             </p>
 
           </div>
@@ -603,7 +840,15 @@
       </div>
 
 
-      @if (formulario.maquinas.length === 0) {
+
+      <!-- ================================================= -->
+      <!-- SIN MÁQUINAS                                     -->
+      <!-- ================================================= -->
+
+      @if (
+        formulario.maquinas.length === 0
+      ) {
+
 
         <div class="empty-state">
 
@@ -611,22 +856,32 @@
             ⚙
           </span>
 
+
           <h3>
             Selecciona primero las máquinas
           </h3>
 
+
           <p>
-            Las horas de práctica aparecerán aquí
-            después de seleccionar las máquinas del plan.
+            Las horas de práctica aparecerán
+            después de seleccionar las máquinas.
           </p>
 
         </div>
 
+
       } @else {
+
+
+        <!-- ================================================= -->
+        <!-- TABLA                                            -->
+        <!-- ================================================= -->
 
         <div class="practice-table-wrapper">
 
+
           <table class="data-table">
+
 
             <thead>
 
@@ -648,76 +903,129 @@
                   Horas por sesión
                 </th>
 
-                <th>
-                  Acción
-                </th>
-
               </tr>
 
             </thead>
 
 
+
             <tbody>
+
 
               @for (
                 maquina of formulario.maquinas;
-                track trackPlanMaquina($index, maquina)
+
+                track trackPlanMaquina(
+                  $index,
+                  maquina
+                )
               ) {
 
+
                 <tr>
+
+
+                  <!-- MÁQUINA -->
 
                   <td>
 
                     <div class="table-machine">
 
+
                       <span class="machine-order">
+
                         {{ maquina.orden }}
+
                       </span>
 
+
                       <strong>
+
                         {{ maquina.maquina_nombre }}
+
                       </strong>
+
 
                     </div>
 
                   </td>
 
 
+
+                  <!-- HORAS -->
+
                   <td>
 
                     <input
                       type="number"
+
                       class="table-input"
+
                       min="0"
+
                       step="0.5"
-                      [ngModel]="obtenerPractica(maquina.maquina_id)?.horas ?? 0"
-                      (ngModelChange)="actualizarHoras(maquina.maquina_id, $event)"
+
+                      [ngModel]="
+                        obtenerPractica(
+                          maquina.maquina_id
+                        )?.horas ?? 0
+                      "
+
+                      (ngModelChange)="
+                        actualizarHoras(
+                          maquina.maquina_id,
+                          $event
+                        )
+                      "
                     />
+
 
                   </td>
 
+
+
+                  <!-- SESIONES -->
 
                   <td>
 
                     <input
                       type="number"
+
                       class="table-input"
+
                       min="1"
+
                       step="1"
-                      [ngModel]="obtenerPractica(maquina.maquina_id)?.sesiones_totales ?? 1"
-                      (ngModelChange)="actualizarSesiones(maquina.maquina_id, $event)"
+
+                      [ngModel]="
+                        obtenerPractica(
+                          maquina.maquina_id
+                        )?.sesiones_totales ?? 1
+                      "
+
+                      (ngModelChange)="
+                        actualizarSesiones(
+                          maquina.maquina_id,
+                          $event
+                        )
+                      "
                     />
+
 
                   </td>
 
+
+
+                  <!-- HORAS POR SESIÓN -->
 
                   <td>
 
                     <span class="calculated-value">
 
                       {{
-                        horasPorSesion(maquina.maquina_id)
-                          ?? 0
+                        horasPorSesion(
+                          maquina.maquina_id
+                        ) ?? 0
                       }}
 
                       h
@@ -727,23 +1035,12 @@
                   </td>
 
 
-                  <td>
-
-                    <button
-                      type="button"
-                      class="btn-text danger"
-                      (click)="eliminarPracticaDeMaquina(maquina.maquina_id)"
-                    >
-                      Quitar
-                    </button>
-
-                  </td>
-
                 </tr>
 
               }
 
             </tbody>
+
 
           </table>
 
@@ -754,28 +1051,126 @@
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- PRECIOS                                               -->
+    <!-- 05. CUOTAS                                          -->
     <!-- ==================================================== -->
 
     <section class="card">
 
+
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             05
           </span>
 
+
           <div class="section-title">
 
             <h2>
-              Precios
+              Cuotas
             </h2>
 
+
             <p>
-              Configura las modalidades y precios del plan.
+              Define la cantidad de cuotas que utilizará
+              este plan.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- CONTENIDO -->
+
+      <div class="installments-config">
+
+
+        <div class="installments-main">
+
+
+          <div class="form-field">
+
+            <label>
+
+              Cantidad de cuotas
+
+              <span class="required">
+                *
+              </span>
+
+            </label>
+
+
+            <input
+              type="number"
+
+              class="installments-input"
+
+              min="1"
+
+              step="1"
+
+              [ngModel]="
+                formulario.cantidad_cuotas
+              "
+
+              (ngModelChange)="
+                actualizarCantidadCuotas(
+                  $event
+                )
+              "
+            />
+
+
+            <small>
+
+              Esta cantidad se guardará en la
+              configuración compatible con
+              <code>plan_precios</code>.
+
+            </small>
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- EXPLICACIÓN -->
+
+        <div class="info-alert">
+
+
+          <span class="alert-icon">
+            ⓘ
+          </span>
+
+
+          <div>
+
+            <strong>
+              Los montos se registran posteriormente
+            </strong>
+
+
+            <p>
+
+              En esta pantalla solo se configura
+              la cantidad de cuotas.
+
+              Los importes de matrícula,
+              certificación y cuota no se modifican
+              desde aquí.
+
             </p>
 
           </div>
@@ -783,378 +1178,34 @@
         </div>
 
 
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="agregarPrecio()"
-        >
-          + Agregar precio
-        </button>
-
       </div>
-
-
-      @if (formulario.precios.length === 0) {
-
-        <div class="empty-state">
-
-          <span class="empty-icon">
-            S/
-          </span>
-
-          <h3>
-            No hay precios configurados
-          </h3>
-
-          <p>
-            Agrega al menos una modalidad de precio para este plan.
-          </p>
-
-        </div>
-
-      } @else {
-
-        <div class="prices-list">
-
-          @for (
-            precio of formulario.precios;
-            track trackPrecio($index, precio);
-            let i = $index
-          ) {
-
-            <div class="price-card">
-
-              <div class="price-card-header">
-
-                <div>
-
-                  <span class="price-index">
-                    Precio {{ i + 1 }}
-                  </span>
-
-                  <h3>
-                    {{ precio.nombre || 'Nuevo precio' }}
-                  </h3>
-
-                </div>
-
-
-                <button
-                  type="button"
-                  class="btn-icon danger"
-                  title="Eliminar precio"
-                  (click)="eliminarPrecio(i)"
-                >
-                  ×
-                </button>
-
-              </div>
-
-
-              <div class="form-grid">
-
-                <!-- Nombre -->
-
-                <div class="form-field">
-
-                  <label>
-                    Nombre
-                    <span class="required">*</span>
-                  </label>
-
-                  <input
-                    type="text"
-                    [(ngModel)]="precio.nombre"
-                    placeholder="Ej. Precio individual"
-                    maxlength="100"
-                  />
-
-                </div>
-
-
-                <!-- Monto total -->
-
-                <div class="form-field">
-
-                  <label>
-                    Monto total
-                  </label>
-
-                  <div class="input-prefix">
-
-                    <span>
-                      S/
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      [(ngModel)]="precio.monto_total"
-                      (ngModelChange)="actualizarMontoCuota(precio)"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                <!-- Matrícula -->
-
-                <div class="form-field">
-
-                  <label>
-                    Matrícula
-                  </label>
-
-                  <div class="input-prefix">
-
-                    <span>
-                      S/
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      [(ngModel)]="precio.matricula"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                <!-- Certificación -->
-
-                <div class="form-field">
-
-                  <label>
-                    Certificación
-                  </label>
-
-                  <div class="input-prefix">
-
-                    <span>
-                      S/
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      [(ngModel)]="precio.certificacion"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                <!-- Cuotas -->
-
-                <div class="form-field">
-
-                  <label>
-                    Cantidad de cuotas
-                  </label>
-
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    [(ngModel)]="precio.cantidad_cuotas"
-                    (ngModelChange)="actualizarMontoCuota(precio)"
-                  />
-
-                </div>
-
-
-                <!-- Monto cuota -->
-
-                <div class="form-field">
-
-                  <label>
-                    Monto por cuota
-                  </label>
-
-                  <div class="input-prefix">
-
-                    <span>
-                      S/
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      [(ngModel)]="precio.monto_cuota"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                <!-- Máquina asociada -->
-
-                <div class="form-field">
-
-                  <label>
-                    Aplicar a máquina
-                  </label>
-
-                  <select
-                    [(ngModel)]="precio.aplica_maquina_id"
-                  >
-
-                    <option [ngValue]="null">
-                      Todas las máquinas
-                    </option>
-
-                    @for (
-                      maquina of formulario.maquinas;
-                      track trackPlanMaquina($index, maquina)
-                    ) {
-
-                      <option
-                        [ngValue]="maquina.maquina_id"
-                      >
-                        {{ maquina.maquina_nombre }}
-                      </option>
-
-                    }
-
-                  </select>
-
-                </div>
-
-
-                <!-- Estado -->
-
-                <div class="form-field">
-
-                  <label>
-                    Estado
-                  </label>
-
-                  <label class="switch-field">
-
-                    <input
-                      type="checkbox"
-                      [(ngModel)]="precio.activo"
-                    />
-
-                    <span class="switch"></span>
-
-                    <span>
-                      {{ precio.activo ? 'Activo' : 'Inactivo' }}
-                    </span>
-
-                  </label>
-
-                </div>
-
-
-                <!-- Vigencia -->
-
-                <div class="form-field">
-
-                  <label>
-                    Vigente desde
-                  </label>
-
-                  <input
-                    type="date"
-                    [(ngModel)]="precio.vigente_desde"
-                  />
-
-                </div>
-
-
-                <div class="form-field">
-
-                  <label>
-                    Vigente hasta
-                  </label>
-
-                  <input
-                    type="date"
-                    [(ngModel)]="precio.vigente_hasta"
-                  />
-
-                </div>
-
-
-                <!-- Tractor -->
-
-                <div class="form-field">
-
-                  <label class="checkbox-field">
-
-                    <input
-                      type="checkbox"
-                      [(ngModel)]="precio.requiere_tractor"
-                    />
-
-                    <span>
-                      Requiere tractor
-                    </span>
-
-                  </label>
-
-                </div>
-
-              </div>
-
-
-              <!-- Observaciones del precio -->
-
-              <div class="form-field full-width">
-
-                <label>
-                  Observaciones
-                </label>
-
-                <textarea
-                  rows="3"
-                  [(ngModel)]="precio.observaciones"
-                  maxlength="500"
-                  placeholder="Observaciones de esta modalidad..."
-                ></textarea>
-
-              </div>
-
-            </div>
-
-          }
-
-        </div>
-
-      }
 
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- RESUMEN                                                -->
+    <!-- 06. RESUMEN                                         -->
     <!-- ==================================================== -->
 
     <section class="card summary-card">
 
+
       <div class="card-header">
 
-        <div>
+        <div class="section-heading">
 
           <span class="section-number">
             06
           </span>
+
 
           <div class="section-title">
 
             <h2>
               Resumen
             </h2>
+
 
             <p>
               Revisa la configuración antes de guardar.
@@ -1167,7 +1218,13 @@
       </div>
 
 
+
+      <!-- RESUMEN -->
+
       <div class="summary-grid">
+
+
+        <!-- TIPO -->
 
         <div class="summary-box">
 
@@ -1175,25 +1232,38 @@
             Tipo de curso
           </span>
 
+
           <strong>
-            {{ tipoCurso?.nombre }}
+            {{ tipoCurso?.nombre || '—' }}
           </strong>
 
         </div>
 
+
+
+        <!-- NOMBRE -->
 
         <div class="summary-box">
 
           <span>
-            Código
+            Nombre del plan
           </span>
 
+
           <strong>
-            {{ formulario.codigo || '—' }}
+
+            {{
+              formulario.nombre ||
+              '—'
+            }}
+
           </strong>
 
         </div>
 
+
+
+        <!-- MÁQUINAS -->
 
         <div class="summary-box">
 
@@ -1201,54 +1271,128 @@
             Máquinas
           </span>
 
-          <strong>
-            {{ formulario.maquinas.length }}
+
+          <strong
+            [class.text-success]="maquinasCompletas"
+          >
+
+            {{ cantidadMaquinasSeleccionadas }}
+
             /
+
             {{ cantidadMaquinasPermitidas }}
+
           </strong>
 
         </div>
 
+
+
+        <!-- CUOTAS -->
 
         <div class="summary-box">
 
           <span>
-            Precios
+            Cuotas
           </span>
 
+
           <strong>
-            {{ formulario.precios.length }}
+
+            {{ formulario.cantidad_cuotas }}
+
           </strong>
 
         </div>
 
+
+
+        <!-- ELECCIÓN -->
+
+        <div class="summary-box">
+
+          <span>
+            Elección de máquinas
+          </span>
+
+
+          <strong>
+
+            {{
+              formulario.permite_eleccion_personalizada
+                ? 'Personalizada'
+                : 'Predeterminada'
+            }}
+
+          </strong>
+
+        </div>
+
+
+
+        <!-- HORAS -->
+
+        <div class="summary-box">
+
+          <span>
+            Máquinas con práctica
+          </span>
+
+
+          <strong>
+
+            {{ formulario.horas_practica.length }}
+
+            /
+
+            {{ cantidadMaquinasPermitidas }}
+
+          </strong>
+
+        </div>
+
+
       </div>
+
 
     </section>
 
 
+
     <!-- ==================================================== -->
-    <!-- FOOTER ACTIONS                                        -->
+    <!-- ACCIONES INFERIORES                                 -->
     <!-- ==================================================== -->
 
     <div class="bottom-actions">
 
+
       <button
         type="button"
         class="btn btn-secondary"
+
         (click)="volver()"
+
         [disabled]="guardando"
       >
+
         Cancelar
+
       </button>
+
 
 
       <button
         type="button"
         class="btn btn-primary"
+
         (click)="guardar()"
-        [disabled]="guardando"
+
+        [disabled]="
+          guardando ||
+          cargando
+        "
       >
+
 
         @if (guardando) {
 
@@ -1262,9 +1406,12 @@
 
         }
 
+
       </button>
 
+
     </div>
+
 
   }
 
