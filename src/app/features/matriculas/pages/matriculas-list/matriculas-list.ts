@@ -2092,7 +2092,8 @@ guardarMatricula(): void {
 
       case 'TRIPLE':
         return 3;
-
+      case 'CUADRUPLE':
+        return 4;
       case 'MULTIPLE':
         return 5;
 
