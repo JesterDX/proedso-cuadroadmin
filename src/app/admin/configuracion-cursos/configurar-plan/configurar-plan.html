@@ -228,7 +228,9 @@
 
       <div class="form-grid">
 
-        <!-- NOMBRE -->
+        <!-- ================================================= -->
+        <!-- NOMBRE                                            -->
+        <!-- ================================================= -->
 
         <div class="form-group full">
 
@@ -256,7 +258,64 @@
         </div>
 
 
-        <!-- ELECCIÓN PERSONALIZADA -->
+        <!-- ================================================= -->
+        <!-- VIGENCIA DESDE                                    -->
+        <!-- ================================================= -->
+
+        <div class="form-group">
+
+          <label for="vigenteDesde">
+            Fecha de vigencia
+            <span class="required">
+              *
+            </span>
+          </label>
+
+          <input
+            id="vigenteDesde"
+            type="date"
+            class="form-control"
+            [(ngModel)]="formulario.vigente_desde"
+            [disabled]="guardando"
+          />
+
+          <small class="form-help">
+            Fecha desde la cual el plan estará vigente.
+            Por defecto: 01/01/2023.
+          </small>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- VIGENCIA HASTA                                    -->
+        <!-- ================================================= -->
+
+        <div class="form-group">
+
+          <label for="vigenteHasta">
+            Fin de vigencia
+          </label>
+
+          <input
+            id="vigenteHasta"
+            type="date"
+            class="form-control"
+            [(ngModel)]="formulario.vigente_hasta"
+            [disabled]="guardando"
+          />
+
+          <small class="form-help">
+            Opcional. Déjalo vacío si el plan no tiene
+            fecha de término.
+          </small>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ELECCIÓN PERSONALIZADA                            -->
+        <!-- ================================================= -->
 
         <div class="form-group">
 
@@ -299,7 +358,9 @@
         </div>
 
 
-        <!-- CUOTAS -->
+        <!-- ================================================= -->
+        <!-- CUOTAS                                            -->
+        <!-- ================================================= -->
 
         <div class="form-group">
 
@@ -330,7 +391,9 @@
         </div>
 
 
-        <!-- OBSERVACIONES -->
+        <!-- ================================================= -->
+        <!-- OBSERVACIONES                                     -->
+        <!-- ================================================= -->
 
         <div class="form-group full">
 
@@ -522,7 +585,9 @@
           </div>
 
 
-          @if (cantidadMaquinasRegalo > 0) {
+          @if (
+            cantidadMaquinasRegalo > 0
+          ) {
 
             <div class="counter gift-counter">
 
@@ -542,8 +607,6 @@
 
       </div>
 
-
-      <!-- INFORMACIÓN -->
 
       <div class="info-alert">
 
@@ -593,10 +656,6 @@
 
       </div>
 
-
-      <!-- ================================================== -->
-      <!-- MÁQUINAS DISPONIBLES                              -->
-      <!-- ================================================== -->
 
       <div class="subsection">
 
@@ -727,10 +786,6 @@
       </div>
 
 
-      <!-- ================================================== -->
-      <!-- MÁQUINAS CONFIGURADAS                             -->
-      <!-- ================================================== -->
-
       @if (
         formulario.maquinas.length > 0
       ) {
@@ -753,9 +808,7 @@
             </div>
 
             <span class="selected-count">
-
               {{ formulario.maquinas.length }}
-
             </span>
 
           </div>
@@ -773,16 +826,10 @@
                 [class.gift-row]="maquina.es_regalo"
               >
 
-                <!-- ORDEN -->
-
                 <div class="machine-order">
-
                   {{ maquina.orden }}
-
                 </div>
 
-
-                <!-- INFORMACIÓN -->
 
                 <div class="selected-machine-info">
 
@@ -817,8 +864,6 @@
                 </div>
 
 
-                <!-- OBLIGATORIA -->
-
                 <label
                   class="check-control"
                   [class.disabled]="maquina.es_regalo"
@@ -829,7 +874,6 @@
                     [(ngModel)]="
                       maquina.obligatoria
                     "
-
                     [disabled]="
                       guardando ||
                       maquina.es_regalo
@@ -843,8 +887,6 @@
                 </label>
 
 
-                <!-- REGALO -->
-
                 <label class="check-control">
 
                   <input
@@ -852,9 +894,7 @@
                     [(ngModel)]="
                       maquina.es_regalo
                     "
-
                     [disabled]="guardando"
-
                     (ngModelChange)="
                       maquina.obligatoria = $event
                         ? false
@@ -869,25 +909,18 @@
                 </label>
 
 
-                <!-- ELIMINAR -->
-
                 <button
                   type="button"
                   class="btn-remove"
-
                   title="Quitar máquina"
-
                   [disabled]="guardando"
-
                   (click)="
                     quitarMaquina(
                       maquina.maquina_id
                     )
                   "
                 >
-
                   ×
-
                 </button>
 
               </div>
@@ -1015,8 +1048,6 @@
 
                 <tr>
 
-                  <!-- MÁQUINA -->
-
                   <td>
 
                     <div class="table-machine">
@@ -1048,8 +1079,6 @@
                   </td>
 
 
-                  <!-- HORAS -->
-
                   <td>
 
                     <div class="input-with-unit">
@@ -1058,7 +1087,6 @@
                         type="number"
                         min="0.01"
                         step="0.5"
-
                         class="table-input"
 
                         [ngModel]="
@@ -1075,7 +1103,6 @@
                         "
 
                         [disabled]="guardando"
-
                       />
 
                       <span>
@@ -1087,8 +1114,6 @@
                   </td>
 
 
-                  <!-- SESIONES -->
-
                   <td>
 
                     <div class="input-with-unit">
@@ -1097,7 +1122,6 @@
                         type="number"
                         min="1"
                         step="1"
-
                         class="table-input"
 
                         [ngModel]="
@@ -1114,7 +1138,6 @@
                         "
 
                         [disabled]="guardando"
-
                       />
 
                       <span>
@@ -1125,8 +1148,6 @@
 
                   </td>
 
-
-                  <!-- HORAS / SESIÓN -->
 
                   <td>
 
@@ -1261,7 +1282,6 @@
                 [disabled]="guardando"
 
                 class="quota-input"
-
               />
 
               <span>
@@ -1329,8 +1349,6 @@
 
       <div class="summary-grid">
 
-        <!-- TIPO -->
-
         <div class="summary-item">
 
           <span class="summary-label">
@@ -1338,15 +1356,11 @@
           </span>
 
           <strong>
-
             {{ tipoCurso?.nombre ?? '—' }}
-
           </strong>
 
         </div>
 
-
-        <!-- PLAN -->
 
         <div class="summary-item">
 
@@ -1366,7 +1380,34 @@
         </div>
 
 
-        <!-- ELECCIÓN -->
+        <!-- VIGENCIA -->
+
+        <div class="summary-item highlight">
+
+          <span class="summary-label">
+            Vigencia desde
+          </span>
+
+          <strong>
+            {{ formulario.vigente_desde || '—' }}
+          </strong>
+
+          @if (formulario.vigente_hasta) {
+
+            <small>
+              Hasta {{ formulario.vigente_hasta }}
+            </small>
+
+          } @else {
+
+            <small>
+              Sin fecha de término
+            </small>
+
+          }
+
+        </div>
+
 
         <div class="summary-item">
 
@@ -1392,8 +1433,6 @@
 
         </div>
 
-
-        <!-- MÁQUINAS -->
 
         <div class="summary-item">
 
@@ -1425,9 +1464,7 @@
         </div>
 
 
-        <!-- ELECCIÓN EN MATRÍCULA -->
-
-        <div class="summary-item highlight">
+        <div class="summary-item">
 
           <span class="summary-label">
             Elección en matrícula
@@ -1454,8 +1491,6 @@
         </div>
 
 
-        <!-- CUOTAS -->
-
         <div class="summary-item">
 
           <span class="summary-label">
@@ -1463,15 +1498,11 @@
           </span>
 
           <strong>
-
             {{ formulario.cantidad_cuotas }}
-
           </strong>
 
         </div>
 
-
-        <!-- PRÁCTICAS -->
 
         <div class="summary-item">
 
@@ -1500,10 +1531,6 @@
 
       </div>
 
-
-      <!-- ================================================== -->
-      <!-- RESUMEN DE MÁQUINAS                               -->
-      <!-- ================================================== -->
 
       @if (
         formulario.maquinas.length > 0
