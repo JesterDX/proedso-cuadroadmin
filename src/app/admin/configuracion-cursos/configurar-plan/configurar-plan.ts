@@ -62,34 +62,50 @@ import {
   ],
 
   templateUrl: './configurar-plan.html',
+
   styleUrl: './configurar-plan.scss'
 })
-export class ConfigurarPlanComponent implements OnInit {
+export class ConfigurarPlanComponent
+  implements OnInit {
 
   // ==========================================================
   // SERVICES
   // ==========================================================
 
   private readonly planesCursoService =
-    inject(PlanesCursoService);
+    inject(
+      PlanesCursoService
+    );
 
   private readonly tiposCursoService =
-    inject(TiposCursoService);
+    inject(
+      TiposCursoService
+    );
 
   private readonly maquinasService =
-    inject(MaquinasAdminService);
+    inject(
+      MaquinasAdminService
+    );
 
   private readonly route =
-    inject(ActivatedRoute);
+    inject(
+      ActivatedRoute
+    );
 
   private readonly router =
-    inject(Router);
+    inject(
+      Router
+    );
 
   private readonly location =
-    inject(Location);
+    inject(
+      Location
+    );
 
   private readonly cd =
-    inject(ChangeDetectorRef);
+    inject(
+      ChangeDetectorRef
+    );
 
 
   // ==========================================================
@@ -97,10 +113,13 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================================
 
   @Input()
-  tipoCurso: TipoCurso | null = null;
+  tipoCurso:
+    TipoCurso | null = null;
+
 
   @Input()
-  plan: PlanCurso | null = null;
+  plan:
+    PlanCurso | null = null;
 
 
   // ==========================================================
@@ -110,6 +129,7 @@ export class ConfigurarPlanComponent implements OnInit {
   @Output()
   guardado =
     new EventEmitter<PlanCurso>();
+
 
   @Output()
   cancelar =
@@ -124,30 +144,47 @@ export class ConfigurarPlanComponent implements OnInit {
 
   guardando = false;
 
-  maquinasDisponibles: Maquina[] = [];
+  maquinasDisponibles:
+    Maquina[] = [];
 
 
   // ==========================================================
   // FORMULARIO
   // ==========================================================
 
-  formulario: PlanCursoPayload = {
+  formulario:
+    PlanCursoPayload = {
 
-    tipo_curso_id: 0,
+      tipo_curso_id: 0,
 
-    nombre: '',
+      nombre: '',
 
-    permite_eleccion_personalizada: false,
+      permite_eleccion_personalizada:
+        false,
 
-    cantidad_cuotas: 1,
+      cantidad_cuotas:
+        1,
 
-    observaciones: null,
+      // ======================================================
+      // VIGENCIA
+      // ======================================================
 
-    maquinas: [],
+      vigente_desde:
+        '2023-01-01',
 
-    horas_practica: []
+      vigente_hasta:
+        null,
 
-  };
+      observaciones:
+        null,
+
+      maquinas:
+        [],
+
+      horas_practica:
+        []
+
+    };
 
 
   // ==========================================================
@@ -164,7 +201,9 @@ export class ConfigurarPlanComponent implements OnInit {
   get tituloFormulario(): string {
 
     return this.modoEdicion
+
       ? 'Editar plan de curso'
+
       : 'Nuevo plan de curso';
 
   }
@@ -173,26 +212,31 @@ export class ConfigurarPlanComponent implements OnInit {
   get textoBotonGuardar(): string {
 
     return this.modoEdicion
+
       ? 'Guardar cambios'
+
       : 'Crear plan';
 
   }
 
 
   // ==========================================================
-  // MÁQUINAS CONFIGURADAS
+  // MÁQUINAS
   // ==========================================================
 
   get cantidadMaquinasConfiguradas(): number {
 
-    return this.formulario.maquinas.length;
+    return this.formulario
+      .maquinas
+      .length;
 
   }
 
 
   get cantidadMaquinasNormales(): number {
 
-    return this.formulario.maquinas
+    return this.formulario
+      .maquinas
       .filter(
         maquina =>
           !maquina.es_regalo
@@ -204,7 +248,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
   get cantidadMaquinasRegalo(): number {
 
-    return this.formulario.maquinas
+    return this.formulario
+      .maquinas
       .filter(
         maquina =>
           maquina.es_regalo
@@ -220,7 +265,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.cargando = true;
+    this.cargando =
+      true;
 
     this.cargarContextoDesdeRuta();
 
@@ -230,25 +276,8 @@ export class ConfigurarPlanComponent implements OnInit {
   // ==========================================================
   // RESOLVER CONTEXTO
   // ==========================================================
-  //
-  // CASOS:
-  //
-  // 1. /configurar-plan?tipoCursoId=9
-  //    -> nuevo plan
-  //
-  // 2. /configurar-plan/1
-  //    -> editar plan 1
-  //
-  // 3. @Input()
-  //    -> también funciona
-  //
-  // ==========================================================
 
   private cargarContextoDesdeRuta(): void {
-
-    // --------------------------------------------------------
-    // SI YA LLEGÓ POR INPUT
-    // --------------------------------------------------------
 
     if (this.tipoCurso) {
 
@@ -269,35 +298,36 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // --------------------------------------------------------
-    // ID DEL PLAN
-    // --------------------------------------------------------
-
     const planIdParam =
-      this.route.snapshot.paramMap.get('id');
+      this.route
+        .snapshot
+        .paramMap
+        .get('id');
 
-
-    // --------------------------------------------------------
-    // ID DEL TIPO PARA NUEVO PLAN
-    // --------------------------------------------------------
 
     const tipoCursoIdParam =
-      this.route.snapshot.queryParamMap
+      this.route
+        .snapshot
+        .queryParamMap
         .get('tipoCursoId');
 
 
     // --------------------------------------------------------
-    // EDITAR PLAN
+    // EDITAR
     // --------------------------------------------------------
 
     if (planIdParam) {
 
       const planId =
-        Number(planIdParam);
+        Number(
+          planIdParam
+        );
 
 
       if (
-        !Number.isInteger(planId) ||
+        !Number.isInteger(
+          planId
+        ) ||
         planId <= 0
       ) {
 
@@ -320,17 +350,21 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
     // --------------------------------------------------------
-    // NUEVO PLAN
+    // NUEVO
     // --------------------------------------------------------
 
     if (tipoCursoIdParam) {
 
       const tipoCursoId =
-        Number(tipoCursoIdParam);
+        Number(
+          tipoCursoIdParam
+        );
 
 
       if (
-        !Number.isInteger(tipoCursoId) ||
+        !Number.isInteger(
+          tipoCursoId
+        ) ||
         tipoCursoId <= 0
       ) {
 
@@ -352,10 +386,6 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    // --------------------------------------------------------
-    // NO HAY CONTEXTO
-    // --------------------------------------------------------
-
     this.mostrarErrorContexto(
       'No se recibió el tipo de curso ni el plan.'
     );
@@ -364,7 +394,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // CARGAR TIPO PARA NUEVO PLAN
+  // CARGAR TIPO
   // ==========================================================
 
   private cargarTipoPorRuta(
@@ -380,10 +410,12 @@ export class ConfigurarPlanComponent implements OnInit {
           const tipos =
             resp?.data ?? [];
 
+
           const tipoEncontrado =
             tipos.find(
               (tipo: TipoCurso) =>
-                Number(tipo.id) === tipoCursoId
+                Number(tipo.id) ===
+                tipoCursoId
             );
 
 
@@ -416,6 +448,7 @@ export class ConfigurarPlanComponent implements OnInit {
             error
           );
 
+
           this.mostrarErrorContexto(
             'No se pudo cargar la información del tipo de curso.'
           );
@@ -428,7 +461,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // CARGAR PLAN PARA EDICIÓN
+  // CARGAR PLAN
   // ==========================================================
 
   private cargarPlanPorRuta(
@@ -436,7 +469,9 @@ export class ConfigurarPlanComponent implements OnInit {
   ): void {
 
     this.planesCursoService
-      .obtenerPorId(planId)
+      .obtenerPorId(
+        planId
+      )
       .subscribe({
 
         next: (resp) => {
@@ -467,7 +502,9 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
           if (
-            !Number.isInteger(tipoCursoId) ||
+            !Number.isInteger(
+              tipoCursoId
+            ) ||
             tipoCursoId <= 0
           ) {
 
@@ -494,6 +531,7 @@ export class ConfigurarPlanComponent implements OnInit {
             error
           );
 
+
           this.mostrarErrorContexto(
             error?.error?.message ??
             'No se pudo cargar el plan.'
@@ -507,7 +545,7 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // CARGAR TIPO ASOCIADO AL PLAN
+  // CARGAR TIPO ASOCIADO
   // ==========================================================
 
   private cargarTipoParaPlan(
@@ -527,7 +565,8 @@ export class ConfigurarPlanComponent implements OnInit {
           const tipoEncontrado =
             tipos.find(
               (tipo: TipoCurso) =>
-                Number(tipo.id) === tipoCursoId
+                Number(tipo.id) ===
+                tipoCursoId
             );
 
 
@@ -560,6 +599,7 @@ export class ConfigurarPlanComponent implements OnInit {
             error
           );
 
+
           this.mostrarErrorContexto(
             'No se pudo cargar el tipo de curso asociado.'
           );
@@ -589,7 +629,8 @@ export class ConfigurarPlanComponent implements OnInit {
           this.tipoCurso.id
         ),
 
-      nombre: '',
+      nombre:
+        '',
 
       permite_eleccion_personalizada:
         false,
@@ -597,12 +638,24 @@ export class ConfigurarPlanComponent implements OnInit {
       cantidad_cuotas:
         1,
 
+      // ======================================================
+      // FECHA POR DEFECTO
+      // ======================================================
+
+      vigente_desde:
+        '2023-01-01',
+
+      vigente_hasta:
+        null,
+
       observaciones:
         null,
 
-      maquinas: [],
+      maquinas:
+        [],
 
-      horas_practica: []
+      horas_practica:
+        []
 
     };
 
@@ -630,7 +683,8 @@ export class ConfigurarPlanComponent implements OnInit {
           this.tipoCurso.id
         ),
 
-      nombre: '',
+      nombre:
+        '',
 
       permite_eleccion_personalizada:
         false,
@@ -638,12 +692,20 @@ export class ConfigurarPlanComponent implements OnInit {
       cantidad_cuotas:
         1,
 
+      vigente_desde:
+        '2023-01-01',
+
+      vigente_hasta:
+        null,
+
       observaciones:
         null,
 
-      maquinas: [],
+      maquinas:
+        [],
 
-      horas_practica: []
+      horas_practica:
+        []
 
     };
 
@@ -700,7 +762,8 @@ export class ConfigurarPlanComponent implements OnInit {
         ),
 
       nombre:
-        plan.nombre ?? '',
+        plan.nombre ??
+        '',
 
       permite_eleccion_personalizada:
         Boolean(
@@ -709,6 +772,21 @@ export class ConfigurarPlanComponent implements OnInit {
 
       cantidad_cuotas:
         cantidadCuotas,
+
+      // ======================================================
+      // VIGENCIA EXISTENTE
+      // ======================================================
+
+      vigente_desde:
+        this.normalizarFechaInput(
+          plan.vigente_desde
+        ) ??
+        '2023-01-01',
+
+      vigente_hasta:
+        this.normalizarFechaInput(
+          plan.vigente_hasta
+        ),
 
       observaciones:
         plan.observaciones ??
@@ -732,7 +810,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
               orden:
                 Number(
-                  maquina.orden ?? 1
+                  maquina.orden ??
+                  1
                 ),
 
               es_regalo:
@@ -766,12 +845,14 @@ export class ConfigurarPlanComponent implements OnInit {
 
               horas:
                 Number(
-                  practica.horas ?? 0
+                  practica.horas ??
+                  0
                 ),
 
               sesiones_totales:
                 Number(
-                  practica.sesiones_totales ?? 1
+                  practica.sesiones_totales ??
+                  1
                 )
 
             })
@@ -783,6 +864,49 @@ export class ConfigurarPlanComponent implements OnInit {
     this.asegurarPracticasDeMaquinas();
 
     this.cd.detectChanges();
+
+  }
+
+
+  // ==========================================================
+  // NORMALIZAR FECHA PARA INPUT DATE
+  // ==========================================================
+
+  private normalizarFechaInput(
+    valor: string | null | undefined
+  ): string | null {
+
+    if (
+      !valor
+    ) {
+
+      return null;
+
+    }
+
+
+    const texto =
+      String(
+        valor
+      );
+
+
+    if (
+      /^\d{4}-\d{2}-\d{2}$/.test(
+        texto
+      )
+    ) {
+
+      return texto;
+
+    }
+
+
+    return texto
+      .slice(
+        0,
+        10
+      );
 
   }
 
@@ -811,7 +935,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
           this.asegurarPracticasDeMaquinas();
 
-          this.cargando = false;
+          this.cargando =
+            false;
 
           this.cd.detectChanges();
 
@@ -825,7 +950,10 @@ export class ConfigurarPlanComponent implements OnInit {
             error
           );
 
-          this.cargando = false;
+
+          this.cargando =
+            false;
+
 
           Swal.fire({
 
@@ -846,18 +974,23 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
   // ==========================================================
-  // ¿MÁQUINA SELECCIONADA?
+  // MÁQUINA SELECCIONADA
   // ==========================================================
 
   estaMaquinaSeleccionada(
     maquinaId: number
   ): boolean {
 
-    return this.formulario.maquinas
+    return this.formulario
+      .maquinas
       .some(
         maquina =>
-          Number(maquina.maquina_id) ===
-          Number(maquinaId)
+          Number(
+            maquina.maquina_id
+          ) ===
+          Number(
+            maquinaId
+          )
       );
 
   }
@@ -872,15 +1005,22 @@ export class ConfigurarPlanComponent implements OnInit {
   ): void {
 
     const index =
-      this.formulario.maquinas
+      this.formulario
+        .maquinas
         .findIndex(
           item =>
-            Number(item.maquina_id) ===
-            Number(maquina.id)
+            Number(
+              item.maquina_id
+            ) ===
+            Number(
+              maquina.id
+            )
         );
 
 
-    if (index >= 0) {
+    if (
+      index >= 0
+    ) {
 
       this.quitarMaquina(
         maquina.id
@@ -891,7 +1031,8 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
-    const nuevaMaquina: PlanMaquina = {
+    const nuevaMaquina:
+      PlanMaquina = {
 
       maquina_id:
         maquina.id,
@@ -900,7 +1041,9 @@ export class ConfigurarPlanComponent implements OnInit {
         maquina.nombre,
 
       orden:
-        this.formulario.maquinas.length + 1,
+        this.formulario
+          .maquinas
+          .length + 1,
 
       es_regalo:
         false,
@@ -912,9 +1055,11 @@ export class ConfigurarPlanComponent implements OnInit {
     };
 
 
-    this.formulario.maquinas.push(
-      nuevaMaquina
-    );
+    this.formulario
+      .maquinas
+      .push(
+        nuevaMaquina
+      );
 
 
     this.asegurarPractica(
@@ -939,20 +1084,30 @@ export class ConfigurarPlanComponent implements OnInit {
   ): void {
 
     this.formulario.maquinas =
-      this.formulario.maquinas
+      this.formulario
+        .maquinas
         .filter(
           maquina =>
-            Number(maquina.maquina_id) !==
-            Number(maquinaId)
+            Number(
+              maquina.maquina_id
+            ) !==
+            Number(
+              maquinaId
+            )
         );
 
 
     this.formulario.horas_practica =
-      this.formulario.horas_practica
+      this.formulario
+        .horas_practica
         .filter(
           practica =>
-            Number(practica.maquina_id) !==
-            Number(maquinaId)
+            Number(
+              practica.maquina_id
+            ) !==
+            Number(
+              maquinaId
+            )
         );
 
 
@@ -969,7 +1124,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
   private reordenarMaquinas(): void {
 
-    this.formulario.maquinas
+    this.formulario
+      .maquinas
       .forEach(
         (maquina, index) => {
 
@@ -994,8 +1150,12 @@ export class ConfigurarPlanComponent implements OnInit {
       .horas_practica
       .find(
         practica =>
-          Number(practica.maquina_id) ===
-          Number(maquinaId)
+          Number(
+            practica.maquina_id
+          ) ===
+          Number(
+            maquinaId
+          )
       );
 
   }
@@ -1087,11 +1247,16 @@ export class ConfigurarPlanComponent implements OnInit {
 
         maquinaId,
 
-        this.formulario.maquinas
+        this.formulario
+          .maquinas
           .find(
             item =>
-              Number(item.maquina_id) ===
-              Number(maquinaId)
+              Number(
+                item.maquina_id
+              ) ===
+              Number(
+                maquinaId
+              )
           )
           ?.maquina_nombre
 
@@ -1099,13 +1264,19 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
     const horas =
-      Number(valor);
+      Number(
+        valor
+      );
 
 
     practica.horas =
-      Number.isFinite(horas) &&
+      Number.isFinite(
+        horas
+      ) &&
       horas >= 0
+
         ? horas
+
         : 0;
 
   }
@@ -1125,11 +1296,16 @@ export class ConfigurarPlanComponent implements OnInit {
 
         maquinaId,
 
-        this.formulario.maquinas
+        this.formulario
+          .maquinas
           .find(
             item =>
-              Number(item.maquina_id) ===
-              Number(maquinaId)
+              Number(
+                item.maquina_id
+              ) ===
+              Number(
+                maquinaId
+              )
           )
           ?.maquina_nombre
 
@@ -1137,13 +1313,21 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
     const sesiones =
-      Number(valor);
+      Number(
+        valor
+      );
 
 
     practica.sesiones_totales =
-      Number.isFinite(sesiones) &&
+      Number.isFinite(
+        sesiones
+      ) &&
       sesiones >= 1
-        ? Math.floor(sesiones)
+
+        ? Math.floor(
+            sesiones
+          )
+
         : 1;
 
   }
@@ -1199,14 +1383,23 @@ export class ConfigurarPlanComponent implements OnInit {
   ): void {
 
     const cuotas =
-      Number(valor);
+      Number(
+        valor
+      );
 
 
-    this.formulario.cantidad_cuotas =
-      Number.isFinite(cuotas) &&
-      cuotas >= 1
-        ? Math.floor(cuotas)
-        : 1;
+    this.formulario
+      .cantidad_cuotas =
+        Number.isFinite(
+          cuotas
+        ) &&
+        cuotas >= 1
+
+          ? Math.floor(
+              cuotas
+            )
+
+          : 1;
 
   }
 
@@ -1298,6 +1491,54 @@ export class ConfigurarPlanComponent implements OnInit {
     }
 
 
+    // ========================================================
+    // VALIDAR VIGENCIA
+    // ========================================================
+
+    if (
+      !this.formulario.vigente_desde
+    ) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title:
+          'Fecha de vigencia requerida',
+
+        text:
+          'Selecciona la fecha desde la cual estará vigente el plan.'
+
+      });
+
+      return false;
+
+    }
+
+
+    if (
+      this.formulario.vigente_hasta &&
+      this.formulario.vigente_hasta <
+        this.formulario.vigente_desde
+    ) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title:
+          'Rango de vigencia inválido',
+
+        text:
+          'La fecha de fin de vigencia no puede ser anterior a la fecha de inicio.'
+
+      });
+
+      return false;
+
+    }
+
+
     if (
       !Number.isInteger(
         Number(
@@ -1348,7 +1589,8 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
     const ids =
-      this.formulario.maquinas
+      this.formulario
+        .maquinas
         .map(
           maquina =>
             Number(
@@ -1411,7 +1653,9 @@ export class ConfigurarPlanComponent implements OnInit {
 
 
       if (
-        Number(practica.horas) <= 0
+        Number(
+          practica.horas
+        ) <= 0
       ) {
 
         Swal.fire({
@@ -1512,11 +1756,14 @@ export class ConfigurarPlanComponent implements OnInit {
       tipo_curso_id:
         Number(
           this.tipoCurso?.id ??
-          this.formulario.tipo_curso_id
+          this.formulario
+            .tipo_curso_id
         ),
 
       nombre:
-        this.formulario.nombre.trim(),
+        this.formulario
+          .nombre
+          .trim(),
 
       permite_eleccion_personalizada:
         Boolean(
@@ -1526,8 +1773,22 @@ export class ConfigurarPlanComponent implements OnInit {
 
       cantidad_cuotas:
         Number(
-          this.formulario.cantidad_cuotas
+          this.formulario
+            .cantidad_cuotas
         ),
+
+      // ======================================================
+      // VIGENCIA
+      // ======================================================
+
+      vigente_desde:
+        this.formulario
+          .vigente_desde,
+
+      vigente_hasta:
+        this.formulario
+          .vigente_hasta ||
+        null,
 
       observaciones:
         this.formulario
@@ -1536,7 +1797,8 @@ export class ConfigurarPlanComponent implements OnInit {
         null,
 
       maquinas:
-        this.formulario.maquinas
+        this.formulario
+          .maquinas
           .map(
             maquina => ({
 
@@ -1571,7 +1833,8 @@ export class ConfigurarPlanComponent implements OnInit {
           .horas_practica
           .filter(
             practica =>
-              this.formulario.maquinas
+              this.formulario
+                .maquinas
                 .some(
                   maquina =>
                     Number(
@@ -1617,13 +1880,21 @@ export class ConfigurarPlanComponent implements OnInit {
 
   guardar(): void {
 
-    if (this.guardando) {
+    if (
+      this.guardando
+    ) {
+
       return;
+
     }
 
 
-    if (!this.validarFormulario()) {
+    if (
+      !this.validarFormulario()
+    ) {
+
       return;
+
     }
 
 
@@ -1637,7 +1908,8 @@ export class ConfigurarPlanComponent implements OnInit {
     );
 
 
-    this.guardando = true;
+    this.guardando =
+      true;
 
 
     const operacion =
@@ -1660,10 +1932,13 @@ export class ConfigurarPlanComponent implements OnInit {
 
       next: response => {
 
-        this.guardando = false;
+        this.guardando =
+          false;
 
 
-        if (!response?.data) {
+        if (
+          !response?.data
+        ) {
 
           Swal.fire({
 
@@ -1696,9 +1971,11 @@ export class ConfigurarPlanComponent implements OnInit {
               ? 'Los cambios se guardaron correctamente.'
               : 'El nuevo plan se creó correctamente.',
 
-          timer: 1800,
+          timer:
+            1800,
 
-          showConfirmButton: false
+          showConfirmButton:
+            false
 
         });
 
@@ -1708,8 +1985,6 @@ export class ConfigurarPlanComponent implements OnInit {
         );
 
 
-        // Si es una página por ruta,
-        // volvemos al listado.
         this.router.navigate(
           ['/admin/tipos-curso']
         );
@@ -1725,7 +2000,8 @@ export class ConfigurarPlanComponent implements OnInit {
         );
 
 
-        this.guardando = false;
+        this.guardando =
+          false;
 
 
         Swal.fire({
@@ -1757,7 +2033,9 @@ export class ConfigurarPlanComponent implements OnInit {
     mensaje: string
   ): void {
 
-    this.cargando = false;
+    this.cargando =
+      false;
+
 
     Swal.fire({
 
