@@ -148,7 +148,11 @@ export interface PlanCursoPayload {
 
   cantidad_cuotas: number;
 
-  observaciones?: string | null;
+  vigente_desde: string;
+
+  vigente_hasta: string | null;
+
+  observaciones: string | null;
 
   maquinas: PlanMaquina[];
 
