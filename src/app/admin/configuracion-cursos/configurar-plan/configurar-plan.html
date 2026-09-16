@@ -1,49 +1,31 @@
 <div class="configurar-plan-page">
 
-  <!-- ====================================================== -->
-  <!-- ENCABEZADO                                             -->
-  <!-- ====================================================== -->
-
-  <div class="page-header">
-
+  <!-- ENCABEZADO -->
+  <header class="page-header">
     <div class="header-left">
-
       <button
         type="button"
         class="btn-back"
         (click)="volver()"
         [disabled]="guardando"
         title="Volver"
+        aria-label="Volver a la página anterior"
       >
         ←
       </button>
 
-      <div>
-
-        <div class="breadcrumb">
-          Configuración
-          <span>/</span>
-          Tipos de curso
-          <span>/</span>
-          Plan
-        </div>
-
-        <h1>
-          {{ tituloFormulario }}
-        </h1>
-
-        <p>
-          Configura las máquinas, prácticas y condiciones
-          del plan de curso.
+      <div class="header-titles">
+        <nav class="breadcrumb">
+          Configuración <span>/</span> Tipos de curso <span>/</span> Plan
+        </nav>
+        <h1>{{ tituloFormulario }}</h1>
+        <p class="subtitle">
+          Configura las máquinas, prácticas y condiciones del plan de curso.
         </p>
-
       </div>
-
     </div>
 
-
     <div class="header-actions">
-
       <button
         type="button"
         class="btn btn-secondary"
@@ -59,1564 +41,597 @@
         (click)="guardar()"
         [disabled]="guardando || cargando"
       >
-
         @if (guardando) {
-
           <span class="spinner"></span>
-
-          Guardando...
-
+          <span>Guardando...</span>
         } @else {
-
-          <span>
-            ✓
-          </span>
-
-          {{ textoBotonGuardar }}
-
+          <span class="btn-icon-check">✓</span>
+          <span>{{ textoBotonGuardar }}</span>
         }
-
       </button>
-
     </div>
+  </header>
 
-  </div>
-
-
-  <!-- ====================================================== -->
-  <!-- LOADING                                                -->
-  <!-- ====================================================== -->
-
+  <!-- ESTADO DE CARGA -->
   @if (cargando) {
-
     <div class="loading-card">
-
-      <div class="loading-spinner"></div>
-
+      <div class="spinner spinner-lg"></div>
       <div>
-
-        <strong>
-          Cargando configuración
-        </strong>
-
-        <p>
-          Estamos preparando las máquinas disponibles...
-        </p>
-
+        <strong>Cargando configuración</strong>
+        <p>Estamos preparando las máquinas disponibles...</p>
       </div>
-
     </div>
-
   }
-
 
   @if (!cargando) {
 
-    <!-- ==================================================== -->
-    <!-- INFORMACIÓN DEL TIPO DE CURSO                        -->
-    <!-- ==================================================== -->
-
+    <!-- INFORMACIÓN DEL TIPO DE CURSO -->
     @if (tipoCurso) {
-
       <section class="card type-summary">
-
         <div class="type-summary-main">
-
-          <div class="type-icon">
-            ⚙
-          </div>
-
+          <div class="type-icon">⚙</div>
           <div>
-
-            <span class="eyebrow">
-              TIPO DE CURSO
-            </span>
-
-            <h2>
-              {{ tipoCurso.nombre }}
-            </h2>
-
+            <span class="eyebrow">TIPO DE CURSO</span>
+            <h2>{{ tipoCurso.nombre }}</h2>
             <div class="type-meta">
-
-              <span>
-                Código:
-                <strong>
-                  {{ tipoCurso.codigo }}
-                </strong>
-              </span>
-
-              <span>
-                Duración:
-                <strong>
-                  {{ tipoCurso.duracion_meses }}
-                  {{
-                    tipoCurso.duracion_meses === 1
-                      ? 'mes'
-                      : 'meses'
-                  }}
-                </strong>
-              </span>
-
+              <span>Código: <strong>{{ tipoCurso.codigo }}</strong></span>
+              <span>Duración: <strong>{{ tipoCurso.duracion_meses }} {{ tipoCurso.duracion_meses === 1 ? 'mes' : 'meses' }}</strong></span>
             </div>
-
           </div>
-
         </div>
-
 
         <div class="selection-limit">
-
-          <span class="limit-label">
-            ELECCIÓN EN MATRÍCULA
-          </span>
-
-          <strong class="limit-number">
-            {{ tipoCurso.cantidad_maquinas }}
-          </strong>
-
+          <span class="limit-label">ELECCIÓN EN MATRÍCULA</span>
+          <strong class="limit-number">{{ tipoCurso.cantidad_maquinas }}</strong>
           <span class="limit-text">
-
-            {{
-              tipoCurso.cantidad_maquinas === 1
-                ? 'máquina'
-                : 'máquinas'
-            }}
-
+            {{ tipoCurso.cantidad_maquinas === 1 ? 'máquina' : 'máquinas' }}
           </span>
-
-          <small>
-            que podrá elegir el alumno
-          </small>
-
+          <small>que podrá elegir el alumno</small>
         </div>
-
       </section>
-
     }
 
-
-    <!-- ==================================================== -->
-    <!-- 01. DATOS GENERALES                                  -->
-    <!-- ==================================================== -->
-
+    <!-- 01. DATOS GENERALES -->
     <section class="card">
-
       <div class="card-header">
-
         <div class="section-heading">
-
-          <span class="section-number">
-            01
-          </span>
-
+          <span class="section-number">01</span>
           <div class="section-title">
-
-            <h2>
-              Datos generales
-            </h2>
-
-            <p>
-              Define la información principal del plan.
-            </p>
-
+            <h2>Datos generales</h2>
+            <p>Define la información principal del plan.</p>
           </div>
-
         </div>
-
       </div>
 
-
-      <div class="form-grid">
-
-        <!-- ================================================= -->
-        <!-- NOMBRE                                            -->
-        <!-- ================================================= -->
-
-        <div class="form-group full">
-
-          <label for="nombrePlan">
-            Nombre del plan
-            <span class="required">
-              *
-            </span>
-          </label>
-
-          <input
-            id="nombrePlan"
-            type="text"
-            class="form-control"
-            [(ngModel)]="formulario.nombre"
-            placeholder="Ej. Curso Individual - Plan Estándar"
-            maxlength="120"
-            [disabled]="guardando"
-          />
-
-          <small class="form-help">
-            Nombre que identificará este plan dentro del sistema.
-          </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- VIGENCIA DESDE                                    -->
-        <!-- ================================================= -->
-
-        <div class="form-group">
-
-          <label for="vigenteDesde">
-            Fecha de vigencia
-            <span class="required">
-              *
-            </span>
-          </label>
-
-          <input
-            id="vigenteDesde"
-            type="date"
-            class="form-control"
-            [(ngModel)]="formulario.vigente_desde"
-            [disabled]="guardando"
-          />
-
-          <small class="form-help">
-            Fecha desde la cual el plan estará vigente.
-            Por defecto: 01/01/2023.
-          </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- VIGENCIA HASTA                                    -->
-        <!-- ================================================= -->
-
-        <div class="form-group">
-
-          <label for="vigenteHasta">
-            Fin de vigencia
-          </label>
-
-          <input
-            id="vigenteHasta"
-            type="date"
-            class="form-control"
-            [(ngModel)]="formulario.vigente_hasta"
-            [disabled]="guardando"
-          />
-
-          <small class="form-help">
-            Opcional. Déjalo vacío si el plan no tiene
-            fecha de término.
-          </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- ELECCIÓN PERSONALIZADA                            -->
-        <!-- ================================================= -->
-
-        <div class="form-group">
-
-          <label>
-            Modalidad de elección
-          </label>
-
-          <label
-            class="switch-field"
-            [class.disabled]="guardando"
-          >
-
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="nombrePlan">
+              Nombre del plan <span class="required">*</span>
+            </label>
             <input
-              type="checkbox"
-              [(ngModel)]="
-                formulario.permite_eleccion_personalizada
-              "
+              id="nombrePlan"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formulario.nombre"
+              placeholder="Ej. Curso Individual - Plan Estándar"
+              maxlength="120"
               [disabled]="guardando"
             />
+            <small class="form-help">Nombre que identificará este plan dentro del sistema.</small>
+          </div>
 
-            <span class="switch"></span>
+          <div class="form-group">
+            <label for="vigenteDesde">
+              Fecha de vigencia <span class="required">*</span>
+            </label>
+            <input
+              id="vigenteDesde"
+              type="date"
+              class="form-control"
+              [(ngModel)]="formulario.vigente_desde"
+              [disabled]="guardando"
+            />
+            <small class="form-help">Fecha desde la cual el plan estará vigente.</small>
+          </div>
 
-            <span class="switch-content">
+          <div class="form-group">
+            <label for="vigenteHasta">Fin de vigencia</label>
+            <input
+              id="vigenteHasta"
+              type="date"
+              class="form-control"
+              [(ngModel)]="formulario.vigente_hasta"
+              [disabled]="guardando"
+            />
+            <small class="form-help">Opcional. Déjalo vacío si no tiene término.</small>
+          </div>
 
-              <strong>
-                Elección personalizada
-              </strong>
+          <div class="form-group">
+            <label>Modalidad de elección</label>
+            <label class="switch-field" [class.disabled]="guardando">
+              <input
+                type="checkbox"
+                [(ngModel)]="formulario.permite_eleccion_personalizada"
+                [disabled]="guardando"
+              />
+              <span class="switch"></span>
+              <span class="switch-content">
+                <strong>Elección personalizada</strong>
+                <small>El alumno podrá escoger sus máquinas durante la matrícula.</small>
+              </span>
+            </label>
+          </div>
 
-              <small>
+          <div class="form-group">
+            <label for="cantidadCuotas">
+              Cantidad de cuotas <span class="required">*</span>
+            </label>
+            <input
+              id="cantidadCuotas"
+              type="number"
+              class="form-control"
+              min="1"
+              step="1"
+              [ngModel]="formulario.cantidad_cuotas"
+              (ngModelChange)="actualizarCantidadCuotas($event)"
+              [disabled]="guardando"
+            />
+            <small class="form-help">Número de cuotas que tendrá el plan.</small>
+          </div>
 
-                El alumno podrá escoger sus máquinas
-                durante la matrícula.
-
-              </small>
-
-            </span>
-
-          </label>
-
+          <div class="form-group full">
+            <label for="observaciones">Observaciones</label>
+            <textarea
+              id="observaciones"
+              class="form-control textarea"
+              [(ngModel)]="formulario.observaciones"
+              placeholder="Escribe alguna observación relacionada con el plan..."
+              rows="4"
+              maxlength="1000"
+              [disabled]="guardando"
+            ></textarea>
+            <small class="form-help">Información adicional del plan.</small>
+          </div>
         </div>
-
-
-        <!-- ================================================= -->
-        <!-- CUOTAS                                            -->
-        <!-- ================================================= -->
-
-        <div class="form-group">
-
-          <label for="cantidadCuotas">
-            Cantidad de cuotas
-            <span class="required">
-              *
-            </span>
-          </label>
-
-          <input
-            id="cantidadCuotas"
-            type="number"
-            class="form-control"
-            min="1"
-            step="1"
-            [ngModel]="formulario.cantidad_cuotas"
-            (ngModelChange)="
-              actualizarCantidadCuotas($event)
-            "
-            [disabled]="guardando"
-          />
-
-          <small class="form-help">
-            Número de cuotas que tendrá el plan.
-          </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- OBSERVACIONES                                     -->
-        <!-- ================================================= -->
-
-        <div class="form-group full">
-
-          <label for="observaciones">
-            Observaciones
-          </label>
-
-          <textarea
-            id="observaciones"
-            class="form-control textarea"
-            [(ngModel)]="formulario.observaciones"
-            placeholder="Escribe alguna observación relacionada con el plan..."
-            rows="4"
-            maxlength="1000"
-            [disabled]="guardando"
-          ></textarea>
-
-          <small class="form-help">
-            Información adicional del plan.
-          </small>
-
-        </div>
-
       </div>
-
     </section>
 
-
-    <!-- ==================================================== -->
-    <!-- 02. REGLA DE ELECCIÓN                               -->
-    <!-- ==================================================== -->
-
+    <!-- 02. REGLA DE SELECCIÓN -->
     <section class="card">
-
       <div class="card-header">
-
         <div class="section-heading">
-
-          <span class="section-number">
-            02
-          </span>
-
+          <span class="section-number">02</span>
           <div class="section-title">
-
-            <h2>
-              Regla de selección
-            </h2>
-
-            <p>
-              Define cómo se utilizarán las máquinas durante la matrícula.
-            </p>
-
+            <h2>Regla de selección</h2>
+            <p>Define cómo se utilizarán las máquinas durante la matrícula.</p>
           </div>
-
         </div>
-
       </div>
 
-
-      @if (
-        formulario.permite_eleccion_personalizada
-      ) {
-
-        <div class="rule-panel personalized">
-
-          <div class="rule-icon">
-            ✓
+      <div class="card-body">
+        @if (formulario.permite_eleccion_personalizada) {
+          <div class="rule-panel personalized">
+            <div class="rule-icon">✓</div>
+            <div class="rule-content">
+              <strong>Elección personalizada activada</strong>
+              <p>
+                Puedes configurar todas las máquinas disponibles para este plan. Al momento de matricular al alumno, el sistema utilizará el límite definido por el tipo de curso:
+                <strong>{{ tipoCurso?.cantidad_maquinas ?? 0 }}</strong>
+                {{ (tipoCurso?.cantidad_maquinas ?? 0) === 1 ? 'máquina' : 'máquinas' }}.
+              </p>
+            </div>
           </div>
-
-          <div class="rule-content">
-
-            <strong>
-              Elección personalizada activada
-            </strong>
-
-            <p>
-
-              Puedes configurar todas las máquinas disponibles
-              para este plan.
-
-              Al momento de matricular al alumno, el sistema
-              utilizará el límite definido por el tipo de curso:
-
-              <strong>
-                {{ tipoCurso?.cantidad_maquinas ?? 0 }}
-              </strong>
-
-              {{
-                (tipoCurso?.cantidad_maquinas ?? 0) === 1
-                  ? 'máquina'
-                  : 'máquinas'
-              }}.
-
-            </p>
-
+        } @else {
+          <div class="rule-panel fixed">
+            <div class="rule-icon">✓</div>
+            <div class="rule-content">
+              <strong>Plan con configuración fija</strong>
+              <p>
+                Las máquinas configuradas forman parte del plan y no se seleccionan libremente durante la matrícula. Las máquinas marcadas como regalo no cuentan dentro de la cantidad del plan.
+              </p>
+            </div>
           </div>
-
-        </div>
-
-      } @else {
-
-        <div class="rule-panel fixed">
-
-          <div class="rule-icon">
-            ✓
-          </div>
-
-          <div class="rule-content">
-
-            <strong>
-              Plan con configuración fija
-            </strong>
-
-            <p>
-
-              Las máquinas configuradas forman parte
-              del plan y no se seleccionan libremente
-              durante la matrícula.
-
-              Las máquinas marcadas como regalo
-              no cuentan dentro de la cantidad del plan.
-
-            </p>
-
-          </div>
-
-        </div>
-
-      }
-
+        }
+      </div>
     </section>
 
-
-    <!-- ==================================================== -->
-    <!-- 03. MÁQUINAS                                        -->
-    <!-- ==================================================== -->
-
+    <!-- 03. MÁQUINAS DEL PLAN -->
     <section class="card">
-
       <div class="card-header">
-
         <div class="section-heading">
-
-          <span class="section-number">
-            03
-          </span>
-
+          <span class="section-number">03</span>
           <div class="section-title">
-
-            <h2>
-              Máquinas del plan
-            </h2>
-
-            <p>
-              Selecciona las máquinas que estarán configuradas
-              dentro de este plan.
-            </p>
-
+            <h2>Máquinas del plan</h2>
+            <p>Selecciona las máquinas que estarán configuradas dentro de este plan.</p>
           </div>
-
         </div>
-
 
         <div class="machine-counters">
-
           <div class="counter">
-
-            <strong>
-              {{ cantidadMaquinasConfiguradas }}
-            </strong>
-
-            <span>
-              configuradas
-            </span>
-
+            <strong>{{ cantidadMaquinasConfiguradas }}</strong>
+            <span>configuradas</span>
           </div>
-
-
           <div class="counter">
-
-            <strong>
-              {{ cantidadMaquinasNormales }}
-            </strong>
-
-            <span>
-              normales
-            </span>
-
+            <strong>{{ cantidadMaquinasNormales }}</strong>
+            <span>normales</span>
           </div>
-
-
-          @if (
-            cantidadMaquinasRegalo > 0
-          ) {
-
+          @if (cantidadMaquinasRegalo > 0) {
             <div class="counter gift-counter">
-
-              <strong>
-                {{ cantidadMaquinasRegalo }}
-              </strong>
-
-              <span>
-                regalo
-              </span>
-
+              <strong>{{ cantidadMaquinasRegalo }}</strong>
+              <span>regalo</span>
             </div>
-
           }
-
         </div>
-
       </div>
 
-
-      <div class="info-alert">
-
-        <div class="alert-icon">
-          ⓘ
-        </div>
-
-        <div>
-
-          @if (
-            formulario.permite_eleccion_personalizada
-          ) {
-
-            <strong>
-              Puedes configurar todas las máquinas disponibles.
-            </strong>
-
-            <p>
-
-              El número
-              <strong>
-                {{ tipoCurso?.cantidad_maquinas ?? 0 }}
-              </strong>
-              indica cuántas máquinas podrá escoger el alumno
-              durante su matrícula. No limita la configuración
-              de este plan.
-
-            </p>
-
-          } @else {
-
-            <strong>
-              Configuración fija del plan.
-            </strong>
-
-            <p>
-
-              Las máquinas configuradas aquí forman parte
-              del combo del plan. Una máquina marcada como
-              regalo no consume una posición de elección.
-
-            </p>
-
-          }
-
-        </div>
-
-      </div>
-
-
-      <div class="subsection">
-
-        <div class="subsection-header">
-
+      <div class="card-body">
+        <div class="info-alert">
+          <div class="alert-icon">ⓘ</div>
           <div>
-
-            <h3>
-              Catálogo de máquinas
-            </h3>
-
-            <p>
-              Haz clic sobre una máquina para agregarla o quitarla.
-            </p>
-
+            @if (formulario.permite_eleccion_personalizada) {
+              <strong>Puedes configurar todas las máquinas disponibles.</strong>
+              <p>
+                El número <strong>{{ tipoCurso?.cantidad_maquinas ?? 0 }}</strong> indica cuántas máquinas podrá escoger el alumno durante su matrícula. No limita la configuración de este plan.
+              </p>
+            } @else {
+              <strong>Configuración fija del plan.</strong>
+              <p>
+                Las máquinas configuradas aquí forman parte del combo del plan. Una máquina marcada como regalo no consume una posición de elección.
+              </p>
+            }
           </div>
-
-          <span class="catalog-count">
-
-            {{ maquinasDisponibles.length }}
-
-            disponibles
-
-          </span>
-
         </div>
 
-
-        @if (
-          maquinasDisponibles.length > 0
-        ) {
-
-          <div class="machines-grid">
-
-            @for (
-              maquina of maquinasDisponibles;
-              track trackMaquina($index, maquina)
-            ) {
-
-              <button
-                type="button"
-                class="machine-option"
-
-                [class.selected]="
-                  estaMaquinaSeleccionada(
-                    maquina.id
-                  )
-                "
-
-                [disabled]="guardando"
-
-                (click)="
-                  toggleMaquina(maquina)
-                "
-              >
-
-                <div class="machine-option-icon">
-
-                  @if (
-                    estaMaquinaSeleccionada(
-                      maquina.id
-                    )
-                  ) {
-
-                    ✓
-
-                  } @else {
-
-                    +
-
-                  }
-
-                </div>
-
-
-                <div class="machine-option-content">
-
-                  <strong>
-                    {{ maquina.nombre }}
-                  </strong>
-
-                  <small>
-                    Máquina #{{ maquina.id }}
-                  </small>
-
-                </div>
-
-
-                @if (
-                  estaMaquinaSeleccionada(
-                    maquina.id
-                  )
-                ) {
-
-                  <span class="selected-label">
-                    Seleccionada
-                  </span>
-
-                }
-
-              </button>
-
-            }
-
-          </div>
-
-        } @else {
-
-          <div class="empty-state">
-
-            <div class="empty-icon">
-              ⚙
-            </div>
-
-            <h3>
-              No hay máquinas disponibles
-            </h3>
-
-            <p>
-              No se encontraron máquinas activas
-              en el catálogo.
-            </p>
-
-          </div>
-
-        }
-
-      </div>
-
-
-      @if (
-        formulario.maquinas.length > 0
-      ) {
-
-        <div class="subsection selected-section">
-
+        <div class="subsection">
           <div class="subsection-header">
-
             <div>
-
-              <h3>
-                Máquinas configuradas
-              </h3>
-
-              <p>
-                Configura si cada máquina es obligatoria
-                o corresponde a un regalo.
-              </p>
-
+              <h3>Catálogo de máquinas</h3>
+              <p>Haz clic sobre una máquina para agregarla o quitarla.</p>
             </div>
-
-            <span class="selected-count">
-              {{ formulario.maquinas.length }}
-            </span>
-
+            <span class="catalog-count">{{ maquinasDisponibles.length }} disponibles</span>
           </div>
 
-
-          <div class="selected-machines-list">
-
-            @for (
-              maquina of formulario.maquinas;
-              track trackPlanMaquina($index, maquina)
-            ) {
-
-              <div
-                class="selected-machine-row"
-                [class.gift-row]="maquina.es_regalo"
-              >
-
-                <div class="machine-order">
-                  {{ maquina.orden }}
-                </div>
-
-
-                <div class="selected-machine-info">
-
-                  <strong>
-                    {{ maquina.maquina_nombre }}
-                  </strong>
-
-                  <div class="machine-status">
-
-                    @if (maquina.es_regalo) {
-
-                      <span class="status-badge gift">
-                        🎁 Regalo
-                      </span>
-
-                    } @else if (maquina.obligatoria) {
-
-                      <span class="status-badge required">
-                        Obligatoria
-                      </span>
-
-                    } @else {
-
-                      <span class="status-badge available">
-                        Disponible para elección
-                      </span>
-
-                    }
-
-                  </div>
-
-                </div>
-
-
-                <label
-                  class="check-control"
-                  [class.disabled]="maquina.es_regalo"
-                >
-
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="
-                      maquina.obligatoria
-                    "
-                    [disabled]="
-                      guardando ||
-                      maquina.es_regalo
-                    "
-                  />
-
-                  <span>
-                    Obligatoria
-                  </span>
-
-                </label>
-
-
-                <label class="check-control">
-
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="
-                      maquina.es_regalo
-                    "
-                    [disabled]="guardando"
-                    (ngModelChange)="
-                      maquina.obligatoria = $event
-                        ? false
-                        : maquina.obligatoria
-                    "
-                  />
-
-                  <span>
-                    Regalo
-                  </span>
-
-                </label>
-
-
+          @if (maquinasDisponibles.length > 0) {
+            <div class="machines-grid">
+              @for (maquina of maquinasDisponibles; track trackMaquina($index, maquina)) {
                 <button
                   type="button"
-                  class="btn-remove"
-                  title="Quitar máquina"
+                  class="machine-option"
+                  [class.selected]="estaMaquinaSeleccionada(maquina.id)"
                   [disabled]="guardando"
-                  (click)="
-                    quitarMaquina(
-                      maquina.maquina_id
-                    )
-                  "
+                  (click)="toggleMaquina(maquina)"
                 >
-                  ×
+                  <div class="machine-option-icon">
+                    {{ estaMaquinaSeleccionada(maquina.id) ? '✓' : '+' }}
+                  </div>
+                  <div class="machine-option-content">
+                    <strong>{{ maquina.nombre }}</strong>
+                    <small>Máquina #{{ maquina.id }}</small>
+                  </div>
+                  @if (estaMaquinaSeleccionada(maquina.id)) {
+                    <span class="selected-label">Seleccionada</span>
+                  }
                 </button>
-
-              </div>
-
-            }
-
-          </div>
-
-        </div>
-
-      } @else {
-
-        <div class="machine-empty-message">
-
-          <div class="empty-icon">
-            ⚙
-          </div>
-
-          <strong>
-            Todavía no has configurado máquinas
-          </strong>
-
-          <p>
-            Selecciona las máquinas del catálogo
-            que formarán parte de este plan.
-          </p>
-
-        </div>
-
-      }
-
-    </section>
-
-
-    <!-- ==================================================== -->
-    <!-- 04. HORAS DE PRÁCTICA                               -->
-    <!-- ==================================================== -->
-
-    <section class="card">
-
-      <div class="card-header">
-
-        <div class="section-heading">
-
-          <span class="section-number">
-            04
-          </span>
-
-          <div class="section-title">
-
-            <h2>
-              Horas de práctica
-            </h2>
-
-            <p>
-              Define las horas y sesiones prácticas
-              para cada máquina configurada.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      @if (
-        formulario.maquinas.length === 0
-      ) {
-
-        <div class="empty-state compact">
-
-          <div class="empty-icon">
-            ⏱
-          </div>
-
-          <strong>
-            Primero configura las máquinas
-          </strong>
-
-          <p>
-            Las horas de práctica aparecerán aquí
-            después de seleccionar las máquinas.
-          </p>
-
-        </div>
-
-      } @else {
-
-        <div class="practice-table-wrapper">
-
-          <table class="practice-table">
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  Máquina
-                </th>
-
-                <th>
-                  Horas totales
-                </th>
-
-                <th>
-                  Sesiones
-                </th>
-
-                <th>
-                  Horas / sesión
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              @for (
-                maquina of formulario.maquinas;
-                track trackPlanMaquina($index, maquina)
-              ) {
-
-                <tr>
-
-                  <td>
-
-                    <div class="table-machine">
-
-                      <span class="table-order">
-                        {{ maquina.orden }}
-                      </span>
-
-                      <div>
-
-                        <strong>
-                          {{ maquina.maquina_nombre }}
-                        </strong>
-
-                        @if (
-                          maquina.es_regalo
-                        ) {
-
-                          <span class="mini-gift">
-                            🎁 Regalo
-                          </span>
-
-                        }
-
-                      </div>
-
-                    </div>
-
-                  </td>
-
-
-                  <td>
-
-                    <div class="input-with-unit">
-
-                      <input
-                        type="number"
-                        min="0.01"
-                        step="0.5"
-                        class="table-input"
-
-                        [ngModel]="
-                          obtenerPractica(
-                            maquina.maquina_id
-                          )?.horas
-                        "
-
-                        (ngModelChange)="
-                          actualizarHoras(
-                            maquina.maquina_id,
-                            $event
-                          )
-                        "
-
-                        [disabled]="guardando"
-                      />
-
-                      <span>
-                        horas
-                      </span>
-
-                    </div>
-
-                  </td>
-
-
-                  <td>
-
-                    <div class="input-with-unit">
-
-                      <input
-                        type="number"
-                        min="1"
-                        step="1"
-                        class="table-input"
-
-                        [ngModel]="
-                          obtenerPractica(
-                            maquina.maquina_id
-                          )?.sesiones_totales
-                        "
-
-                        (ngModelChange)="
-                          actualizarSesiones(
-                            maquina.maquina_id,
-                            $event
-                          )
-                        "
-
-                        [disabled]="guardando"
-                      />
-
-                      <span>
-                        sesiones
-                      </span>
-
-                    </div>
-
-                  </td>
-
-
-                  <td>
-
-                    <div class="session-hours">
-
-                      @if (
-                        horasPorSesion(
-                          maquina.maquina_id
-                        ) !== null
-                      ) {
-
-                        <strong>
-
-                          {{
-                            horasPorSesion(
-                              maquina.maquina_id
-                            )
-                          }}
-
-                        </strong>
-
-                        <span>
-                          h/sesión
-                        </span>
-
-                      } @else {
-
-                        <span class="not-configured">
-                          —
-                        </span>
-
-                      }
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
               }
-
-            </tbody>
-
-          </table>
-
+            </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-icon">⚙</div>
+              <h3>No hay máquinas disponibles</h3>
+              <p>No se encontraron máquinas activas en el catálogo.</p>
+            </div>
+          }
         </div>
 
-
-        <div class="practice-help">
-
-          <span>
-            ⓘ
-          </span>
-
-          <p>
-
-            Cada máquina debe tener horas de práctica
-            mayores a 0 y una cantidad de sesiones
-            mayor o igual a 1.
-
-          </p>
-
-        </div>
-
-      }
-
-    </section>
-
-
-    <!-- ==================================================== -->
-    <!-- 05. CUOTAS                                          -->
-    <!-- ==================================================== -->
-
-    <section class="card">
-
-      <div class="card-header">
-
-        <div class="section-heading">
-
-          <span class="section-number">
-            05
-          </span>
-
-          <div class="section-title">
-
-            <h2>
-              Cuotas del plan
-            </h2>
-
-            <p>
-              Define la cantidad de cuotas para este plan.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="quota-layout">
-
-        <div class="quota-main">
-
-          <div class="quota-icon">
-            $
-          </div>
-
-          <div>
-
-            <span class="eyebrow">
-              CANTIDAD DE CUOTAS
-            </span>
-
-            <div class="quota-input-wrapper">
-
-              <input
-                type="number"
-                min="1"
-                step="1"
-
-                [ngModel]="
-                  formulario.cantidad_cuotas
-                "
-
-                (ngModelChange)="
-                  actualizarCantidadCuotas(
-                    $event
-                  )
-                "
-
-                [disabled]="guardando"
-
-                class="quota-input"
-              />
-
-              <span>
-                cuotas
-              </span>
-
+        @if (formulario.maquinas.length > 0) {
+          <div class="subsection selected-section">
+            <div class="subsection-header">
+              <div>
+                <h3>Máquinas configuradas</h3>
+                <p>Configura si cada máquina es obligatoria o corresponde a un regalo.</p>
+              </div>
+              <span class="selected-count">{{ formulario.maquinas.length }}</span>
             </div>
 
+            <div class="selected-machines-list">
+              @for (maquina of formulario.maquinas; track trackPlanMaquina($index, maquina)) {
+                <div class="selected-machine-row" [class.gift-row]="maquina.es_regalo">
+                  <div class="machine-order">{{ maquina.orden }}</div>
+
+                  <div class="selected-machine-info">
+                    <strong>{{ maquina.maquina_nombre }}</strong>
+                    <div class="machine-status">
+                      @if (maquina.es_regalo) {
+                        <span class="status-badge gift">🎁 Regalo</span>
+                      } @else if (maquina.obligatoria) {
+                        <span class="status-badge required">Obligatoria</span>
+                      } @else {
+                        <span class="status-badge available">Disponible para elección</span>
+                      }
+                    </div>
+                  </div>
+
+                  <label class="check-control" [class.disabled]="maquina.es_regalo">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="maquina.obligatoria"
+                      [disabled]="guardando || maquina.es_regalo"
+                    />
+                    <span>Obligatoria</span>
+                  </label>
+
+                  <label class="check-control">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="maquina.es_regalo"
+                      [disabled]="guardando"
+                      (ngModelChange)="maquina.obligatoria = $event ? false : maquina.obligatoria"
+                    />
+                    <span>Regalo</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    class="btn-remove"
+                    title="Quitar máquina"
+                    [disabled]="guardando"
+                    (click)="quitarMaquina(maquina.maquina_id)"
+                  >
+                    ×
+                  </button>
+                </div>
+              }
+            </div>
           </div>
-
-        </div>
-
-
-        <div class="quota-info">
-
-          <strong>
-            Configuración financiera
-          </strong>
-
-          <p>
-
-            La cantidad de cuotas se aplicará
-            a la configuración activa de precios
-            asociada al plan.
-
-          </p>
-
-        </div>
-
+        } @else {
+          <div class="machine-empty-message">
+            <div class="empty-icon">⚙</div>
+            <strong>Todavía no has configurado máquinas</strong>
+            <p>Selecciona las máquinas del catálogo que formarán parte de este plan.</p>
+          </div>
+        }
       </div>
-
     </section>
 
-
-    <!-- ==================================================== -->
-    <!-- 06. RESUMEN                                         -->
-    <!-- ==================================================== -->
-
-    <section class="card summary-card">
-
+    <!-- 04. HORAS DE PRÁCTICA -->
+    <section class="card">
       <div class="card-header">
-
         <div class="section-heading">
-
-          <span class="section-number">
-            06
-          </span>
-
+          <span class="section-number">04</span>
           <div class="section-title">
-
-            <h2>
-              Resumen
-            </h2>
-
-            <p>
-              Revisa la configuración antes de guardar.
-            </p>
-
+            <h2>Horas de práctica</h2>
+            <p>Define las horas y sesiones prácticas para cada máquina configurada.</p>
           </div>
-
         </div>
-
       </div>
 
-
-      <div class="summary-grid">
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Tipo de curso
-          </span>
-
-          <strong>
-            {{ tipoCurso?.nombre ?? '—' }}
-          </strong>
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Nombre del plan
-          </span>
-
-          <strong>
-
-            {{
-              formulario.nombre.trim()
-                || 'Sin nombre'
-            }}
-
-          </strong>
-
-        </div>
-
-
-        <!-- VIGENCIA -->
-
-        <div class="summary-item highlight">
-
-          <span class="summary-label">
-            Vigencia desde
-          </span>
-
-          <strong>
-            {{ formulario.vigente_desde || '—' }}
-          </strong>
-
-          @if (formulario.vigente_hasta) {
-
-            <small>
-              Hasta {{ formulario.vigente_hasta }}
-            </small>
-
-          } @else {
-
-            <small>
-              Sin fecha de término
-            </small>
-
-          }
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Modalidad
-          </span>
-
-          <strong>
-
-            @if (
-              formulario.permite_eleccion_personalizada
-            ) {
-
-              Elección personalizada
-
-            } @else {
-
-              Configuración fija
-
-            }
-
-          </strong>
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Máquinas configuradas
-          </span>
-
-          <strong>
-            {{ cantidadMaquinasConfiguradas }}
-          </strong>
-
-          <small>
-
-            {{ cantidadMaquinasNormales }}
-            normales
-
-            @if (
-              cantidadMaquinasRegalo > 0
-            ) {
-
-              ·
-              {{ cantidadMaquinasRegalo }}
-              regalo
-
-            }
-
-          </small>
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Elección en matrícula
-          </span>
-
-          <strong>
-
-            {{
-              tipoCurso?.cantidad_maquinas ?? 0
-            }}
-
-          </strong>
-
-          <small>
-
-            {{
-              (tipoCurso?.cantidad_maquinas ?? 0) === 1
-                ? 'máquina que podrá elegir el alumno'
-                : 'máquinas que podrá elegir el alumno'
-            }}
-
-          </small>
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Cuotas
-          </span>
-
-          <strong>
-            {{ formulario.cantidad_cuotas }}
-          </strong>
-
-        </div>
-
-
-        <div class="summary-item">
-
-          <span class="summary-label">
-            Prácticas configuradas
-          </span>
-
-          <strong>
-
-            {{
-              formulario.horas_practica.length
-            }}
-
-            /
-            {{
-              formulario.maquinas.length
-            }}
-
-          </strong>
-
-          <small>
-            máquinas con práctica
-          </small>
-
-        </div>
-
-      </div>
-
-
-      @if (
-        formulario.maquinas.length > 0
-      ) {
-
-        <div class="summary-machines">
-
-          <h3>
-            Máquinas
-          </h3>
-
-          <div class="summary-machine-list">
-
-            @for (
-              maquina of formulario.maquinas;
-              track trackPlanMaquina($index, maquina)
-            ) {
-
-              <div
-                class="summary-machine"
-                [class.gift]="maquina.es_regalo"
-              >
-
-                <span class="summary-machine-order">
-                  {{ maquina.orden }}
-                </span>
-
-                <span class="summary-machine-name">
-                  {{ maquina.maquina_nombre }}
-                </span>
-
-                @if (
-                  maquina.es_regalo
-                ) {
-
-                  <span class="summary-machine-badge gift">
-                    🎁 Regalo
-                  </span>
-
-                } @else if (
-                  maquina.obligatoria
-                ) {
-
-                  <span class="summary-machine-badge required">
-                    Obligatoria
-                  </span>
-
-                } @else {
-
-                  <span class="summary-machine-badge available">
-                    Elección
-                  </span>
-
+      <div class="card-body">
+        @if (formulario.maquinas.length === 0) {
+          <div class="empty-state compact">
+            <div class="empty-icon">⏱</div>
+            <strong>Primero configura las máquinas</strong>
+            <p>Las horas de práctica aparecerán aquí después de seleccionar las máquinas.</p>
+          </div>
+        } @else {
+          <div class="practice-table-wrapper">
+            <table class="practice-table">
+              <thead>
+                <tr>
+                  <th>Máquina</th>
+                  <th>Horas totales</th>
+                  <th>Sesiones</th>
+                  <th>Horas / sesión</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (maquina of formulario.maquinas; track trackPlanMaquina($index, maquina)) {
+                  <tr>
+                    <td>
+                      <div class="table-machine">
+                        <span class="table-order">{{ maquina.orden }}</span>
+                        <div>
+                          <strong>{{ maquina.maquina_nombre }}</strong>
+                          @if (maquina.es_regalo) {
+                            <span class="mini-gift">🎁 Regalo</span>
+                          }
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="input-with-unit">
+                        <input
+                          type="number"
+                          min="0.01"
+                          step="0.5"
+                          class="table-input"
+                          [ngModel]="obtenerPractica(maquina.maquina_id)?.horas"
+                          (ngModelChange)="actualizarHoras(maquina.maquina_id, $event)"
+                          [disabled]="guardando"
+                        />
+                        <span>horas</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="input-with-unit">
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          class="table-input"
+                          [ngModel]="obtenerPractica(maquina.maquina_id)?.sesiones_totales"
+                          (ngModelChange)="actualizarSesiones(maquina.maquina_id, $event)"
+                          [disabled]="guardando"
+                        />
+                        <span>sesiones</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="session-hours">
+                        @if (horasPorSesion(maquina.maquina_id) !== null) {
+                          <strong>{{ horasPorSesion(maquina.maquina_id) }}</strong>
+                          <span>h/sesión</span>
+                        } @else {
+                          <span class="not-configured">—</span>
+                        }
+                      </div>
+                    </td>
+                  </tr>
                 }
-
-              </div>
-
-            }
-
+              </tbody>
+            </table>
           </div>
 
-        </div>
-
-      }
-
+          <div class="practice-help">
+            <span>ⓘ</span>
+            <p>Cada máquina debe tener horas de práctica mayores a 0 y una cantidad de sesiones mayor o igual a 1.</p>
+          </div>
+        }
+      </div>
     </section>
 
+    <!-- 05. CUOTAS DEL PLAN -->
+    <section class="card">
+      <div class="card-header">
+        <div class="section-heading">
+          <span class="section-number">05</span>
+          <div class="section-title">
+            <h2>Cuotas del plan</h2>
+            <p>Define la cantidad de cuotas para este plan.</p>
+          </div>
+        </div>
+      </div>
 
-    <!-- ==================================================== -->
-    <!-- ACCIONES FINALES                                    -->
-    <!-- ==================================================== -->
+      <div class="card-body">
+        <div class="quota-layout">
+          <div class="quota-main">
+            <div class="quota-icon">$</div>
+            <div>
+              <span class="eyebrow">CANTIDAD DE CUOTAS</span>
+              <div class="quota-input-wrapper">
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  [ngModel]="formulario.cantidad_cuotas"
+                  (ngModelChange)="actualizarCantidadCuotas($event)"
+                  [disabled]="guardando"
+                  class="form-control quota-input"
+                />
+                <span>cuotas</span>
+              </div>
+            </div>
+          </div>
 
+          <div class="quota-info">
+            <strong>Configuración financiera</strong>
+            <p>La cantidad de cuotas se aplicará a la configuración activa de precios asociada al plan.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06. RESUMEN -->
+    <section class="card summary-card">
+      <div class="card-header">
+        <div class="section-heading">
+          <span class="section-number">06</span>
+          <div class="section-title">
+            <h2>Resumen</h2>
+            <p>Revisa la configuración antes de guardar.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">Tipo de curso</span>
+            <strong>{{ tipoCurso?.nombre ?? '—' }}</strong>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Nombre del plan</span>
+            <strong>{{ formulario.nombre.trim() || 'Sin nombre' }}</strong>
+          </div>
+
+          <div class="summary-item highlight">
+            <span class="summary-label">Vigencia desde</span>
+            <strong>{{ formulario.vigente_desde || '—' }}</strong>
+            <small>{{ formulario.vigente_hasta ? 'Hasta ' + formulario.vigente_hasta : 'Sin fecha de término' }}</small>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Modalidad</span>
+            <strong>
+              {{ formulario.permite_eleccion_personalizada ? 'Elección personalizada' : 'Configuración fija' }}
+            </strong>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Máquinas configuradas</span>
+            <strong>{{ cantidadMaquinasConfiguradas }}</strong>
+            <small>
+              {{ cantidadMaquinasNormales }} normales
+              @if (cantidadMaquinasRegalo > 0) { · {{ cantidadMaquinasRegalo }} regalo }
+            </small>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Elección en matrícula</span>
+            <strong>{{ tipoCurso?.cantidad_maquinas ?? 0 }}</strong>
+            <small>
+              {{ (tipoCurso?.cantidad_maquinas ?? 0) === 1 ? 'máquina que podrá elegir el alumno' : 'máquinas que podrá elegir el alumno' }}
+            </small>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Cuotas</span>
+            <strong>{{ formulario.cantidad_cuotas }}</strong>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Prácticas configuradas</span>
+            <strong>
+              {{ formulario.horas_practica.length }} / {{ formulario.maquinas.length }}
+            </strong>
+            <small>máquinas con práctica</small>
+          </div>
+        </div>
+
+        @if (formulario.maquinas.length > 0) {
+          <div class="summary-machines">
+            <h3>Máquinas</h3>
+            <div class="summary-machine-list">
+              @for (maquina of formulario.maquinas; track trackPlanMaquina($index, maquina)) {
+                <div class="summary-machine" [class.gift]="maquina.es_regalo">
+                  <span class="summary-machine-order">{{ maquina.orden }}</span>
+                  <span class="summary-machine-name">{{ maquina.maquina_nombre }}</span>
+                  @if (maquina.es_regalo) {
+                    <span class="summary-machine-badge gift">🎁 Regalo</span>
+                  } @else if (maquina.obligatoria) {
+                    <span class="summary-machine-badge required">Obligatoria</span>
+                  } @else {
+                    <span class="summary-machine-badge available">Elección</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ACCIONES FINALES -->
     <div class="bottom-actions">
-
       <button
         type="button"
         class="btn btn-secondary"
         (click)="volver()"
         [disabled]="guardando"
       >
-
-        ←
-        Cancelar
-
+        ← Cancelar
       </button>
-
 
       <button
         type="button"
@@ -1624,27 +639,15 @@
         (click)="guardar()"
         [disabled]="guardando"
       >
-
         @if (guardando) {
-
           <span class="spinner"></span>
-
-          Guardando...
-
+          <span>Guardando...</span>
         } @else {
-
-          <span>
-            ✓
-          </span>
-
-          {{ textoBotonGuardar }}
-
+          <span class="btn-icon-check">✓</span>
+          <span>{{ textoBotonGuardar }}</span>
         }
-
       </button>
-
     </div>
 
   }
-
 </div>
