@@ -93,6 +93,17 @@ export class MatriculasService {
   }
 
 
+    
+  eliminarMatriculaCompleta(
+    id: number
+  ): Observable<ApiResponse<any>> {
+  
+    return this.http.delete<ApiResponse<any>>(
+      `${this.apiUrl}/${id}/completa`
+    );
+  }
+
+
   // ==========================================================
   // OBTENER MATRÍCULA
   // ==========================================================
