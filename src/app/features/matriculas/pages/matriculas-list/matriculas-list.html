@@ -230,6 +230,22 @@
               </button>
 
 
+              
+              <button
+                *ngIf="puedeEditar()"
+                type="button"
+                class="btn-table btn-delete"
+                (click)="eliminarMatriculaCompleta(matricula)"
+              >
+                Eliminar
+              </button>
+
+
+              
+
+
+              
+
               <!-- RETIRAR -->
 
               <button
