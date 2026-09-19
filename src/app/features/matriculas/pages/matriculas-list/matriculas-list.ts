@@ -1560,6 +1560,153 @@ editarFechaCuota(
 
   }
 
+
+  eliminarMatricula(
+  matricula: Matricula
+): void {
+
+  const nombreAlumno =
+    this.getNombreAlumno(
+      matricula.alumno_id
+    );
+
+  Swal.fire({
+
+    icon: 'warning',
+
+    title: '¿Eliminar matrícula?',
+
+    html: `
+      <p>
+        Estás a punto de eliminar la matrícula de:
+      </p>
+
+      <strong>
+        ${nombreAlumno}
+      </strong>
+
+      <p style="margin-top: 12px;">
+        Esta acción eliminará la matrícula y la información
+        relacionada que el backend permita eliminar.
+      </p>
+
+      <p>
+        <strong>Esta acción no se puede deshacer.</strong>
+      </p>
+    `,
+
+    showCancelButton: true,
+
+    confirmButtonText:
+      'Sí, eliminar',
+
+    cancelButtonText:
+      'Cancelar',
+
+    confirmButtonColor:
+      '#dc2626',
+
+    cancelButtonColor:
+      '#6b7280',
+
+    reverseButtons: true
+
+  }).then((result) => {
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    // ========================================================
+    // ESTADO DE CARGA
+    // ========================================================
+
+    this.saving = true;
+
+    this.cd.detectChanges();
+
+    // ========================================================
+    // REQUEST
+    // ========================================================
+
+    this.matriculasService
+      .eliminar(matricula.id)
+      .pipe(
+        finalize(() => {
+
+          this.saving = false;
+
+          this.cd.detectChanges();
+
+        })
+      )
+      .subscribe({
+
+        next: (
+          resp: ApiResponse<any>
+        ) => {
+
+          Swal.fire({
+
+            icon: 'success',
+
+            title:
+              'Matrícula eliminada',
+
+            text:
+              resp?.message ||
+              'La matrícula fue eliminada correctamente.',
+
+            confirmButtonText:
+              'Aceptar'
+
+          });
+
+          // ==================================================
+          // RECARGAR LISTADO
+          // ==================================================
+
+          this.cargarTodo();
+
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Error al eliminar matrícula:',
+            err
+          );
+
+          console.error(
+            'Respuesta backend:',
+            err?.error
+          );
+
+          Swal.fire({
+
+            icon: 'error',
+
+            title:
+              'No se pudo eliminar',
+
+            text:
+              err?.error?.message ||
+              'Ocurrió un error al intentar eliminar la matrícula.',
+
+            confirmButtonText:
+              'Aceptar'
+
+          });
+
+        }
+
+      });
+
+  });
+
+}
+
+
   // ==========================================================
   // VALIDAR FORMULARIO
   // ==========================================================
