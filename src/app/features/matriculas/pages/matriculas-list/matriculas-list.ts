@@ -1629,8 +1629,8 @@ editarFechaCuota(
     // REQUEST
     // ========================================================
 
-    this.matriculasService
-      .eliminar(matricula.id)
+  this.matriculasService
+    .eliminarMatriculaCompleta(matricula.id)
       .pipe(
         finalize(() => {
 
