@@ -145,41 +145,15 @@
 
           <tr>
 
-            <th>
-              ID
-            </th>
-
-            <th>
-              Alumno
-            </th>
-
-            <th>
-              Curso / Plan
-            </th>
-
-            <th>
-              Tipo
-            </th>
-
-            <th>
-              Estado
-            </th>
-
-            <th>
-              Fecha matrícula
-            </th>
-
-            <th>
-              Inicio
-            </th>
-
-            <th>
-              Fin estimado
-            </th>
-
-            <th>
-              Acciones
-            </th>
+            <th>ID</th>
+            <th>Alumno</th>
+            <th>Curso / Plan</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha matrícula</th>
+            <th>Inicio</th>
+            <th>Fin estimado</th>
+            <th>Acciones</th>
 
           </tr>
 
@@ -195,23 +169,15 @@
             "
           >
 
-            <!-- ID -->
-
             <td>
               {{ matricula.id }}
             </td>
 
 
-            <!-- ALUMNO -->
-
             <td>
               {{ getNombreAlumno(matricula.alumno_id) }}
             </td>
 
-
-            <!-- ================================================= -->
-            <!-- CURSO / PLAN -->
-            <!-- ================================================= -->
 
             <td>
 
@@ -247,10 +213,6 @@
             </td>
 
 
-            <!-- ================================================= -->
-            <!-- TIPO -->
-            <!-- ================================================= -->
-
             <td>
 
               <span
@@ -270,10 +232,6 @@
 
             </td>
 
-
-            <!-- ================================================= -->
-            <!-- ESTADO -->
-            <!-- ================================================= -->
 
             <td>
 
@@ -296,10 +254,6 @@
             </td>
 
 
-            <!-- ================================================= -->
-            <!-- FECHAS -->
-            <!-- ================================================= -->
-
             <td>
               {{ formatFechaVista(matricula.fecha_matricula) }}
             </td>
@@ -315,15 +269,9 @@
             </td>
 
 
-            <!-- ================================================= -->
-            <!-- ACCIONES -->
-            <!-- ================================================= -->
-
             <td>
 
               <div class="table-actions">
-
-                <!-- VER -->
 
                 <a
                   [routerLink]="[
@@ -344,8 +292,6 @@
                 </a>
 
 
-                <!-- EDITAR -->
-
                 <button
                   *ngIf="puedeEditar()"
                   type="button"
@@ -356,8 +302,6 @@
                 </button>
 
 
-                <!-- ELIMINAR -->
-
                 <button
                   *ngIf="puedeEditar()"
                   type="button"
@@ -367,8 +311,6 @@
                   Eliminar
                 </button>
 
-
-                <!-- RETIRAR -->
 
                 <button
                   *ngIf="
@@ -390,8 +332,6 @@
                 </button>
 
 
-                <!-- EGRESAR -->
-
                 <button
                   *ngIf="
                     puedeMostrarAccionesDeActiva() &&
@@ -412,8 +352,6 @@
                 </button>
 
 
-                <!-- RESERVA -->
-
                 <button
                   *ngIf="
                     puedeMostrarAccionesDeActiva() &&
@@ -433,8 +371,6 @@
                   Reserva
                 </button>
 
-
-                <!-- ACTIVAR -->
 
                 <button
                   *ngIf="puedeMostrarActivar()"
@@ -457,14 +393,8 @@
           </tr>
 
 
-          <!-- =================================================== -->
-          <!-- SIN DATOS -->
-          <!-- =================================================== -->
-
           <tr
-            *ngIf="
-              matriculas.length === 0
-            "
+            *ngIf="matriculas.length === 0"
           >
 
             <td
@@ -575,16 +505,7 @@
         </div>
 
 
-        <!-- ======================================================= -->
-        <!-- RESUMEN -->
-        <!-- ======================================================= -->
-
         <div class="side-summary">
-
-
-          <!-- ===================================================== -->
-          <!-- TIPO -->
-          <!-- ===================================================== -->
 
           <div class="side-summary__item">
 
@@ -605,10 +526,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- ALUMNO ORDINARIO -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -627,10 +544,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- ALUMNO ACELERADO -->
-          <!-- ===================================================== -->
 
           <div
             class="side-summary__item"
@@ -651,10 +564,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- PLAN ORDINARIO -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -673,10 +582,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- CURSO ACELERADO -->
-          <!-- ===================================================== -->
 
           <div
             class="side-summary__item"
@@ -697,10 +602,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- MÁQUINAS ORDINARIAS -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -719,10 +620,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- MÁQUINAS ORDINARIAS SELECCIONADAS -->
-          <!-- ===================================================== -->
 
           <div
             class="side-summary__item"
@@ -748,10 +645,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- MÁQUINAS ACELERADAS -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -771,10 +664,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- CUOTAS ACELERADAS -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -793,10 +682,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- FIN ORDINARIO -->
-          <!-- ===================================================== -->
 
           <div
             class="side-summary__item"
@@ -823,10 +708,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- FIN ACELERADO -->
-          <!-- ===================================================== -->
-
           <div
             class="side-summary__item"
             *ngIf="
@@ -852,10 +733,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- REGALO ORDINARIO -->
-          <!-- ===================================================== -->
-
           <div
             class="side-note"
             *ngIf="
@@ -870,10 +747,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- AYUDA MÁQUINAS -->
-          <!-- ===================================================== -->
 
           <div
             class="side-note"
@@ -892,10 +765,6 @@
           </div>
 
 
-          <!-- ===================================================== -->
-          <!-- PREVIEW ORDINARIO -->
-          <!-- ===================================================== -->
-
           <div
             class="side-note side-note--success"
             *ngIf="
@@ -909,10 +778,6 @@
 
           </div>
 
-
-          <!-- ===================================================== -->
-          <!-- TOTAL ACELERADO -->
-          <!-- ===================================================== -->
 
           <div
             class="side-summary__item side-summary__item--total"
@@ -943,9 +808,7 @@
       <div class="modal-main">
 
 
-        <!-- ======================================================= -->
         <!-- HEADER -->
-        <!-- ======================================================= -->
 
         <div class="modal-header modal-header--main">
 
@@ -996,9 +859,7 @@
         </div>
 
 
-        <!-- ======================================================= -->
         <!-- BODY -->
-        <!-- ======================================================= -->
 
         <div class="modal-body">
 
@@ -1032,9 +893,6 @@
 
             <div class="matricula-type-selector">
 
-
-              <!-- ORDINARIA -->
-
               <button
                 type="button"
                 class="matricula-type-option"
@@ -1067,8 +925,6 @@
 
               </button>
 
-
-              <!-- ACELERADA -->
 
               <button
                 type="button"
@@ -1123,8 +979,6 @@
                 </label>
 
 
-                <!-- BUSCADOR -->
-
                 <div
                   class="search-select-container"
                   style="margin-bottom: 8px;"
@@ -1146,8 +1000,6 @@
 
                 </div>
 
-
-                <!-- SELECT -->
 
                 <select
                   *ngIf="tipoMatricula === 'ORDINARIA'"
@@ -1181,8 +1033,6 @@
 
                 </select>
 
-
-                <!-- SELECT ACELERADO -->
 
                 <select
                   *ngIf="tipoMatricula === 'ACELERADA'"
@@ -1239,24 +1089,16 @@
 
 
           <!-- ===================================================== -->
-          <!-- ===================================================== -->
           <!-- FORMULARIO ORDINARIO -->
-          <!-- ===================================================== -->
           <!-- ===================================================== -->
 
           <ng-container
             *ngIf="tipoMatricula === 'ORDINARIA'"
           >
 
-
-            <!-- =================================================== -->
-            <!-- DATOS ORDINARIOS -->
-            <!-- =================================================== -->
-
             <div class="section-card">
 
               <div class="form-grid">
-
 
                 <!-- PLAN -->
 
@@ -1266,7 +1108,6 @@
                     Plan de curso *
                   </label>
 
-
                   <select
                     [(ngModel)]="form.plan_curso_id"
                     (ngModelChange)="onPlanChange()"
@@ -1275,7 +1116,6 @@
                     <option [ngValue]="null">
                       Seleccionar plan
                     </option>
-
 
                     <option
                       *ngFor="
@@ -1301,7 +1141,6 @@
                     Estado del alumno *
                   </label>
 
-
                   <select
                     [(ngModel)]="form.estado_alumno_id"
                   >
@@ -1309,7 +1148,6 @@
                     <option [ngValue]="null">
                       Seleccionar estado
                     </option>
-
 
                     <option
                       *ngFor="
@@ -1327,9 +1165,7 @@
                 </div>
 
 
-                <!-- ================================================= -->
                 <!-- MÁQUINAS -->
-                <!-- ================================================= -->
 
                 <div
                   class="form-field full-width"
@@ -1383,10 +1219,8 @@
                   <ng-template #sinMaquinas>
 
                     <div class="machine-empty">
-
                       No hay máquinas disponibles
                       para este plan.
-
                     </div>
 
                   </ng-template>
@@ -1426,7 +1260,6 @@
                     Fecha de matrícula *
                   </label>
 
-
                   <input
                     type="date"
                     [(ngModel)]="form.fecha_matricula"
@@ -1443,7 +1276,6 @@
                   <label>
                     Modalidad de pago *
                   </label>
-
 
                   <select
                     [(ngModel)]="form.modalidad_pago"
@@ -1471,7 +1303,6 @@
                     Fecha de inicio
                   </label>
 
-
                   <input
                     type="date"
                     [(ngModel)]="form.fecha_inicio"
@@ -1489,19 +1320,15 @@
                     Fecha fin estimada
                   </label>
 
-
                   <input
                     type="date"
                     [(ngModel)]="form.fecha_fin_estimada"
                     readonly
                   />
 
-
                   <small class="field-help">
-
                     Se calcula automáticamente según
                     el tipo de curso y la fecha de inicio.
-
                   </small>
 
                 </div>
@@ -1515,7 +1342,6 @@
                     Pago mensual
                   </label>
 
-
                   <input
                     type="number"
                     min="0"
@@ -1524,7 +1350,6 @@
                     (ngModelChange)="onMontoPagoChange()"
                     placeholder="0.00"
                   />
-
 
                   <small class="field-help">
                     Monto total de la matrícula.
@@ -1541,7 +1366,6 @@
                     Costo Matrícula
                   </label>
 
-
                   <input
                     type="number"
                     min="0"
@@ -1550,7 +1374,6 @@
                     (ngModelChange)="onMontoPagoChange()"
                     placeholder="0.00"
                   />
-
 
                   <small class="field-help">
                     Monto que se pagará inicialmente.
@@ -1567,7 +1390,6 @@
                     Costo de certificación
                   </label>
 
-
                   <input
                     type="number"
                     min="0"
@@ -1576,7 +1398,6 @@
                     (ngModelChange)="onMontoPagoChange()"
                     placeholder="0.00"
                   />
-
 
                   <small class="field-help">
                     Monto correspondiente al costo
@@ -1593,7 +1414,6 @@
                   <label>
                     Notas
                   </label>
-
 
                   <textarea
                     rows="4"
@@ -1613,9 +1433,6 @@
 
             <div class="preview-section">
 
-
-              <!-- BOTÓN PREVISUALIZAR -->
-
               <div class="preview-action">
 
                 <div class="preview-action__info">
@@ -1631,13 +1448,11 @@
                       👁
                     </span>
 
-
                     <span
                       *ngIf="previewCuotasLoading"
                     >
                       ⏳
                     </span>
-
 
                     <span
                       *ngIf="
@@ -1662,7 +1477,6 @@
                       }}
 
                     </strong>
-
 
                     <span>
 
@@ -1732,8 +1546,6 @@
               </div>
 
 
-              <!-- ERROR -->
-
               <div
                 class="preview-error"
                 *ngIf="previewCuotasError"
@@ -1750,16 +1562,10 @@
               </div>
 
 
-              <!-- CARD PREVIEW -->
-
               <div
                 class="preview-card"
-                *ngIf="
-                  previewCuotas.length > 0
-                "
+                *ngIf="previewCuotas.length > 0"
               >
-
-                <!-- HEADER -->
 
                 <div class="preview-card__header">
 
@@ -1769,11 +1575,9 @@
                       PREVISUALIZACIÓN
                     </span>
 
-
                     <h3>
                       Cronograma de cuotas
                     </h3>
-
 
                     <p>
                       Revisa el cronograma antes
@@ -1795,10 +1599,7 @@
                 </div>
 
 
-                <!-- RESUMEN -->
-
                 <div class="preview-summary">
-
 
                   <div class="preview-summary__item">
 
@@ -1866,8 +1667,6 @@
                 </div>
 
 
-                <!-- TABLA PREVIEW -->
-
                 <div
                   class="preview-table-container"
                   *ngIf="
@@ -1881,17 +1680,9 @@
 
                       <tr>
 
-                        <th>
-                          #
-                        </th>
-
-                        <th>
-                          Vencimiento
-                        </th>
-
-                        <th>
-                          Monto
-                        </th>
+                        <th>#</th>
+                        <th>Vencimiento</th>
+                        <th>Monto</th>
 
                       </tr>
 
@@ -1942,9 +1733,7 @@
                         </td>
 
 
-                        <td
-                          class="preview-table__amount"
-                        >
+                        <td class="preview-table__amount">
 
                           {{
                             formatMonto(
@@ -1972,7 +1761,6 @@
                           Total
                         </td>
 
-
                         <td
                           class="preview-total"
                         >
@@ -1994,8 +1782,6 @@
                 </div>
 
 
-                <!-- SIN CUOTAS -->
-
                 <div
                   class="preview-empty"
                   *ngIf="
@@ -2009,8 +1795,6 @@
 
                 </div>
 
-
-                <!-- CONFIRMACIÓN -->
 
                 <div
                   class="preview-confirmation"
@@ -2029,7 +1813,6 @@
                     <strong>
                       ¿El cronograma es correcto?
                     </strong>
-
 
                     <p>
 
@@ -2053,9 +1836,7 @@
 
 
           <!-- ===================================================== -->
-          <!-- ===================================================== -->
           <!-- FORMULARIO ACELERADO -->
-          <!-- ===================================================== -->
           <!-- ===================================================== -->
 
           <ng-container
@@ -2063,9 +1844,7 @@
           >
 
 
-            <!-- =================================================== -->
             <!-- DATOS DEL CURSO -->
-            <!-- =================================================== -->
 
             <div class="section-card">
 
@@ -2093,9 +1872,6 @@
 
               <div class="form-grid">
 
-
-                <!-- NOMBRE -->
-
                 <div class="form-field full-width">
 
                   <label>
@@ -2118,8 +1894,6 @@
                 </div>
 
 
-                <!-- ESTADO -->
-
                 <div class="form-field">
 
                   <label>
@@ -2135,7 +1909,6 @@
                     <option [ngValue]="null">
                       Seleccionar estado
                     </option>
-
 
                     <option
                       *ngFor="
@@ -2153,8 +1926,6 @@
                 </div>
 
 
-                <!-- FECHA MATRÍCULA -->
-
                 <div class="form-field">
 
                   <label>
@@ -2171,8 +1942,6 @@
                 </div>
 
 
-                <!-- FECHA INICIO -->
-
                 <div class="form-field">
 
                   <label>
@@ -2188,8 +1957,6 @@
 
                 </div>
 
-
-                <!-- FECHA FIN -->
 
                 <div class="form-field">
 
@@ -2210,8 +1977,6 @@
 
                 </div>
 
-
-                <!-- NOTAS -->
 
                 <div class="form-field full-width">
 
@@ -2234,9 +1999,7 @@
             </div>
 
 
-            <!-- =================================================== -->
             <!-- MÁQUINAS -->
-            <!-- =================================================== -->
 
             <div class="section-card">
 
@@ -2275,8 +2038,6 @@
               </div>
 
 
-              <!-- SIN MÁQUINAS -->
-
               <div
                 class="accelerated-empty"
                 *ngIf="
@@ -2300,8 +2061,6 @@
               </div>
 
 
-              <!-- LISTA -->
-
               <div
                 class="accelerated-machines"
                 *ngIf="
@@ -2317,8 +2076,6 @@
                   "
                 >
 
-                  <!-- ORDEN -->
-
                   <div class="accelerated-machine-order">
 
                     <span>
@@ -2327,8 +2084,6 @@
 
                   </div>
 
-
-                  <!-- MÁQUINA -->
 
                   <div class="form-field">
 
@@ -2374,8 +2129,6 @@
                   </div>
 
 
-                  <!-- HORAS -->
-
                   <div class="form-field">
 
                     <label>
@@ -2395,8 +2148,6 @@
                   </div>
 
 
-                  <!-- SESIONES -->
-
                   <div class="form-field">
 
                     <label>
@@ -2415,8 +2166,6 @@
 
                   </div>
 
-
-                  <!-- REGALO -->
 
                   <div class="form-field machine-gift-field">
 
@@ -2441,8 +2190,6 @@
 
                   </div>
 
-
-                  <!-- ELIMINAR -->
 
                   <div class="accelerated-machine-actions">
 
@@ -2479,9 +2226,7 @@
             </div>
 
 
-            <!-- =================================================== -->
             <!-- PAGOS -->
-            <!-- =================================================== -->
 
             <div class="section-card">
 
@@ -2509,9 +2254,6 @@
 
               <div class="form-grid">
 
-
-                <!-- MATRÍCULA -->
-
                 <div class="form-field">
 
                   <label>
@@ -2538,8 +2280,6 @@
                 </div>
 
 
-                <!-- FECHA MATRÍCULA -->
-
                 <div class="form-field">
 
                   <label>
@@ -2555,8 +2295,6 @@
 
                 </div>
 
-
-                <!-- CERTIFICACIÓN -->
 
                 <div class="form-field">
 
@@ -2583,8 +2321,6 @@
 
                 </div>
 
-
-                <!-- FECHA CERTIFICACIÓN -->
 
                 <div class="form-field">
 
@@ -2644,9 +2380,7 @@
               </div>
 
 
-              <!-- ================================================= -->
               <!-- SIN CUOTAS -->
-              <!-- ================================================= -->
 
               <div
                 class="accelerated-empty"
@@ -2671,168 +2405,164 @@
 
 
               <!-- ================================================= -->
-              <!-- TABLA -->
+              <!-- TABLA DE CUOTAS CORREGIDA -->
               <!-- ================================================= -->
 
-<!-- ================================================= -->
-<!-- TABLA -->
-<!-- ================================================= -->
+              <div
+                class="accelerated-payment-table"
+                *ngIf="cuotasAceleradas.length > 0"
+              >
 
-<div
-  class="accelerated-payment-table"
-  *ngIf="cuotasAceleradas.length > 0"
->
+                <table>
 
-  <table>
+                  <thead>
 
-    <thead>
-      <tr>
+                    <tr>
 
-        <th>
-          #
-        </th>
+                      <th>
+                        #
+                      </th>
 
-        <th>
-          Monto
-        </th>
+                      <th>
+                        Monto
+                      </th>
 
-        <th>
-          Fecha programada
-        </th>
+                      <th>
+                        Fecha programada
+                      </th>
 
-        <th>
-          Fecha vencimiento
-        </th>
+                      <th>
+                        Fecha vencimiento
+                      </th>
 
-        <th>
-          Acción
-        </th>
+                      <th>
+                        Acción
+                      </th>
 
-      </tr>
-    </thead>
+                    </tr>
+
+                  </thead>
 
 
-    <tbody>
+                  <tbody>
 
-      <tr
-        *ngFor="
-          let cuota of cuotasAceleradas;
-          let i = index
-        "
-      >
+                    <tr
+                      *ngFor="
+                        let cuota of cuotasAceleradas;
+                        let i = index
+                      "
+                    >
 
-        <!-- NÚMERO -->
+                      <!-- NÚMERO -->
 
-        <td>
+                      <td>
 
-          <span class="cuota-number">
-            {{ cuota.numero_cuota }}
-          </span>
+                        <span class="cuota-number">
+                          {{ cuota.numero_cuota }}
+                        </span>
 
-        </td>
-
-
-        <!-- MONTO -->
-
-        <td>
-
-          <input
-            type="number"
-            min="0.01"
-            step="0.01"
-            [ngModel]="cuota.monto"
-            (ngModelChange)="
-              cuota.monto = $event === '' ? 0 : Number($event);
-              sincronizarColeccionesAceleradas();
-              recalcularTotalAcelerada()
-            "
-            placeholder="0.00"
-          />
-
-        </td>
+                      </td>
 
 
-        <!-- FECHA PROGRAMADA -->
+                      <!-- ================================================= -->
+                      <!-- MONTO -->
+                      <!-- ================================================= -->
 
-        <td>
+                      <td>
 
-          <input
-            type="date"
-            [ngModel]="cuota.fecha_programada"
-            (ngModelChange)="
-              cuota.fecha_programada = $event;
-              sincronizarColeccionesAceleradas()
-            "
-          />
+                        <input
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          [(ngModel)]="cuota.monto"
+                          (ngModelChange)="
+                            recalcularTotalAcelerada()
+                          "
+                          placeholder="0.00"
+                        />
 
-        </td>
-
-
-        <!-- FECHA VENCIMIENTO -->
-
-        <td>
-
-          <input
-            type="date"
-            [ngModel]="cuota.fecha_vencimiento"
-            (ngModelChange)="
-              cuota.fecha_vencimiento = $event;
-              sincronizarColeccionesAceleradas()
-            "
-          />
-
-        </td>
+                      </td>
 
 
-        <!-- ELIMINAR -->
+                      <!-- FECHA PROGRAMADA -->
 
-        <td>
+                      <td>
 
-          <button
-            type="button"
-            class="btn-table btn-delete"
-            (click)="
-              eliminarCuotaAcelerada(i)
-            "
-            [disabled]="saving"
-          >
-            Eliminar
-          </button>
+                        <input
+                          type="date"
+                          [(ngModel)]="cuota.fecha_programada"
+                        />
 
-        </td>
-
-      </tr>
-
-    </tbody>
+                      </td>
 
 
-    <!-- TOTAL CUOTAS -->
+                      <!-- FECHA VENCIMIENTO -->
 
-    <tfoot>
+                      <td>
 
-      <tr>
+                        <input
+                          type="date"
+                          [(ngModel)]="cuota.fecha_vencimiento"
+                        />
 
-        <td>
-          <strong>
-            Total cuotas
-          </strong>
-        </td>
+                      </td>
 
-        <td colspan="4">
 
-          <strong>
-            {{ formatMonto(totalCuotasAceleradas) }}
-          </strong>
+                      <!-- ELIMINAR -->
 
-        </td>
+                      <td>
 
-      </tr>
+                        <button
+                          type="button"
+                          class="btn-table btn-delete"
+                          (click)="
+                            eliminarCuotaAcelerada(i)
+                          "
+                          [disabled]="saving"
+                        >
+                          Eliminar
+                        </button>
 
-    </tfoot>
+                      </td>
 
-  </table>
+                    </tr>
 
-</div>
+                  </tbody>
+
+
+                  <!-- TOTAL -->
+
+                  <tfoot>
+
+                    <tr>
+
+                      <td>
+
+                        <strong>
+                          Total cuotas
+                        </strong>
+
+                      </td>
+
+                      <td colspan="4">
+
+                        <strong>
+                          {{
+                            formatMonto(
+                              totalCuotasAceleradas
+                            )
+                          }}
+                        </strong>
+
+                      </td>
+
+                    </tr>
+
+                  </tfoot>
+
+                </table>
+
+              </div>
 
             </div>
 
@@ -2841,73 +2571,90 @@
             <!-- RESUMEN FINANCIERO -->
             <!-- =================================================== -->
 
-<div class="accelerated-financial-summary">
+            <div class="accelerated-financial-summary">
 
-  <div class="accelerated-financial-summary__header">
+              <div class="accelerated-financial-summary__header">
 
-    <div>
+                <div>
 
-      <span>
-        RESUMEN FINANCIERO
-      </span>
+                  <span>
+                    RESUMEN FINANCIERO
+                  </span>
 
-      <h3>
-        Total del curso
-      </h3>
+                  <h3>
+                    Total del curso
+                  </h3>
 
-    </div>
+                </div>
 
-    <strong>
-      {{ formatMonto(totalAcelerada) }}
-    </strong>
+                <strong>
+                  {{ formatMonto(totalAcelerada) }}
+                </strong>
 
-  </div>
-
-
-  <div class="accelerated-financial-summary__grid">
-
-    <div>
-      <span>Matrícula</span>
-
-      <strong>
-        {{
-          formatMonto(
-            formAcelerada.pago.monto_matricula
-          )
-        }}
-      </strong>
-    </div>
+              </div>
 
 
-    <div>
-      <span>Cuotas</span>
+              <div class="accelerated-financial-summary__grid">
 
-      <strong>
-        {{
-          formatMonto(
-            totalCuotasAceleradas
-          )
-        }}
-      </strong>
-    </div>
+                <div>
+
+                  <span>
+                    Matrícula
+                  </span>
+
+                  <strong>
+
+                    {{
+                      formatMonto(
+                        formAcelerada.pago.monto_matricula
+                      )
+                    }}
+
+                  </strong>
+
+                </div>
 
 
-    <div>
-      <span>Certificación</span>
+                <div>
 
-      <strong>
-        {{
-          formatMonto(
-            formAcelerada.pago.monto_certificacion
-          )
-        }}
-      </strong>
-    </div>
+                  <span>
+                    Cuotas
+                  </span>
 
-  </div>
+                  <strong>
 
-</div>
+                    {{
+                      formatMonto(
+                        totalCuotasAceleradas
+                      )
+                    }}
 
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Certificación
+                  </span>
+
+                  <strong>
+
+                    {{
+                      formatMonto(
+                        formAcelerada.pago.monto_certificacion
+                      )
+                    }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
 
           </ng-container>
 
