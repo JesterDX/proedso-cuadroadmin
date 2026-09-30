@@ -154,3 +154,50 @@ export interface PrevisualizacionCuotasData {
 
   cuotas: CuotaCronograma[];
 }
+
+
+// ==========================================================
+// MATRÍCULA ACELERADA
+// ==========================================================
+
+export interface MaquinaMatriculaAceleradaPayload {
+  maquina_id: number;
+  orden: number;
+  es_regalo: boolean;
+  horas_asignadas: number;
+  sesiones_totales: number;
+}
+
+export interface CuotaMatriculaAceleradaPayload {
+  numero_cuota: number;
+  fecha_programada: string;
+  fecha_vencimiento: string;
+  monto: number;
+}
+
+export interface PagoMatriculaAceleradaPayload {
+  monto_matricula: number;
+  fecha_matricula: string | null;
+
+  monto_certificacion: number;
+  fecha_certificacion: string | null;
+
+  cuotas: CuotaMatriculaAceleradaPayload[];
+}
+
+export interface MatriculaAceleradaPayload {
+  alumno_id: number;
+  nombre_curso_manual: string;
+
+  estado_alumno_id: number;
+
+  fecha_matricula: string;
+  fecha_inicio: string | null;
+  fecha_fin_estimada: string | null;
+
+  notas?: string | null;
+
+  maquinas: MaquinaMatriculaAceleradaPayload[];
+
+  pago: PagoMatriculaAceleradaPayload;
+}
