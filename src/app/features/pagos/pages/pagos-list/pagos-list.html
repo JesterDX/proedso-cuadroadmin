@@ -1,4 +1,3 @@
-
 <section class="pagos-container">
 
   <!-- =========================================================
@@ -7,6 +6,7 @@
   <header class="main-header">
 
     <div class="header-info">
+
       <div class="header-kicker">
         <span class="kicker-dot"></span>
         Administración financiera
@@ -17,15 +17,25 @@
       <p>
         Panel de control y seguimiento financiero de alumnos
       </p>
+
     </div>
 
-    <div class="header-actions" *ngIf="!loading">
+
+    <div
+      class="header-actions"
+      *ngIf="!loading"
+    >
 
       <div class="mini-stat">
-        <span class="label">Total Alumnos</span>
+
+        <span class="label">
+          Total Alumnos
+        </span>
+
         <span class="value">
           {{ alumnosFiltrados.length }}
         </span>
+
       </div>
 
     </div>
@@ -41,7 +51,19 @@
     <!-- BUSCADOR -->
     <div class="search-box">
 
-      <span class="icon">🔍</span>
+      <span class="icon" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+      </span>
 
       <input
         type="text"
@@ -56,7 +78,9 @@
     <!-- MES -->
     <div class="filter-box">
 
-      <label>Mes</label>
+      <label>
+        Mes
+      </label>
 
       <select
         [(ngModel)]="mesMatricula"
@@ -83,13 +107,18 @@
     <!-- AÑO -->
     <div class="filter-box">
 
-      <label>Año</label>
+      <label>
+        Año
+      </label>
 
       <select
         [(ngModel)]="anioMatricula"
         (ngModelChange)="filtrar()"
       >
-        <option value="">Todos</option>
+
+        <option value="">
+          Todos
+        </option>
 
         <option
           *ngFor="let anio of aniosDisponibles"
@@ -106,12 +135,15 @@
     <!-- ESTADO -->
     <div class="filter-box">
 
-      <label>Estado</label>
+      <label>
+        Estado
+      </label>
 
       <select
         [(ngModel)]="estado"
         (ngModelChange)="filtrar()"
       >
+
         <option value="">
           Todos los registros
         </option>
@@ -135,8 +167,22 @@
       class="btn-primary"
       (click)="abrirModalPlanManual()"
     >
-      <span>＋</span>
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 5v14"></path>
+        <path d="M5 12h14"></path>
+      </svg>
+
       Asignar plan de pagos
+
     </button>
 
   </div>
@@ -178,7 +224,29 @@
         <div class="grupo-title">
 
           <div class="grupo-icon">
-            📅
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="17"
+                rx="2"
+              ></rect>
+
+              <path d="M16 2v4"></path>
+              <path d="M8 2v4"></path>
+              <path d="M3 10h18"></path>
+            </svg>
+
           </div>
 
           <div>
@@ -195,9 +263,17 @@
 
         </div>
 
+
         <div class="grupo-count">
+
           {{ grupo.alumnos.length }}
-          {{ grupo.alumnos.length === 1 ? 'alumno' : 'alumnos' }}
+
+          {{
+            grupo.alumnos.length === 1
+              ? 'alumno'
+              : 'alumnos'
+          }}
+
         </div>
 
       </div>
@@ -261,10 +337,15 @@
                 <ng-template #avatarDefault>
 
                   <div class="avatar">
-                    {{ a.alumno?.charAt(0) || '?' }}
+
+                    {{
+                      a.alumno?.charAt(0) || '?'
+                    }}
+
                   </div>
 
                 </ng-template>
+
 
                 <div class="alumno-info">
 
@@ -339,8 +420,22 @@
                   class="btn-detail"
                   (click)="verDetalle(a.matricula_id)"
                 >
+
                   Ver detalles
-                  <span>→</span>
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m13 6 6 6-6 6"></path>
+                  </svg>
+
                 </button>
 
               </td>
@@ -371,8 +466,21 @@
       class="page-btn"
       (click)="paginaAnterior()"
       [disabled]="paginaActual === 1"
+      aria-label="Página anterior"
     >
-      ←
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+
     </button>
 
 
@@ -392,8 +500,21 @@
       class="page-btn"
       (click)="paginaSiguiente()"
       [disabled]="paginaActual === totalPaginas"
+      aria-label="Página siguiente"
     >
-      →
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m9 18 6-6-6-6"></path>
+      </svg>
+
     </button>
 
   </div>
@@ -408,7 +529,20 @@
   >
 
     <div class="empty-icon">
-      📂
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 7h5l2 2h11v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h3"></path>
+      </svg>
+
     </div>
 
     <h3>
@@ -438,9 +572,7 @@
     (click)="$event.stopPropagation()"
   >
 
-    <!-- =======================================================
-         MODAL HEADER
-         ======================================================= -->
+    <!-- MODAL HEADER -->
     <header class="modal-header">
 
       <div class="user-meta-extended">
@@ -459,7 +591,11 @@
         <ng-template #avatarDefaultLg>
 
           <div class="avatar-lg">
-            {{ alumnoSeleccionado?.alumno?.charAt(0) || '?' }}
+
+            {{
+              alumnoSeleccionado?.alumno?.charAt(0) || '?'
+            }}
+
           </div>
 
         </ng-template>
@@ -478,13 +614,48 @@
           <div class="extra-data">
 
             <span>
-              📱
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.08 5.18 2 2 0 0 1 5.06 3h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L9 10.73a16 16 0 0 0 4.27 4.27l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 21 15.9z"></path>
+              </svg>
+
               {{ alumnoSeleccionado?.telefono || 'Sin teléfono' }}
+
             </span>
 
+
             <span>
-              🆔
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="17"
+                  rx="2"
+                ></rect>
+
+                <path d="M16 2v4"></path>
+                <path d="M8 2v4"></path>
+                <path d="M3 10h18"></path>
+              </svg>
+
               Matrícula #{{ alumnoSeleccionado?.matricula_id }}
+
             </span>
 
           </div>
@@ -498,28 +669,32 @@
         type="button"
         class="btn-close"
         (click)="cerrarModal()"
+        aria-label="Cerrar"
       >
-        ✕
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+
       </button>
 
     </header>
 
 
-    <!-- =======================================================
-         LAYOUT
-         ======================================================= -->
+    <!-- LAYOUT -->
     <div class="modal-layout">
 
-
-      <!-- =====================================================
-           CONTENIDO PRINCIPAL
-           ===================================================== -->
       <div class="modal-main">
 
-
-        <!-- ===================================================
-             RESUMEN
-             =================================================== -->
+        <!-- RESUMEN -->
         <div class="summary-grid">
 
           <div class="summary-card danger">
@@ -559,7 +734,11 @@
             </span>
 
             <span class="amount status">
-              {{ getTotalDeuda() > 0 ? 'Con deuda' : 'Al día' }}
+              {{
+                getTotalDeuda() > 0
+                  ? 'Con deuda'
+                  : 'Al día'
+              }}
             </span>
 
           </div>
@@ -567,9 +746,7 @@
         </div>
 
 
-        <!-- ===================================================
-             TABS
-             =================================================== -->
+        <!-- TABS -->
         <nav class="modal-tabs">
 
           <button
@@ -577,16 +754,51 @@
             (click)="cambiarTab('cuotas')"
             [class.active]="tab === 'cuotas'"
           >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M8 6h13"></path>
+              <path d="M8 12h13"></path>
+              <path d="M8 18h13"></path>
+              <path d="M3 6h.01"></path>
+              <path d="M3 12h.01"></path>
+              <path d="M3 18h.01"></path>
+            </svg>
+
             Estado de cuenta
+
           </button>
+
 
           <button
             type="button"
             (click)="cambiarTab('historial')"
             [class.active]="tab === 'historial'"
           >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+              <path d="M3 4v5h5"></path>
+              <path d="M12 7v5l3 2"></path>
+            </svg>
+
             Historial de pagos
+
           </button>
+
 
           <button
             type="button"
@@ -594,17 +806,36 @@
             [class.active]="tab === 'pago'"
             class="tab-highlight"
           >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect
+                x="2"
+                y="5"
+                width="20"
+                height="14"
+                rx="2"
+              ></rect>
+
+              <path d="M2 10h20"></path>
+              <path d="M6 15h4"></path>
+            </svg>
+
             Registrar pago
+
           </button>
 
         </nav>
 
 
-        <!-- ===================================================
-             MODAL BODY
-             =================================================== -->
+        <!-- MODAL BODY -->
         <main class="modal-body">
-
 
           <!-- =================================================
                TAB CUOTAS
@@ -686,8 +917,6 @@
                     (click)="abrirMiniPago(c)"
                   >
 
-
-                    <!-- CONCEPTO -->
                     <td>
 
                       <span
@@ -709,7 +938,6 @@
                     </td>
 
 
-                    <!-- VENCIMIENTO -->
                     <td
                       (click)="$event.stopPropagation()"
                     >
@@ -738,7 +966,6 @@
                     </td>
 
 
-                    <!-- PROGRAMADO -->
                     <td class="text-right">
 
                       <strong class="amount-programmed">
@@ -748,7 +975,6 @@
                     </td>
 
 
-                    <!-- PAGADO -->
                     <td class="text-right">
 
                       <span class="amount-paid">
@@ -758,7 +984,6 @@
                     </td>
 
 
-                    <!-- SALDO -->
                     <td
                       class="text-right"
                       [class.text-danger]="c.saldo_pendiente > 0"
@@ -772,7 +997,6 @@
                     </td>
 
 
-                    <!-- ESTADO -->
                     <td>
 
                       <span
@@ -790,7 +1014,6 @@
                     </td>
 
 
-                    <!-- ACCIÓN -->
                     <td
                       class="text-center quota-actions"
                       (click)="$event.stopPropagation()"
@@ -802,8 +1025,26 @@
                         title="Editar monto de esta cuota"
                         (click)="abrirEditarMontoCuota(c)"
                       >
-                        ✏️
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            d="M12 20h9"
+                          ></path>
+
+                          <path
+                            d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                          ></path>
+                        </svg>
+
                       </button>
+
 
                       <button
                         type="button"
@@ -812,7 +1053,26 @@
                         title="Registrar pago"
                         (click)="abrirMiniPago(c)"
                       >
-                        💳
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <rect
+                            x="2"
+                            y="5"
+                            width="20"
+                            height="14"
+                            rx="2"
+                          ></rect>
+
+                          <path d="M2 10h20"></path>
+                        </svg>
+
                       </button>
 
                     </td>
@@ -820,7 +1080,6 @@
                   </tr>
 
 
-                  <!-- SIN CUOTAS -->
                   <tr *ngIf="!cuotasOrdenadas.length">
 
                     <td
@@ -882,7 +1141,26 @@
               >
 
                 <div class="history-icon">
-                  💳
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect
+                      x="2"
+                      y="5"
+                      width="20"
+                      height="14"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M2 10h20"></path>
+                  </svg>
+
                 </div>
 
 
@@ -895,18 +1173,82 @@
                   <div class="h-meta">
 
                     <span>
-                      📅
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect
+                          x="3"
+                          y="4"
+                          width="18"
+                          height="17"
+                          rx="2"
+                        ></rect>
+
+                        <path d="M16 2v4"></path>
+                        <path d="M8 2v4"></path>
+                        <path d="M3 10h18"></path>
+                      </svg>
+
                       {{ formatFecha(h.fecha_pago) }}
+
                     </span>
 
+
                     <span>
-                      💳
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect
+                          x="2"
+                          y="5"
+                          width="20"
+                          height="14"
+                          rx="2"
+                        ></rect>
+
+                        <path d="M2 10h20"></path>
+                      </svg>
+
                       {{ h.metodo_pago || 'Sin método' }}
+
                     </span>
 
+
                     <span>
-                      👤
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M20 21a8 8 0 0 0-16 0"
+                        ></path>
+
+                        <circle
+                          cx="12"
+                          cy="7"
+                          r="4"
+                        ></circle>
+                      </svg>
+
                       {{ h.usuario || 'Admin' }}
+
                     </span>
 
                   </div>
@@ -930,7 +1272,22 @@
                       rel="noopener noreferrer"
                       class="btn-voucher"
                     >
-                      📎 Ver comprobante
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                        ></path>
+                      </svg>
+
+                      Ver comprobante
+
                     </a>
 
 
@@ -939,7 +1296,24 @@
                       class="btn-edit-payment"
                       (click)="editarPago(h)"
                     >
-                      ✏️ Editar
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M12 20h9"></path>
+
+                        <path
+                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                        ></path>
+                      </svg>
+
+                      Editar
+
                     </button>
 
 
@@ -948,7 +1322,24 @@
                       class="btn-delete-payment"
                       (click)="eliminarPago(h.id)"
                     >
-                      🗑️ Eliminar
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M3 6h18"></path>
+                        <path d="M8 6V4h8v2"></path>
+                        <path d="M19 6v14H5V6"></path>
+                        <path d="M10 11v5"></path>
+                        <path d="M14 11v5"></path>
+                      </svg>
+
+                      Eliminar
+
                     </button>
 
                   </div>
@@ -983,7 +1374,26 @@
               <div class="payment-header">
 
                 <div class="payment-icon">
-                  💳
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect
+                      x="2"
+                      y="5"
+                      width="20"
+                      height="14"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M2 10h20"></path>
+                  </svg>
+
                 </div>
 
                 <div>
@@ -1020,10 +1430,19 @@
                     *ngFor="let c of cuotasPendientes"
                     [ngValue]="c.id"
                   >
+
                     {{ c.concepto_nombre }}
-                    {{ c.numero_cuota ? ' #' + c.numero_cuota : '' }}
+
+                    {{
+                      c.numero_cuota
+                        ? ' #' + c.numero_cuota
+                        : ''
+                    }}
+
                     -
+
                     {{ formatMonto(c.saldo_pendiente) }}
+
                   </option>
 
                 </select>
@@ -1115,6 +1534,7 @@
                   <select
                     [(ngModel)]="formPago.metodo_pago"
                   >
+
                     <option value="EFECTIVO">
                       💵 Efectivo
                     </option>
@@ -1130,6 +1550,7 @@
                     <option value="TRANSFERENCIA">
                       🏦 Transferencia
                     </option>
+
                   </select>
 
                 </div>
@@ -1161,7 +1582,22 @@
                 class="btn-save-payment"
                 (click)="registrarPago()"
               >
-                💾 Registrar pago
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                  <path d="M17 21v-8H7v8"></path>
+                  <path d="M7 3v5h8"></path>
+                </svg>
+
+                Registrar pago
+
               </button>
 
             </div>
@@ -1196,6 +1632,7 @@
                 <button
                   type="button"
                   (click)="miniModalOpen=false"
+                  aria-label="Cerrar"
                 >
                   ✕
                 </button>
@@ -1318,7 +1755,28 @@
                   class="btn-pay"
                   (click)="pagarMini()"
                 >
-                  💳 Registrar pago
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect
+                      x="2"
+                      y="5"
+                      width="20"
+                      height="14"
+                      rx="2"
+                    ></rect>
+
+                    <path d="M2 10h20"></path>
+                  </svg>
+
+                  Registrar pago
+
                 </button>
 
               </div>
@@ -1332,11 +1790,8 @@
       </div>
 
 
-      <!-- =====================================================
-           SIDEBAR
-           ===================================================== -->
+      <!-- SIDEBAR -->
       <aside class="modal-sidebar">
-
 
         <!-- DETALLES -->
         <div class="sidebar-section">
@@ -1410,6 +1865,7 @@
               <select
                 [(ngModel)]="formRecalculo.tipo"
               >
+
                 <option value="MENSUAL">
                   Mensual
                 </option>
@@ -1417,6 +1873,7 @@
                 <option value="QUINCENAL">
                   Quincenal
                 </option>
+
               </select>
 
             </div>
@@ -1458,7 +1915,23 @@
             class="btn-recalcular"
             (click)="recalcularPlan()"
           >
-            🔄 Recalcular plan
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12a9 9 0 0 0-15.5-6.3L3 8"></path>
+              <path d="M3 3v5h5"></path>
+              <path d="M3 12a9 9 0 0 0 15.5 6.3L21 16"></path>
+              <path d="M21 21v-5h-5"></path>
+            </svg>
+
+            Recalcular plan
+
           </button>
 
         </div>
@@ -1471,7 +1944,6 @@
             Gestión de fechas
           </h4>
 
-
           <p class="sidebar-description">
             Modifica las fechas de vencimiento de las cuotas pendientes.
           </p>
@@ -1482,7 +1954,22 @@
             class="btn-secondary w-100"
             (click)="toggleEditarFechas()"
           >
-            {{ editandoFechas ? 'Cancelar edición' : '✏️ Editar fechas' }}
+
+            <svg
+              *ngIf="!editandoFechas"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+            </svg>
+
+            {{ editandoFechas ? 'Cancelar edición' : 'Editar fechas' }}
+
           </button>
 
 
@@ -1492,7 +1979,22 @@
             class="btn-primary w-100 mt-2"
             (click)="guardarFechas()"
           >
-            💾 Guardar fechas
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+              <path d="M17 21v-8H7v8"></path>
+              <path d="M7 3v5h8"></path>
+            </svg>
+
+            Guardar fechas
+
           </button>
 
         </div>
@@ -1525,15 +2027,31 @@
         </span>
 
         <h3>
-          🛠️ Constructor de Plan Manual
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 3v18"></path>
+            <path d="M3 12h18"></path>
+          </svg>
+
+          Constructor de Plan Manual
+
         </h3>
 
       </div>
+
 
       <button
         type="button"
         class="btn-close"
         (click)="cerrarModalPlanManual()"
+        aria-label="Cerrar"
       >
         ✕
       </button>
@@ -1542,7 +2060,6 @@
 
 
     <div class="modal-body">
-
 
       <!-- BUSCAR ALUMNO -->
       <div class="search-section">
@@ -1553,9 +2070,17 @@
 
         <div class="search-manual">
 
-          <span>
-            🔍
-          </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
 
           <input
             type="text"
@@ -1625,14 +2150,25 @@
 
         <div class="grid-layout">
 
-
           <!-- CONFIGURACIÓN -->
           <div class="config-panel">
 
             <div class="panel-heading">
 
               <span class="panel-icon">
-                ⚙️
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06-1.7 1.7-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V20h-2.4v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06-1.7-1.7.06-.06A1.65 1.65 0 0 0 8.6 15a1.65 1.65 0 0 0-1.51-1H7v-2.4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06 1.7-1.7.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V5h2.4v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06 1.7 1.7-.06.06A1.65 1.65 0 0 0 19.4 10a1.65 1.65 0 0 0 1.51 1H21v2.4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
+                </svg>
+
               </span>
 
               <div>
@@ -1755,7 +2291,19 @@
             <div class="panel-heading">
 
               <span class="panel-icon">
-                ＋
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 5v14"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+
               </span>
 
               <div>
@@ -1826,7 +2374,21 @@
                 class="btn-secondary"
                 (click)="agregarCuota()"
               >
-                ＋ Añadir
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 5v14"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+
+                Añadir
+
               </button>
 
             </div>
@@ -1840,7 +2402,21 @@
             <div class="panel-heading">
 
               <span class="panel-icon">
-                📋
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <path d="M14 2v6h6"></path>
+                  <path d="M8 13h8"></path>
+                  <path d="M8 17h8"></path>
+                </svg>
+
               </span>
 
               <div>
@@ -1861,6 +2437,7 @@
             <div class="preview-summary">
 
               <div>
+
                 <span>
                   Cuotas
                 </span>
@@ -1868,15 +2445,18 @@
                 <strong>
                   {{ formularioPlan.cuotas.length }}
                 </strong>
+
               </div>
 
 
               <div>
+
                 <span>
                   Total
                 </span>
 
                 <strong>
+
                   {{ formatMonto(
                     formularioPlan.cuotas
                       .reduce(
@@ -1885,7 +2465,9 @@
                         0
                       )
                   ) }}
+
                 </strong>
+
               </div>
 
             </div>
@@ -1928,9 +2510,11 @@
                   >
 
                     <td>
+
                       <span class="number-badge">
                         {{ c.numero_cuota }}
                       </span>
+
                     </td>
 
                     <td>
@@ -1938,9 +2522,11 @@
                     </td>
 
                     <td class="text-right">
+
                       <strong>
                         {{ formatMonto(c.monto || 0) }}
                       </strong>
+
                     </td>
 
                     <td>
@@ -1951,7 +2537,22 @@
                         (click)="eliminarCuota(i)"
                         title="Eliminar cuota"
                       >
-                        🗑️
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M3 6h18"></path>
+                          <path d="M8 6V4h8v2"></path>
+                          <path d="M19 6v14H5V6"></path>
+                          <path d="M10 11v5"></path>
+                          <path d="M14 11v5"></path>
+                        </svg>
+
                       </button>
 
                     </td>
@@ -1994,7 +2595,26 @@
       >
 
         <div>
-          👤
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle
+              cx="12"
+              cy="8"
+              r="4"
+            ></circle>
+
+            <path
+              d="M4 21a8 8 0 0 1 16 0"
+            ></path>
+          </svg>
+
         </div>
 
         <h4>
@@ -2033,7 +2653,22 @@
         "
         (click)="guardarPlanManual()"
       >
-        💾 Guardar plan manual
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+          <path d="M17 21v-8H7v8"></path>
+          <path d="M7 3v5h8"></path>
+        </svg>
+
+        Guardar plan manual
+
       </button>
 
     </footer>
@@ -2062,7 +2697,7 @@
         </span>
 
         <h3>
-          ✏️ Editar pago
+          Editar pago
         </h3>
 
       </div>
@@ -2070,6 +2705,7 @@
       <button
         type="button"
         (click)="modalEditarPago=false"
+        aria-label="Cerrar"
       >
         ✕
       </button>
@@ -2171,7 +2807,22 @@
         class="btn-pay"
         (click)="guardarEditarPago()"
       >
-        💾 Guardar cambios
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+          <path d="M17 21v-8H7v8"></path>
+          <path d="M7 3v5h8"></path>
+        </svg>
+
+        Guardar cambios
+
       </button>
 
     </div>
@@ -2200,15 +2851,17 @@
         </span>
 
         <h3>
-          ✏️ Editar monto de cuota
+          Editar monto de cuota
         </h3>
 
         <small *ngIf="cuotaEditando">
+
           {{ cuotaEditando.concepto_nombre }}
 
           <span *ngIf="cuotaEditando.numero_cuota">
             · Cuota #{{ cuotaEditando.numero_cuota }}
           </span>
+
         </small>
 
       </div>
@@ -2217,6 +2870,7 @@
       <button
         type="button"
         (click)="modalEditarCuota=false"
+        aria-label="Cerrar"
       >
         ✕
       </button>
@@ -2226,7 +2880,6 @@
 
     <div class="mini-body">
 
-      <!-- ACTUAL -->
       <div class="edit-cuota-summary">
 
         <div class="edit-summary-item">
@@ -2276,7 +2929,6 @@
       </div>
 
 
-      <!-- NUEVO MONTO -->
       <div class="mini-field edit-cuota-input">
 
         <label>
@@ -2306,7 +2958,6 @@
       </div>
 
 
-      <!-- NUEVO SALDO -->
       <div class="new-balance-preview">
 
         <div>
@@ -2328,11 +2979,26 @@
       </div>
 
 
-      <!-- ADVERTENCIA -->
       <div class="edit-cuota-warning">
 
         <span class="warning-icon">
-          ⚠️
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10.3 3.6 2.1 18a2 2 0 0 0 1.7 3h16.4a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"
+            ></path>
+
+            <path d="M12 9v4"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+
         </span>
 
         <div>
@@ -2369,7 +3035,22 @@
         class="btn-pay"
         (click)="guardarEditarMontoCuota()"
       >
-        💾 Guardar monto
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+          <path d="M17 21v-8H7v8"></path>
+          <path d="M7 3v5h8"></path>
+        </svg>
+
+        Guardar monto
+
       </button>
 
     </div>
