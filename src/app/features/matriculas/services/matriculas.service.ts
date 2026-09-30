@@ -9,8 +9,12 @@ import {
 
 import { ApiResponse } from '../../../core/models/api-response.model';
 
-import { Matricula, MatriculaPayload, PrevisualizacionCuotasData } from '../models/matricula.model';
-
+import {
+  Matricula,
+  MatriculaPayload,
+  PrevisualizacionCuotasData,
+  MatriculaAceleradaPayload
+} from '../models/matricula.model';
 import { MatriculaDetail } from '../models/matricula-detail.model';
 import { MatriculaMaquina } from '../models/matricula-maquina.model';
 import { MatriculaFinanzasData } from '../models/matricula-finanzas.model';
@@ -312,5 +316,7 @@ previsualizarCuotas(
       `${this.apiUrl}/${id}/finanzas`
     );
   }
+
+  
 
 }
