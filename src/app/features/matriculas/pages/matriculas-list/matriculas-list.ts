@@ -4046,29 +4046,18 @@ export class MatriculasList implements OnInit {
   // NOMBRE PLAN
   // ==========================================================
 
-  getNombrePlan(
-    planId: number
-  ): string {
-
-    if (!planId) {
-
-      return 'Curso acelerado';
-
-    }
-
-
-    const plan =
-      this.planesCurso.find(
-        (p) =>
-          Number(p.id) ===
-          Number(planId)
-      );
-
-
-    return plan?.nombre ??
-      '-';
-
+getNombrePlan(planId: number | null | undefined): string {
+  // Las matrículas aceleradas no tienen plan_curso_id
+  if (planId == null) {
+    return 'Curso acelerado';
   }
+
+  const plan = this.planesCurso.find(
+    p => Number(p.id) === Number(planId)
+  );
+
+  return plan?.nombre ?? 'Plan no encontrado';
+}
 
 
   // ==========================================================
