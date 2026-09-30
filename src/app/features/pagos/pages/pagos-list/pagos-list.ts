@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +11,14 @@ import { PagosService } from '../../services/pagos.service';
   styleUrls: ['./pagos-list.scss']
 })
 export class PagosList implements OnInit {
+
+  // ============================================================
+  // EXPONER OBJETOS NATIVOS PARA EL TEMPLATE ANGULAR
+  // ============================================================
+
+  readonly Math = Math;
+  readonly Number = Number;
+
 
   // ============================================================
   // INYECCIÓN
@@ -35,13 +42,10 @@ export class PagosList implements OnInit {
 
   modalManualAbierto = false;
 
-  // NUEVO: modal para editar monto de cuota
   modalEditarCuota = false;
 
-  // NUEVO: cuota actualmente seleccionada para editar
   cuotaEditando: any = null;
 
-  // NUEVO: formulario para editar monto de cuota
   formEditarCuota = {
     monto: null as number | null
   };
@@ -53,7 +57,6 @@ export class PagosList implements OnInit {
   gruposPaginados: any[] = [];
 
   aniosDisponibles: number[] = [];
-
 
   tab: 'cuotas' | 'historial' | 'pago' = 'cuotas';
 
@@ -332,11 +335,6 @@ export class PagosList implements OnInit {
     const filtrados =
       this.alumnos.filter(a => {
 
-
-        // --------------------------------------------------------
-        // BÚSQUEDA
-        // --------------------------------------------------------
-
         const cumpleBusqueda =
 
           !search ||
@@ -349,10 +347,6 @@ export class PagosList implements OnInit {
             ?.toLowerCase()
             .includes(search);
 
-
-        // --------------------------------------------------------
-        // ESTADO
-        // --------------------------------------------------------
 
         const cumpleEstado =
 
@@ -368,10 +362,6 @@ export class PagosList implements OnInit {
             a.tiene_deuda
           );
 
-
-        // --------------------------------------------------------
-        // FECHA
-        // --------------------------------------------------------
 
         const fechaAgrupacion =
 
@@ -429,21 +419,13 @@ export class PagosList implements OnInit {
 
 
         return (
-
           cumpleBusqueda &&
-
           cumpleEstado &&
-
           cumpleFecha
-
         );
 
       });
 
-
-    // ----------------------------------------------------------
-    // ORDENAR
-    // ----------------------------------------------------------
 
     filtrados.sort((a, b) => {
 
@@ -459,23 +441,17 @@ export class PagosList implements OnInit {
 
 
       if (!fechaA && !fechaB) {
-
         return 0;
-
       }
 
 
       if (!fechaA) {
-
         return 1;
-
       }
 
 
       if (!fechaB) {
-
         return -1;
-
       }
 
 
@@ -487,32 +463,22 @@ export class PagosList implements OnInit {
 
 
       if (tiempoA !== tiempoB) {
-
         return tiempoB - tiempoA;
-
       }
 
 
       return (
         a.alumno || ''
       ).localeCompare(
-
         b.alumno || '',
-
         'es',
-
         {
           sensitivity: 'base'
         }
-
       );
 
     });
 
-
-    // ----------------------------------------------------------
-    // PAGINACIÓN
-    // ----------------------------------------------------------
 
     this.totalPaginas =
       Math.ceil(
@@ -522,26 +488,21 @@ export class PagosList implements OnInit {
 
 
     if (this.totalPaginas === 0) {
-
       this.totalPaginas = 1;
-
     }
 
 
     const inicio =
-
       (this.paginaActual - 1) *
       this.itemsPorPagina;
 
 
     const fin =
-
       inicio +
       this.itemsPorPagina;
 
 
     const paginaActualData =
-
       filtrados.slice(
         inicio,
         fin
@@ -553,73 +514,39 @@ export class PagosList implements OnInit {
 
 
     this.paginas =
-
       Array.from(
-
         {
           length:
             this.totalPaginas
         },
-
         (_, i) => i + 1
-
       );
 
 
-    // ----------------------------------------------------------
-    // MESES
-    // ----------------------------------------------------------
-
     const meses = [
-
       'Enero',
-
       'Febrero',
-
       'Marzo',
-
       'Abril',
-
       'Mayo',
-
       'Junio',
-
       'Julio',
-
       'Agosto',
-
       'Septiembre',
-
       'Octubre',
-
       'Noviembre',
-
       'Diciembre'
-
     ];
 
 
-    // ----------------------------------------------------------
-    // AGRUPACIÓN
-    // ----------------------------------------------------------
-
     const grupos: {
-
       [key: string]: {
-
         anio: number | null;
-
         mesNumero: number | null;
-
         mes: string;
-
-        fechaReferencia:
-          string | null;
-
+        fechaReferencia: string | null;
         alumnos: any[];
-
       }
-
     } = {};
 
 
@@ -627,17 +554,10 @@ export class PagosList implements OnInit {
       alumno => {
 
         const fechaReferencia =
-
           alumno.fecha_inicio ||
-
           alumno.fecha_matricula ||
-
           null;
 
-
-        // ------------------------------------------------------
-        // SIN FECHA
-        // ------------------------------------------------------
 
         if (!fechaReferencia) {
 
@@ -650,13 +570,9 @@ export class PagosList implements OnInit {
             grupos[key] = {
 
               anio: null,
-
               mesNumero: null,
-
               mes: 'Sin fecha',
-
               fechaReferencia: null,
-
               alumnos: []
 
             };
@@ -673,10 +589,6 @@ export class PagosList implements OnInit {
 
         }
 
-
-        // ------------------------------------------------------
-        // CON FECHA
-        // ------------------------------------------------------
 
         const fecha =
           new Date(
@@ -699,13 +611,9 @@ export class PagosList implements OnInit {
             grupos[key] = {
 
               anio: null,
-
               mesNumero: null,
-
               mes: 'Sin fecha',
-
               fechaReferencia: null,
-
               alumnos: []
 
             };
@@ -726,10 +634,8 @@ export class PagosList implements OnInit {
         const anio =
           fecha.getFullYear();
 
-
         const mes =
           fecha.getMonth();
-
 
         const key =
           `${anio}-${mes}`;
@@ -740,14 +646,10 @@ export class PagosList implements OnInit {
           grupos[key] = {
 
             anio,
-
             mesNumero: mes,
-
             mes:
               `${meses[mes]} ${anio}`,
-
             fechaReferencia,
-
             alumnos: []
 
           };
@@ -762,25 +664,16 @@ export class PagosList implements OnInit {
       });
 
 
-    // ----------------------------------------------------------
-    // ORDENAR GRUPOS
-    // ----------------------------------------------------------
-
     this.gruposPaginados =
-
       Object.values(grupos)
-
         .sort(
           (a: any, b: any) => {
-
 
             if (
               a.anio === null &&
               b.anio !== null
             ) {
-
               return 1;
-
             }
 
 
@@ -788,9 +681,7 @@ export class PagosList implements OnInit {
               a.anio !== null &&
               b.anio === null
             ) {
-
               return -1;
-
             }
 
 
@@ -798,16 +689,12 @@ export class PagosList implements OnInit {
               a.anio === null &&
               b.anio === null
             ) {
-
               return 0;
-
             }
 
 
             if (a.anio !== b.anio) {
-
               return b.anio - a.anio;
-
             }
 
 
@@ -835,9 +722,7 @@ export class PagosList implements OnInit {
       p < 1 ||
       p > this.totalPaginas
     ) {
-
       return;
-
     }
 
     this.paginaActual = p;
@@ -913,9 +798,7 @@ export class PagosList implements OnInit {
     if (
       !this.pagoEditando
     ) {
-
       return;
-
     }
 
 
@@ -924,23 +807,17 @@ export class PagosList implements OnInit {
 
 
     formData.append(
-
       'monto',
-
       String(
         this.formEditarPago.monto
       )
-
     );
 
 
     formData.append(
-
       'metodo_pago',
-
       this.formEditarPago
         .metodo_pago
-
     );
 
 
@@ -949,36 +826,25 @@ export class PagosList implements OnInit {
     ) {
 
       formData.append(
-
         'comprobante',
-
         this.fileEditarPago
-
       );
 
     }
 
 
     this.pagosService
-
       .editarPago(
-
         this.pagoEditando.id,
-
         formData
-
       )
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Pago actualizado correctamente',
-
             'success'
-
           );
 
 
@@ -996,18 +862,14 @@ export class PagosList implements OnInit {
           ) {
 
             this.cargarHistorial(
-
               this.alumnoSeleccionado
                 .matricula_id
-
             );
 
 
             this.verDetalle(
-
               this.alumnoSeleccionado
                 .matricula_id
-
             );
 
           }
@@ -1023,12 +885,9 @@ export class PagosList implements OnInit {
 
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error al editar pago',
-
             'error'
-
           );
 
         }
@@ -1049,26 +908,19 @@ export class PagosList implements OnInit {
         '¿Eliminar este pago?'
       )
     ) {
-
       return;
-
     }
 
 
     this.pagosService
-
       .eliminarPago(id)
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Pago eliminado correctamente',
-
             'success'
-
           );
 
 
@@ -1078,18 +930,14 @@ export class PagosList implements OnInit {
           ) {
 
             this.cargarHistorial(
-
               this.alumnoSeleccionado
                 .matricula_id
-
             );
 
 
             this.verDetalle(
-
               this.alumnoSeleccionado
                 .matricula_id
-
             );
 
           }
@@ -1105,12 +953,9 @@ export class PagosList implements OnInit {
 
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error al eliminar pago',
-
             'error'
-
           );
 
         }
@@ -1129,9 +974,7 @@ export class PagosList implements OnInit {
   ) {
 
     if (!cuota) {
-
       return;
-
     }
 
 
@@ -1168,9 +1011,7 @@ export class PagosList implements OnInit {
     if (
       !this.cuotaEditando
     ) {
-
       return 0;
-
     }
 
 
@@ -1205,9 +1046,7 @@ export class PagosList implements OnInit {
     if (
       !this.cuotaEditando
     ) {
-
       return;
-
     }
 
 
@@ -1218,10 +1057,6 @@ export class PagosList implements OnInit {
       );
 
 
-    // ----------------------------------------------------------
-    // VALIDACIÓN MONTO
-    // ----------------------------------------------------------
-
     if (
       !Number.isFinite(
         nuevoMonto
@@ -1230,21 +1065,14 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'Ingresa un monto válido mayor a cero.',
-
         'warning'
-
       );
 
       return;
 
     }
 
-
-    // ----------------------------------------------------------
-    // MONTO YA PAGADO
-    // ----------------------------------------------------------
 
     const montoPagado =
       Number(
@@ -1253,20 +1081,14 @@ export class PagosList implements OnInit {
       );
 
 
-    // No permitir que la cuota quede por debajo
-    // de lo que ya pagó el alumno.
-
     if (
       nuevoMonto <
       montoPagado
     ) {
 
       this.mostrarNotificacion(
-
         `El monto no puede ser menor a lo ya pagado: ${this.formatMonto(montoPagado)}`,
-
         'warning'
-
       );
 
       return;
@@ -1277,22 +1099,13 @@ export class PagosList implements OnInit {
     this.loading = true;
 
 
-    // ----------------------------------------------------------
-    // LLAMAR BACKEND
-    // ----------------------------------------------------------
-
     this.pagosService
-
       .editarMontoCuota(
-
         Number(
           this.cuotaEditando.id
         ),
-
         nuevoMonto
-
       )
-
       .subscribe({
 
         next: () => {
@@ -1301,11 +1114,8 @@ export class PagosList implements OnInit {
 
 
           this.mostrarNotificacion(
-
             'Monto de la cuota actualizado correctamente.',
-
             'success'
-
           );
 
 
@@ -1318,13 +1128,9 @@ export class PagosList implements OnInit {
 
 
           this.formEditarCuota = {
-
             monto: null
-
           };
 
-
-          // Recargar detalle
 
           if (
             this.alumnoSeleccionado
@@ -1332,16 +1138,12 @@ export class PagosList implements OnInit {
           ) {
 
             this.verDetalle(
-
               this.alumnoSeleccionado
                 .matricula_id
-
             );
 
           }
 
-
-          // Recargar listado
 
           this.cargar();
 
@@ -1354,21 +1156,15 @@ export class PagosList implements OnInit {
 
 
           console.error(
-
             'Error al editar monto de cuota:',
-
             err
-
           );
 
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'No se pudo actualizar el monto de la cuota.',
-
             'error'
-
           );
 
         }
@@ -1457,7 +1253,6 @@ export class PagosList implements OnInit {
   ) {
 
     const termino =
-
       (
         event.target as
         HTMLInputElement
@@ -1485,11 +1280,9 @@ export class PagosList implements OnInit {
       setTimeout(() => {
 
         this.pagosService
-
           .buscarMatriculas(
             termino
           )
-
           .subscribe({
 
             next: (res) => {
@@ -1548,11 +1341,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'Llena la fecha y el monto de la cuota',
-
         'warning'
-
       );
 
       return;
@@ -1563,9 +1353,7 @@ export class PagosList implements OnInit {
     this.formularioPlan
       .cuotas
       .push({
-
         ...this.cuotaTemporal
-
       });
 
 
@@ -1616,20 +1404,15 @@ export class PagosList implements OnInit {
   guardarPlanManual() {
 
     const totalCuotas =
-
       this.formularioPlan
         .cuotas
         .reduce(
-
           (sum, cuota) =>
-
             sum +
             Number(
               cuota.monto || 0
             ),
-
           0
-
         );
 
 
@@ -1642,11 +1425,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'La suma de las cuotas no coincide con el monto total',
-
         'warning'
-
       );
 
       return;
@@ -1660,11 +1440,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'Debes agregar al menos una cuota',
-
         'warning'
-
       );
 
       return;
@@ -1676,21 +1453,16 @@ export class PagosList implements OnInit {
 
 
     this.pagosService
-
       .crearPlanManual(
         this.formularioPlan
       )
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Plan manual creado con éxito',
-
             'success'
-
           );
 
 
@@ -1707,12 +1479,9 @@ export class PagosList implements OnInit {
 
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error al crear plan',
-
             'error'
-
           );
 
         }
@@ -1734,11 +1503,9 @@ export class PagosList implements OnInit {
 
 
     this.pagosService
-
       .detalle(
         matriculaId
       )
-
       .subscribe({
 
         next: (data) => {
@@ -1794,9 +1561,7 @@ export class PagosList implements OnInit {
   ) {
 
     this.pagosService
-
       .historial(id)
-
       .subscribe({
 
         next: (data) => {
@@ -1856,9 +1621,7 @@ export class PagosList implements OnInit {
     if (
       !this.cuotasDetalle
     ) {
-
       return [];
-
     }
 
 
@@ -1875,9 +1638,7 @@ export class PagosList implements OnInit {
 
 
     return [
-
       ...this.cuotasDetalle
-
     ].sort((a, b) => {
 
       const ordenA =
@@ -1906,17 +1667,14 @@ export class PagosList implements OnInit {
 
 
       return (
-
         (
           a.numero_cuota ||
           0
         ) -
-
         (
           b.numero_cuota ||
           0
         )
-
       );
 
     });
@@ -1950,12 +1708,10 @@ export class PagosList implements OnInit {
 
     const cuota =
       this.cuotasDetalle.find(
-
         c =>
           c.id ==
           this.formPago
             .cuota_id
-
       );
 
 
@@ -1977,12 +1733,10 @@ export class PagosList implements OnInit {
   getCuotaSeleccionada() {
 
     return this.cuotasDetalle.find(
-
       c =>
         c.id ==
         this.formPago
           .cuota_id
-
     );
 
   }
@@ -2000,11 +1754,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'No hay plan de pago disponible',
-
         'error'
-
       );
 
       return;
@@ -2013,11 +1764,9 @@ export class PagosList implements OnInit {
 
 
     this.pagosService
-
       .recalcularPlan({
 
         plan_pago_alumno_id:
-
           this.alumnoSeleccionado
             .plan_pago_alumno_id,
 
@@ -2034,17 +1783,13 @@ export class PagosList implements OnInit {
             .cantidad_cuotas
 
       })
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Plan de pagos recalculado con éxito',
-
             'success'
-
           );
 
 
@@ -2053,10 +1798,8 @@ export class PagosList implements OnInit {
 
 
           this.verDetalle(
-
             this.alumnoSeleccionado
               .matricula_id
-
           );
 
         },
@@ -2065,12 +1808,9 @@ export class PagosList implements OnInit {
         error: (err) => {
 
           this.mostrarNotificacion(
-
             err?.error?.error ||
             'Error al recalcular el plan',
-
             'error'
-
           );
 
         }
@@ -2095,16 +1835,12 @@ export class PagosList implements OnInit {
   guardarFechas() {
 
     const data =
-
       this.cuotasDetalle
-
         .filter(
           c =>
             c.saldo_pendiente > 0
         )
-
         .map(c => ({
-
           cuota_id:
             Number(c.id),
 
@@ -2112,18 +1848,14 @@ export class PagosList implements OnInit {
             String(
               c.fecha_vencimiento
             )
-
         }));
 
 
     if (!data.length) {
 
       this.mostrarNotificacion(
-
         'No hay fechas pendientes para actualizar.',
-
         'warning'
-
       );
 
       return;
@@ -2132,19 +1864,14 @@ export class PagosList implements OnInit {
 
 
     this.pagosService
-
       .actualizarFechas(data)
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Fechas de vencimiento actualizadas',
-
             'success'
-
           );
 
 
@@ -2153,10 +1880,8 @@ export class PagosList implements OnInit {
 
 
           this.verDetalle(
-
             this.alumnoSeleccionado
               .matricula_id
-
           );
 
         },
@@ -2170,12 +1895,9 @@ export class PagosList implements OnInit {
 
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error al actualizar fechas',
-
             'error'
-
           );
 
         }
@@ -2199,11 +1921,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'Por favor, complete todos los campos obligatorios.',
-
         'warning'
-
       );
 
       return;
@@ -2216,36 +1935,27 @@ export class PagosList implements OnInit {
 
 
     formData.append(
-
       'cuota_id',
-
       String(
         this.formPago
           .cuota_id
       )
-
     );
 
 
     formData.append(
-
       'monto',
-
       String(
         this.formPago
           .monto
       )
-
     );
 
 
     formData.append(
-
       'metodo_pago',
-
       this.formPago
         .metodo_pago
-
     );
 
 
@@ -2254,32 +1964,24 @@ export class PagosList implements OnInit {
     ) {
 
       formData.append(
-
         'comprobante',
-
         this.selectedFile
-
       );
 
     }
 
 
     this.pagosService
-
       .registrarPago(
         formData
       )
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             '¡Pago registrado correctamente!',
-
             'success'
-
           );
 
 
@@ -2300,10 +2002,8 @@ export class PagosList implements OnInit {
 
 
           this.verDetalle(
-
             this.alumnoSeleccionado
               .matricula_id
-
           );
 
         },
@@ -2312,12 +2012,9 @@ export class PagosList implements OnInit {
         error: (err) => {
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error al procesar el pago',
-
             'error'
-
           );
 
         }
@@ -2371,11 +2068,8 @@ export class PagosList implements OnInit {
     ) {
 
       this.mostrarNotificacion(
-
         'Ingresa un monto válido.',
-
         'warning'
-
       );
 
       return;
@@ -2388,36 +2082,27 @@ export class PagosList implements OnInit {
 
 
     formData.append(
-
       'cuota_id',
-
       String(
         this.miniPagoForm
           .cuota_id
       )
-
     );
 
 
     formData.append(
-
       'monto',
-
       String(
         this.miniPagoForm
           .monto
       )
-
     );
 
 
     formData.append(
-
       'metodo_pago',
-
       this.miniPagoForm
         .metodo_pago
-
     );
 
 
@@ -2426,32 +2111,24 @@ export class PagosList implements OnInit {
     ) {
 
       formData.append(
-
         'comprobante',
-
         this.miniFile
-
       );
 
     }
 
 
     this.pagosService
-
       .registrarPago(
         formData
       )
-
       .subscribe({
 
         next: () => {
 
           this.mostrarNotificacion(
-
             'Pago rápido registrado correctamente',
-
             'success'
-
           );
 
 
@@ -2464,10 +2141,8 @@ export class PagosList implements OnInit {
 
 
           this.verDetalle(
-
             this.alumnoSeleccionado
               .matricula_id
-
           );
 
         },
@@ -2476,12 +2151,9 @@ export class PagosList implements OnInit {
         error: (err) => {
 
           this.mostrarNotificacion(
-
             err?.error?.message ||
             'Error en pago rápido',
-
             'error'
-
           );
 
         }
@@ -2500,17 +2172,11 @@ export class PagosList implements OnInit {
   ) {
 
     return new Intl.NumberFormat(
-
       'es-PE',
-
       {
-
         style: 'currency',
-
         currency: 'PEN'
-
       }
-
     ).format(
       v || 0
     );
@@ -2523,9 +2189,7 @@ export class PagosList implements OnInit {
   ) {
 
     if (!f) {
-
       return '-';
-
     }
 
 
@@ -2570,18 +2234,13 @@ export class PagosList implements OnInit {
   getTotalDeuda() {
 
     return this.cuotasDetalle
-
       .reduce(
-
         (a, b) =>
-
           a +
           Number(
             b.saldo_pendiente || 0
           ),
-
         0
-
       );
 
   }
@@ -2598,14 +2257,11 @@ export class PagosList implements OnInit {
   get cuotasPendientes() {
 
     return this.cuotasDetalle
-
       .filter(
-
         c =>
           Number(
             c.saldo_pendiente || 0
           ) > 0
-
       );
 
   }
@@ -2642,9 +2298,7 @@ export class PagosList implements OnInit {
   ): string {
 
     if (!url) {
-
       return '#';
-
     }
 
 
@@ -2656,9 +2310,7 @@ export class PagosList implements OnInit {
         'https://'
       )
     ) {
-
       return url;
-
     }
 
 
@@ -2691,9 +2343,7 @@ export class PagosList implements OnInit {
         '/uploads/'
       )
     ) {
-
       return url;
-
     }
 
 
@@ -2707,14 +2357,11 @@ export class PagosList implements OnInit {
   // ============================================================
 
   mostrarNotificacion(
-
     msg: string,
-
     tipo:
       'success' |
       'error' |
       'warning' = 'success'
-
   ) {
 
     this.notificacion.visible =
@@ -2764,4 +2411,3 @@ export class PagosList implements OnInit {
   }
 
 }
-
