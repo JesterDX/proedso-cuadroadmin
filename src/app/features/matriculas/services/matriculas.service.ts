@@ -80,6 +80,16 @@ export class MatriculasService {
     );
   }
 
+  crearAcelerada(
+  payload: MatriculaAceleradaPayload
+): Observable<ApiResponse<Matricula>> {
+
+  return this.http.post<ApiResponse<Matricula>>(
+    `${this.apiUrl}/acelerada`,
+    payload
+  );
+}
+
 
   // ==========================================================
   // ACTUALIZAR MATRÍCULA
