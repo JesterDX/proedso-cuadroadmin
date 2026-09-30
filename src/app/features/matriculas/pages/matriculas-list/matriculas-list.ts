@@ -43,13 +43,58 @@ import { MatriculaPdfService } from '../../services/matricula-pdf.service';
 import { AlumnosService } from '../../../alumnos/services/alumnos.service';
 import { EstadosAlumnoService } from '../../services/estados-alumno.service';
 import { PlanesCursoService } from '../../services/planes-curso.service';
-import {
-  MatriculasService,
-  MatriculaAceleradaPayload
-} from '../../services/matriculas.service';
+import { MatriculasService } from '../../services/matriculas.service';
 import { MaquinasService } from '../../services/maquinas.service';
 
 import { ApiResponse } from '../../../../core/models/api-response.model';
+
+
+// ==========================================================
+// TIPOS LOCALES PARA PREVISUALIZACIÓN NORMAL
+// ==========================================================
+
+interface CuotaCronograma {
+
+  numero_cuota?: number;
+
+  nro_cuota?: number;
+
+  numero?: number;
+
+  fecha_programada?: string;
+
+  fecha_vencimiento?: string;
+
+  fecha_pago?: string;
+
+  fecha?: string;
+
+  monto?: number;
+
+  monto_cuota?: number;
+
+  importe?: number;
+
+  total?: number;
+
+  [key: string]: any;
+
+}
+
+
+interface CuotaCronogramaPayload {
+
+  numero_cuota?: number;
+
+  fecha_programada?: string;
+
+  fecha_vencimiento?: string;
+
+  monto?: number;
+
+  [key: string]: any;
+
+}
 
 
 // ==========================================================
@@ -238,9 +283,7 @@ export class MatriculasList implements OnInit {
   modalOpen = false;
 
   get mostrarModal(): boolean {
-
     return this.modalOpen;
-
   }
 
 
@@ -255,6 +298,15 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
+  // TIPO DE MATRÍCULA
+  // ==========================================================
+
+  tipoMatricula:
+    'ORDINARIA' |
+    'ACELERADA' = 'ORDINARIA';
+
+
+  // ==========================================================
   // FORMULARIO NORMAL
   // ==========================================================
 
@@ -266,7 +318,9 @@ export class MatriculasList implements OnInit {
   // FORMULARIO ACELERADO
   // ==========================================================
 
-  formAcelerada = this.getEmptyFormAcelerada();
+  formAcelerada:
+    MatriculaAceleradaPayload =
+    this.getEmptyFormAcelerada();
 
 
   // ==========================================================
@@ -328,23 +382,17 @@ export class MatriculasList implements OnInit {
   // ==========================================================
 
   get mostrarPrevisualizacionCuotas(): boolean {
-
     return this.previewCuotasOpen;
-
   }
 
 
   get cuotasPrevisualizadas(): CuotaCronograma[] {
-
     return this.previewCuotas;
-
   }
 
 
   get cargandoPrevisualizacion(): boolean {
-
     return this.previewCuotasLoading;
-
   }
 
 
@@ -364,12 +412,12 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
-  // TOTAL ACELERADO
+  // TOTAL CUOTAS ACELERADA
   // ==========================================================
 
   get totalCuotasAceleradas(): number {
 
-    return this.cuotasAceleradas.reduce(
+    return this.formAcelerada.pago.cuotas.reduce(
       (total, cuota) =>
         total + Number(cuota.monto ?? 0),
       0
@@ -378,15 +426,21 @@ export class MatriculasList implements OnInit {
   }
 
 
+  // ==========================================================
+  // TOTAL ACELERADA
+  // ==========================================================
+
   get totalAcelerada(): number {
 
     return (
       Number(
-        this.formAcelerada.monto_matricula ?? 0
+        this.formAcelerada.pago.monto_matricula ?? 0
       ) +
+
       this.totalCuotasAceleradas +
+
       Number(
-        this.formAcelerada.monto_certificacion ?? 0
+        this.formAcelerada.pago.monto_certificacion ?? 0
       )
     );
 
@@ -499,7 +553,8 @@ export class MatriculasList implements OnInit {
   // FORMULARIO ACELERADO VACÍO
   // ==========================================================
 
-  getEmptyFormAcelerada() {
+  getEmptyFormAcelerada():
+    MatriculaAceleradaPayload {
 
     const hoy =
       new Date()
@@ -508,29 +563,128 @@ export class MatriculasList implements OnInit {
 
     return {
 
-      alumno_id: null as number | null,
+      alumno_id: null,
 
       nombre_curso_manual: '',
 
-      estado_alumno_id: null as number | null,
+      estado_alumno_id: null,
 
       fecha_matricula: hoy,
 
       fecha_inicio: hoy,
 
-      fecha_fin_estimada: null as string | null,
+      fecha_fin_estimada: null,
 
       notas: '',
 
-      monto_matricula: 0,
+      maquinas: [],
 
-      fecha_pago_matricula: hoy,
+      pago: {
 
-      monto_certificacion: 0,
+        monto_matricula: 0,
 
-      fecha_certificacion: null as string | null
+        fecha_matricula: hoy,
+
+        monto_certificacion: 0,
+
+        fecha_certificacion: null,
+
+        cuotas: []
+
+      }
 
     };
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR TIPO DE MATRÍCULA
+  // ==========================================================
+
+  cambiarTipoMatricula(
+    tipo:
+      'ORDINARIA' |
+      'ACELERADA'
+  ): void {
+
+    this.tipoMatricula =
+      tipo;
+
+
+    if (
+      tipo === 'ORDINARIA'
+    ) {
+
+      this.modoModal =
+        'crear';
+
+      this.form =
+        this.getEmptyForm();
+
+      this.formAcelerada =
+        this.getEmptyFormAcelerada();
+
+      this.maquinasAceleradas =
+        [];
+
+      this.cuotasAceleradas =
+        [];
+
+      this.maquinasSeleccionadas =
+        [];
+
+      this.cerrarPreviewCuotas();
+
+    } else {
+
+      this.modoModal =
+        'crear-acelerada';
+
+      this.form =
+        this.getEmptyForm();
+
+      this.formAcelerada =
+        this.getEmptyFormAcelerada();
+
+      this.maquinasAceleradas =
+        [];
+
+      this.cuotasAceleradas =
+        [];
+
+      this.maquinasSeleccionadas =
+        [];
+
+      this.maquinasDisponibles =
+        [...this.maquinas].sort(
+          (a, b) =>
+            (a.orden_visual ?? 999) -
+            (b.orden_visual ?? 999)
+        );
+
+      this.cerrarPreviewCuotas();
+
+    }
+
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ==========================================================
+  // ¿ES ACELERADA?
+  // ==========================================================
+
+  esMatriculaAcelerada(): boolean {
+
+    return (
+      this.tipoMatricula ===
+      'ACELERADA' ||
+      this.modoModal ===
+      'crear-acelerada'
+    );
 
   }
 
@@ -634,14 +788,19 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
-  // ABRIR MODAL NORMAL
+  // ABRIR MODAL CREAR
   // ==========================================================
 
   abrirModalCrear(): void {
 
-    this.modoModal = 'crear';
+    this.tipoMatricula =
+      'ORDINARIA';
 
-    this.matriculaEditandoId = null;
+    this.modoModal =
+      'crear';
+
+    this.matriculaEditandoId =
+      null;
 
     this.form =
       this.getEmptyForm();
@@ -649,21 +808,29 @@ export class MatriculasList implements OnInit {
     this.formAcelerada =
       this.getEmptyFormAcelerada();
 
-    this.maquinasAceleradas = [];
+    this.maquinasAceleradas =
+      [];
 
-    this.cuotasAceleradas = [];
+    this.cuotasAceleradas =
+      [];
 
-    this.modalOpen = true;
+    this.modalOpen =
+      true;
 
-    this.txtBusquedaAlumno = '';
+    this.txtBusquedaAlumno =
+      '';
 
-    this.mostrarSelectorMaquinas = false;
+    this.mostrarSelectorMaquinas =
+      false;
 
-    this.cantidadMaquinasRequeridas = 0;
+    this.cantidadMaquinasRequeridas =
+      0;
 
-    this.maquinasDisponibles = [];
+    this.maquinasDisponibles =
+      [];
 
-    this.maquinasSeleccionadas = [];
+    this.maquinasSeleccionadas =
+      [];
 
     this.cerrarPreviewCuotas();
 
@@ -677,6 +844,9 @@ export class MatriculasList implements OnInit {
   // ==========================================================
 
   abrirModalCrearAcelerada(): void {
+
+    this.tipoMatricula =
+      'ACELERADA';
 
     this.modoModal =
       'crear-acelerada';
@@ -726,20 +896,6 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
-  // ¿ES ACELERADA?
-  // ==========================================================
-
-  esMatriculaAcelerada(): boolean {
-
-    return (
-      this.modoModal ===
-      'crear-acelerada'
-    );
-
-  }
-
-
-  // ==========================================================
   // BUSCAR ALUMNO
   // ==========================================================
 
@@ -760,8 +916,26 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
-  // ALUMNO ACELERADA
+  // CAMBIO ALUMNO ACELERADA
   // ==========================================================
+
+  onAlumnoChangeAcelerada(): void {
+
+    if (
+      this.formAcelerada.alumno_id
+    ) {
+
+      this.formAcelerada.alumno_id =
+        Number(
+          this.formAcelerada.alumno_id
+        );
+
+    }
+
+    this.cd.detectChanges();
+
+  }
+
 
   seleccionarAlumnoAcelerada(
     alumnoId: number
@@ -770,7 +944,7 @@ export class MatriculasList implements OnInit {
     this.formAcelerada.alumno_id =
       Number(alumnoId);
 
-    this.cd.detectChanges();
+    this.onAlumnoChangeAcelerada();
 
   }
 
@@ -780,11 +954,46 @@ export class MatriculasList implements OnInit {
   // ==========================================================
 
   agregarMaquinaAcelerada(
-    maquinaId: number
+    maquinaId?: number
   ): void {
+
+    // --------------------------------------------------------
+    // Si el HTML no envía ID, simplemente agrega una fila.
+    // --------------------------------------------------------
+
+    if (
+      maquinaId === undefined ||
+      maquinaId === null ||
+      Number(maquinaId) === 0
+    ) {
+
+      this.maquinasAceleradas.push({
+
+        maquina_id: 0,
+
+        orden:
+          this.maquinasAceleradas.length + 1,
+
+        es_regalo: false,
+
+        horas_asignadas: null,
+
+        sesiones_totales: null
+
+      });
+
+      this.sincronizarMaquinasAceleradas();
+
+      this.cd.detectChanges();
+
+      return;
+
+    }
+
 
     const id =
       Number(maquinaId);
+
 
     if (
       !id ||
@@ -795,17 +1004,32 @@ export class MatriculasList implements OnInit {
 
     }
 
-    const existe =
-      this.maquinasAceleradas.some(
-        m =>
-          Number(m.maquina_id) === id
-      );
 
-    if (existe) {
+    if (
+      this.maquinaAceleradaYaSeleccionada(
+        id,
+        -1
+      )
+    ) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title: 'Máquina repetida',
+
+        text:
+          'Esta máquina ya fue seleccionada.',
+
+        confirmButtonText:
+          'Aceptar'
+
+      });
 
       return;
 
     }
+
 
     const maquina =
       this.maquinas.find(
@@ -813,11 +1037,13 @@ export class MatriculasList implements OnInit {
           Number(m.id) === id
       );
 
+
     if (!maquina) {
 
       return;
 
     }
+
 
     this.maquinasAceleradas.push({
 
@@ -834,25 +1060,184 @@ export class MatriculasList implements OnInit {
 
     });
 
+
+    this.sincronizarMaquinasAceleradas();
+
     this.cd.detectChanges();
 
   }
 
 
   // ==========================================================
-  // QUITAR MÁQUINA ACELERADA
+  // CAMBIO DE MÁQUINA ACELERADA
+  // ==========================================================
+
+  onMaquinaAceleradaChange(
+    index: number
+  ): void {
+
+    const maquina =
+      this.maquinasAceleradas[index];
+
+
+    if (!maquina) {
+
+      return;
+
+    }
+
+
+    if (
+      !maquina.maquina_id
+    ) {
+
+      this.sincronizarMaquinasAceleradas();
+
+      return;
+
+    }
+
+
+    const repetida =
+      this.maquinasAceleradas.some(
+        (otra, i) =>
+          i !== index &&
+          Number(
+            otra.maquina_id
+          ) === Number(
+            maquina.maquina_id
+          ) &&
+          Number(
+            maquina.maquina_id
+          ) !== 0
+      );
+
+
+    if (repetida) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title: 'Máquina repetida',
+
+        text:
+          'No puedes seleccionar la misma máquina más de una vez.',
+
+        confirmButtonText:
+          'Aceptar'
+
+      });
+
+
+      maquina.maquina_id =
+        0;
+
+    }
+
+
+    this.sincronizarMaquinasAceleradas();
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ==========================================================
+  // VERIFICAR MÁQUINA REPETIDA
+  // ==========================================================
+
+  maquinaAceleradaYaSeleccionada(
+    maquinaId: number,
+    index: number
+  ): boolean {
+
+    return this.maquinasAceleradas.some(
+      (maquina, i) =>
+        i !== index &&
+        Number(
+          maquina.maquina_id
+        ) === Number(maquinaId) &&
+        Number(maquinaId) !== 0
+    );
+
+  }
+
+
+  // ==========================================================
+  // SINCRONIZAR MÁQUINAS
+  // ==========================================================
+
+  private sincronizarMaquinasAceleradas(): void {
+
+    this.formAcelerada.maquinas =
+      this.maquinasAceleradas.map(
+        (maquina) => ({
+
+          maquina_id:
+            Number(
+              maquina.maquina_id
+            ),
+
+          orden:
+            Number(
+              maquina.orden
+            ),
+
+          es_regalo:
+            Boolean(
+              maquina.es_regalo
+            ),
+
+          horas_asignadas:
+            Number(
+              maquina.horas_asignadas ?? 0
+            ),
+
+          sesiones_totales:
+            Number(
+              maquina.sesiones_totales ?? 0
+            )
+
+        })
+      );
+
+  }
+
+
+  // ==========================================================
+  // ELIMINAR MÁQUINA ACELERADA
+  // ==========================================================
+
+  eliminarMaquinaAcelerada(
+    index: number
+  ): void {
+
+    this.maquinasAceleradas.splice(
+      index,
+      1
+    );
+
+    this.reordenarMaquinasAceleradas();
+
+    this.sincronizarMaquinasAceleradas();
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ==========================================================
+  // ALIAS ANTIGUO
   // ==========================================================
 
   quitarMaquinaAcelerada(
     index: number
   ): void {
 
-    this.maquinasAceleradas
-      .splice(index, 1);
-
-    this.reordenarMaquinasAceleradas();
-
-    this.cd.detectChanges();
+    this.eliminarMaquinaAcelerada(
+      index
+    );
 
   }
 
@@ -869,10 +1254,14 @@ export class MatriculasList implements OnInit {
 
           ...maquina,
 
-          orden: index + 1
+          orden:
+            index + 1
 
         })
       );
+
+
+    this.sincronizarMaquinasAceleradas();
 
   }
 
@@ -883,27 +1272,39 @@ export class MatriculasList implements OnInit {
 
   agregarCuotaAcelerada(): void {
 
+    const cuotas =
+      this.formAcelerada.pago.cuotas;
+
+
     const numero =
-      this.cuotasAceleradas.length + 1;
+      cuotas.length + 1;
+
 
     const ultima =
-      this.cuotasAceleradas[
-        this.cuotasAceleradas.length - 1
+      cuotas[
+        cuotas.length - 1
       ];
+
 
     let fecha =
       ultima?.fecha_vencimiento ??
       this.formAcelerada.fecha_inicio ??
       this.formAcelerada.fecha_matricula;
 
+
     if (fecha) {
 
       fecha =
-        this.sumarMes(fecha, 1);
+        this.sumarMes(
+          fecha,
+          1
+        );
 
     }
 
-    this.cuotasAceleradas.push({
+
+    const cuota:
+      CuotaMatriculaAceleradaPayload = {
 
       numero_cuota:
         numero,
@@ -915,9 +1316,35 @@ export class MatriculasList implements OnInit {
         fecha,
 
       monto:
-        null
+        0
 
-    });
+    };
+
+
+    cuotas.push(
+      cuota
+    );
+
+
+    this.cuotasAceleradas =
+      cuotas.map(
+        (item) => ({
+
+          numero_cuota:
+            item.numero_cuota,
+
+          fecha_programada:
+            item.fecha_programada,
+
+          fecha_vencimiento:
+            item.fecha_vencimiento,
+
+          monto:
+            item.monto
+
+        })
+      );
+
 
     this.cd.detectChanges();
 
@@ -932,8 +1359,10 @@ export class MatriculasList implements OnInit {
     index: number
   ): void {
 
-    this.cuotasAceleradas
-      .splice(index, 1);
+    this.formAcelerada.pago.cuotas.splice(
+      index,
+      1
+    );
 
     this.reordenarCuotasAceleradas();
 
@@ -948,8 +1377,8 @@ export class MatriculasList implements OnInit {
 
   reordenarCuotasAceleradas(): void {
 
-    this.cuotasAceleradas =
-      this.cuotasAceleradas.map(
+    this.formAcelerada.pago.cuotas =
+      this.formAcelerada.pago.cuotas.map(
         (cuota, index) => ({
 
           ...cuota,
@@ -959,6 +1388,37 @@ export class MatriculasList implements OnInit {
 
         })
       );
+
+
+    this.cuotasAceleradas =
+      this.formAcelerada.pago.cuotas.map(
+        (cuota) => ({
+
+          numero_cuota:
+            cuota.numero_cuota,
+
+          fecha_programada:
+            cuota.fecha_programada,
+
+          fecha_vencimiento:
+            cuota.fecha_vencimiento,
+
+          monto:
+            cuota.monto
+
+        })
+      );
+
+  }
+
+
+  // ==========================================================
+  // RECALCULAR TOTAL ACELERADA
+  // ==========================================================
+
+  recalcularTotalAcelerada(): void {
+
+    this.cd.detectChanges();
 
   }
 
@@ -977,6 +1437,7 @@ export class MatriculasList implements OnInit {
         .split('-')
         .map(Number);
 
+
     if (
       partes.length !== 3
     ) {
@@ -985,6 +1446,7 @@ export class MatriculasList implements OnInit {
 
     }
 
+
     const fecha =
       new Date(
         partes[0],
@@ -992,9 +1454,12 @@ export class MatriculasList implements OnInit {
         partes[2]
       );
 
+
     fecha.setMonth(
-      fecha.getMonth() + cantidad
+      fecha.getMonth() +
+      cantidad
     );
+
 
     return `${fecha.getFullYear()}-${String(
       fecha.getMonth() + 1
@@ -1013,6 +1478,7 @@ export class MatriculasList implements OnInit {
 
     const errores: string[] = [];
 
+
     if (
       !this.formAcelerada.alumno_id
     ) {
@@ -1023,8 +1489,10 @@ export class MatriculasList implements OnInit {
 
     }
 
+
     if (
-      !this.formAcelerada.nombre_curso_manual
+      !this.formAcelerada
+        .nombre_curso_manual
         ?.trim()
     ) {
 
@@ -1033,6 +1501,7 @@ export class MatriculasList implements OnInit {
       );
 
     }
+
 
     if (
       !this.formAcelerada.estado_alumno_id
@@ -1044,6 +1513,7 @@ export class MatriculasList implements OnInit {
 
     }
 
+
     if (
       !this.formAcelerada.fecha_matricula
     ) {
@@ -1053,6 +1523,7 @@ export class MatriculasList implements OnInit {
       );
 
     }
+
 
     if (
       !this.formAcelerada.fecha_inicio
@@ -1084,7 +1555,21 @@ export class MatriculasList implements OnInit {
       (maquina, index) => {
 
         if (
-          !maquina.horas_asignadas ||
+          !maquina.maquina_id ||
+          Number(
+            maquina.maquina_id
+          ) <= 0
+        ) {
+
+          errores.push(
+            `Debes seleccionar una máquina en la fila ${index + 1}.`
+          );
+
+        }
+
+
+        if (
+          maquina.horas_asignadas === null ||
           Number(
             maquina.horas_asignadas
           ) <= 0
@@ -1096,8 +1581,14 @@ export class MatriculasList implements OnInit {
 
         }
 
+
         if (
-          !maquina.sesiones_totales ||
+          maquina.sesiones_totales === null ||
+          !Number.isInteger(
+            Number(
+              maquina.sesiones_totales
+            )
+          ) ||
           Number(
             maquina.sesiones_totales
           ) <= 0
@@ -1117,10 +1608,19 @@ export class MatriculasList implements OnInit {
     // MATRÍCULA
     // ========================================================
 
-    if (
+    const montoMatricula =
       Number(
-        this.formAcelerada.monto_matricula
-      ) < 0
+        this.formAcelerada
+          .pago
+          .monto_matricula ?? 0
+      );
+
+
+    if (
+      !Number.isFinite(
+        montoMatricula
+      ) ||
+      montoMatricula < 0
     ) {
 
       errores.push(
@@ -1131,7 +1631,10 @@ export class MatriculasList implements OnInit {
 
 
     if (
-      !this.formAcelerada.fecha_pago_matricula
+      montoMatricula > 0 &&
+      !this.formAcelerada
+        .pago
+        .fecha_matricula
     ) {
 
       errores.push(
@@ -1145,8 +1648,14 @@ export class MatriculasList implements OnInit {
     // CUOTAS
     // ========================================================
 
+    const cuotas =
+      this.formAcelerada
+        .pago
+        .cuotas;
+
+
     if (
-      this.cuotasAceleradas.length === 0
+      cuotas.length === 0
     ) {
 
       errores.push(
@@ -1156,13 +1665,65 @@ export class MatriculasList implements OnInit {
     }
 
 
-    this.cuotasAceleradas.forEach(
+    const numeros =
+      cuotas.map(
+        cuota =>
+          Number(
+            cuota.numero_cuota
+          )
+      );
+
+
+    const numerosUnicos =
+      new Set(
+        numeros
+      );
+
+
+    if (
+      numerosUnicos.size !==
+      numeros.length
+    ) {
+
+      errores.push(
+        'No puede haber números de cuota repetidos.'
+      );
+
+    }
+
+
+    cuotas.forEach(
       (cuota, index) => {
+
+        if (
+          !Number.isInteger(
+            Number(
+              cuota.numero_cuota
+            )
+          ) ||
+          Number(
+            cuota.numero_cuota
+          ) <= 0
+        ) {
+
+          errores.push(
+            `La cuota ${index + 1} tiene un número inválido.`
+          );
+
+        }
+
 
         if (
           cuota.monto === null ||
           cuota.monto === undefined ||
-          Number(cuota.monto) <= 0
+          !Number.isFinite(
+            Number(
+              cuota.monto
+            )
+          ) ||
+          Number(
+            cuota.monto
+          ) <= 0
         ) {
 
           errores.push(
@@ -1170,6 +1731,7 @@ export class MatriculasList implements OnInit {
           );
 
         }
+
 
         if (
           !cuota.fecha_programada
@@ -1180,6 +1742,7 @@ export class MatriculasList implements OnInit {
           );
 
         }
+
 
         if (
           !cuota.fecha_vencimiento
@@ -1199,28 +1762,37 @@ export class MatriculasList implements OnInit {
     // CERTIFICACIÓN
     // ========================================================
 
-    if (
+    const montoCertificacion =
       Number(
-        this.formAcelerada.monto_certificacion
-      ) > 0 &&
-      !this.formAcelerada.fecha_certificacion
+        this.formAcelerada
+          .pago
+          .monto_certificacion ?? 0
+      );
+
+
+    if (
+      !Number.isFinite(
+        montoCertificacion
+      ) ||
+      montoCertificacion < 0
     ) {
 
       errores.push(
-        'Si existe monto de certificación debes indicar la fecha de certificación.'
+        'El monto de certificación no puede ser negativo.'
       );
 
     }
 
 
     if (
-      Number(
-        this.formAcelerada.monto_certificacion
-      ) < 0
+      montoCertificacion > 0 &&
+      !this.formAcelerada
+        .pago
+        .fecha_certificacion
     ) {
 
       errores.push(
-        'El monto de certificación no puede ser negativo.'
+        'Si existe monto de certificación debes indicar la fecha de certificación.'
       );
 
     }
@@ -1250,6 +1822,7 @@ export class MatriculasList implements OnInit {
 
     const errores =
       this.validarFormulario();
+
 
     if (
       errores.length > 0
@@ -1340,7 +1913,7 @@ export class MatriculasList implements OnInit {
         null,
 
       cronograma_confirmado:
-        this.previewCuotas || []
+        this.previewCuotas as any
 
     };
 
@@ -1470,6 +2043,9 @@ export class MatriculasList implements OnInit {
     }
 
 
+    this.sincronizarMaquinasAceleradas();
+
+
     // ========================================================
     // CONSTRUIR PAYLOAD
     // ========================================================
@@ -1546,26 +2122,33 @@ export class MatriculasList implements OnInit {
         monto_matricula:
           Number(
             this.formAcelerada
+              .pago
               .monto_matricula ?? 0
           ),
 
         fecha_matricula:
           this.formAcelerada
-            .fecha_pago_matricula,
+            .pago
+            .fecha_matricula ||
+          null,
 
         monto_certificacion:
           Number(
             this.formAcelerada
+              .pago
               .monto_certificacion ?? 0
           ),
 
         fecha_certificacion:
           this.formAcelerada
+            .pago
             .fecha_certificacion ||
           null,
 
         cuotas:
-          this.cuotasAceleradas
+          this.formAcelerada
+            .pago
+            .cuotas
             .map(
               (cuota) => ({
 
@@ -1593,38 +2176,15 @@ export class MatriculasList implements OnInit {
     };
 
 
-    // ========================================================
-    // DEBUG
-    // ========================================================
-
-    console.log('');
     console.log(
-      '========================================'
+      '🚀 MATRÍCULA ACELERADA:',
+      payload
     );
 
-    console.log(
-      '🚀 MATRÍCULA ACELERADA'
-    );
 
     console.log(
-      '========================================'
-    );
-
-    console.log(
-      JSON.stringify(
-        payload,
-        null,
-        2
-      )
-    );
-
-    console.log(
-      '💰 TOTAL CALCULADO EN FRONT:',
+      '💰 TOTAL:',
       this.totalAcelerada
-    );
-
-    console.log(
-      '========================================'
     );
 
 
@@ -1638,7 +2198,9 @@ export class MatriculasList implements OnInit {
 
 
     this.matriculasService
-      .crearAcelerada(payload)
+      .crearAcelerada(
+        payload
+      )
       .pipe(
 
         finalize(() => {
@@ -1659,6 +2221,12 @@ export class MatriculasList implements OnInit {
 
           this.modalOpen =
             false;
+
+          this.tipoMatricula =
+            'ORDINARIA';
+
+          this.modoModal =
+            'crear';
 
           this.maquinasAceleradas =
             [];
@@ -1952,7 +2520,7 @@ export class MatriculasList implements OnInit {
 
           const data =
             resp.data as
-              PrevisualizacionCuotasData;
+            PrevisualizacionCuotasData;
 
 
           let cuotas:
@@ -2022,6 +2590,10 @@ export class MatriculasList implements OnInit {
 
           this.previewCuotas =
             cuotas;
+
+
+          this.cronogramaConfirmado =
+            cuotas as CuotaCronogramaPayload[];
 
 
           if (
@@ -2114,6 +2686,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotas =
       [];
 
+    this.cronogramaConfirmado =
+      [];
+
     this.previewCuotasError =
       '';
 
@@ -2149,6 +2724,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotas =
       [];
 
+    this.cronogramaConfirmado =
+      [];
+
     this.previewCuotasError =
       '';
 
@@ -2169,6 +2747,9 @@ export class MatriculasList implements OnInit {
     this.previewCuotas =
       [];
 
+    this.cronogramaConfirmado =
+      [];
+
     this.previewCuotasError =
       '';
 
@@ -2187,6 +2768,9 @@ export class MatriculasList implements OnInit {
       false;
 
     this.previewCuotas =
+      [];
+
+    this.cronogramaConfirmado =
       [];
 
     this.previewCuotasError =
@@ -2210,7 +2794,10 @@ export class MatriculasList implements OnInit {
   ): string {
 
     const numero =
-      Number(valor ?? 0);
+      Number(
+        valor ?? 0
+      );
+
 
     return numero.toLocaleString(
       'es-PE',
@@ -2267,13 +2854,17 @@ export class MatriculasList implements OnInit {
   ): string {
 
     const fecha =
-      this.getFechaCuota(cuota);
+      this.getFechaCuota(
+        cuota
+      );
+
 
     if (!fecha) {
 
       return '';
 
     }
+
 
     return fecha
       .split('T')[0];
@@ -2291,6 +2882,7 @@ export class MatriculasList implements OnInit {
       return;
 
     }
+
 
     cuota.fecha_vencimiento =
       nuevaFecha;
@@ -2357,8 +2949,24 @@ export class MatriculasList implements OnInit {
 
     }
 
+
     this.modalOpen =
       false;
+
+    this.tipoMatricula =
+      'ORDINARIA';
+
+    this.modoModal =
+      'crear';
+
+    this.maquinasAceleradas =
+      [];
+
+    this.cuotasAceleradas =
+      [];
+
+    this.formAcelerada =
+      this.getEmptyFormAcelerada();
 
     this.cerrarPreviewCuotas();
 
@@ -2522,6 +3130,40 @@ export class MatriculasList implements OnInit {
     matricula: Matricula
   ): void {
 
+    /*
+     * La edición acelerada todavía no se mezcla
+     * con la edición ordinaria.
+     */
+
+    if (
+      (matricula as any)
+        .tipo_matricula ===
+      'ACELERADA'
+    ) {
+
+      Swal.fire({
+
+        icon: 'info',
+
+        title:
+          'Matrícula acelerada',
+
+        text:
+          'La edición de matrículas aceleradas se implementará por separado para no afectar el flujo ordinario.',
+
+        confirmButtonText:
+          'Entendido'
+
+      });
+
+      return;
+
+    }
+
+
+    this.tipoMatricula =
+      'ORDINARIA';
+
     this.modoModal =
       'editar';
 
@@ -2664,7 +3306,7 @@ export class MatriculasList implements OnInit {
 
 
   // ==========================================================
-  // ELIMINAR
+  // ELIMINAR MATRÍCULA
   // ==========================================================
 
   eliminarMatricula(
@@ -3977,7 +4619,9 @@ export class MatriculasList implements OnInit {
 
 
             const nombreCurso =
-              (m as any)
+              (
+                m as any
+              )
                 .nombre_curso_manual
                 ?.toLowerCase() ??
               '';
@@ -4004,7 +4648,9 @@ export class MatriculasList implements OnInit {
           (m) => {
 
             const fechaRef =
-              this.getFechaReferencia(m);
+              this.getFechaReferencia(
+                m
+              );
 
 
             if (
@@ -4046,7 +4692,9 @@ export class MatriculasList implements OnInit {
           (m) => {
 
             const fechaRef =
-              this.getFechaReferencia(m);
+              this.getFechaReferencia(
+                m
+              );
 
 
             if (
