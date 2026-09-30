@@ -64,5 +64,14 @@ export class PagosService {
       `${this.apiUrl}/${id}`
     );
   }
+
+  editarMontoCuota(cuotaId: number, monto: number) {
+  return this.http.put(
+    `${this.apiUrl}/cuotas/${cuotaId}/monto`,
+    {
+      monto
+    }
+  );
+}
   
 }
