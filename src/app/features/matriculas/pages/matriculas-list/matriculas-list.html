@@ -1,1590 +1,2953 @@
 <section class="matriculas-page">
- <div class="matriculas-page">
 
-  <!-- ========================================================= -->
-  <!-- HEADER -->
-  <!-- ========================================================= -->
-
-  <header class="page-header">
-
-    <div>
-      <h1>Matrículas</h1>
-      <p>Gestión y seguimiento de las matrículas de alumnos.</p>
-    </div>
-
-    <button
-      *ngIf="esVistaActiva()"
-      type="button"
-      class="btn-primary"
-      (click)="abrirModalCrear()"
-    >
-      + Nueva matrícula
-    </button>
-
-  </header>
-
-
-  <!-- ========================================================= -->
-  <!-- RESUMEN -->
-  <!-- ========================================================= -->
-
-  <section class="catalog-summary">
-
-    <div class="summary-card">
-      <span class="summary-label">Matrículas</span>
-      <strong>{{ matriculas.length }}</strong>
-    </div>
-
-    <div class="summary-card">
-      <span class="summary-label">Planes de curso</span>
-      <strong>{{ planesCurso.length }}</strong>
-    </div>
-
-  </section>
-
-
-  <!-- ========================================================= -->
-  <!-- FILTROS -->
-  <!-- ========================================================= -->
-
-  <div class="toolbar--filters">
-
-  <div class="filter-box">
-    <label>Buscar alumno</label>
-  
-    <input
-      type="text"
-      [(ngModel)]="nombreFiltro"
-      (ngModelChange)="buscar()"
-      placeholder="Escribe el nombre del alumno..."
-    />
-  </div>
-
-<select
-  [(ngModel)]="anioFiltro"
-  (ngModelChange)="buscar()"
->
-  <option [ngValue]="null">
-    Todos los años
-  </option>
-
-  <option
-    *ngFor="let anio of aniosDisponibles"
-    [ngValue]="anio"
-  >
-    {{ anio }}
-  </option>
-</select>
-
-<select
-  [(ngModel)]="mesFiltro"
-  (ngModelChange)="buscar()"
->
-  <option [ngValue]="null">
-    Todos los meses
-  </option>
-
-  <option
-    *ngFor="let mes of mesesDisponibles"
-    [ngValue]="mes.value"
-  >
-    {{ mes.label }}
-  </option>
-</select>
-
-<button
-  type="button"
-  class="btn-light"
-  (click)="limpiarFiltros()"
->
-  Limpiar
-</button>
-  </div>
-
-
-  <!-- ========================================================= -->
-  <!-- TABLA -->
-  <!-- ========================================================= -->
-
-  <div class="table-card">
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>ID</th>
-
-          <th>Alumno</th>
-
-          <th>Plan</th>
-
-          <th>Estado</th>
-
-          <th>Fecha matrícula</th>
-
-          <th>Inicio</th>
-
-          <th>Fin estimado</th>
-
-          <th>Acciones</th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody>
-
-        <tr
-          *ngFor="
-            let matricula of matriculasPaginadas;
-            trackBy: trackByMatriculaId
-          "
-        >
-
-          <td>
-            {{ matricula.id }}
-          </td>
-
-
-          <td>
-            {{ getNombreAlumno(matricula.alumno_id) }}
-          </td>
-
-
-          <td>
-            {{ getNombrePlan(matricula.plan_curso_id) }}
-          </td>
-
-
-          <td>
-
-            <span
-              [class]="
-                getClaseEstado(
-                  matricula.estado_alumno_id
-                )
-              "
-            >
-              {{
-                getNombreEstado(
-                  matricula.estado_alumno_id
-                )
-              }}
-            </span>
-
-          </td>
-
-
-          <td>
-            {{ formatFechaVista(matricula.fecha_matricula) }}
-          </td>
-
-
-          <td>
-            {{ formatFechaVista(matricula.fecha_inicio) }}
-          </td>
-
-
-          <td>
-            {{ formatFechaVista(matricula.fecha_fin_estimada) }}
-          </td>
-
-
-          <td>
-
-            <div class="table-actions">
-
-              <!-- VER -->
-
-              <a
-                [routerLink]="[
-                  '/matriculas',
-                  matricula.id
-                ]"
-                class="btn-table btn-view btn-view--pro"
-              >
-
-                <span class="btn-view__icon">
-                  👁
-                </span>
-
-                <span class="btn-view__text">
-                  Ver ficha
-                </span>
-
-              </a>
-
-
-              <!-- EDITAR -->
-
-              <button
-                *ngIf="puedeEditar()"
-                type="button"
-                class="btn-table btn-edit"
-                (click)="abrirModalEditar(matricula)"
-              >
-                Editar
-              </button>
-
-
-              
-              <button
-                *ngIf="puedeEditar()"
-                type="button"
-                class="btn-table btn-delete"
-                (click)="eliminarMatricula(matricula)"
-              >
-                Eliminar
-              </button>
-
-
-              
-
-
-              
-
-              <!-- RETIRAR -->
-
-              <button
-                *ngIf="
-                  puedeMostrarAccionesDeActiva() &&
-                  puedeRetirar(
-                    matricula.estado_alumno_id
-                  )
-                "
-                type="button"
-                class="btn-table btn-retire"
-                (click)="
-                  cambiarEstadoMatricula(
-                    matricula,
-                    'RETIRADO'
-                  )
-                "
-              >
-                Retirar
-              </button>
-
-
-              <!-- EGRESAR -->
-
-              <button
-                *ngIf="
-                  puedeMostrarAccionesDeActiva() &&
-                  puedeEgresar(
-                    matricula.estado_alumno_id
-                  )
-                "
-                type="button"
-                class="btn-table btn-success"
-                (click)="
-                  cambiarEstadoMatricula(
-                    matricula,
-                    'EGRESADO'
-                  )
-                "
-              >
-                Egresar
-              </button>
-
-
-              <!-- RESERVA -->
-
-              <button
-                *ngIf="
-                  puedeMostrarAccionesDeActiva() &&
-                  puedeReservar(
-                    matricula.estado_alumno_id
-                  )
-                "
-                type="button"
-                class="btn-table btn-warning"
-                (click)="
-                  cambiarEstadoMatricula(
-                    matricula,
-                    'RESERVA'
-                  )
-                "
-              >
-                Reserva
-              </button>
-
-
-              <!-- ACTIVAR -->
-
-              <button
-                *ngIf="puedeMostrarActivar()"
-                type="button"
-                class="btn-table btn-activate"
-                (click)="
-                  cambiarEstadoMatricula(
-                    matricula,
-                    'MATRICULADO'
-                  )
-                "
-              >
-                Activar matrícula
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-
-
-        <!-- SIN DATOS -->
-
-        <tr *ngIf="matriculas.length === 0">
-
-          <td
-            colspan="8"
-            class="empty-cell"
-          >
-            Aún no hay matrículas registradas.
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-
-  <!-- ========================================================= -->
-  <!-- PAGINACIÓN -->
-  <!-- ========================================================= -->
-
-  <div
-    class="pagination"
-    *ngIf="totalPaginas > 1"
-  >
-
-    <button
-      class="page-btn"
-      (click)="
-        cambiarPagina(
-          paginaActual - 1
-        )
-      "
-      [disabled]="paginaActual === 1"
-    >
-      ←
-    </button>
-
-
-    <button
-      *ngFor="let pagina of paginas"
-      class="page-number"
-      [class.active]="pagina === paginaActual"
-      (click)="cambiarPagina(pagina)"
-    >
-      {{ pagina }}
-    </button>
-
-
-    <button
-      class="page-btn"
-      (click)="
-        cambiarPagina(
-          paginaActual + 1
-        )
-      "
-      [disabled]="paginaActual === totalPaginas"
-    >
-      →
-    </button>
-
-  </div>
-
-</div>
-
-
-<!-- ============================================================= -->
-<!-- MODAL -->
-<!-- ============================================================= -->
-
-<div
-  class="modal-backdrop"
-  *ngIf="mostrarModal"
->
-
-  <div class="modal-card modal-card--split">
-
+  <div class="matriculas-page">
 
     <!-- ========================================================= -->
-    <!-- SIDEBAR -->
+    <!-- HEADER -->
     <!-- ========================================================= -->
 
-    <aside class="modal-side">
+    <header class="page-header">
 
-      <div class="modal-side__top">
-
-        <h2>
-          {{
-            modoModal === 'crear'
-              ? 'Nueva matrícula'
-              : 'Editar matrícula'
-          }}
-        </h2>
-
+      <div>
+        <h1>Matrículas</h1>
         <p>
-          {{
-            modoModal === 'crear'
-              ? 'Registra una nueva matrícula.'
-              : 'Actualiza la información de la matrícula.'
-          }}
+          Gestión y seguimiento de las matrículas de alumnos.
         </p>
-
       </div>
 
+      <button
+        *ngIf="esVistaActiva()"
+        type="button"
+        class="btn-primary"
+        (click)="abrirModalCrear()"
+      >
+        + Nueva matrícula
+      </button>
 
-      <!-- ======================================================= -->
-      <!-- RESUMEN -->
-      <!-- ======================================================= -->
-
-      <div class="side-summary">
-
-        <!-- ALUMNO -->
-
-        <div
-          class="side-summary__item"
-          *ngIf="form.alumno_id"
-        >
-
-          <span class="side-summary__label">
-            Alumno
-          </span>
-
-          <strong>
-            {{ getNombreAlumno(form.alumno_id) }}
-          </strong>
-
-        </div>
-
-
-        <!-- PLAN -->
-
-        <div
-          class="side-summary__item"
-          *ngIf="form.plan_curso_id"
-        >
-
-          <span class="side-summary__label">
-            Plan
-          </span>
-
-          <strong>
-            {{ getNombrePlan(form.plan_curso_id) }}
-          </strong>
-
-        </div>
-
-
-        <!-- MÁQUINAS REQUERIDAS -->
-
-        <div
-          class="side-summary__item"
-          *ngIf="
-            cantidadMaquinasRequeridas > 0
-          "
-        >
-
-          <span class="side-summary__label">
-            Máquinas requeridas
-          </span>
-
-          <strong>
-            {{ cantidadMaquinasRequeridas }}
-          </strong>
-
-        </div>
-
-
-        <!-- MÁQUINAS SELECCIONADAS -->
-
-        <div
-          class="side-summary__item"
-          *ngIf="
-            mostrarSelectorMaquinas &&
-            maquinasSeleccionadas.length > 0
-          "
-        >
-
-          <span class="side-summary__label">
-            Máquinas seleccionadas
-          </span>
-
-          <strong>
-            {{ maquinasSeleccionadas.length }}
-            /
-            {{ cantidadMaquinasRequeridas }}
-          </strong>
-
-        </div>
-
-
-        <!-- FIN ESTIMADO -->
-
-        <div
-          class="side-summary__item"
-          *ngIf="form.fecha_fin_estimada"
-        >
-
-          <span class="side-summary__label">
-            Fin estimado
-          </span>
-
-          <strong>
-            {{
-              formatFechaVista(
-                form.fecha_fin_estimada
-              )
-            }}
-          </strong>
-
-        </div>
-
-
-        <!-- REGALO -->
-
-        <div
-          class="side-note"
-          *ngIf="esPlanMultipleConRegalo()"
-        >
-
-          Este plan incluye
-          <strong>Camioneta</strong>
-          como regalo.
-
-        </div>
-
-
-        <!-- MÁQUINAS -->
-
-        <div
-          class="side-note"
-          *ngIf="mostrarSelectorMaquinas"
-        >
-
-          Selecciona exactamente
-          <strong>
-            {{ cantidadMaquinasRequeridas }}
-          </strong>
-          máquina(s).
-
-        </div>
-
-
-        <!-- PREVIEW LISTO -->
-
-        <div
-          class="side-note side-note--success"
-          *ngIf="
-            previewCuotas.length > 0 &&
-            !previewCuotasLoading
-          "
-        >
-
-          ✓ Cronograma previsualizado.
-
-        </div>
-
-      </div>
-
-    </aside>
+    </header>
 
 
     <!-- ========================================================= -->
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- RESUMEN -->
     <!-- ========================================================= -->
 
-    <div class="modal-main">
+    <section class="catalog-summary">
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Matrículas
+        </span>
+
+        <strong>
+          {{ matriculas.length }}
+        </strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Planes de curso
+        </span>
+
+        <strong>
+          {{ planesCurso.length }}
+        </strong>
+      </div>
+
+    </section>
 
 
-      <!-- ======================================================= -->
-      <!-- HEADER -->
-      <!-- ======================================================= -->
+    <!-- ========================================================= -->
+    <!-- FILTROS -->
+    <!-- ========================================================= -->
 
-      <div class="modal-header modal-header--main">
+    <div class="toolbar--filters">
 
-        <div>
+      <div class="filter-box">
 
-          <span class="modal-eyebrow">
+        <label>
+          Buscar alumno
+        </label>
 
-            {{
-              modoModal === 'crear'
-                ? 'REGISTRAR MATRÍCULA'
-                : 'EDITAR MATRÍCULA'
-            }}
-
-          </span>
-
-          <h2>
-            Datos principales
-          </h2>
-
-          <p>
-            Configura la matrícula del alumno
-            y el plan de curso.
-          </p>
-
-        </div>
-
-
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModal()"
-          [disabled]="saving"
-        >
-          ×
-        </button>
+        <input
+          type="text"
+          [(ngModel)]="nombreFiltro"
+          (ngModelChange)="buscar()"
+          placeholder="Escribe el nombre del alumno..."
+        />
 
       </div>
 
 
-      <!-- ======================================================= -->
-      <!-- BODY -->
-      <!-- ======================================================= -->
+      <select
+        [(ngModel)]="anioFiltro"
+        (ngModelChange)="buscar()"
+      >
 
-      <div class="modal-body">
+        <option [ngValue]="null">
+          Todos los años
+        </option>
 
-        <div class="section-card">
+        <option
+          *ngFor="let anio of aniosDisponibles"
+          [ngValue]="anio"
+        >
+          {{ anio }}
+        </option>
 
-          <div class="form-grid">
+      </select>
+
+
+      <select
+        [(ngModel)]="mesFiltro"
+        (ngModelChange)="buscar()"
+      >
+
+        <option [ngValue]="null">
+          Todos los meses
+        </option>
+
+        <option
+          *ngFor="let mes of mesesDisponibles"
+          [ngValue]="mes.value"
+        >
+          {{ mes.label }}
+        </option>
+
+      </select>
+
+
+      <button
+        type="button"
+        class="btn-light"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar
+      </button>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TABLA -->
+    <!-- ========================================================= -->
+
+    <div class="table-card">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              ID
+            </th>
+
+            <th>
+              Alumno
+            </th>
+
+            <th>
+              Curso / Plan
+            </th>
+
+            <th>
+              Tipo
+            </th>
+
+            <th>
+              Estado
+            </th>
+
+            <th>
+              Fecha matrícula
+            </th>
+
+            <th>
+              Inicio
+            </th>
+
+            <th>
+              Fin estimado
+            </th>
+
+            <th>
+              Acciones
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr
+            *ngFor="
+              let matricula of matriculasPaginadas;
+              trackBy: trackByMatriculaId
+            "
+          >
+
+            <td>
+              {{ matricula.id }}
+            </td>
+
+
+            <td>
+
+              {{ getNombreAlumno(matricula.alumno_id) }}
+
+            </td>
 
 
             <!-- ================================================= -->
-            <!-- ALUMNO -->
+            <!-- CURSO / PLAN -->
             <!-- ================================================= -->
 
-            <div class="form-field full-width">
+            <td>
 
-              <label>
-                Alumno *
-              </label>
-
-
-              <div
-                class="search-select-container"
-                style="margin-bottom: 8px;"
+              <ng-container
+                *ngIf="
+                  matricula.tipo_matricula !== 'ACELERADA';
+                  else cursoAceleradoTabla
+                "
               >
 
-                <input
-                  type="text"
-                  [(ngModel)]="txtBusquedaAlumno"
-                  (ngModelChange)="filtrarAlumnos()"
-                  placeholder="Escribe nombre o DNI para filtrar..."
-                  class="form-control-search"
-                  style="
-                    width: 100%;
-                    padding: 8px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                  "
-                />
+                {{ getNombrePlan(matricula.plan_curso_id) }}
 
-              </div>
+              </ng-container>
 
 
-              <select
-                [(ngModel)]="form.alumno_id"
-              >
+              <ng-template #cursoAceleradoTabla>
 
-                <option [ngValue]="null">
+                <span class="course-manual-name">
 
                   {{
-                    alumnosFiltrados.length === 0
-                      ? 'No se encontraron coincidencias'
-                      : 'Seleccionar alumno'
+                    matricula.nombre_curso_manual ||
+                    'Curso acelerado'
                   }}
 
-                </option>
+                </span>
 
+              </ng-template>
 
-                <option
-                  *ngFor="
-                    let alumno of alumnosFiltrados
-                  "
-                  [ngValue]="alumno.id"
-                >
-
-                  {{ alumno.nombres }}
-                  {{ alumno.apellidos }}
-                  -
-                  {{ alumno.dni }}
-
-                </option>
-
-              </select>
-
-
-              <small
-                class="field-help"
-                *ngIf="txtBusquedaAlumno"
-              >
-
-                Mostrando
-                {{ alumnosFiltrados.length }}
-                de
-                {{ alumnos.length }}
-                alumnos.
-
-              </small>
-
-            </div>
+            </td>
 
 
             <!-- ================================================= -->
-            <!-- PLAN -->
+            <!-- TIPO -->
             <!-- ================================================= -->
 
-            <div class="form-field">
+            <td>
 
-              <label>
-                Plan de curso *
-              </label>
-
-
-              <select
-                [(ngModel)]="form.plan_curso_id"
-                (ngModelChange)="onPlanChange()"
+              <span
+                class="matricula-type"
+                [class.matricula-type--accelerated]="
+                  matricula.tipo_matricula === 'ACELERADA'
+                "
               >
 
-                <option [ngValue]="null">
-                  Seleccionar plan
-                </option>
+                {{
+                  matricula.tipo_matricula === 'ACELERADA'
+                    ? 'Acelerada'
+                    : 'Ordinaria'
+                }}
 
+              </span>
 
-                <option
-                  *ngFor="
-                    let plan of planesCurso
-                  "
-                  [ngValue]="plan.id"
-                >
-
-                  {{ plan.nombre }}
-
-                </option>
-
-              </select>
-
-            </div>
+            </td>
 
 
             <!-- ================================================= -->
             <!-- ESTADO -->
             <!-- ================================================= -->
 
-            <div class="form-field">
+            <td>
 
-              <label>
-                Estado del alumno *
-              </label>
-
-
-              <select
-                [(ngModel)]="form.estado_alumno_id"
-              >
-
-                <option [ngValue]="null">
-                  Seleccionar estado
-                </option>
-
-
-                <option
-                  *ngFor="
-                    let estado of estadosMatriculaDisponibles
-                  "
-                  [ngValue]="estado.id"
-                >
-
-                  {{ estado.nombre }}
-
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- MÁQUINAS -->
-            <!-- ================================================= -->
-
-            <div
-              class="form-field full-width"
-              *ngIf="mostrarSelectorMaquinas"
-            >
-
-              <label>
-                Máquinas seleccionadas *
-              </label>
-
-
-              <div
-                class="machine-selector"
-                *ngIf="
-                  maquinasDisponibles.length > 0;
-                  else sinMaquinas
+              <span
+                [class]="
+                  getClaseEstado(
+                    matricula.estado_alumno_id
+                  )
                 "
               >
 
-                <label
-                  *ngFor="
-                    let maquina of maquinasDisponibles
-                  "
-                  class="machine-option"
+                {{
+                  getNombreEstado(
+                    matricula.estado_alumno_id
+                  )
+                }}
+
+              </span>
+
+            </td>
+
+
+            <!-- ================================================= -->
+            <!-- FECHAS -->
+            <!-- ================================================= -->
+
+            <td>
+              {{ formatFechaVista(matricula.fecha_matricula) }}
+            </td>
+
+
+            <td>
+              {{ formatFechaVista(matricula.fecha_inicio) }}
+            </td>
+
+
+            <td>
+              {{ formatFechaVista(matricula.fecha_fin_estimada) }}
+            </td>
+
+
+            <!-- ================================================= -->
+            <!-- ACCIONES -->
+            <!-- ================================================= -->
+
+            <td>
+
+              <div class="table-actions">
+
+                <!-- VER -->
+
+                <a
+                  [routerLink]="[
+                    '/matriculas',
+                    matricula.id
+                  ]"
+                  class="btn-table btn-view btn-view--pro"
                 >
 
-                  <input
-                    type="checkbox"
-                    [checked]="
-                      isMaquinaSeleccionada(
-                        maquina.id
-                      )
-                    "
-                    (change)="
-                      toggleMaquina(
-                        maquina.id,
-                        $event
-                      )
-                    "
-                  />
-
-                  <span>
-                    {{ maquina.nombre }}
+                  <span class="btn-view__icon">
+                    👁
                   </span>
 
-                </label>
+                  <span class="btn-view__text">
+                    Ver ficha
+                  </span>
+
+                </a>
+
+
+                <!-- EDITAR -->
+
+                <button
+                  *ngIf="puedeEditar()"
+                  type="button"
+                  class="btn-table btn-edit"
+                  (click)="abrirModalEditar(matricula)"
+                >
+                  Editar
+                </button>
+
+
+                <!-- ELIMINAR -->
+
+                <button
+                  *ngIf="puedeEditar()"
+                  type="button"
+                  class="btn-table btn-delete"
+                  (click)="eliminarMatricula(matricula)"
+                >
+                  Eliminar
+                </button>
+
+
+                <!-- RETIRAR -->
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeRetirar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-retire"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'RETIRADO'
+                    )
+                  "
+                >
+                  Retirar
+                </button>
+
+
+                <!-- EGRESAR -->
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeEgresar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-success"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'EGRESADO'
+                    )
+                  "
+                >
+                  Egresar
+                </button>
+
+
+                <!-- RESERVA -->
+
+                <button
+                  *ngIf="
+                    puedeMostrarAccionesDeActiva() &&
+                    puedeReservar(
+                      matricula.estado_alumno_id
+                    )
+                  "
+                  type="button"
+                  class="btn-table btn-warning"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'RESERVA'
+                    )
+                  "
+                >
+                  Reserva
+                </button>
+
+
+                <!-- ACTIVAR -->
+
+                <button
+                  *ngIf="puedeMostrarActivar()"
+                  type="button"
+                  class="btn-table btn-activate"
+                  (click)="
+                    cambiarEstadoMatricula(
+                      matricula,
+                      'MATRICULADO'
+                    )
+                  "
+                >
+                  Activar matrícula
+                </button>
 
               </div>
 
+            </td>
 
-              <ng-template #sinMaquinas>
+          </tr>
 
-                <div class="machine-empty">
 
-                  No hay máquinas disponibles
-                  para este plan.
+          <!-- =================================================== -->
+          <!-- SIN DATOS -->
+          <!-- =================================================== -->
 
-                </div>
+          <tr
+            *ngIf="
+              matriculas.length === 0
+            "
+          >
 
-              </ng-template>
+            <td
+              colspan="9"
+              class="empty-cell"
+            >
+              Aún no hay matrículas registradas.
+            </td>
 
+          </tr>
 
-              <small class="field-help">
+        </tbody>
 
-                Debes seleccionar exactamente
-                <strong>
-                  {{ cantidadMaquinasRequeridas }}
-                </strong>
-                máquina(s).
+      </table>
 
-              </small>
-
-
-              <small
-                class="field-help"
-                *ngIf="esPlanMultipleConRegalo()"
-              >
-
-                La
-                <strong>Camioneta</strong>
-                se agregará automáticamente
-                como regalo.
-
-              </small>
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- FECHA MATRÍCULA -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Fecha de matrícula *
-              </label>
-
-
-              <input
-                type="date"
-                [(ngModel)]="form.fecha_matricula"
-                (ngModelChange)="onMontoPagoChange()"
-              />
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- MODALIDAD -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Modalidad de pago *
-              </label>
-
-
-              <select
-                [(ngModel)]="form.modalidad_pago"
-                (ngModelChange)="onModalidadPagoChange()"
-              >
-
-                <option value="MENSUAL">
-                  Mensual
-                </option>
-
-                <option value="QUINCENAL">
-                  Quincenal
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- FECHA INICIO -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Fecha de inicio
-              </label>
-
-
-              <input
-                type="date"
-                [(ngModel)]="form.fecha_inicio"
-                (ngModelChange)="onFechaInicioChange()"
-              />
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- FECHA FIN -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Fecha fin estimada
-              </label>
-
-
-              <input
-                type="date"
-                [(ngModel)]="form.fecha_fin_estimada"
-                readonly
-              />
-
-
-              <small class="field-help">
-
-                Se calcula automáticamente según
-                el tipo de curso y la fecha de inicio.
-
-              </small>
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- MONTO TOTAL -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Pago mensual
-              </label>
-
-
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                [(ngModel)]="form.monto_total"
-                (ngModelChange)="onMontoPagoChange()"
-                placeholder="0.00"
-              />
-
-
-              <small class="field-help">
-                Monto total de la matrícula.
-              </small>
-
-            </div>
-
-
-            <!-- ================================================= -->
-            <!-- CUOTA INICIAL -->
-            <!-- ================================================= -->
-
-            <div class="form-field">
-
-              <label>
-                Costo Matrícula
-              </label>
-
-
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                [(ngModel)]="form.cuota_inicial"
-                (ngModelChange)="onMontoPagoChange()"
-                placeholder="0.00"
-              />
-
-
-              <small class="field-help">
-                Monto que se pagará inicialmente.
-              </small>
-
-            </div>
-
-            <div class="form-field">
-
-  <label>
-    Costo de certificación
-  </label>
-
-  <input
-    type="number"
-    min="0"
-    step="0.01"
-    [(ngModel)]="form.costo_certificacion"
-    (ngModelChange)="onMontoPagoChange()"
-    placeholder="0.00"
-  />
-
-  <small class="field-help">
-    Monto correspondiente al costo de certificación.
-  </small>
-
-</div>
-
-
-            <!-- ================================================= -->
-            <!-- NOTAS -->
-            <!-- ================================================= -->
-
-            <div class="form-field full-width">
-
-              <label>
-                Notas
-              </label>
-
-
-              <textarea
-                rows="4"
-                [(ngModel)]="form.notas"
-              ></textarea>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- ======================================================= -->
-      <!-- PREVISUALIZACIÓN DE CUOTAS -->
-      <!-- ======================================================= -->
-
-      <div class="preview-section">
-
-
-        <!-- ===================================================== -->
-        <!-- BOTÓN PREVISUALIZAR -->
-        <!-- ===================================================== -->
-
-
-<div class="preview-action">
-
-  <div class="preview-action__info">
-
-    <div class="preview-action__icon">
-      <span *ngIf="!previewCuotasLoading && previewCuotas.length === 0">
-        👁
-      </span>
-
-      <span *ngIf="previewCuotasLoading">
-        ⏳
-      </span>
-
-      <span
-        *ngIf="
-          !previewCuotasLoading &&
-          previewCuotas.length > 0
-        "
-      >
-        ✓
-      </span>
     </div>
 
-    <div class="preview-action__content">
 
-      <strong>
-        {{
-          previewCuotas.length > 0
-            ? 'Cronograma listo para revisar'
-            : 'Confirma el cronograma de pagos'
-        }}
-      </strong>
+    <!-- ========================================================= -->
+    <!-- PAGINACIÓN -->
+    <!-- ========================================================= -->
 
-      <span>
-        {{
-          previewCuotas.length > 0
-            ? 'Puedes revisar y ajustar las fechas de vencimiento.'
-            : 'Genera una previsualización antes de guardar la matrícula.'
-        }}
-      </span>
+    <div
+      class="pagination"
+      *ngIf="totalPaginas > 1"
+    >
+
+      <button
+        class="page-btn"
+        (click)="
+          cambiarPagina(
+            paginaActual - 1
+          )
+        "
+        [disabled]="paginaActual === 1"
+      >
+        ←
+      </button>
+
+
+      <button
+        *ngFor="let pagina of paginas"
+        class="page-number"
+        [class.active]="pagina === paginaActual"
+        (click)="cambiarPagina(pagina)"
+      >
+        {{ pagina }}
+      </button>
+
+
+      <button
+        class="page-btn"
+        (click)="
+          cambiarPagina(
+            paginaActual + 1
+          )
+        "
+        [disabled]="paginaActual === totalPaginas"
+      >
+        →
+      </button>
 
     </div>
 
   </div>
 
 
-  <button
-    type="button"
-    class="btn-preview"
-    [class.btn-preview--success]="
-      previewCuotas.length > 0 &&
-      !previewCuotasLoading
-    "
-    (click)="previsualizarCuotas()"
-    [disabled]="
-      saving ||
-      previewCuotasLoading
-    "
+  <!-- ============================================================= -->
+  <!-- MODAL -->
+  <!-- ============================================================= -->
+
+  <div
+    class="modal-backdrop"
+    *ngIf="mostrarModal"
   >
 
-    <span
-      class="btn-preview__icon"
-      *ngIf="!previewCuotasLoading"
-    >
-      {{
-        previewCuotas.length > 0
-          ? '↻'
-          : '👁'
-      }}
-    </span>
-
-    <span
-      class="btn-preview__icon"
-      *ngIf="previewCuotasLoading"
-    >
-      ⏳
-    </span>
+    <div class="modal-card modal-card--split">
 
 
-    <span>
+      <!-- ========================================================= -->
+      <!-- SIDEBAR -->
+      <!-- ========================================================= -->
 
-      {{
-        previewCuotasLoading
-          ? 'Generando...'
-          : previewCuotas.length > 0
-            ? 'Actualizar previsualización'
-            : 'Previsualizar cuotas'
-      }}
+      <aside class="modal-side">
 
-    </span>
+        <div class="modal-side__top">
 
-  </button>
+          <h2>
 
-</div>
+            {{
+              modoModal === 'crear'
+                ? 'Nueva matrícula'
+                : 'Editar matrícula'
+            }}
 
+          </h2>
 
-        <!-- ===================================================== -->
-        <!-- ERROR -->
-        <!-- ===================================================== -->
+          <p>
 
-        <div
-          class="preview-error"
-          *ngIf="previewCuotasError"
-        >
+            {{
+              modoModal === 'crear'
+                ? 'Registra una nueva matrícula.'
+                : 'Actualiza la información de la matrícula.'
+            }}
 
-          <span class="preview-error__icon">
-            ⚠
-          </span>
-
-          <span>
-            {{ previewCuotasError }}
-          </span>
+          </p>
 
         </div>
 
 
-        <!-- ===================================================== -->
-        <!-- CARD PREVIEW -->
-        <!-- ===================================================== -->
+        <!-- ======================================================= -->
+        <!-- RESUMEN -->
+        <!-- ======================================================= -->
 
-        <div
-          class="preview-card"
-          *ngIf="
-            previewCuotas.length > 0
-          "
-        >
+        <div class="side-summary">
 
 
-          <!-- HEADER -->
+          <!-- ===================================================== -->
+          <!-- TIPO DE MATRÍCULA -->
+          <!-- ===================================================== -->
 
-          <div class="preview-card__header">
+          <div class="side-summary__item">
 
-            <div>
+            <span class="side-summary__label">
+              Tipo de matrícula
+            </span>
 
-              <span class="preview-card__eyebrow">
-                PREVISUALIZACIÓN
-              </span>
+            <strong>
 
+              {{
+                tipoMatricula === 'ACELERADA'
+                  ? 'Curso acelerado'
+                  : 'Matrícula ordinaria'
+              }}
 
-              <h3>
-                Cronograma de cuotas
-              </h3>
-
-
-              <p>
-                Revisa el cronograma antes
-                de confirmar la matrícula.
-              </p>
-
-            </div>
-
-
-            <button
-              type="button"
-              class="preview-card__close"
-              (click)="cerrarPreviewCuotas()"
-              [disabled]="previewCuotasLoading"
-            >
-              ×
-            </button>
+            </strong>
 
           </div>
 
 
-          <!-- =================================================== -->
-          <!-- RESUMEN PREVIEW -->
-          <!-- =================================================== -->
-
-          <div class="preview-summary">
-
-
-            <div class="preview-summary__item">
-
-              <span>
-                Número de cuotas
-              </span>
-
-              <strong>
-                {{ previewCuotas.length }}
-              </strong>
-
-            </div>
-
-
-            <div class="preview-summary__item">
-
-              <span>
-                Total cuotas
-              </span>
-
-              <strong>
-                {{
-                  formatMonto(
-                    totalPreviewCuotas
-                  )
-                }}
-              </strong>
-
-            </div>
-
-
-            <div
-              class="preview-summary__item"
-              *ngIf="
-                form.cuota_inicial !== null &&
-                form.cuota_inicial !== undefined
-              "
-            >
-
-              <span>
-                Cuota inicial
-              </span>
-
-              <strong>
-                {{
-                  formatMonto(
-                    form.cuota_inicial
-                  )
-                }}
-              </strong>
-
-            </div>
-
-
-            <div
-              class="preview-summary__item"
-              *ngIf="
-                form.monto_total !== null &&
-                form.monto_total !== undefined
-              "
-            >
-
-              <span>
-                Monto total
-              </span>
-
-              <strong>
-                {{
-                  formatMonto(
-                    form.monto_total
-                  )
-                }}
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <!-- =================================================== -->
-          <!-- TABLA PREVIEW -->
-          <!-- =================================================== -->
+          <!-- ===================================================== -->
+          <!-- ALUMNO -->
+          <!-- ===================================================== -->
 
           <div
-            class="preview-table-container"
+            class="side-summary__item"
+            *ngIf="form.alumno_id"
+          >
+
+            <span class="side-summary__label">
+              Alumno
+            </span>
+
+            <strong>
+              {{ getNombreAlumno(form.alumno_id) }}
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- PLAN ORDINARIO -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
             *ngIf="
-              previewCuotas.length > 0
+              tipoMatricula === 'ORDINARIA' &&
+              form.plan_curso_id
             "
           >
 
-            <table class="preview-table">
+            <span class="side-summary__label">
+              Plan
+            </span>
 
-              <thead>
-
-                <tr>
-
-                  <th>
-                    #
-                  </th>
-
-                  <th>
-                    Vencimiento
-                  </th>
-
-                  <th>
-                    Monto
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody>
-
-                <tr
-                  *ngFor="
-                    let cuota of previewCuotas;
-                    let i = index
-                  "
-                >
-
-                  <td>
-
-                    <span class="cuota-number">
-
-                      {{
-                        getNumeroCuota(
-                          cuota,
-                          i
-                        )
-                      }}
-
-                    </span>
-
-                  </td>
-
-
-                <td>
-                
-                <input
-                type="date"
-                [ngModel]="getFechaCuotaInput(cuota)"
-                (ngModelChange)="editarFechaCuota(cuota, $event)"
-                class="preview-date-input"
-                />
-                
-                </td>
-
-
-                  <td
-                    class="preview-table__amount"
-                  >
-
-                    {{
-                      formatMonto(
-                        getMontoCuota(
-                          cuota
-                        )
-                      )
-                    }}
-
-                  </td>
-
-                </tr>
-
-              </tbody>
-
-
-              <tfoot>
-
-                <tr>
-
-                  <td
-                    colspan="2"
-                    class="preview-total-label"
-                  >
-                    Total
-                  </td>
-
-
-                  <td
-                    class="preview-total"
-                  >
-
-                    {{
-                      formatMonto(
-                        totalPreviewCuotas
-                      )
-                    }}
-
-                  </td>
-
-                </tr>
-
-              </tfoot>
-
-            </table>
+            <strong>
+              {{ getNombrePlan(form.plan_curso_id) }}
+            </strong>
 
           </div>
 
 
-          <!-- =================================================== -->
-          <!-- SIN CUOTAS -->
-          <!-- =================================================== -->
+          <!-- ===================================================== -->
+          <!-- CURSO ACELERADO -->
+          <!-- ===================================================== -->
 
           <div
-            class="preview-empty"
+            class="side-summary__item"
             *ngIf="
-              previewCuotas.length === 0 &&
+              tipoMatricula === 'ACELERADA' &&
+              formAcelerada.nombre_curso_manual
+            "
+          >
+
+            <span class="side-summary__label">
+              Curso
+            </span>
+
+            <strong>
+              {{ formAcelerada.nombre_curso_manual }}
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- MÁQUINAS ORDINARIAS -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              cantidadMaquinasRequeridas > 0
+            "
+          >
+
+            <span class="side-summary__label">
+              Máquinas requeridas
+            </span>
+
+            <strong>
+              {{ cantidadMaquinasRequeridas }}
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- MÁQUINAS ORDINARIAS SELECCIONADAS -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              mostrarSelectorMaquinas &&
+              maquinasSeleccionadas.length > 0
+            "
+          >
+
+            <span class="side-summary__label">
+              Máquinas seleccionadas
+            </span>
+
+            <strong>
+
+              {{ maquinasSeleccionadas.length }}
+              /
+              {{ cantidadMaquinasRequeridas }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- MÁQUINAS ACELERADAS -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ACELERADA' &&
+              maquinasAceleradas.length > 0
+            "
+          >
+
+            <span class="side-summary__label">
+              Máquinas
+            </span>
+
+            <strong>
+              {{ maquinasAceleradas.length }}
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- CUOTAS ACELERADAS -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ACELERADA' &&
+              cuotasAceleradas.length > 0
+            "
+          >
+
+            <span class="side-summary__label">
+              Cuotas
+            </span>
+
+            <strong>
+              {{ cuotasAceleradas.length }}
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- FIN ESTIMADO ORDINARIO -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              form.fecha_fin_estimada
+            "
+          >
+
+            <span class="side-summary__label">
+              Fin estimado
+            </span>
+
+            <strong>
+
+              {{
+                formatFechaVista(
+                  form.fecha_fin_estimada
+                )
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- FIN ESTIMADO ACELERADO -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-summary__item"
+            *ngIf="
+              tipoMatricula === 'ACELERADA' &&
+              formAcelerada.fecha_fin_estimada
+            "
+          >
+
+            <span class="side-summary__label">
+              Fin estimado
+            </span>
+
+            <strong>
+
+              {{
+                formatFechaVista(
+                  formAcelerada.fecha_fin_estimada
+                )
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- REGALO ORDINARIO -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-note"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              esPlanMultipleConRegalo()
+            "
+          >
+
+            Este plan incluye
+            <strong>Camioneta</strong>
+            como regalo.
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- AYUDA MÁQUINAS ORDINARIAS -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-note"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              mostrarSelectorMaquinas
+            "
+          >
+
+            Selecciona exactamente
+            <strong>
+              {{ cantidadMaquinasRequeridas }}
+            </strong>
+            máquina(s).
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- PREVIEW LISTO -->
+          <!-- ===================================================== -->
+
+          <div
+            class="side-note side-note--success"
+            *ngIf="
+              tipoMatricula === 'ORDINARIA' &&
+              previewCuotas.length > 0 &&
               !previewCuotasLoading
             "
           >
 
-            No se generaron cuotas
-            para los datos ingresados.
+            ✓ Cronograma previsualizado.
 
           </div>
 
 
-          <!-- =================================================== -->
-          <!-- CONFIRMACIÓN -->
-          <!-- =================================================== -->
+          <!-- ===================================================== -->
+          <!-- TOTAL ACELERADO -->
+          <!-- ===================================================== -->
 
           <div
-            class="preview-confirmation"
+            class="side-summary__item side-summary__item--total"
             *ngIf="
-              previewCuotas.length > 0
+              tipoMatricula === 'ACELERADA'
             "
           >
 
-            <span class="preview-confirmation__icon">
-              ✓
+            <span class="side-summary__label">
+              Total del curso
             </span>
 
-
-            <div>
-
-              <strong>
-                ¿El cronograma es correcto?
-              </strong>
-
-
-              <p>
-
-                Si todo está conforme,
-                puedes continuar con
-                <strong>
-                  Guardar matrícula
-                </strong>.
-
-              </p>
-
-            </div>
+            <strong>
+              S/
+              {{ formatMonto(totalAcelerada) }}
+            </strong>
 
           </div>
 
         </div>
 
-      </div>
+      </aside>
 
 
-      <!-- ======================================================= -->
-      <!-- ACCIONES -->
-      <!-- ======================================================= -->
+      <!-- ========================================================= -->
+      <!-- CONTENIDO PRINCIPAL -->
+      <!-- ========================================================= -->
 
-      <div class="modal-actions">
-
-        <button
-          type="button"
-          class="btn-light"
-          (click)="cerrarModal()"
-          [disabled]="saving"
-        >
-          Cancelar
-        </button>
+      <div class="modal-main">
 
 
-        <button
-          type="button"
-          class="btn-primary"
-          (click)="guardarMatricula()"
-          [disabled]="
-            saving ||
-            (
-              modoModal === 'crear' &&
-              previewCuotas.length === 0
-            )
-          "
-        >
+        <!-- ======================================================= -->
+        <!-- HEADER -->
+        <!-- ======================================================= -->
 
-          {{
-            saving
-              ? 'Guardando...'
-              : modoModal === 'crear'
-                ? 'Guardar matrícula'
-                : 'Actualizar matrícula'
-          }}
+        <div class="modal-header modal-header--main">
 
-        </button>
+          <div>
+
+            <span class="modal-eyebrow">
+
+              {{
+                modoModal === 'crear'
+                  ? 'REGISTRAR MATRÍCULA'
+                  : 'EDITAR MATRÍCULA'
+              }}
+
+            </span>
+
+            <h2>
+
+              {{
+                tipoMatricula === 'ACELERADA'
+                  ? 'Curso acelerado'
+                  : 'Datos principales'
+              }}
+
+            </h2>
+
+            <p>
+
+              {{
+                tipoMatricula === 'ACELERADA'
+                  ? 'Registra manualmente la configuración del curso acelerado.'
+                  : 'Configura la matrícula del alumno y el plan de curso.'
+              }}
+
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn-close"
+            (click)="cerrarModal()"
+            [disabled]="saving"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- ======================================================= -->
+        <!-- BODY -->
+        <!-- ======================================================= -->
+
+        <div class="modal-body">
+
+
+          <!-- ===================================================== -->
+          <!-- TIPO DE MATRÍCULA -->
+          <!-- ===================================================== -->
+
+          <div class="section-card matricula-type-card">
+
+            <div class="section-card__header">
+
+              <div>
+
+                <span class="section-eyebrow">
+                  MODALIDAD DE MATRÍCULA
+                </span>
+
+                <h3>
+                  Tipo de curso
+                </h3>
+
+                <p>
+                  Selecciona cómo deseas registrar esta matrícula.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="matricula-type-selector">
+
+              <!-- ORDINARIA -->
+
+              <button
+                type="button"
+                class="matricula-type-option"
+                [class.active]="
+                  tipoMatricula === 'ORDINARIA'
+                "
+                [disabled]="
+                  modoModal === 'editar'
+                "
+                (click)="
+                  cambiarTipoMatricula('ORDINARIA')
+                "
+              >
+
+                <span class="matricula-type-option__icon">
+                  📋
+                </span>
+
+                <span class="matricula-type-option__content">
+
+                  <strong>
+                    Matrícula ordinaria
+                  </strong>
+
+                  <small>
+                    Utiliza un plan de curso configurado.
+                  </small>
+
+                </span>
+
+              </button>
+
+
+              <!-- ACELERADA -->
+
+              <button
+                type="button"
+                class="matricula-type-option"
+                [class.active]="
+                  tipoMatricula === 'ACELERADA'
+                "
+                [disabled]="
+                  modoModal === 'editar'
+                "
+                (click)="
+                  cambiarTipoMatricula('ACELERADA')
+                "
+              >
+
+                <span class="matricula-type-option__icon">
+                  ⚡
+                </span>
+
+                <span class="matricula-type-option__content">
+
+                  <strong>
+                    Curso acelerado
+                  </strong>
+
+                  <small>
+                    Configuración manual de curso, máquinas y pagos.
+                  </small>
+
+                </span>
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- ALUMNO -->
+          <!-- ===================================================== -->
+
+          <div class="section-card">
+
+            <div class="form-grid">
+
+
+              <div class="form-field full-width">
+
+                <label>
+                  Alumno *
+                </label>
+
+
+                <div
+                  class="search-select-container"
+                  style="margin-bottom: 8px;"
+                >
+
+                  <input
+                    type="text"
+                    [(ngModel)]="txtBusquedaAlumno"
+                    (ngModelChange)="filtrarAlumnos()"
+                    placeholder="Escribe nombre o DNI para filtrar..."
+                    class="form-control-search"
+                    style="
+                      width: 100%;
+                      padding: 8px;
+                      border: 1px solid #ddd;
+                      border-radius: 4px;
+                    "
+                  />
+
+                </div>
+
+
+                <select
+                  [(ngModel)]="form.alumno_id"
+                  (ngModelChange)="onAlumnoChangeAcelerada()"
+                >
+
+                  <option [ngValue]="null">
+
+                    {{
+                      alumnosFiltrados.length === 0
+                        ? 'No se encontraron coincidencias'
+                        : 'Seleccionar alumno'
+                    }}
+
+                  </option>
+
+
+                  <option
+                    *ngFor="
+                      let alumno of alumnosFiltrados
+                    "
+                    [ngValue]="alumno.id"
+                  >
+
+                    {{ alumno.nombres }}
+                    {{ alumno.apellidos }}
+                    -
+                    {{ alumno.dni }}
+
+                  </option>
+
+                </select>
+
+
+                <small
+                  class="field-help"
+                  *ngIf="txtBusquedaAlumno"
+                >
+
+                  Mostrando
+                  {{ alumnosFiltrados.length }}
+                  de
+                  {{ alumnos.length }}
+                  alumnos.
+
+                </small>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ===================================================== -->
+          <!-- ===================================================== -->
+          <!-- FORMULARIO ORDINARIO -->
+          <!-- ===================================================== -->
+          <!-- ===================================================== -->
+
+          <ng-container
+            *ngIf="tipoMatricula === 'ORDINARIA'"
+          >
+
+
+            <!-- =================================================== -->
+            <!-- DATOS ORDINARIOS -->
+            <!-- =================================================== -->
+
+            <div class="section-card">
+
+              <div class="form-grid">
+
+
+                <!-- PLAN -->
+
+                <div class="form-field">
+
+                  <label>
+                    Plan de curso *
+                  </label>
+
+
+                  <select
+                    [(ngModel)]="form.plan_curso_id"
+                    (ngModelChange)="onPlanChange()"
+                  >
+
+                    <option [ngValue]="null">
+                      Seleccionar plan
+                    </option>
+
+
+                    <option
+                      *ngFor="
+                        let plan of planesCurso
+                      "
+                      [ngValue]="plan.id"
+                    >
+
+                      {{ plan.nombre }}
+
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <!-- ESTADO -->
+
+                <div class="form-field">
+
+                  <label>
+                    Estado del alumno *
+                  </label>
+
+
+                  <select
+                    [(ngModel)]="form.estado_alumno_id"
+                  >
+
+                    <option [ngValue]="null">
+                      Seleccionar estado
+                    </option>
+
+
+                    <option
+                      *ngFor="
+                        let estado of estadosMatriculaDisponibles
+                      "
+                      [ngValue]="estado.id"
+                    >
+
+                      {{ estado.nombre }}
+
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MÁQUINAS -->
+                <!-- ================================================= -->
+
+                <div
+                  class="form-field full-width"
+                  *ngIf="mostrarSelectorMaquinas"
+                >
+
+                  <label>
+                    Máquinas seleccionadas *
+                  </label>
+
+
+                  <div
+                    class="machine-selector"
+                    *ngIf="
+                      maquinasDisponibles.length > 0;
+                      else sinMaquinas
+                    "
+                  >
+
+                    <label
+                      *ngFor="
+                        let maquina of maquinasDisponibles
+                      "
+                      class="machine-option"
+                    >
+
+                      <input
+                        type="checkbox"
+                        [checked]="
+                          isMaquinaSeleccionada(
+                            maquina.id
+                          )
+                        "
+                        (change)="
+                          toggleMaquina(
+                            maquina.id,
+                            $event
+                          )
+                        "
+                      />
+
+                      <span>
+                        {{ maquina.nombre }}
+                      </span>
+
+                    </label>
+
+                  </div>
+
+
+                  <ng-template #sinMaquinas>
+
+                    <div class="machine-empty">
+
+                      No hay máquinas disponibles
+                      para este plan.
+
+                    </div>
+
+                  </ng-template>
+
+
+                  <small class="field-help">
+
+                    Debes seleccionar exactamente
+                    <strong>
+                      {{ cantidadMaquinasRequeridas }}
+                    </strong>
+                    máquina(s).
+
+                  </small>
+
+
+                  <small
+                    class="field-help"
+                    *ngIf="esPlanMultipleConRegalo()"
+                  >
+
+                    La
+                    <strong>Camioneta</strong>
+                    se agregará automáticamente
+                    como regalo.
+
+                  </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- FECHA MATRÍCULA -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha de matrícula *
+                  </label>
+
+
+                  <input
+                    type="date"
+                    [(ngModel)]="form.fecha_matricula"
+                    (ngModelChange)="onMontoPagoChange()"
+                  />
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MODALIDAD -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Modalidad de pago *
+                  </label>
+
+
+                  <select
+                    [(ngModel)]="form.modalidad_pago"
+                    (ngModelChange)="onModalidadPagoChange()"
+                  >
+
+                    <option value="MENSUAL">
+                      Mensual
+                    </option>
+
+                    <option value="QUINCENAL">
+                      Quincenal
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- FECHA INICIO -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha de inicio
+                  </label>
+
+
+                  <input
+                    type="date"
+                    [(ngModel)]="form.fecha_inicio"
+                    (ngModelChange)="onFechaInicioChange()"
+                  />
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- FECHA FIN -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha fin estimada
+                  </label>
+
+
+                  <input
+                    type="date"
+                    [(ngModel)]="form.fecha_fin_estimada"
+                    readonly
+                  />
+
+
+                  <small class="field-help">
+
+                    Se calcula automáticamente según
+                    el tipo de curso y la fecha de inicio.
+
+                  </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MONTO TOTAL -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Pago mensual
+                  </label>
+
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [(ngModel)]="form.monto_total"
+                    (ngModelChange)="onMontoPagoChange()"
+                    placeholder="0.00"
+                  />
+
+
+                  <small class="field-help">
+                    Monto total de la matrícula.
+                  </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CUOTA INICIAL -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Costo Matrícula
+                  </label>
+
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [(ngModel)]="form.cuota_inicial"
+                    (ngModelChange)="onMontoPagoChange()"
+                    placeholder="0.00"
+                  />
+
+
+                  <small class="field-help">
+                    Monto que se pagará inicialmente.
+                  </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CERTIFICACIÓN -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Costo de certificación
+                  </label>
+
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [(ngModel)]="form.costo_certificacion"
+                    (ngModelChange)="onMontoPagoChange()"
+                    placeholder="0.00"
+                  />
+
+
+                  <small class="field-help">
+                    Monto correspondiente al costo de certificación.
+                  </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- NOTAS -->
+                <!-- ================================================= -->
+
+                <div class="form-field full-width">
+
+                  <label>
+                    Notas
+                  </label>
+
+
+                  <textarea
+                    rows="4"
+                    [(ngModel)]="form.notas"
+                  ></textarea>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================== -->
+            <!-- PREVISUALIZACIÓN ORDINARIA -->
+            <!-- =================================================== -->
+
+            <div class="preview-section">
+
+
+              <!-- BOTÓN PREVISUALIZAR -->
+
+              <div class="preview-action">
+
+                <div class="preview-action__info">
+
+                  <div class="preview-action__icon">
+
+                    <span
+                      *ngIf="
+                        !previewCuotasLoading &&
+                        previewCuotas.length === 0
+                      "
+                    >
+                      👁
+                    </span>
+
+                    <span
+                      *ngIf="previewCuotasLoading"
+                    >
+                      ⏳
+                    </span>
+
+                    <span
+                      *ngIf="
+                        !previewCuotasLoading &&
+                        previewCuotas.length > 0
+                      "
+                    >
+                      ✓
+                    </span>
+
+                  </div>
+
+
+                  <div class="preview-action__content">
+
+                    <strong>
+
+                      {{
+                        previewCuotas.length > 0
+                          ? 'Cronograma listo para revisar'
+                          : 'Confirma el cronograma de pagos'
+                      }}
+
+                    </strong>
+
+
+                    <span>
+
+                      {{
+                        previewCuotas.length > 0
+                          ? 'Puedes revisar y ajustar las fechas de vencimiento.'
+                          : 'Genera una previsualización antes de guardar la matrícula.'
+                      }}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btn-preview"
+                  [class.btn-preview--success]="
+                    previewCuotas.length > 0 &&
+                    !previewCuotasLoading
+                  "
+                  (click)="previsualizarCuotas()"
+                  [disabled]="
+                    saving ||
+                    previewCuotasLoading
+                  "
+                >
+
+                  <span
+                    class="btn-preview__icon"
+                    *ngIf="!previewCuotasLoading"
+                  >
+
+                    {{
+                      previewCuotas.length > 0
+                        ? '↻'
+                        : '👁'
+                    }}
+
+                  </span>
+
+
+                  <span
+                    class="btn-preview__icon"
+                    *ngIf="previewCuotasLoading"
+                  >
+                    ⏳
+                  </span>
+
+
+                  <span>
+
+                    {{
+                      previewCuotasLoading
+                        ? 'Generando...'
+                        : previewCuotas.length > 0
+                          ? 'Actualizar previsualización'
+                          : 'Previsualizar cuotas'
+                    }}
+
+                  </span>
+
+                </button>
+
+              </div>
+
+
+              <!-- ERROR -->
+
+              <div
+                class="preview-error"
+                *ngIf="previewCuotasError"
+              >
+
+                <span class="preview-error__icon">
+                  ⚠
+                </span>
+
+                <span>
+                  {{ previewCuotasError }}
+                </span>
+
+              </div>
+
+
+              <!-- CARD PREVIEW -->
+
+              <div
+                class="preview-card"
+                *ngIf="
+                  previewCuotas.length > 0
+                "
+              >
+
+
+                <!-- HEADER -->
+
+                <div class="preview-card__header">
+
+                  <div>
+
+                    <span class="preview-card__eyebrow">
+                      PREVISUALIZACIÓN
+                    </span>
+
+
+                    <h3>
+                      Cronograma de cuotas
+                    </h3>
+
+
+                    <p>
+                      Revisa el cronograma antes
+                      de confirmar la matrícula.
+                    </p>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    class="preview-card__close"
+                    (click)="cerrarPreviewCuotas()"
+                    [disabled]="previewCuotasLoading"
+                  >
+                    ×
+                  </button>
+
+                </div>
+
+
+                <!-- RESUMEN -->
+
+                <div class="preview-summary">
+
+
+                  <div class="preview-summary__item">
+
+                    <span>
+                      Número de cuotas
+                    </span>
+
+                    <strong>
+                      {{ previewCuotas.length }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="preview-summary__item">
+
+                    <span>
+                      Total cuotas
+                    </span>
+
+                    <strong>
+
+                      {{
+                        formatMonto(
+                          totalPreviewCuotas
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+
+                  <div
+                    class="preview-summary__item"
+                    *ngIf="
+                      form.cuota_inicial !== null &&
+                      form.cuota_inicial !== undefined
+                    "
+                  >
+
+                    <span>
+                      Cuota inicial
+                    </span>
+
+                    <strong>
+
+                      {{
+                        formatMonto(
+                          form.cuota_inicial
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+
+                  <div
+                    class="preview-summary__item"
+                    *ngIf="
+                      form.monto_total !== null &&
+                      form.monto_total !== undefined
+                    "
+                  >
+
+                    <span>
+                      Monto total
+                    </span>
+
+                    <strong>
+
+                      {{
+                        formatMonto(
+                          form.monto_total
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <!-- TABLA PREVIEW -->
+
+                <div
+                  class="preview-table-container"
+                  *ngIf="
+                    previewCuotas.length > 0
+                  "
+                >
+
+                  <table class="preview-table">
+
+                    <thead>
+
+                      <tr>
+
+                        <th>
+                          #
+                        </th>
+
+                        <th>
+                          Vencimiento
+                        </th>
+
+                        <th>
+                          Monto
+                        </th>
+
+                      </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                      <tr
+                        *ngFor="
+                          let cuota of previewCuotas;
+                          let i = index
+                        "
+                      >
+
+                        <td>
+
+                          <span class="cuota-number">
+
+                            {{
+                              getNumeroCuota(
+                                cuota,
+                                i
+                              )
+                            }}
+
+                          </span>
+
+                        </td>
+
+
+                        <td>
+
+                          <input
+                            type="date"
+                            [ngModel]="
+                              getFechaCuotaInput(cuota)
+                            "
+                            (ngModelChange)="
+                              editarFechaCuota(
+                                cuota,
+                                $event
+                              )
+                            "
+                            class="preview-date-input"
+                          />
+
+                        </td>
+
+
+                        <td
+                          class="preview-table__amount"
+                        >
+
+                          {{
+                            formatMonto(
+                              getMontoCuota(
+                                cuota
+                              )
+                            )
+                          }}
+
+                        </td>
+
+                      </tr>
+
+                    </tbody>
+
+
+                    <tfoot>
+
+                      <tr>
+
+                        <td
+                          colspan="2"
+                          class="preview-total-label"
+                        >
+                          Total
+                        </td>
+
+
+                        <td
+                          class="preview-total"
+                        >
+
+                          {{
+                            formatMonto(
+                              totalPreviewCuotas
+                            )
+                          }}
+
+                        </td>
+
+                      </tr>
+
+                    </tfoot>
+
+                  </table>
+
+                </div>
+
+
+                <!-- SIN CUOTAS -->
+
+                <div
+                  class="preview-empty"
+                  *ngIf="
+                    previewCuotas.length === 0 &&
+                    !previewCuotasLoading
+                  "
+                >
+
+                  No se generaron cuotas
+                  para los datos ingresados.
+
+                </div>
+
+
+                <!-- CONFIRMACIÓN -->
+
+                <div
+                  class="preview-confirmation"
+                  *ngIf="
+                    previewCuotas.length > 0
+                  "
+                >
+
+                  <span class="preview-confirmation__icon">
+                    ✓
+                  </span>
+
+
+                  <div>
+
+                    <strong>
+                      ¿El cronograma es correcto?
+                    </strong>
+
+
+                    <p>
+
+                      Si todo está conforme,
+                      puedes continuar con
+                      <strong>
+                        Guardar matrícula
+                      </strong>.
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+
+          <!-- ===================================================== -->
+          <!-- ===================================================== -->
+          <!-- FORMULARIO ACELERADO -->
+          <!-- ===================================================== -->
+          <!-- ===================================================== -->
+
+          <ng-container
+            *ngIf="tipoMatricula === 'ACELERADA'"
+          >
+
+
+            <!-- =================================================== -->
+            <!-- DATOS DEL CURSO -->
+            <!-- =================================================== -->
+
+            <div class="section-card">
+
+              <div class="section-card__header">
+
+                <div>
+
+                  <span class="section-eyebrow">
+                    CURSO ACELERADO
+                  </span>
+
+                  <h3>
+                    Datos del curso
+                  </h3>
+
+                  <p>
+                    Estos datos se registrarán directamente
+                    en la matrícula.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+
+                <!-- NOMBRE DEL CURSO -->
+
+                <div class="form-field full-width">
+
+                  <label>
+                    Nombre del curso *
+                  </label>
+
+                  <input
+                    type="text"
+                    [(ngModel)]="
+                      formAcelerada.nombre_curso_manual
+                    "
+                    maxlength="200"
+                    placeholder="Ej. Curso acelerado de Montacargas"
+                  />
+
+                  <small class="field-help">
+                    Nombre histórico del curso que se está registrando.
+                  </small>
+
+                </div>
+
+
+                <!-- ESTADO -->
+
+                <div class="form-field">
+
+                  <label>
+                    Estado del alumno *
+                  </label>
+
+                  <select
+                    [(ngModel)]="
+                      formAcelerada.estado_alumno_id
+                    "
+                  >
+
+                    <option [ngValue]="null">
+                      Seleccionar estado
+                    </option>
+
+
+                    <option
+                      *ngFor="
+                        let estado of estadosMatriculaDisponibles
+                      "
+                      [ngValue]="estado.id"
+                    >
+
+                      {{ estado.nombre }}
+
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <!-- FECHA MATRÍCULA -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha de matrícula *
+                  </label>
+
+                  <input
+                    type="date"
+                    [(ngModel)]="
+                      formAcelerada.fecha_matricula
+                    "
+                  />
+
+                </div>
+
+
+                <!-- FECHA INICIO -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha de inicio
+                  </label>
+
+                  <input
+                    type="date"
+                    [(ngModel)]="
+                      formAcelerada.fecha_inicio
+                    "
+                  />
+
+                </div>
+
+
+                <!-- FECHA FIN -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha fin estimada
+                  </label>
+
+                  <input
+                    type="date"
+                    [(ngModel)]="
+                      formAcelerada.fecha_fin_estimada
+                    "
+                  />
+
+                  <small class="field-help">
+                    En cursos acelerados la fecha se registra manualmente.
+                  </small>
+
+                </div>
+
+
+                <!-- NOTAS -->
+
+                <div class="form-field full-width">
+
+                  <label>
+                    Notas
+                  </label>
+
+                  <textarea
+                    rows="4"
+                    [(ngModel)]="
+                      formAcelerada.notas
+                    "
+                    placeholder="Observaciones del curso acelerado..."
+                  ></textarea>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================== -->
+            <!-- MÁQUINAS DEL CURSO ACELERADO -->
+            <!-- =================================================== -->
+
+            <div class="section-card">
+
+              <div class="section-card__header">
+
+                <div>
+
+                  <span class="section-eyebrow">
+                    CONFIGURACIÓN PRÁCTICA
+                  </span>
+
+                  <h3>
+                    Máquinas
+                  </h3>
+
+                  <p>
+                    Selecciona las máquinas y define las horas
+                    y sesiones de práctica.
+                  </p>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btn-light"
+                  (click)="agregarMaquinaAcelerada()"
+                  [disabled]="
+                    saving ||
+                    maquinasAceleradas.length >= maquinasDisponibles.length
+                  "
+                >
+                  + Agregar máquina
+                </button>
+
+              </div>
+
+
+              <!-- SIN MÁQUINAS -->
+
+              <div
+                class="accelerated-empty"
+                *ngIf="
+                  maquinasAceleradas.length === 0
+                "
+              >
+
+                <span class="accelerated-empty__icon">
+                  ⚙
+                </span>
+
+                <strong>
+                  No hay máquinas seleccionadas
+                </strong>
+
+                <p>
+                  Agrega una máquina para configurar
+                  sus horas y sesiones.
+                </p>
+
+              </div>
+
+
+              <!-- LISTA DE MÁQUINAS -->
+
+              <div
+                class="accelerated-machines"
+                *ngIf="
+                  maquinasAceleradas.length > 0
+                "
+              >
+
+                <div
+                  class="accelerated-machine-row"
+                  *ngFor="
+                    let maquina of maquinasAceleradas;
+                    let i = index
+                  "
+                >
+
+                  <!-- ORDEN -->
+
+                  <div class="accelerated-machine-order">
+
+                    <span>
+                      {{ i + 1 }}
+                    </span>
+
+                  </div>
+
+
+                  <!-- MÁQUINA -->
+
+                  <div class="form-field">
+
+                    <label>
+                      Máquina *
+                    </label>
+
+                    <select
+                      [(ngModel)]="
+                        maquina.maquina_id
+                      "
+                      (ngModelChange)="
+                        onMaquinaAceleradaChange(
+                          i
+                        )
+                      "
+                    >
+
+                      <option [ngValue]="null">
+                        Seleccionar máquina
+                      </option>
+
+
+                      <option
+                        *ngFor="
+                          let maquinaDisponible of maquinasDisponibles
+                        "
+                        [ngValue]="
+                          maquinaDisponible.id
+                        "
+                        [disabled]="
+                          maquinaAceleradaYaSeleccionada(
+                            maquinaDisponible.id,
+                            i
+                          )
+                        "
+                      >
+
+                        {{ maquinaDisponible.nombre }}
+
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <!-- HORAS -->
+
+                  <div class="form-field">
+
+                    <label>
+                      Horas *
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      [(ngModel)]="
+                        maquina.horas_asignadas
+                      "
+                      placeholder="0"
+                    />
+
+                  </div>
+
+
+                  <!-- SESIONES -->
+
+                  <div class="form-field">
+
+                    <label>
+                      Sesiones *
+                    </label>
+
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      [(ngModel)]="
+                        maquina.sesiones_totales
+                      "
+                      placeholder="0"
+                    />
+
+                  </div>
+
+
+                  <!-- REGALO -->
+
+                  <div class="form-field machine-gift-field">
+
+                    <label>
+                      Regalo
+                    </label>
+
+                    <label class="checkbox-inline">
+
+                      <input
+                        type="checkbox"
+                        [(ngModel)]="
+                          maquina.es_regalo
+                        "
+                      />
+
+                      <span>
+                        Es regalo
+                      </span>
+
+                    </label>
+
+                  </div>
+
+
+                  <!-- ELIMINAR -->
+
+                  <div class="accelerated-machine-actions">
+
+                    <button
+                      type="button"
+                      class="btn-table btn-delete"
+                      (click)="
+                        eliminarMaquinaAcelerada(i)
+                      "
+                      [disabled]="saving"
+                    >
+                      Eliminar
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <small
+                class="field-help"
+                *ngIf="
+                  maquinasAceleradas.length > 0
+                "
+              >
+
+                Cada máquina tendrá una asignación práctica
+                independiente.
+
+              </small>
+
+            </div>
+
+
+            <!-- =================================================== -->
+            <!-- PAGOS DEL CURSO ACELERADO -->
+            <!-- =================================================== -->
+
+            <div class="section-card">
+
+              <div class="section-card__header">
+
+                <div>
+
+                  <span class="section-eyebrow">
+                    CONFIGURACIÓN DE PAGOS
+                  </span>
+
+                  <h3>
+                    Matrícula y certificación
+                  </h3>
+
+                  <p>
+                    Registra manualmente los conceptos iniciales
+                    del curso.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+
+                <!-- ================================================= -->
+                <!-- MATRÍCULA -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Costo de matrícula
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [(ngModel)]="
+                      formAcelerada.pago.monto_matricula
+                    "
+                    placeholder="0.00"
+                    (ngModelChange)="
+                      recalcularTotalAcelerada()
+                    "
+                  />
+
+                  <small class="field-help">
+                    Coloca 0 si el curso no cobra matrícula.
+                  </small>
+
+                </div>
+
+
+                <!-- FECHA MATRÍCULA -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha pago matrícula
+                  </label>
+
+                  <input
+                    type="date"
+                    [(ngModel)]="
+                      formAcelerada.pago.fecha_matricula
+                    "
+                  />
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CERTIFICACIÓN -->
+                <!-- ================================================= -->
+
+                <div class="form-field">
+
+                  <label>
+                    Costo de certificación
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [(ngModel)]="
+                      formAcelerada.pago.monto_certificacion
+                    "
+                    placeholder="0.00"
+                    (ngModelChange)="
+                      recalcularTotalAcelerada()
+                    "
+                  />
+
+                  <small class="field-help">
+                    Coloca 0 si no corresponde.
+                  </small>
+
+                </div>
+
+
+                <!-- FECHA CERTIFICACIÓN -->
+
+                <div class="form-field">
+
+                  <label>
+                    Fecha de certificación
+                  </label>
+
+                  <input
+                    type="date"
+                    [(ngModel)]="
+                      formAcelerada.pago.fecha_certificacion
+                    "
+                  />
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================== -->
+            <!-- CUOTAS MANUALES -->
+            <!-- =================================================== -->
+
+            <div class="section-card">
+
+              <div class="section-card__header">
+
+                <div>
+
+                  <span class="section-eyebrow">
+                    CRONOGRAMA MANUAL
+                  </span>
+
+                  <h3>
+                    Cuotas del curso
+                  </h3>
+
+                  <p>
+                    Define manualmente el número, monto y fechas
+                    de cada cuota.
+                  </p>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btn-primary"
+                  (click)="agregarCuotaAcelerada()"
+                  [disabled]="saving"
+                >
+                  + Agregar cuota
+                </button>
+
+              </div>
+
+
+              <!-- ================================================= -->
+              <!-- SIN CUOTAS -->
+              <!-- ================================================= -->
+
+              <div
+                class="accelerated-empty"
+                *ngIf="
+                  cuotasAceleradas.length === 0
+                "
+              >
+
+                <span class="accelerated-empty__icon">
+                  💳
+                </span>
+
+                <strong>
+                  No hay cuotas registradas
+                </strong>
+
+                <p>
+                  Agrega las cuotas que tendrá el curso.
+                </p>
+
+              </div>
+
+
+              <!-- ================================================= -->
+              <!-- TABLA DE CUOTAS -->
+              <!-- ================================================= -->
+
+              <div
+                class="accelerated-payment-table"
+                *ngIf="
+                  cuotasAceleradas.length > 0
+                "
+              >
+
+                <table>
+
+                  <thead>
+
+                    <tr>
+
+                      <th>
+                        #
+                      </th>
+
+                      <th>
+                        Monto
+                      </th>
+
+                      <th>
+                        Fecha programada
+                      </th>
+
+                      <th>
+                        Fecha vencimiento
+                      </th>
+
+                      <th>
+                        Acción
+                      </th>
+
+                    </tr>
+
+                  </thead>
+
+
+                  <tbody>
+
+                    <tr
+                      *ngFor="
+                        let cuota of cuotasAceleradas;
+                        let i = index
+                      "
+                    >
+
+                      <!-- NÚMERO -->
+
+                      <td>
+
+                        <span class="cuota-number">
+                          {{ cuota.numero_cuota }}
+                        </span>
+
+                      </td>
+
+
+                      <!-- MONTO -->
+
+                      <td>
+
+                        <input
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          [(ngModel)]="
+                            cuota.monto
+                          "
+                          placeholder="0.00"
+                          (ngModelChange)="
+                            recalcularTotalAcelerada()
+                          "
+                        />
+
+                      </td>
+
+
+                      <!-- FECHA PROGRAMADA -->
+
+                      <td>
+
+                        <input
+                          type="date"
+                          [(ngModel)]="
+                            cuota.fecha_programada
+                          "
+                        />
+
+                      </td>
+
+
+                      <!-- FECHA VENCIMIENTO -->
+
+                      <td>
+
+                        <input
+                          type="date"
+                          [(ngModel)]="
+                            cuota.fecha_vencimiento
+                          "
+                        />
+
+                      </td>
+
+
+                      <!-- ELIMINAR -->
+
+                      <td>
+
+                        <button
+                          type="button"
+                          class="btn-table btn-delete"
+                          (click)="
+                            eliminarCuotaAcelerada(i)
+                          "
+                          [disabled]="
+                            saving
+                          "
+                        >
+                          Eliminar
+                        </button>
+
+                      </td>
+
+                    </tr>
+
+                  </tbody>
+
+
+                  <!-- TOTAL -->
+
+                  <tfoot>
+
+                    <tr>
+
+                      <td>
+                        <strong>
+                          Total cuotas
+                        </strong>
+                      </td>
+
+                      <td colspan="4">
+
+                        <strong>
+                          S/
+                          {{
+                            formatMonto(
+                              totalCuotasAceleradas
+                            )
+                          }}
+                        </strong>
+
+                      </td>
+
+                    </tr>
+
+                  </tfoot>
+
+                </table>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================== -->
+            <!-- RESUMEN FINANCIERO ACELERADO -->
+            <!-- =================================================== -->
+
+            <div class="accelerated-financial-summary">
+
+              <div class="accelerated-financial-summary__header">
+
+                <div>
+
+                  <span>
+                    RESUMEN FINANCIERO
+                  </span>
+
+                  <h3>
+                    Total del curso
+                  </h3>
+
+                </div>
+
+                <strong>
+
+                  S/
+                  {{
+                    formatMonto(
+                      totalAcelerada
+                    )
+                  }}
+
+                </strong>
+
+              </div>
+
+
+              <div class="accelerated-financial-summary__grid">
+
+
+                <div>
+
+                  <span>
+                    Matrícula
+                  </span>
+
+                  <strong>
+
+                    S/
+                    {{
+                      formatMonto(
+                        formAcelerada.pago.monto_matricula
+                      )
+                    }}
+
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Cuotas
+                  </span>
+
+                  <strong>
+
+                    S/
+                    {{
+                      formatMonto(
+                        totalCuotasAceleradas
+                      )
+                    }}
+
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Certificación
+                  </span>
+
+                  <strong>
+
+                    S/
+                    {{
+                      formatMonto(
+                        formAcelerada.pago.monto_certificacion
+                      )
+                    }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </ng-container>
+
+
+        </div>
+
+
+        <!-- ======================================================= -->
+        <!-- ACCIONES -->
+        <!-- ======================================================= -->
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="btn-light"
+            (click)="cerrarModal()"
+            [disabled]="saving"
+          >
+            Cancelar
+          </button>
+
+
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="guardarMatricula()"
+            [disabled]="
+              saving ||
+              (
+                tipoMatricula === 'ORDINARIA' &&
+                modoModal === 'crear' &&
+                previewCuotas.length === 0
+              )
+            "
+          >
+
+            {{
+              saving
+                ? 'Guardando...'
+                : modoModal === 'crear'
+                  ? 'Guardar matrícula'
+                  : 'Actualizar matrícula'
+            }}
+
+          </button>
+
+        </div>
 
       </div>
 
@@ -1592,5 +2955,4 @@
 
   </div>
 
-</div>
 </section>
