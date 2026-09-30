@@ -29,9 +29,10 @@ import { Alumno } from '../../../alumnos/models/alumno.model';
 import {
   Matricula,
   MatriculaPayload,
-  CuotaCronograma,
-  CuotaCronogramaPayload,
-  PrevisualizacionCuotasData
+  PrevisualizacionCuotasData,
+  MatriculaAceleradaPayload,
+  MaquinaMatriculaAceleradaPayload,
+  CuotaMatriculaAceleradaPayload
 } from '../../models/matricula.model';
 
 import { EstadoAlumno } from '../../models/estado-alumno.model';
