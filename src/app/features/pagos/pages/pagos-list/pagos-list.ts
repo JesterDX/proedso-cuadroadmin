@@ -1,3 +1,4 @@
+
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,76 +13,138 @@ import { PagosService } from '../../services/pagos.service';
 })
 export class PagosList implements OnInit {
 
-  // ======================
+  // ============================================================
   // INYECCIÓN
-  // ======================
+  // ============================================================
+
   private pagosService = inject(PagosService);
   private cd = inject(ChangeDetectorRef);
 
-  // ======================
+
+  // ============================================================
   // UI STATE
-  // ======================
+  // ============================================================
+
   loading = false;
+
   modalOpen = false;
+
   miniModalOpen = false;
+
   editandoFechas = false;
+
   modalManualAbierto = false;
+
+  // NUEVO: modal para editar monto de cuota
+  modalEditarCuota = false;
+
+  // NUEVO: cuota actualmente seleccionada para editar
+  cuotaEditando: any = null;
+
+  // NUEVO: formulario para editar monto de cuota
+  formEditarCuota = {
+    monto: null as number | null
+  };
+
   mesMatricula: string = '';
+
   anioMatricula: string = '';
+
   gruposPaginados: any[] = [];
+
   aniosDisponibles: number[] = [];
+
 
   tab: 'cuotas' | 'historial' | 'pago' = 'cuotas';
 
-  // ======================
+
+  // ============================================================
   // DATA GENERAL
-  // ======================
+  // ============================================================
+
   alumnos: any[] = [];
+
   alumnosFiltrados: any[] = [];
+
   alumnosAgrupados: any[] = [];
+
   cuotasDetalle: any[] = [];
+
   historial: any[] = [];
+
+
+  // ============================================================
+  // EDITAR PAGO
+  // ============================================================
+
   pagoEditando: any = null;
+
   modalEditarPago = false;
+
   formEditarPago = {
     monto: null as number | null,
     metodo_pago: 'EFECTIVO'
   };
+
   fileEditarPago: File | null = null;
+
+
+  // ============================================================
+  // ALUMNO / PAGO RÁPIDO
+  // ============================================================
+
   alumnoSeleccionado: any = null;
+
   miniPago: any = null;
 
-  // ======================
+
+  // ============================================================
   // BÚSQUEDA PLAN MANUAL
-  // ======================
+  // ============================================================
+
   resultadosBusqueda: any[] = [];
+
   matriculaSeleccionada: any = null;
+
   timeoutBusqueda: any;
 
-  // ======================
+
+  // ============================================================
   // PAGINACIÓN Y FILTROS
-  // ======================
+  // ============================================================
+
   paginaActual = 1;
+
   itemsPorPagina = 8;
+
   totalPaginas = 1;
+
   paginas: number[] = [];
+
   search = '';
+
   estado = '';
 
-  // ======================
+
+  // ============================================================
   // ARCHIVOS
-  // ======================
+  // ============================================================
+
   selectedFile: File | null = null;
+
   miniFile: File | null = null;
 
-  // ======================
+
+  // ============================================================
   // FORMULARIOS
-  // ======================
+  // ============================================================
+
   formPago = {
     cuota_id: null as number | null,
     monto: null as number | null,
     metodo_pago: 'EFECTIVO'
   };
+
 
   miniPagoForm = {
     cuota_id: null as number | null,
@@ -89,18 +152,32 @@ export class PagosList implements OnInit {
     metodo_pago: 'EFECTIVO'
   };
 
+
   formRecalculo = {
     tipo: 'MENSUAL' as 'MENSUAL' | 'QUINCENAL',
     fecha_inicio: new Date().toISOString().split('T')[0],
     cantidad_cuotas: 4
   };
 
+
+  // ============================================================
+  // FORMULARIO PLAN MANUAL
+  // ============================================================
+
   formularioPlan: {
     matricula_id: number | null;
-    modalidad_pago: 'MENSUAL' | 'QUINCENAL' | 'PERSONALIZADO';
+
+    modalidad_pago:
+      | 'MENSUAL'
+      | 'QUINCENAL'
+      | 'PERSONALIZADO';
+
     monto_total: number | null;
+
     monto_matricula: number;
+
     monto_certificacion: number;
+
     cuotas: {
       numero_cuota: number;
       fecha_vencimiento: string;
@@ -108,892 +185,2583 @@ export class PagosList implements OnInit {
       observaciones: string;
     }[];
   } = {
-      matricula_id: null,
-      modalidad_pago: 'MENSUAL',
-      monto_total: null,
-      monto_matricula: 0,
-      monto_certificacion: 0,
-      cuotas: []
-    };
+
+    matricula_id: null,
+
+    modalidad_pago: 'MENSUAL',
+
+    monto_total: null,
+
+    monto_matricula: 0,
+
+    monto_certificacion: 0,
+
+    cuotas: []
+  };
+
 
   cuotaTemporal = {
+
     numero_cuota: 1,
+
     fecha_vencimiento: '',
+
     monto: null as number | null,
+
     observaciones: ''
   };
 
-  // ======================
+
+  // ============================================================
   // NOTIFICACIONES
-  // ======================
+  // ============================================================
+
   notificacion = {
+
     visible: false,
+
     mensaje: '',
-    tipo: 'success' as 'success' | 'error' | 'warning'
+
+    tipo: 'success' as
+      | 'success'
+      | 'error'
+      | 'warning'
   };
 
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
   ngOnInit() {
+
     this.cargar();
+
   }
 
-  // ======================
+
+  // ============================================================
   // CARGA PRINCIPAL
-  // ======================
+  // ============================================================
+
   cargar() {
+
     this.loading = true;
+
     this.pagosService.resumen().subscribe({
+
       next: (data) => {
+
         this.alumnos = data || [];
+
         const anios = this.alumnos
-          .map(a => new Date(a.fecha_matricula).getFullYear())
-          .filter(a => !isNaN(a));
 
-        this.aniosDisponibles = [...new Set(anios)].sort((a, b) => b - a);
+          .map(a =>
+            new Date(
+              a.fecha_matricula
+            ).getFullYear()
+          )
+
+          .filter(a =>
+            !isNaN(a)
+          );
+
+
+        this.aniosDisponibles =
+          [...new Set(anios)]
+            .sort(
+              (a, b) => b - a
+            );
+
+
         this.filtrar();
+
         this.loading = false;
+
         this.cd.detectChanges();
+
       },
-      error: () => this.loading = false
+
+      error: (err) => {
+
+        console.error(
+          'Error cargando pagos:',
+          err
+        );
+
+        this.loading = false;
+
+      }
+
     });
+
   }
 
-  onEditarFileSelected(e:any){
-  this.fileEditarPago = e.target.files[0];
-}
-  // ======================
-  // FILTRO + PAGINACIÓN
-  // ======================
-// ======================
-// FILTRO + PAGINACIÓN + AGRUPACIÓN
-// ======================
-filtrar(reset = true) {
 
-  if (reset) {
-    this.paginaActual = 1;
+  // ============================================================
+  // ARCHIVO EDITAR PAGO
+  // ============================================================
+
+  onEditarFileSelected(e: any) {
+
+    this.fileEditarPago =
+      e.target.files?.[0] || null;
+
   }
 
-  const search = this.search.toLowerCase().trim();
 
-  const filtrados = this.alumnos.filter(a => {
+  // ============================================================
+  // FILTRO + PAGINACIÓN + AGRUPACIÓN
+  // ============================================================
 
-    // ======================
-    // BÚSQUEDA
-    // ======================
-    const cumpleBusqueda =
-      !search ||
-      a.alumno?.toLowerCase().includes(search) ||
-      a.plan_nombre?.toLowerCase().includes(search);
+  filtrar(reset = true) {
 
-    // ======================
-    // ESTADO
-    // ======================
-    const cumpleEstado =
-      !this.estado ||
-      (this.estado === 'PAGADO' && !a.tiene_deuda) ||
-      (this.estado === 'PENDIENTE' && a.tiene_deuda);
+    if (reset) {
 
-    // ======================
-    // FECHA PARA FILTROS
-    // PRIORIDAD:
-    // 1. fecha_inicio
-    // 2. fecha_matricula
-    // ======================
-    const fechaAgrupacion =
-      a.fecha_inicio ||
-      a.fecha_matricula ||
-      null;
-
-    let cumpleFecha = true;
-
-    if (fechaAgrupacion) {
-
-      const fecha = new Date(fechaAgrupacion);
-
-      if (!isNaN(fecha.getTime())) {
-
-        const mes = fecha.getMonth() + 1;
-        const anio = fecha.getFullYear();
-
-        if (
-          this.mesMatricula &&
-          mes !== Number(this.mesMatricula)
-        ) {
-          cumpleFecha = false;
-        }
-
-        if (
-          this.anioMatricula &&
-          anio !== Number(this.anioMatricula)
-        ) {
-          cumpleFecha = false;
-        }
-
-      }
+      this.paginaActual = 1;
 
     }
 
-    return (
-      cumpleBusqueda &&
-      cumpleEstado &&
-      cumpleFecha
-    );
-  });
+
+    const search =
+      this.search
+        .toLowerCase()
+        .trim();
 
 
-  // ======================
-  // ORDENAR ALUMNOS
-  // ======================
-  filtrados.sort((a, b) => {
+    const filtrados =
+      this.alumnos.filter(a => {
 
-    const fechaA =
-      a.fecha_inicio ||
-      a.fecha_matricula ||
-      null;
 
-    const fechaB =
-      b.fecha_inicio ||
-      b.fecha_matricula ||
-      null;
+        // --------------------------------------------------------
+        // BÚSQUEDA
+        // --------------------------------------------------------
 
-    // Los que no tienen ninguna fecha van al final
-    if (!fechaA && !fechaB) return 0;
-    if (!fechaA) return 1;
-    if (!fechaB) return -1;
+        const cumpleBusqueda =
 
-    const tiempoA = new Date(fechaA).getTime();
-    const tiempoB = new Date(fechaB).getTime();
+          !search ||
 
-    // Más reciente primero
-    if (tiempoA !== tiempoB) {
-      return tiempoB - tiempoA;
+          a.alumno
+            ?.toLowerCase()
+            .includes(search) ||
+
+          a.plan_nombre
+            ?.toLowerCase()
+            .includes(search);
+
+
+        // --------------------------------------------------------
+        // ESTADO
+        // --------------------------------------------------------
+
+        const cumpleEstado =
+
+          !this.estado ||
+
+          (
+            this.estado === 'PAGADO' &&
+            !a.tiene_deuda
+          ) ||
+
+          (
+            this.estado === 'PENDIENTE' &&
+            a.tiene_deuda
+          );
+
+
+        // --------------------------------------------------------
+        // FECHA
+        // --------------------------------------------------------
+
+        const fechaAgrupacion =
+
+          a.fecha_inicio ||
+
+          a.fecha_matricula ||
+
+          null;
+
+
+        let cumpleFecha = true;
+
+
+        if (fechaAgrupacion) {
+
+          const fecha =
+            new Date(fechaAgrupacion);
+
+
+          if (!isNaN(fecha.getTime())) {
+
+            const mes =
+              fecha.getMonth() + 1;
+
+            const anio =
+              fecha.getFullYear();
+
+
+            if (
+              this.mesMatricula &&
+              mes !== Number(
+                this.mesMatricula
+              )
+            ) {
+
+              cumpleFecha = false;
+
+            }
+
+
+            if (
+              this.anioMatricula &&
+              anio !== Number(
+                this.anioMatricula
+              )
+            ) {
+
+              cumpleFecha = false;
+
+            }
+
+          }
+
+        }
+
+
+        return (
+
+          cumpleBusqueda &&
+
+          cumpleEstado &&
+
+          cumpleFecha
+
+        );
+
+      });
+
+
+    // ----------------------------------------------------------
+    // ORDENAR
+    // ----------------------------------------------------------
+
+    filtrados.sort((a, b) => {
+
+      const fechaA =
+        a.fecha_inicio ||
+        a.fecha_matricula ||
+        null;
+
+      const fechaB =
+        b.fecha_inicio ||
+        b.fecha_matricula ||
+        null;
+
+
+      if (!fechaA && !fechaB) {
+
+        return 0;
+
+      }
+
+
+      if (!fechaA) {
+
+        return 1;
+
+      }
+
+
+      if (!fechaB) {
+
+        return -1;
+
+      }
+
+
+      const tiempoA =
+        new Date(fechaA).getTime();
+
+      const tiempoB =
+        new Date(fechaB).getTime();
+
+
+      if (tiempoA !== tiempoB) {
+
+        return tiempoB - tiempoA;
+
+      }
+
+
+      return (
+        a.alumno || ''
+      ).localeCompare(
+
+        b.alumno || '',
+
+        'es',
+
+        {
+          sensitivity: 'base'
+        }
+
+      );
+
+    });
+
+
+    // ----------------------------------------------------------
+    // PAGINACIÓN
+    // ----------------------------------------------------------
+
+    this.totalPaginas =
+      Math.ceil(
+        filtrados.length /
+        this.itemsPorPagina
+      );
+
+
+    if (this.totalPaginas === 0) {
+
+      this.totalPaginas = 1;
+
     }
 
-    // Si tienen misma fecha, ordenar por nombre
-    return (a.alumno || '').localeCompare(
-      b.alumno || '',
-      'es',
-      {
-        sensitivity: 'base'
+
+    const inicio =
+
+      (this.paginaActual - 1) *
+      this.itemsPorPagina;
+
+
+    const fin =
+
+      inicio +
+      this.itemsPorPagina;
+
+
+    const paginaActualData =
+
+      filtrados.slice(
+        inicio,
+        fin
+      );
+
+
+    this.alumnosFiltrados =
+      filtrados;
+
+
+    this.paginas =
+
+      Array.from(
+
+        {
+          length:
+            this.totalPaginas
+        },
+
+        (_, i) => i + 1
+
+      );
+
+
+    // ----------------------------------------------------------
+    // MESES
+    // ----------------------------------------------------------
+
+    const meses = [
+
+      'Enero',
+
+      'Febrero',
+
+      'Marzo',
+
+      'Abril',
+
+      'Mayo',
+
+      'Junio',
+
+      'Julio',
+
+      'Agosto',
+
+      'Septiembre',
+
+      'Octubre',
+
+      'Noviembre',
+
+      'Diciembre'
+
+    ];
+
+
+    // ----------------------------------------------------------
+    // AGRUPACIÓN
+    // ----------------------------------------------------------
+
+    const grupos: {
+
+      [key: string]: {
+
+        anio: number | null;
+
+        mesNumero: number | null;
+
+        mes: string;
+
+        fechaReferencia:
+          string | null;
+
+        alumnos: any[];
+
       }
-    );
 
-  });
+    } = {};
 
 
-  // ======================
+    paginaActualData.forEach(
+      alumno => {
+
+        const fechaReferencia =
+
+          alumno.fecha_inicio ||
+
+          alumno.fecha_matricula ||
+
+          null;
+
+
+        // ------------------------------------------------------
+        // SIN FECHA
+        // ------------------------------------------------------
+
+        if (!fechaReferencia) {
+
+          const key =
+            'SIN_FECHA';
+
+
+          if (!grupos[key]) {
+
+            grupos[key] = {
+
+              anio: null,
+
+              mesNumero: null,
+
+              mes: 'Sin fecha',
+
+              fechaReferencia: null,
+
+              alumnos: []
+
+            };
+
+          }
+
+
+          grupos[key]
+            .alumnos
+            .push(alumno);
+
+
+          return;
+
+        }
+
+
+        // ------------------------------------------------------
+        // CON FECHA
+        // ------------------------------------------------------
+
+        const fecha =
+          new Date(
+            fechaReferencia
+          );
+
+
+        if (
+          isNaN(
+            fecha.getTime()
+          )
+        ) {
+
+          const key =
+            'SIN_FECHA';
+
+
+          if (!grupos[key]) {
+
+            grupos[key] = {
+
+              anio: null,
+
+              mesNumero: null,
+
+              mes: 'Sin fecha',
+
+              fechaReferencia: null,
+
+              alumnos: []
+
+            };
+
+          }
+
+
+          grupos[key]
+            .alumnos
+            .push(alumno);
+
+
+          return;
+
+        }
+
+
+        const anio =
+          fecha.getFullYear();
+
+
+        const mes =
+          fecha.getMonth();
+
+
+        const key =
+          `${anio}-${mes}`;
+
+
+        if (!grupos[key]) {
+
+          grupos[key] = {
+
+            anio,
+
+            mesNumero: mes,
+
+            mes:
+              `${meses[mes]} ${anio}`,
+
+            fechaReferencia,
+
+            alumnos: []
+
+          };
+
+        }
+
+
+        grupos[key]
+          .alumnos
+          .push(alumno);
+
+      });
+
+
+    // ----------------------------------------------------------
+    // ORDENAR GRUPOS
+    // ----------------------------------------------------------
+
+    this.gruposPaginados =
+
+      Object.values(grupos)
+
+        .sort(
+          (a: any, b: any) => {
+
+
+            if (
+              a.anio === null &&
+              b.anio !== null
+            ) {
+
+              return 1;
+
+            }
+
+
+            if (
+              a.anio !== null &&
+              b.anio === null
+            ) {
+
+              return -1;
+
+            }
+
+
+            if (
+              a.anio === null &&
+              b.anio === null
+            ) {
+
+              return 0;
+
+            }
+
+
+            if (a.anio !== b.anio) {
+
+              return b.anio - a.anio;
+
+            }
+
+
+            return (
+              b.mesNumero -
+              a.mesNumero
+            );
+
+          }
+        );
+
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ============================================================
   // PAGINACIÓN
-  // ======================
-  this.totalPaginas = Math.ceil(
-    filtrados.length / this.itemsPorPagina
-  );
+  // ============================================================
 
-  // Evitar página 0 cuando no hay resultados
-  if (this.totalPaginas === 0) {
-    this.totalPaginas = 1;
+  cambiarPagina(p: number) {
+
+    if (
+      p < 1 ||
+      p > this.totalPaginas
+    ) {
+
+      return;
+
+    }
+
+    this.paginaActual = p;
+
+    this.filtrar(false);
+
   }
 
-  const inicio =
-    (this.paginaActual - 1) *
-    this.itemsPorPagina;
 
-  const fin =
-    inicio +
-    this.itemsPorPagina;
+  paginaAnterior() {
 
-  const paginaActualData =
-    filtrados.slice(inicio, fin);
+    if (
+      this.paginaActual > 1
+    ) {
 
-  this.alumnosFiltrados = filtrados;
+      this.paginaActual--;
 
-  this.paginas = Array.from(
-    {
-      length: this.totalPaginas
-    },
-    (_, i) => i + 1
-  );
+      this.filtrar(false);
 
-
-  // ======================
-  // MESES
-  // ======================
-  const meses = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
-  ];
-
-
-  // ======================
-  // AGRUPACIÓN
-  // ======================
-  const grupos: {
-    [key: string]: {
-      anio: number | null;
-      mesNumero: number | null;
-      mes: string;
-      fechaReferencia: string | null;
-      alumnos: any[];
     }
-  } = {};
+
+  }
 
 
-  paginaActualData.forEach(alumno => {
+  paginaSiguiente() {
 
-    // ==================================================
-    // FECHA PRINCIPAL:
-    // fecha_inicio
-    //
-    // SI NO EXISTE:
-    // fecha_matricula
-    // ==================================================
-    const fechaReferencia =
-      alumno.fecha_inicio ||
-      alumno.fecha_matricula ||
+    if (
+      this.paginaActual <
+      this.totalPaginas
+    ) {
+
+      this.paginaActual++;
+
+      this.filtrar(false);
+
+    }
+
+  }
+
+
+  // ============================================================
+  // EDITAR PAGO REGISTRADO
+  // ============================================================
+
+  editarPago(pago: any) {
+
+    this.pagoEditando =
+      pago;
+
+
+    this.formEditarPago = {
+
+      monto:
+        Number(
+          pago.monto || 0
+        ),
+
+      metodo_pago:
+        pago.metodo_pago ||
+        'EFECTIVO'
+
+    };
+
+
+    this.modalEditarPago =
+      true;
+
+  }
+
+
+  guardarEditarPago() {
+
+    if (
+      !this.pagoEditando
+    ) {
+
+      return;
+
+    }
+
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+
+      'monto',
+
+      String(
+        this.formEditarPago.monto
+      )
+
+    );
+
+
+    formData.append(
+
+      'metodo_pago',
+
+      this.formEditarPago
+        .metodo_pago
+
+    );
+
+
+    if (
+      this.fileEditarPago
+    ) {
+
+      formData.append(
+
+        'comprobante',
+
+        this.fileEditarPago
+
+      );
+
+    }
+
+
+    this.pagosService
+
+      .editarPago(
+
+        this.pagoEditando.id,
+
+        formData
+
+      )
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Pago actualizado correctamente',
+
+            'success'
+
+          );
+
+
+          this.modalEditarPago =
+            false;
+
+
+          this.fileEditarPago =
+            null;
+
+
+          if (
+            this.alumnoSeleccionado
+              ?.matricula_id
+          ) {
+
+            this.cargarHistorial(
+
+              this.alumnoSeleccionado
+                .matricula_id
+
+            );
+
+
+            this.verDetalle(
+
+              this.alumnoSeleccionado
+                .matricula_id
+
+            );
+
+          }
+
+        },
+
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error al editar pago',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ============================================================
+  // ELIMINAR PAGO
+  // ============================================================
+
+  eliminarPago(id: number) {
+
+    if (
+      !confirm(
+        '¿Eliminar este pago?'
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    this.pagosService
+
+      .eliminarPago(id)
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Pago eliminado correctamente',
+
+            'success'
+
+          );
+
+
+          if (
+            this.alumnoSeleccionado
+              ?.matricula_id
+          ) {
+
+            this.cargarHistorial(
+
+              this.alumnoSeleccionado
+                .matricula_id
+
+            );
+
+
+            this.verDetalle(
+
+              this.alumnoSeleccionado
+                .matricula_id
+
+            );
+
+          }
+
+        },
+
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error al eliminar pago',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ============================================================
+  // EDITAR MONTO DE CUOTA
+  // ============================================================
+
+  abrirEditarMontoCuota(
+    cuota: any
+  ) {
+
+    if (!cuota) {
+
+      return;
+
+    }
+
+
+    this.cuotaEditando =
+      cuota;
+
+
+    this.formEditarCuota = {
+
+      monto:
+        Number(
+          cuota.monto_programado ||
+          0
+        )
+
+    };
+
+
+    this.modalEditarCuota =
+      true;
+
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ============================================================
+  // NUEVO SALDO PREVISUALIZADO
+  // ============================================================
+
+  getNuevoSaldoCuota(): number {
+
+    if (
+      !this.cuotaEditando
+    ) {
+
+      return 0;
+
+    }
+
+
+    const nuevoMonto =
+      Number(
+        this.formEditarCuota
+          .monto || 0
+      );
+
+
+    const montoPagado =
+      Number(
+        this.cuotaEditando
+          .monto_pagado || 0
+      );
+
+
+    return Math.max(
+      nuevoMonto - montoPagado,
+      0
+    );
+
+  }
+
+
+  // ============================================================
+  // GUARDAR NUEVO MONTO DE CUOTA
+  // ============================================================
+
+  guardarEditarMontoCuota() {
+
+    if (
+      !this.cuotaEditando
+    ) {
+
+      return;
+
+    }
+
+
+    const nuevoMonto =
+      Number(
+        this.formEditarCuota
+          .monto
+      );
+
+
+    // ----------------------------------------------------------
+    // VALIDACIÓN MONTO
+    // ----------------------------------------------------------
+
+    if (
+      !Number.isFinite(
+        nuevoMonto
+      ) ||
+      nuevoMonto <= 0
+    ) {
+
+      this.mostrarNotificacion(
+
+        'Ingresa un monto válido mayor a cero.',
+
+        'warning'
+
+      );
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------------------
+    // MONTO YA PAGADO
+    // ----------------------------------------------------------
+
+    const montoPagado =
+      Number(
+        this.cuotaEditando
+          .monto_pagado || 0
+      );
+
+
+    // No permitir que la cuota quede por debajo
+    // de lo que ya pagó el alumno.
+
+    if (
+      nuevoMonto <
+      montoPagado
+    ) {
+
+      this.mostrarNotificacion(
+
+        `El monto no puede ser menor a lo ya pagado: ${this.formatMonto(montoPagado)}`,
+
+        'warning'
+
+      );
+
+      return;
+
+    }
+
+
+    this.loading = true;
+
+
+    // ----------------------------------------------------------
+    // LLAMAR BACKEND
+    // ----------------------------------------------------------
+
+    this.pagosService
+
+      .editarMontoCuota(
+
+        Number(
+          this.cuotaEditando.id
+        ),
+
+        nuevoMonto
+
+      )
+
+      .subscribe({
+
+        next: () => {
+
+          this.loading = false;
+
+
+          this.mostrarNotificacion(
+
+            'Monto de la cuota actualizado correctamente.',
+
+            'success'
+
+          );
+
+
+          this.modalEditarCuota =
+            false;
+
+
+          this.cuotaEditando =
+            null;
+
+
+          this.formEditarCuota = {
+
+            monto: null
+
+          };
+
+
+          // Recargar detalle
+
+          if (
+            this.alumnoSeleccionado
+              ?.matricula_id
+          ) {
+
+            this.verDetalle(
+
+              this.alumnoSeleccionado
+                .matricula_id
+
+            );
+
+          }
+
+
+          // Recargar listado
+
+          this.cargar();
+
+        },
+
+
+        error: (err) => {
+
+          this.loading = false;
+
+
+          console.error(
+
+            'Error al editar monto de cuota:',
+
+            err
+
+          );
+
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'No se pudo actualizar el monto de la cuota.',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ============================================================
+  // MODAL PLAN MANUAL
+  // ============================================================
+
+  abrirModalPlanManual() {
+
+    this.modalManualAbierto =
+      true;
+
+
+    this.cerrarModalPlanManual(
+      false
+    );
+
+  }
+
+
+  cerrarModalPlanManual(
+    cerrarOverlay = true
+  ) {
+
+    if (
+      cerrarOverlay
+    ) {
+
+      this.modalManualAbierto =
+        false;
+
+    }
+
+
+    this.resultadosBusqueda =
+      [];
+
+    this.matriculaSeleccionada =
       null;
 
 
-    // ==================================================
-    // SIN FECHA
-    // ==================================================
-    if (!fechaReferencia) {
+    this.formularioPlan = {
 
-      const key = 'SIN_FECHA';
+      matricula_id: null,
 
-      if (!grupos[key]) {
+      modalidad_pago:
+        'MENSUAL',
 
-        grupos[key] = {
-          anio: null,
-          mesNumero: null,
-          mes: 'Sin fecha',
-          fechaReferencia: null,
-          alumnos: []
-        };
+      monto_total:
+        null,
 
-      }
+      monto_matricula:
+        0,
 
-      grupos[key].alumnos.push(alumno);
+      monto_certificacion:
+        0,
+
+      cuotas: []
+
+    };
+
+
+    this.cuotaTemporal = {
+
+      numero_cuota: 1,
+
+      fecha_vencimiento: '',
+
+      monto: null,
+
+      observaciones: ''
+
+    };
+
+  }
+
+
+  buscarMatricula(
+    event: Event
+  ) {
+
+    const termino =
+
+      (
+        event.target as
+        HTMLInputElement
+      ).value;
+
+
+    if (
+      termino.length < 3
+    ) {
+
+      this.resultadosBusqueda =
+        [];
 
       return;
+
     }
 
 
-    // ==================================================
-    // CON FECHA
-    // ==================================================
-    const fecha =
-      new Date(fechaReferencia);
+    clearTimeout(
+      this.timeoutBusqueda
+    );
 
 
-    if (isNaN(fecha.getTime())) {
+    this.timeoutBusqueda =
+      setTimeout(() => {
 
-      const key = 'SIN_FECHA';
+        this.pagosService
 
-      if (!grupos[key]) {
+          .buscarMatriculas(
+            termino
+          )
 
-        grupos[key] = {
-          anio: null,
-          mesNumero: null,
-          mes: 'Sin fecha',
-          fechaReferencia: null,
-          alumnos: []
-        };
+          .subscribe({
 
-      }
+            next: (res) => {
 
-      grupos[key].alumnos.push(alumno);
+              this.resultadosBusqueda =
+                res || [];
+
+              this.cd.detectChanges();
+
+            },
+
+            error: (err) => {
+
+              console.error(
+                err
+              );
+
+              this.resultadosBusqueda =
+                [];
+
+            }
+
+          });
+
+      }, 400);
+
+  }
+
+
+  seleccionarMatricula(
+    alumno: any
+  ) {
+
+    this.matriculaSeleccionada =
+      alumno;
+
+
+    this.formularioPlan
+      .matricula_id =
+      alumno.matricula_id;
+
+
+    this.resultadosBusqueda =
+      [];
+
+  }
+
+
+  agregarCuota() {
+
+    if (
+      !this.cuotaTemporal
+        .fecha_vencimiento ||
+      !this.cuotaTemporal
+        .monto
+    ) {
+
+      this.mostrarNotificacion(
+
+        'Llena la fecha y el monto de la cuota',
+
+        'warning'
+
+      );
 
       return;
+
     }
 
 
-    const anio =
-      fecha.getFullYear();
+    this.formularioPlan
+      .cuotas
+      .push({
 
-    const mes =
-      fecha.getMonth();
+        ...this.cuotaTemporal
 
-
-    // ==================================================
-    // CLAVE DEL GRUPO
-    // ==================================================
-    const key =
-      `${anio}-${mes}`;
+      });
 
 
-    // ==================================================
-    // CREAR GRUPO
-    // ==================================================
-    if (!grupos[key]) {
+    this.cuotaTemporal
+      .numero_cuota++;
 
-      grupos[key] = {
 
-        anio,
+    this.cuotaTemporal
+      .monto = null;
 
-        mesNumero: mes,
 
-        mes:
-          `${meses[mes]} ${anio}`,
+    this.cuotaTemporal
+      .observaciones = '';
 
-        fechaReferencia,
+  }
 
-        alumnos: []
+
+  eliminarCuota(
+    index: number
+  ) {
+
+    this.formularioPlan
+      .cuotas
+      .splice(
+        index,
+        1
+      );
+
+
+    this.formularioPlan
+      .cuotas
+      .forEach(
+        (c, i) =>
+          c.numero_cuota =
+            i + 1
+      );
+
+
+    this.cuotaTemporal
+      .numero_cuota =
+      this.formularioPlan
+        .cuotas
+        .length + 1;
+
+  }
+
+
+  guardarPlanManual() {
+
+    const totalCuotas =
+
+      this.formularioPlan
+        .cuotas
+        .reduce(
+
+          (sum, cuota) =>
+
+            sum +
+            Number(
+              cuota.monto || 0
+            ),
+
+          0
+
+        );
+
+
+    if (
+      totalCuotas !==
+      Number(
+        this.formularioPlan
+          .monto_total
+      )
+    ) {
+
+      this.mostrarNotificacion(
+
+        'La suma de las cuotas no coincide con el monto total',
+
+        'warning'
+
+      );
+
+      return;
+
+    }
+
+
+    if (
+      this.formularioPlan
+        .cuotas.length === 0
+    ) {
+
+      this.mostrarNotificacion(
+
+        'Debes agregar al menos una cuota',
+
+        'warning'
+
+      );
+
+      return;
+
+    }
+
+
+    this.loading = true;
+
+
+    this.pagosService
+
+      .crearPlanManual(
+        this.formularioPlan
+      )
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Plan manual creado con éxito',
+
+            'success'
+
+          );
+
+
+          this.cerrarModalPlanManual();
+
+          this.cargar();
+
+        },
+
+
+        error: (err) => {
+
+          this.loading = false;
+
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error al crear plan',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // ============================================================
+  // DETALLE ALUMNO
+  // ============================================================
+
+  verDetalle(
+    matriculaId: number
+  ) {
+
+    this.loading = true;
+
+
+    this.pagosService
+
+      .detalle(
+        matriculaId
+      )
+
+      .subscribe({
+
+        next: (data) => {
+
+          this.cuotasDetalle =
+            data || [];
+
+
+          this.alumnoSeleccionado =
+            data?.[0] || null;
+
+
+          this.cargarHistorial(
+            matriculaId
+          );
+
+
+          this.modalOpen =
+            true;
+
+
+          this.tab =
+            'cuotas';
+
+
+          this.loading =
+            false;
+
+
+          this.cd.detectChanges();
+
+        },
+
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+          this.loading =
+            false;
+
+        }
+
+      });
+
+  }
+
+
+  cargarHistorial(
+    id: number
+  ) {
+
+    this.pagosService
+
+      .historial(id)
+
+      .subscribe({
+
+        next: (data) => {
+
+          this.historial =
+            data || [];
+
+          this.cd.detectChanges();
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+        }
+
+      });
+
+  }
+
+
+  cerrarModal() {
+
+    this.modalOpen =
+      false;
+
+    this.editandoFechas =
+      false;
+
+  }
+
+
+  cambiarTab(
+    tab:
+      'cuotas' |
+      'historial' |
+      'pago'
+  ) {
+
+    this.tab =
+      tab;
+
+    this.cd.detectChanges();
+
+  }
+
+
+  // ============================================================
+  // CUOTAS ORDENADAS
+  // ============================================================
+
+  get cuotasOrdenadas() {
+
+    if (
+      !this.cuotasDetalle
+    ) {
+
+      return [];
+
+    }
+
+
+    const orden:
+      Record<string, number> = {
+
+        MATRICULA: 1,
+
+        CUOTA: 2,
+
+        CERTIFICACION: 3
 
       };
 
-    }
 
+    return [
 
-    // ==================================================
-    // AGREGAR ALUMNO
-    // ==================================================
-    grupos[key].alumnos.push(alumno);
+      ...this.cuotasDetalle
 
-  });
+    ].sort((a, b) => {
 
+      const ordenA =
+        orden[
+          a.concepto_codigo
+        ] ?? 99;
 
-  // ======================
-  // ORDENAR GRUPOS
-  // ======================
-  this.gruposPaginados =
-    Object.values(grupos)
-      .sort((a: any, b: any) => {
 
-        // Sin fecha siempre al final
-        if (
-          a.anio === null &&
-          b.anio !== null
-        ) {
-          return 1;
-        }
+      const ordenB =
+        orden[
+          b.concepto_codigo
+        ] ?? 99;
 
-        if (
-          a.anio !== null &&
-          b.anio === null
-        ) {
-          return -1;
-        }
 
-        if (
-          a.anio === null &&
-          b.anio === null
-        ) {
-          return 0;
-        }
+      if (
+        ordenA !==
+        ordenB
+      ) {
 
+        return (
+          ordenA -
+          ordenB
+        );
 
-        // Año más reciente
-        if (a.anio !== b.anio) {
-          return b.anio - a.anio;
-        }
-
-
-        // Mes más reciente
-        return b.mesNumero - a.mesNumero;
-
-      });
-
-
-  this.cd.detectChanges();
-}
-
-  cambiarPagina(p: number) {
-    if (p < 1 || p > this.totalPaginas) return;
-    this.paginaActual = p;
-    this.filtrar(false);
-  }
-
-  paginaAnterior() {
-    if (this.paginaActual > 1) {
-      this.paginaActual--;
-      this.filtrar(false);
-    }
-  }
-
-  paginaSiguiente() {
-    if (this.paginaActual < this.totalPaginas) {
-      this.paginaActual++;
-      this.filtrar(false);
-    }
-  }
-
-  editarPago(pago:any){
-
-  this.pagoEditando = pago;
-
-  this.formEditarPago = {
-    monto: pago.monto,
-    metodo_pago: pago.metodo_pago || 'EFECTIVO'
-  };
-
-  this.modalEditarPago = true;
-
-}
-
-  guardarEditarPago(){
-
-  if(!this.pagoEditando) return;
-
-
-  const formData = new FormData();
-
-  formData.append(
-    'monto',
-    String(this.formEditarPago.monto)
-  );
-
-  formData.append(
-    'metodo_pago',
-    this.formEditarPago.metodo_pago
-  );
-
-
-  if(this.fileEditarPago){
-
-    formData.append(
-      'comprobante',
-      this.fileEditarPago
-    );
-
-  }
-
-
-  this.pagosService.editarPago(
-    this.pagoEditando.id,
-    formData
-  )
-  .subscribe({
-
-    next:()=>{
-
-      this.mostrarNotificacion(
-        'Pago actualizado correctamente',
-        'success'
-      );
-
-
-      this.modalEditarPago=false;
-
-
-      this.cargarHistorial(
-        this.alumnoSeleccionado.matricula_id
-      );
-
-      this.verDetalle(
-        this.alumnoSeleccionado.matricula_id
-      );
-
-    },
-
-    error:(err)=>{
-
-      this.mostrarNotificacion(
-        err.error?.message || 'Error al editar pago',
-        'error'
-      );
-
-    }
-
-  });
-
-}
-
-  eliminarPago(id:number){
-
- if(!confirm('¿Eliminar este pago?')) return;
-
-
- this.pagosService.eliminarPago(id)
- .subscribe({
-
-  next:()=>{
-
-    this.mostrarNotificacion(
-      'Pago eliminado correctamente',
-      'success'
-    );
-
-
-    this.cargarHistorial(
-      this.alumnoSeleccionado.matricula_id
-    );
-
-    this.verDetalle(
-      this.alumnoSeleccionado.matricula_id
-    );
-
-  },
-
-  error:(err)=>{
-
-    this.mostrarNotificacion(
-      err.error?.message || 'Error al eliminar pago',
-      'error'
-    );
-
-  }
-
- });
-
-
-}
-
-  // ======================
-  // MODAL PLAN MANUAL
-  // ======================
-  abrirModalPlanManual() {
-    this.modalManualAbierto = true;
-    this.cerrarModalPlanManual(false);
-  }
-
-  cerrarModalPlanManual(cerrarOverlay = true) {
-    if (cerrarOverlay) this.modalManualAbierto = false;
-    this.resultadosBusqueda = [];
-    this.matriculaSeleccionada = null;
-    this.formularioPlan = {
-      matricula_id: null,
-      modalidad_pago: 'MENSUAL',
-      monto_total: null,
-      monto_matricula: 0,
-      monto_certificacion: 0,
-      cuotas: []
-    };
-    this.cuotaTemporal = { numero_cuota: 1, fecha_vencimiento: '', monto: null, observaciones: '' };
-  }
-
-  buscarMatricula(event: Event) {
-    const termino = (event.target as HTMLInputElement).value;
-    if (termino.length < 3) {
-      this.resultadosBusqueda = [];
-      return;
-    }
-
-    clearTimeout(this.timeoutBusqueda);
-    this.timeoutBusqueda = setTimeout(() => {
-      this.pagosService.buscarMatriculas(termino).subscribe(res => {
-        this.resultadosBusqueda = res;
-        this.cd.detectChanges();
-      });
-    }, 400);
-  }
-
-  seleccionarMatricula(alumno: any) {
-    this.matriculaSeleccionada = alumno;
-    this.formularioPlan.matricula_id = alumno.matricula_id;
-    this.resultadosBusqueda = [];
-  }
-
-  agregarCuota() {
-    if (!this.cuotaTemporal.fecha_vencimiento || !this.cuotaTemporal.monto) {
-      this.mostrarNotificacion('Llena la fecha y el monto de la cuota', 'warning');
-      return;
-    }
-
-    this.formularioPlan.cuotas.push({ ...this.cuotaTemporal });
-    this.cuotaTemporal.numero_cuota++;
-    this.cuotaTemporal.monto = null;
-    this.cuotaTemporal.observaciones = '';
-  }
-
-  eliminarCuota(index: number) {
-    this.formularioPlan.cuotas.splice(index, 1);
-    this.formularioPlan.cuotas.forEach((c, i) => c.numero_cuota = i + 1);
-    this.cuotaTemporal.numero_cuota = this.formularioPlan.cuotas.length + 1;
-  }
-
-  guardarPlanManual() {
-    const totalCuotas = this.formularioPlan.cuotas.reduce(
-      (sum, cuota) => sum + Number(cuota.monto || 0), 0
-    );
-
-    if (totalCuotas !== Number(this.formularioPlan.monto_total)) {
-      this.mostrarNotificacion('La suma de las cuotas no coincide con el monto total', 'warning');
-      return;
-    }
-    if (this.formularioPlan.cuotas.length === 0) {
-      this.mostrarNotificacion('Debes agregar al menos una cuota', 'warning');
-      return;
-    }
-
-    this.loading = true;
-    this.pagosService.crearPlanManual(this.formularioPlan).subscribe({
-      next: () => {
-        this.mostrarNotificacion('Plan manual creado con éxito', 'success');
-        this.cerrarModalPlanManual();
-        this.cargar();
-      },
-      error: (err) => {
-        this.loading = false;
-        this.mostrarNotificacion(err.error?.message || 'Error al crear plan', 'error');
       }
+
+
+      return (
+
+        (
+          a.numero_cuota ||
+          0
+        ) -
+
+        (
+          b.numero_cuota ||
+          0
+        )
+
+      );
+
     });
+
   }
 
-  // ======================
-  // DETALLE ALUMNO
-  // ======================
-  verDetalle(matriculaId: number) {
-    this.loading = true;
-    this.pagosService.detalle(matriculaId).subscribe({
-      next: (data) => {
-        this.cuotasDetalle = data || [];
-        this.alumnoSeleccionado = data?.[0] || null;
-        this.cargarHistorial(matriculaId);
-        this.modalOpen = true;
-        this.tab = 'cuotas';
-        this.loading = false;
-        this.cd.detectChanges();
-      },
-      error: () => this.loading = false
-    });
-  }
 
-  cargarHistorial(id: number) {
-    this.pagosService.historial(id).subscribe(data => {
-      this.historial = data || [];
-      this.cd.detectChanges();
-    });
-  }
+  getClaseConcepto(
+    codigo: string
+  ) {
 
-  cerrarModal() {
-    this.modalOpen = false;
-  }
-
-  cambiarTab(tab: any) {
-    this.tab = tab;
-    this.cd.detectChanges();
-  }
-
-  get cuotasOrdenadas() {
-    if (!this.cuotasDetalle) return [];
-    const orden: Record<string, number> = {
-      MATRICULA: 1,
-      CUOTA: 2,
-      CERTIFICACION: 3
-    };
-
-    return [...this.cuotasDetalle].sort((a, b) => {
-      const ordenA = orden[a.concepto_codigo] ?? 99;
-      const ordenB = orden[b.concepto_codigo] ?? 99;
-      if (ordenA !== ordenB) return ordenA - ordenB;
-      return (a.numero_cuota || 0) - (b.numero_cuota || 0);
-    });
-  }
-
-  getClaseConcepto(codigo: string) {
     return `badge ${codigo?.toLowerCase()}`;
+
   }
 
-  getClaseEstado(estado: string) {
-    return estado === 'PAGADO' ? 'pagado' : 'pendiente';
+
+  getClaseEstado(
+    estado: string
+  ) {
+
+    return (
+      estado === 'PAGADO'
+        ? 'pagado'
+        : 'pendiente'
+    );
+
   }
+
 
   onSelectCuota() {
-    const cuota = this.cuotasDetalle.find(c => c.id == this.formPago.cuota_id);
+
+    const cuota =
+      this.cuotasDetalle.find(
+
+        c =>
+          c.id ==
+          this.formPago
+            .cuota_id
+
+      );
+
+
     if (cuota) {
-      this.formPago.monto = cuota.saldo_pendiente;
+
+      this.formPago.monto =
+        Number(
+          cuota.saldo_pendiente
+        );
+
+
       this.cd.detectChanges();
+
     }
+
   }
+
 
   getCuotaSeleccionada() {
-    return this.cuotasDetalle.find(c => c.id == this.formPago.cuota_id);
+
+    return this.cuotasDetalle.find(
+
+      c =>
+        c.id ==
+        this.formPago
+          .cuota_id
+
+    );
+
   }
 
-  // ======================
-  // OPERACIONES CON ALERTAS ASÍNCRONAS FIJADAS
-  // ======================
+
+  // ============================================================
+  // RECALCULAR PLAN
+  // ============================================================
+
   recalcularPlan() {
-    if (!this.alumnoSeleccionado?.plan_pago_alumno_id) {
-      this.mostrarNotificacion('No hay plan de pago disponible', 'error');
+
+    if (
+      !this.alumnoSeleccionado
+        ?.plan_pago_alumno_id
+    ) {
+
+      this.mostrarNotificacion(
+
+        'No hay plan de pago disponible',
+
+        'error'
+
+      );
+
       return;
+
     }
 
-    this.pagosService.recalcularPlan({
-      plan_pago_alumno_id: this.alumnoSeleccionado.plan_pago_alumno_id,
-      tipo: this.formRecalculo.tipo,
-      fecha_inicio: this.formRecalculo.fecha_inicio,
-      cantidad_cuotas: this.formRecalculo.cantidad_cuotas
-    }).subscribe({
-      next: () => {
-        this.mostrarNotificacion('Plan de pagos recalculado con éxito', 'success');
-        this.miniModalOpen = false;
-        this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      },
-      error: (err) => {
-        this.mostrarNotificacion(err?.error?.error || 'Error al recalcular el plan', 'error');
-      }
-    });
+
+    this.pagosService
+
+      .recalcularPlan({
+
+        plan_pago_alumno_id:
+
+          this.alumnoSeleccionado
+            .plan_pago_alumno_id,
+
+        tipo:
+          this.formRecalculo
+            .tipo,
+
+        fecha_inicio:
+          this.formRecalculo
+            .fecha_inicio,
+
+        cantidad_cuotas:
+          this.formRecalculo
+            .cantidad_cuotas
+
+      })
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Plan de pagos recalculado con éxito',
+
+            'success'
+
+          );
+
+
+          this.miniModalOpen =
+            false;
+
+
+          this.verDetalle(
+
+            this.alumnoSeleccionado
+              .matricula_id
+
+          );
+
+        },
+
+
+        error: (err) => {
+
+          this.mostrarNotificacion(
+
+            err?.error?.error ||
+            'Error al recalcular el plan',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
   }
+
+
+  // ============================================================
+  // EDITAR FECHAS
+  // ============================================================
 
   toggleEditarFechas() {
-    this.editandoFechas = !this.editandoFechas;
+
+    this.editandoFechas =
+      !this.editandoFechas;
+
   }
+
 
   guardarFechas() {
-    const data = this.cuotasDetalle
-      .filter(c => c.saldo_pendiente > 0)
-      .map(c => ({
-        cuota_id: Number(c.id),
-        fecha_vencimiento: String(c.fecha_vencimiento)
-      }));
 
-    this.pagosService.actualizarFechas(data).subscribe({
-      next: () => {
-        this.mostrarNotificacion('Fechas de vencimiento actualizadas', 'success');
-        this.editandoFechas = false;
-        this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      },
-      error: (err) => {
-        console.error(err);
-        this.mostrarNotificacion('Error al actualizar fechas', 'error');
-      }
-    });
+    const data =
+
+      this.cuotasDetalle
+
+        .filter(
+          c =>
+            c.saldo_pendiente > 0
+        )
+
+        .map(c => ({
+
+          cuota_id:
+            Number(c.id),
+
+          fecha_vencimiento:
+            String(
+              c.fecha_vencimiento
+            )
+
+        }));
+
+
+    if (!data.length) {
+
+      this.mostrarNotificacion(
+
+        'No hay fechas pendientes para actualizar.',
+
+        'warning'
+
+      );
+
+      return;
+
+    }
+
+
+    this.pagosService
+
+      .actualizarFechas(data)
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Fechas de vencimiento actualizadas',
+
+            'success'
+
+          );
+
+
+          this.editandoFechas =
+            false;
+
+
+          this.verDetalle(
+
+            this.alumnoSeleccionado
+              .matricula_id
+
+          );
+
+        },
+
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error al actualizar fechas',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
   }
+
+
+  // ============================================================
+  // REGISTRAR PAGO
+  // ============================================================
 
   registrarPago() {
-    if (!this.formPago.cuota_id || !this.formPago.monto) {
-      this.mostrarNotificacion('Por favor, complete todos los campos obligatorios.', 'warning');
+
+    if (
+      !this.formPago
+        .cuota_id ||
+      !this.formPago
+        .monto
+    ) {
+
+      this.mostrarNotificacion(
+
+        'Por favor, complete todos los campos obligatorios.',
+
+        'warning'
+
+      );
+
       return;
+
     }
 
-    const formData = new FormData();
-    formData.append('cuota_id', String(this.formPago.cuota_id));
-    formData.append('monto', String(this.formPago.monto));
-    formData.append('metodo_pago', this.formPago.metodo_pago);
 
-    if (this.selectedFile) {
-      formData.append('comprobante', this.selectedFile);
+    const formData =
+      new FormData();
+
+
+    formData.append(
+
+      'cuota_id',
+
+      String(
+        this.formPago
+          .cuota_id
+      )
+
+    );
+
+
+    formData.append(
+
+      'monto',
+
+      String(
+        this.formPago
+          .monto
+      )
+
+    );
+
+
+    formData.append(
+
+      'metodo_pago',
+
+      this.formPago
+        .metodo_pago
+
+    );
+
+
+    if (
+      this.selectedFile
+    ) {
+
+      formData.append(
+
+        'comprobante',
+
+        this.selectedFile
+
+      );
+
     }
 
-    this.pagosService.registrarPago(formData).subscribe({
-      next: () => {
-        this.mostrarNotificacion('¡Pago registrado correctamente!', 'success');
-        this.formPago = { cuota_id: null, monto: null, metodo_pago: 'EFECTIVO' };
-        this.selectedFile = null;
-        this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      },
-      error: (err) => this.mostrarNotificacion(err?.error?.message || 'Error al procesar el pago', 'error')
-    });
+
+    this.pagosService
+
+      .registrarPago(
+        formData
+      )
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            '¡Pago registrado correctamente!',
+
+            'success'
+
+          );
+
+
+          this.formPago = {
+
+            cuota_id: null,
+
+            monto: null,
+
+            metodo_pago:
+              'EFECTIVO'
+
+          };
+
+
+          this.selectedFile =
+            null;
+
+
+          this.verDetalle(
+
+            this.alumnoSeleccionado
+              .matricula_id
+
+          );
+
+        },
+
+
+        error: (err) => {
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error al procesar el pago',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
   }
 
-  abrirMiniPago(c: any) {
-    this.miniPago = c;
-    this.miniModalOpen = true;
+
+  // ============================================================
+  // PAGO RÁPIDO
+  // ============================================================
+
+  abrirMiniPago(
+    c: any
+  ) {
+
+    this.miniPago =
+      c;
+
+
+    this.miniModalOpen =
+      true;
+
+
     this.miniPagoForm = {
-      cuota_id: c.id,
-      monto: c.saldo_pendiente,
-      metodo_pago: 'EFECTIVO'
+
+      cuota_id:
+        c.id,
+
+      monto:
+        Number(
+          c.saldo_pendiente
+        ),
+
+      metodo_pago:
+        'EFECTIVO'
+
     };
+
   }
+
 
   pagarMini() {
-    const formData = new FormData();
-    formData.append('cuota_id', String(this.miniPagoForm.cuota_id));
-    formData.append('monto', String(this.miniPagoForm.monto));
-    formData.append('metodo_pago', this.miniPagoForm.metodo_pago);
 
-    if (this.miniFile) {
-      formData.append('comprobante', this.miniFile);
+    if (
+      !this.miniPagoForm
+        .cuota_id ||
+      !this.miniPagoForm
+        .monto
+    ) {
+
+      this.mostrarNotificacion(
+
+        'Ingresa un monto válido.',
+
+        'warning'
+
+      );
+
+      return;
+
     }
 
-    this.pagosService.registrarPago(formData).subscribe({
-      next: () => {
-        this.mostrarNotificacion('Pago rápido registrado correctamente', 'success');
-        this.miniModalOpen = false;
-        this.miniFile = null;
-        this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      },
-      error: (err) => this.mostrarNotificacion(err?.error?.message || 'Error en pago rápido', 'error')
-    });
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+
+      'cuota_id',
+
+      String(
+        this.miniPagoForm
+          .cuota_id
+      )
+
+    );
+
+
+    formData.append(
+
+      'monto',
+
+      String(
+        this.miniPagoForm
+          .monto
+      )
+
+    );
+
+
+    formData.append(
+
+      'metodo_pago',
+
+      this.miniPagoForm
+        .metodo_pago
+
+    );
+
+
+    if (
+      this.miniFile
+    ) {
+
+      formData.append(
+
+        'comprobante',
+
+        this.miniFile
+
+      );
+
+    }
+
+
+    this.pagosService
+
+      .registrarPago(
+        formData
+      )
+
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+
+            'Pago rápido registrado correctamente',
+
+            'success'
+
+          );
+
+
+          this.miniModalOpen =
+            false;
+
+
+          this.miniFile =
+            null;
+
+
+          this.verDetalle(
+
+            this.alumnoSeleccionado
+              .matricula_id
+
+          );
+
+        },
+
+
+        error: (err) => {
+
+          this.mostrarNotificacion(
+
+            err?.error?.message ||
+            'Error en pago rápido',
+
+            'error'
+
+          );
+
+        }
+
+      });
+
   }
 
-  // ======================
-  // FORMATOS Y UTILIDADES
-  // ======================
-  formatMonto(v: number) {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN'
-    }).format(v || 0);
-  }
 
-  formatFecha(f: string | Date) {
-    if (!f) return '-';
-  
-    if (typeof f === 'string') {
-      const fecha = f.substring(0, 10);
-      const partes = fecha.split('-');
-  
-      if (partes.length === 3) {
-        const [anio, mes, dia] = partes;
-        return `${dia}/${mes}/${anio}`;
+  // ============================================================
+  // FORMATOS
+  // ============================================================
+
+  formatMonto(
+    v: number
+  ) {
+
+    return new Intl.NumberFormat(
+
+      'es-PE',
+
+      {
+
+        style: 'currency',
+
+        currency: 'PEN'
+
       }
+
+    ).format(
+      v || 0
+    );
+
+  }
+
+
+  formatFecha(
+    f: string | Date
+  ) {
+
+    if (!f) {
+
+      return '-';
+
     }
-  
-    return new Date(f).toLocaleDateString('es-PE');
+
+
+    if (
+      typeof f === 'string'
+    ) {
+
+      const fecha =
+        f.substring(0, 10);
+
+
+      const partes =
+        fecha.split('-');
+
+
+      if (
+        partes.length === 3
+      ) {
+
+        const [
+          anio,
+          mes,
+          dia
+        ] = partes;
+
+
+        return `${dia}/${mes}/${anio}`;
+
+      }
+
+    }
+
+
+    return new Date(f)
+      .toLocaleDateString(
+        'es-PE'
+      );
+
   }
+
+
   getTotalDeuda() {
-    return this.cuotasDetalle.reduce((a, b) => a + Number(b.saldo_pendiente || 0), 0);
+
+    return this.cuotasDetalle
+
+      .reduce(
+
+        (a, b) =>
+
+          a +
+          Number(
+            b.saldo_pendiente || 0
+          ),
+
+        0
+
+      );
+
   }
+
 
   getTotalCuotas() {
-    return this.cuotasDetalle.length;
+
+    return this.cuotasDetalle
+      .length;
+
   }
+
 
   get cuotasPendientes() {
-    return this.cuotasDetalle.filter(c => c.saldo_pendiente > 0);
+
+    return this.cuotasDetalle
+
+      .filter(
+
+        c =>
+          Number(
+            c.saldo_pendiente || 0
+          ) > 0
+
+      );
+
   }
 
-  onFileSelected(e: any) {
-    this.selectedFile = e.target.files[0];
+
+  // ============================================================
+  // ARCHIVOS
+  // ============================================================
+
+  onFileSelected(
+    e: any
+  ) {
+
+    this.selectedFile =
+      e.target.files?.[0] ||
+      null;
+
   }
 
-  onMiniFileSelected(e: any) {
-    this.miniFile = e.target.files[0];
+
+  onMiniFileSelected(
+    e: any
+  ) {
+
+    this.miniFile =
+      e.target.files?.[0] ||
+      null;
+
   }
 
-  getComprobanteUrl(url?: string | null): string {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+
+  getComprobanteUrl(
+    url?: string | null
+  ): string {
+
+    if (!url) {
+
+      return '#';
+
+    }
+
+
+    if (
+      url.startsWith(
+        'http://'
+      ) ||
+      url.startsWith(
+        'https://'
+      )
+    ) {
+
       return url;
+
     }
-    if (url.includes('proedso/')) {
-      const index = url.indexOf('proedso/');
-      const pathLimpio = url.substring(index);
-      return `https://res.cloudinary.com/dfx6p5sjd/image/upload/${pathLimpio}`;
+
+
+    if (
+      url.includes(
+        'proedso/'
+      )
+    ) {
+
+      const index =
+        url.indexOf(
+          'proedso/'
+        );
+
+
+      const pathLimpio =
+        url.substring(index);
+
+
+      return (
+        'https://res.cloudinary.com/dfx6p5sjd/image/upload/' +
+        pathLimpio
+      );
+
     }
-    if (url.startsWith('/uploads/')) {
+
+
+    if (
+      url.startsWith(
+        '/uploads/'
+      )
+    ) {
+
       return url;
+
     }
+
+
     return `/uploads/pagos/${url}`;
+
   }
 
-  // ======================
-  // MANEJO DE NOTIFICACIONES
-  // ======================
-  mostrarNotificacion(msg: string, tipo: 'success' | 'error' | 'warning' = 'success') {
-    this.notificacion.visible = false;
+
+  // ============================================================
+  // NOTIFICACIONES
+  // ============================================================
+
+  mostrarNotificacion(
+
+    msg: string,
+
+    tipo:
+      'success' |
+      'error' |
+      'warning' = 'success'
+
+  ) {
+
+    this.notificacion.visible =
+      false;
+
+
     this.cd.detectChanges();
 
-    this.notificacion = { visible: true, mensaje: msg, tipo };
+
+    this.notificacion = {
+
+      visible: true,
+
+      mensaje: msg,
+
+      tipo
+
+    };
+
+
     this.cd.detectChanges();
+
 
     setTimeout(() => {
-      this.notificacion.visible = false;
+
+      this.notificacion.visible =
+        false;
+
       this.cd.detectChanges();
-    }, 4000); 
+
+    }, 4000);
+
   }
 
-  trackByAlumno(i: number, a: any) {
+
+  // ============================================================
+  // TRACK BY
+  // ============================================================
+
+  trackByAlumno(
+    i: number,
+    a: any
+  ) {
+
     return a.matricula_id;
+
   }
+
 }
+
