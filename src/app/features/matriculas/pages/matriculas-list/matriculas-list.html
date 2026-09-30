@@ -2674,163 +2674,165 @@
               <!-- TABLA -->
               <!-- ================================================= -->
 
-              <div
-                class="accelerated-payment-table"
-                *ngIf="
-                  cuotasAceleradas.length > 0
-                "
-              >
+<!-- ================================================= -->
+<!-- TABLA -->
+<!-- ================================================= -->
 
-                <table>
+<div
+  class="accelerated-payment-table"
+  *ngIf="cuotasAceleradas.length > 0"
+>
 
-                  <thead>
+  <table>
 
-                    <tr>
+    <thead>
+      <tr>
 
-                      <th>
-                        #
-                      </th>
+        <th>
+          #
+        </th>
 
-                      <th>
-                        Monto
-                      </th>
+        <th>
+          Monto
+        </th>
 
-                      <th>
-                        Fecha programada
-                      </th>
+        <th>
+          Fecha programada
+        </th>
 
-                      <th>
-                        Fecha vencimiento
-                      </th>
+        <th>
+          Fecha vencimiento
+        </th>
 
-                      <th>
-                        Acción
-                      </th>
+        <th>
+          Acción
+        </th>
 
-                    </tr>
-
-                  </thead>
-
-
-                  <tbody>
-
-                    <tr
-                      *ngFor="
-                        let cuota of cuotasAceleradas;
-                        let i = index
-                      "
-                    >
-
-                      <!-- NÚMERO -->
-
-                      <td>
-
-                        <span class="cuota-number">
-                          {{ cuota.numero_cuota }}
-                        </span>
-
-                      </td>
+      </tr>
+    </thead>
 
 
-                      <!-- MONTO -->
+    <tbody>
 
-                      <td>
+      <tr
+        *ngFor="
+          let cuota of cuotasAceleradas;
+          let i = index
+        "
+      >
 
-                        <input
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          [(ngModel)]="
-                            cuota.monto
-                          "
-                          placeholder="0.00"
-                          (ngModelChange)="
-                            recalcularTotalAcelerada()
-                          "
-                        />
+        <!-- NÚMERO -->
 
-                      </td>
+        <td>
 
+          <span class="cuota-number">
+            {{ cuota.numero_cuota }}
+          </span>
 
-                      <!-- FECHA PROGRAMADA -->
-
-                      <td>
-
-                        <input
-                          type="date"
-                          [(ngModel)]="
-                            cuota.fecha_programada
-                          "
-                        />
-
-                      </td>
+        </td>
 
 
-                      <!-- FECHA VENCIMIENTO -->
+        <!-- MONTO -->
 
-                      <td>
+        <td>
 
-                        <input
-                          type="date"
-                          [(ngModel)]="
-                            cuota.fecha_vencimiento
-                          "
-                        />
+          <input
+            type="number"
+            min="0.01"
+            step="0.01"
+            [ngModel]="cuota.monto"
+            (ngModelChange)="
+              cuota.monto = $event === '' ? 0 : Number($event);
+              sincronizarColeccionesAceleradas();
+              recalcularTotalAcelerada()
+            "
+            placeholder="0.00"
+          />
 
-                      </td>
-
-
-                      <!-- ELIMINAR -->
-
-                      <td>
-
-                        <button
-                          type="button"
-                          class="btn-table btn-delete"
-                          (click)="
-                            eliminarCuotaAcelerada(i)
-                          "
-                          [disabled]="saving"
-                        >
-                          Eliminar
-                        </button>
-
-                      </td>
-
-                    </tr>
-
-                  </tbody>
+        </td>
 
 
-                  <!-- ================================================= -->
-                  <!-- TOTAL CUOTAS -->
-                  <!-- ================================================= -->
+        <!-- FECHA PROGRAMADA -->
 
-                  <tfoot>
+        <td>
 
-                    <tr>
+          <input
+            type="date"
+            [ngModel]="cuota.fecha_programada"
+            (ngModelChange)="
+              cuota.fecha_programada = $event;
+              sincronizarColeccionesAceleradas()
+            "
+          />
 
-                      <td>
-                        <strong>
-                          Total cuotas
-                        </strong>
-                      </td>
+        </td>
 
-                      <td colspan="4">
 
-                        <strong>
-                          {{ formatMonto(totalCuotasAceleradas) }}
-                        </strong>
+        <!-- FECHA VENCIMIENTO -->
 
-                      </td>
+        <td>
 
-                    </tr>
+          <input
+            type="date"
+            [ngModel]="cuota.fecha_vencimiento"
+            (ngModelChange)="
+              cuota.fecha_vencimiento = $event;
+              sincronizarColeccionesAceleradas()
+            "
+          />
 
-                  </tfoot>
+        </td>
 
-                </table>
 
-              </div>
+        <!-- ELIMINAR -->
+
+        <td>
+
+          <button
+            type="button"
+            class="btn-table btn-delete"
+            (click)="
+              eliminarCuotaAcelerada(i)
+            "
+            [disabled]="saving"
+          >
+            Eliminar
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+
+    <!-- TOTAL CUOTAS -->
+
+    <tfoot>
+
+      <tr>
+
+        <td>
+          <strong>
+            Total cuotas
+          </strong>
+        </td>
+
+        <td colspan="4">
+
+          <strong>
+            {{ formatMonto(totalCuotasAceleradas) }}
+          </strong>
+
+        </td>
+
+      </tr>
+
+    </tfoot>
+
+  </table>
+
+</div>
 
             </div>
 
@@ -2839,96 +2841,72 @@
             <!-- RESUMEN FINANCIERO -->
             <!-- =================================================== -->
 
-            <div class="accelerated-financial-summary">
+<div class="accelerated-financial-summary">
 
-              <div class="accelerated-financial-summary__header">
+  <div class="accelerated-financial-summary__header">
 
-                <div>
+    <div>
 
-                  <span>
-                    RESUMEN FINANCIERO
-                  </span>
+      <span>
+        RESUMEN FINANCIERO
+      </span>
 
-                  <h3>
-                    Total del curso
-                  </h3>
+      <h3>
+        Total del curso
+      </h3>
 
-                </div>
+    </div>
 
+    <strong>
+      {{ formatMonto(totalAcelerada) }}
+    </strong>
 
-                <!-- IMPORTANTE:
-                     NO agregar "S/" aquí porque
-                     formatMonto() ya lo devuelve. -->
-
-                <strong>
-                  {{ formatMonto(totalAcelerada) }}
-                </strong>
-
-              </div>
+  </div>
 
 
-              <div class="accelerated-financial-summary__grid">
+  <div class="accelerated-financial-summary__grid">
+
+    <div>
+      <span>Matrícula</span>
+
+      <strong>
+        {{
+          formatMonto(
+            formAcelerada.pago.monto_matricula
+          )
+        }}
+      </strong>
+    </div>
 
 
-                <!-- MATRÍCULA -->
+    <div>
+      <span>Cuotas</span>
 
-                <div>
-
-                  <span>
-                    Matrícula
-                  </span>
-
-                  <strong>
-                    {{
-                      formatMonto(
-                        formAcelerada.pago.monto_matricula
-                      )
-                    }}
-                  </strong>
-
-                </div>
+      <strong>
+        {{
+          formatMonto(
+            totalCuotasAceleradas
+          )
+        }}
+      </strong>
+    </div>
 
 
-                <!-- CUOTAS -->
+    <div>
+      <span>Certificación</span>
 
-                <div>
+      <strong>
+        {{
+          formatMonto(
+            formAcelerada.pago.monto_certificacion
+          )
+        }}
+      </strong>
+    </div>
 
-                  <span>
-                    Cuotas
-                  </span>
+  </div>
 
-                  <strong>
-                    {{
-                      formatMonto(
-                        totalCuotasAceleradas
-                      )
-                    }}
-                  </strong>
-
-                </div>
-
-
-                <!-- CERTIFICACIÓN -->
-
-                <div>
-
-                  <span>
-                    Certificación
-                  </span>
-
-                  <strong>
-                    {{
-                      formatMonto(
-                        formAcelerada.pago.monto_certificacion
-                      )
-                    }}
-                  </strong>
-
-                </div>
-
-              </div>
-
-            </div>
+</div>
 
 
           </ng-container>
