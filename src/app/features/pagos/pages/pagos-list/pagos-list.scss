@@ -1,4 +1,10 @@
 // ============================================================
+// PAGOS - ESTILOS PRINCIPALES
+// PROEDSO | Módulo de Gestión de Pagos
+// ============================================================
+
+
+// ============================================================
 // VARIABLES
 // ============================================================
 
@@ -21,9 +27,11 @@ $border: #e5e9f0;
 $border-dark: #d5dae3;
 
 $success: #15803d;
+$success-dark: #166534;
 $success-bg: #ecfdf3;
 
 $danger: #dc2626;
+$danger-dark: #b91c1c;
 $danger-bg: #fef2f2;
 
 $warning: #b45309;
@@ -32,10 +40,15 @@ $warning-bg: #fffbeb;
 $info: #2563eb;
 $info-bg: #eff6ff;
 
+$purple: #7e22ce;
+$purple-bg: #faf5ff;
+
+$shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.04);
 $shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
 $shadow-md: 0 12px 35px rgba(15, 23, 42, 0.10);
 $shadow-lg: 0 25px 70px rgba(15, 23, 42, 0.18);
 
+$radius-xs: 6px;
 $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
@@ -46,8 +59,28 @@ $radius-xl: 22px;
 // RESET LOCAL
 // ============================================================
 
-* {
+.pagos-container,
+.pagos-container *,
+.modal-overlay,
+.modal-overlay *,
+.mini-modal,
+.mini-modal * {
   box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  border: 0;
+}
+
+img {
+  max-width: 100%;
 }
 
 
@@ -58,19 +91,25 @@ $radius-xl: 22px;
 .pagos-container {
   min-height: 100%;
   padding: 28px;
+
   background:
     radial-gradient(
-      circle at top right,
-      rgba(212, 160, 23, 0.05),
+      circle at 100% 0,
+      rgba(212, 160, 23, 0.06),
       transparent 30%
     ),
-    $bg;
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      $bg 100%
+    );
+
   color: $text;
 }
 
 
 // ============================================================
-// HEADER
+// HEADER PRINCIPAL
 // ============================================================
 
 .main-header {
@@ -78,10 +117,12 @@ $radius-xl: 22px;
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 }
 
 .header-info {
+  min-width: 0;
+
   .header-kicker {
     display: flex;
     align-items: center;
@@ -98,14 +139,20 @@ $radius-xl: 22px;
   .kicker-dot {
     width: 7px;
     height: 7px;
+    flex-shrink: 0;
+
     border-radius: 50%;
     background: $gold;
-    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.12);
+
+    box-shadow:
+      0 0 0 4px rgba(212, 160, 23, 0.12);
   }
 
   h1 {
     margin: 0;
+
     color: $navy;
+
     font-size: 30px;
     line-height: 1.1;
     font-weight: 800;
@@ -114,36 +161,43 @@ $radius-xl: 22px;
 
   p {
     margin: 8px 0 0;
+
     color: $text-soft;
     font-size: 14px;
+    line-height: 1.5;
   }
 }
 
 .header-actions {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .mini-stat {
-  min-width: 150px;
+  min-width: 155px;
   padding: 14px 18px;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: $white;
   box-shadow: $shadow-sm;
 
   .label {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
+
     color: $text-muted;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
   }
 
   .value {
     display: block;
+
     color: $navy;
     font-size: 23px;
     line-height: 1;
@@ -153,23 +207,27 @@ $radius-xl: 22px;
 
 
 // ============================================================
-// TOOLBAR
+// TOOLBAR / FILTROS
 // ============================================================
 
 .toolbar {
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  padding: 16px;
+
+  padding: 15px;
   margin-bottom: 20px;
+
   border: 1px solid $border;
   border-radius: $radius-lg;
+
   background: $white;
   box-shadow: $shadow-sm;
 }
 
 .search-box {
   position: relative;
+
   flex: 1;
   min-width: 240px;
 
@@ -177,27 +235,42 @@ $radius-xl: 22px;
     position: absolute;
     left: 13px;
     top: 50%;
+
     transform: translateY(-50%);
+
+    color: $text-muted;
     font-size: 15px;
+
     pointer-events: none;
   }
 
   input {
     width: 100%;
     height: 42px;
+
     padding: 0 14px 0 40px;
+
     border: 1px solid $border;
     border-radius: $radius-sm;
+
     outline: none;
+
     background: #fafbfc;
     color: $text;
+
     font-size: 13px;
-    transition: 0.2s ease;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
 
     &:focus {
       border-color: $navy;
       background: $white;
-      box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.08);
+
+      box-shadow:
+        0 0 0 3px rgba(11, 31, 58, 0.08);
     }
 
     &::placeholder {
@@ -212,38 +285,44 @@ $radius-xl: 22px;
   label {
     display: block;
     margin-bottom: 5px;
+
     color: $text-soft;
-    font-size: 11px;
-    font-weight: 700;
+
+    font-size: 10px;
+    font-weight: 800;
   }
 
   select {
     width: 100%;
     height: 42px;
-    padding: 0 32px 0 12px;
+
+    padding: 0 30px 0 12px;
+
     border: 1px solid $border;
     border-radius: $radius-sm;
+
     outline: none;
+
     background: $white;
     color: $text;
+
     font-size: 13px;
+
     cursor: pointer;
 
     &:focus {
       border-color: $navy;
-      box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.08);
+
+      box-shadow:
+        0 0 0 3px rgba(11, 31, 58, 0.08);
     }
   }
 }
 
 
 // ============================================================
-// BOTONES GENERALES
+// BOTONES
 // ============================================================
-
-button {
-  font-family: inherit;
-}
 
 .btn-primary,
 .btn-secondary,
@@ -256,35 +335,48 @@ button {
   align-items: center;
   justify-content: center;
   gap: 7px;
+
   min-height: 42px;
   padding: 0 16px;
-  border-radius: $radius-sm;
+
   border: 1px solid transparent;
+  border-radius: $radius-sm;
+
   font-size: 13px;
   font-weight: 700;
+
   cursor: pointer;
+
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    border-color 0.15s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
   }
 }
 
 .btn-primary {
   background: $navy;
   color: $white;
-  box-shadow: 0 5px 14px rgba(11, 31, 58, 0.18);
 
-  &:hover {
+  box-shadow:
+    0 5px 14px rgba(11, 31, 58, 0.18);
+
+  &:hover:not(:disabled) {
     background: $navy-dark;
   }
 }
@@ -294,7 +386,7 @@ button {
   background: $white;
   color: $navy;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: $navy;
     background: #f8fafc;
   }
@@ -304,8 +396,8 @@ button {
   background: $success;
   color: $white;
 
-  &:hover {
-    background: #166534;
+  &:hover:not(:disabled) {
+    background: $success-dark;
   }
 }
 
@@ -314,8 +406,9 @@ button {
   background: $white;
   color: $text-soft;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #f8fafc;
+    border-color: $border-dark;
   }
 }
 
@@ -323,17 +416,18 @@ button {
   background: $navy;
   color: $white;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: $navy-dark;
   }
 }
 
 .btn-recalcular {
   width: 100%;
+
   background: $navy;
   color: $white;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: $navy-dark;
   }
 }
@@ -342,11 +436,13 @@ button {
   width: 100%;
   min-height: 46px;
   margin-top: 8px;
+
   background: $navy;
   color: $white;
+
   font-size: 14px;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: $navy-dark;
   }
 }
@@ -367,6 +463,7 @@ button {
 .card {
   border: 1px solid $border;
   border-radius: $radius-lg;
+
   background: $white;
   box-shadow: $shadow-sm;
 }
@@ -377,15 +474,23 @@ button {
 }
 
 .table-scroll {
+  width: 100%;
   overflow-x: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: $border-dark transparent;
 }
 
 .grupo-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 17px 20px;
+  gap: 15px;
+
+  padding: 16px 20px;
+
   border-bottom: 1px solid $border;
+
   background:
     linear-gradient(
       90deg,
@@ -399,19 +504,28 @@ button {
   align-items: center;
   gap: 11px;
 
+  min-width: 0;
+
   .grupo-icon {
     display: grid;
     place-items: center;
+
     width: 36px;
     height: 36px;
+    flex-shrink: 0;
+
     border-radius: 10px;
+
     background: rgba(11, 31, 58, 0.07);
+
     font-size: 16px;
   }
 
   h3 {
     margin: 0;
+
     color: $navy;
+
     font-size: 15px;
     font-weight: 800;
   }
@@ -419,23 +533,32 @@ button {
   span {
     display: block;
     margin-top: 3px;
+
     color: $text-muted;
+
     font-size: 11px;
   }
 }
 
 .grupo-count {
+  flex-shrink: 0;
+
   padding: 6px 10px;
+
   border-radius: 20px;
+
   background: #f1f5f9;
   color: $text-soft;
-  font-size: 11px;
-  font-weight: 700;
+
+  font-size: 10px;
+  font-weight: 800;
 }
 
 table {
   width: 100%;
+
   border-collapse: collapse;
+  border-spacing: 0;
 }
 
 thead {
@@ -444,26 +567,35 @@ thead {
 
 th {
   padding: 12px 16px;
+
   border-bottom: 1px solid $border;
+
   color: $text-muted;
+
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.07em;
+
   text-align: left;
   text-transform: uppercase;
+
   white-space: nowrap;
 }
 
 td {
   padding: 14px 16px;
+
   border-bottom: 1px solid #eef1f5;
+
   color: $text;
+
   font-size: 13px;
   vertical-align: middle;
 }
 
 tbody tr {
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease;
 
   &:hover {
     background: #fafcff;
@@ -478,22 +610,35 @@ tbody tr {
   display: flex;
   align-items: center;
   gap: 11px;
+
+  min-width: 210px;
 }
 
 .avatar,
 .avatar-lg {
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
+
   border-radius: 50%;
-  background: linear-gradient(135deg, $navy, $navy-soft);
+
+  background:
+    linear-gradient(
+      135deg,
+      $navy,
+      $navy-soft
+    );
+
   color: $white;
+
   font-weight: 800;
 }
 
 .avatar {
   width: 38px;
   height: 38px;
+
   font-size: 13px;
 }
 
@@ -501,35 +646,52 @@ tbody tr {
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  border-radius: 50%;
-  object-fit: cover;
+
   border: 2px solid #edf1f5;
+  border-radius: 50%;
+
+  object-fit: cover;
 }
 
 .alumno-info {
   display: flex;
   flex-direction: column;
+
   min-width: 0;
 
   .nombre {
+    overflow: hidden;
+
     color: $text;
+
     font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   small {
     margin-top: 3px;
+
     color: $text-muted;
+
     font-size: 10px;
   }
 }
 
 .curso-tag {
   display: inline-flex;
+  align-items: center;
+
   max-width: 260px;
+
   padding: 6px 9px;
+
   border-radius: 7px;
+
   background: #f3f5f8;
   color: $navy;
+
   font-size: 11px;
   font-weight: 700;
 }
@@ -537,20 +699,32 @@ tbody tr {
 .btn-detail {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
+
   padding: 7px 11px;
+
   border: 1px solid $border;
   border-radius: 7px;
+
   background: $white;
   color: $navy;
+
   font-size: 11px;
   font-weight: 700;
+
   cursor: pointer;
-  transition: 0.15s ease;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
 
   &:hover {
     border-color: $navy;
     background: #f8fafc;
+
+    transform: translateY(-1px);
   }
 }
 
@@ -564,13 +738,17 @@ tbody tr {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+
   white-space: nowrap;
+
   font-weight: 700;
 }
 
 .status-pill {
   padding: 6px 9px;
+
   border-radius: 20px;
+
   font-size: 10px;
 
   &.paid {
@@ -592,7 +770,10 @@ tbody tr {
 .status-dot {
   width: 6px;
   height: 6px;
+  flex-shrink: 0;
+
   border-radius: 50%;
+
   background: currentColor;
 }
 
@@ -632,25 +813,37 @@ tbody tr {
 
 .pagination-container {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+
   margin: 24px 0;
 }
 
 .page-btn {
   display: grid;
   place-items: center;
+
   min-width: 34px;
   height: 34px;
+
   padding: 0 8px;
+
   border: 1px solid $border;
   border-radius: 8px;
+
   background: $white;
   color: $text-soft;
+
   font-size: 12px;
   font-weight: 700;
+
   cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
 
   &:hover:not(:disabled) {
     border-color: $navy;
@@ -659,6 +852,7 @@ tbody tr {
 
   &.active {
     border-color: $navy;
+
     background: $navy;
     color: $white;
   }
@@ -671,7 +865,7 @@ tbody tr {
 
 
 // ============================================================
-// EMPTY / LOADING
+// LOADING
 // ============================================================
 
 .loader-container {
@@ -679,11 +873,14 @@ tbody tr {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   min-height: 280px;
+
   color: $text-soft;
 
   p {
-    margin-top: 12px;
+    margin: 12px 0 0;
+
     font-size: 13px;
   }
 }
@@ -691,96 +888,133 @@ tbody tr {
 .spinner {
   width: 38px;
   height: 38px;
+
   border: 3px solid #e5e7eb;
   border-top-color: $navy;
+
   border-radius: 50%;
+
   animation: spin 0.8s linear infinite;
 }
+
+
+// ============================================================
+// EMPTY STATE
+// ============================================================
 
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   min-height: 300px;
+
   padding: 40px;
+
   border: 1px dashed $border-dark;
   border-radius: $radius-lg;
-  background: rgba(255, 255, 255, 0.65);
+
+  background: rgba(255, 255, 255, 0.7);
+
   text-align: center;
 
   .empty-icon {
     margin-bottom: 12px;
+
     font-size: 38px;
+
     opacity: 0.6;
   }
 
   h3 {
     margin: 0;
+
     color: $navy;
+
     font-size: 17px;
   }
 
   p {
     margin: 7px 0 0;
+
     color: $text-muted;
+
     font-size: 13px;
   }
 }
 
 
 // ============================================================
-// MODAL OVERLAY
+// MODAL PRINCIPAL
 // ============================================================
 
 .modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 22px;
+
   background: rgba(4, 15, 30, 0.68);
+
   backdrop-filter: blur(5px);
+
   animation: fadeIn 0.18s ease;
 }
 
 .modal-content {
   display: flex;
   flex-direction: column;
+
   width: min(1180px, 96vw);
   max-height: 92vh;
+
   overflow: hidden;
+
   border-radius: $radius-xl;
+
   background: $white;
+
   box-shadow: $shadow-lg;
+
   animation: modalIn 0.2s ease;
 }
 
 .wide-modal {
-  width: min(1100px, 96vw);
+  width: min(1180px, 96vw);
 }
 
 
 // ============================================================
-// MODAL HEADER
+// HEADER DEL MODAL
 // ============================================================
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 18px;
+
   padding: 20px 24px;
+
   border-bottom: 1px solid $border;
+
   background: $white;
 }
 
 .user-meta-extended {
   display: flex;
   align-items: center;
+
   gap: 13px;
+
+  min-width: 0;
 
   .info {
     min-width: 0;
@@ -788,15 +1022,25 @@ tbody tr {
 
   h3 {
     margin: 0;
+
+    overflow: hidden;
+
     color: $navy;
+
     font-size: 18px;
     font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .subtext {
     display: block;
+
     margin-top: 4px;
+
     color: $text-soft;
+
     font-size: 12px;
   }
 }
@@ -804,25 +1048,31 @@ tbody tr {
 .avatar-lg {
   width: 52px;
   height: 52px;
+
   font-size: 17px;
 }
 
 .avatar-lg-img {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
+  flex-shrink: 0;
+
   border: 2px solid #edf1f5;
+  border-radius: 50%;
+
+  object-fit: cover;
 }
 
 .extra-data {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+
   margin-top: 7px;
 
   span {
     color: $text-muted;
+
     font-size: 10px;
   }
 }
@@ -830,15 +1080,23 @@ tbody tr {
 .btn-close {
   display: grid;
   place-items: center;
+
   width: 34px;
   height: 34px;
   flex-shrink: 0;
+
   border: 1px solid $border;
   border-radius: 8px;
+
   background: $white;
   color: $text-soft;
+
   cursor: pointer;
-  transition: 0.15s ease;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
 
   &:hover {
     border-color: $danger;
@@ -850,56 +1108,103 @@ tbody tr {
 .modal-kicker,
 .mini-kicker {
   display: block;
+
   margin-bottom: 3px;
+
   color: $gold;
+
   font-size: 9px;
   font-weight: 800;
+
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 
 // ============================================================
-// MODAL LAYOUT
+// LAYOUT DEL MODAL
 // ============================================================
 
 .modal-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 275px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    275px;
+
   min-height: 0;
+
   flex: 1;
 }
 
 .modal-main {
   min-width: 0;
-  overflow: auto;
+
+  overflow-y: auto;
+
   background: #fbfcfe;
 }
 
 .modal-sidebar {
   overflow-y: auto;
+
   padding: 18px;
+
   border-left: 1px solid $border;
+
   background: #f8fafc;
 }
 
 
 // ============================================================
-// SUMMARY
+// RESUMEN
 // ============================================================
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 12px;
+
   padding: 18px;
 }
 
 .summary-card {
   padding: 15px;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: $white;
+
+  .label {
+    display: block;
+
+    color: $text-soft;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .amount {
+    display: block;
+
+    margin-top: 7px;
+
+    color: $navy;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    &.status {
+      font-size: 14px;
+    }
+  }
 
   &.danger {
     border-color: #fee2e2;
@@ -920,60 +1225,68 @@ tbody tr {
     border-color: #fde68a;
     background: $warning-bg;
   }
-
-  .label {
-    display: block;
-    color: $text-soft;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .amount {
-    display: block;
-    margin-top: 7px;
-    color: $navy;
-    font-size: 18px;
-    font-weight: 800;
-
-    &.status {
-      font-size: 14px;
-    }
-  }
 }
 
 
 // ============================================================
-// TABS
+// TABS DEL MODAL
 // ============================================================
 
 .modal-tabs {
   display: flex;
+
   gap: 2px;
+
   padding: 0 18px;
+
+  overflow-x: auto;
+
   border-bottom: 1px solid $border;
+
   background: $white;
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   button {
     position: relative;
+
+    flex-shrink: 0;
+
     padding: 13px 15px;
+
     border: 0;
+
     background: transparent;
+
     color: $text-muted;
+
     font-size: 12px;
     font-weight: 700;
+
     cursor: pointer;
+
+    transition: color 0.15s ease;
 
     &::after {
       content: '';
+
       position: absolute;
+
       left: 12px;
       right: 12px;
       bottom: -1px;
+
       height: 2px;
+
       border-radius: 2px;
+
       background: transparent;
+
+      transition: background 0.15s ease;
     }
 
     &:hover {
@@ -996,7 +1309,7 @@ tbody tr {
 
 
 // ============================================================
-// MODAL BODY
+// BODY DEL MODAL
 // ============================================================
 
 .modal-body {
@@ -1011,42 +1324,57 @@ tbody tr {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 15px;
+
   margin-bottom: 14px;
 
   h3 {
     margin: 0;
+
     color: $navy;
+
     font-size: 15px;
     font-weight: 800;
   }
 
   p {
     margin: 4px 0 0;
+
     color: $text-muted;
+
     font-size: 11px;
   }
 }
 
 .section-total {
+  flex-shrink: 0;
+
   padding: 6px 10px;
+
   border-radius: 20px;
+
   background: #f1f5f9;
   color: $text-soft;
+
   font-size: 10px;
   font-weight: 700;
 }
 
 
 // ============================================================
-// TABLA CUOTAS
+// TABLA DE CUOTAS
 // ============================================================
 
 .inner-table-wrapper {
   overflow-x: auto;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: $white;
+
+  scrollbar-width: thin;
 }
 
 .inner-table {
@@ -1054,16 +1382,18 @@ tbody tr {
 
   th {
     padding: 11px 12px;
+
     font-size: 9px;
   }
 
   td {
     padding: 12px;
+
     font-size: 11px;
   }
 
   tbody tr {
-    cursor: pointer;
+    cursor: default;
 
     &:hover {
       background: #f8fafc;
@@ -1077,10 +1407,15 @@ tbody tr {
 
 .tag-concepto {
   display: inline-flex;
+  align-items: center;
+
   padding: 5px 8px;
+
   border-radius: 6px;
+
   font-size: 9px;
   font-weight: 800;
+
   text-transform: uppercase;
 
   &.matricula {
@@ -1090,19 +1425,22 @@ tbody tr {
 
   &.cuota {
     background: #f0fdf4;
-    color: #15803d;
+    color: $success;
   }
 
   &.certificacion {
-    background: #faf5ff;
-    color: #7e22ce;
+    background: $purple-bg;
+    color: $purple;
   }
 }
 
 .quota-number {
   display: block;
+
   margin-top: 4px;
+
   color: $text-muted;
+
   font-size: 9px;
 }
 
@@ -1117,7 +1455,9 @@ tbody tr {
 
 .mini-status {
   padding: 5px 8px;
+
   border-radius: 20px;
+
   font-size: 9px;
 
   &.pagado {
@@ -1134,15 +1474,24 @@ tbody tr {
 .table-input {
   width: 130px;
   height: 32px;
+
   padding: 0 8px;
+
   border: 1px solid $border-dark;
   border-radius: 6px;
+
   outline: none;
+
+  background: $white;
+  color: $text;
+
   font-size: 11px;
 
   &:focus {
     border-color: $navy;
-    box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.07);
+
+    box-shadow:
+      0 0 0 3px rgba(11, 31, 58, 0.07);
   }
 }
 
@@ -1154,21 +1503,31 @@ tbody tr {
 .btn-quick-pay {
   display: inline-grid;
   place-items: center;
+
   width: 30px;
   height: 30px;
+
   margin: 0 2px;
   padding: 0;
+
   border: 1px solid $border;
   border-radius: 7px;
+
   background: $white;
+
   cursor: pointer;
-  transition: 0.15s ease;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .btn-edit-cuota {
   &:hover {
     border-color: $gold;
-    background: #fffbeb;
+    background: $warning-bg;
+
     transform: translateY(-1px);
   }
 }
@@ -1177,37 +1536,53 @@ tbody tr {
   &:hover {
     border-color: $navy;
     background: #f1f5f9;
+
     transform: translateY(-1px);
   }
 }
 
 .empty-table {
   padding: 40px !important;
+
   color: $text-muted;
+
   text-align: center;
 }
 
 
 // ============================================================
-// HISTORIAL
+// HISTORIAL DE PAGOS
 // ============================================================
 
 .history-list {
   display: flex;
   flex-direction: column;
+
   gap: 9px;
 }
 
 .history-item {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    auto;
+
   align-items: center;
+
   gap: 12px;
+
   padding: 13px;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: $white;
-  transition: 0.15s ease;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     border-color: #d7dce5;
@@ -1218,10 +1593,14 @@ tbody tr {
 .history-icon {
   display: grid;
   place-items: center;
+
   width: 36px;
   height: 36px;
+
   border-radius: 9px;
+
   background: $success-bg;
+
   font-size: 15px;
 }
 
@@ -1230,19 +1609,29 @@ tbody tr {
 
   strong {
     display: block;
+
+    overflow: hidden;
+
     color: $navy;
+
     font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 .h-meta {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
+
   margin-top: 5px;
 
   span {
     color: $text-muted;
+
     font-size: 10px;
   }
 }
@@ -1251,10 +1640,13 @@ tbody tr {
   display: flex;
   align-items: flex-end;
   flex-direction: column;
+
   gap: 7px;
 }
 
 .h-amount {
+  color: $success;
+
   font-size: 13px;
   font-weight: 800;
 }
@@ -1262,9 +1654,11 @@ tbody tr {
 .history-buttons {
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
   justify-content: flex-end;
+
+  gap: 5px;
+
+  flex-wrap: wrap;
 }
 
 .btn-voucher,
@@ -1272,16 +1666,29 @@ tbody tr {
 .btn-delete-payment {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+
   min-height: 29px;
+
   padding: 0 8px;
+
   border: 1px solid $border;
   border-radius: 6px;
+
   background: $white;
   color: $text-soft;
+
   font-size: 9px;
   font-weight: 700;
+
   text-decoration: none;
+
   cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .btn-voucher:hover {
@@ -1292,6 +1699,7 @@ tbody tr {
 .btn-edit-payment:hover {
   border-color: $gold;
   background: $warning-bg;
+  color: $warning;
 }
 
 .btn-delete-payment:hover {
@@ -1303,54 +1711,76 @@ tbody tr {
 .empty-mini {
   display: grid;
   place-items: center;
+
   min-height: 180px;
+
   border: 1px dashed $border-dark;
   border-radius: $radius-md;
+
   color: $text-muted;
+
   font-size: 12px;
+
+  text-align: center;
 }
 
 
 // ============================================================
-// PAYMENT CARD
+// CARD DE REGISTRO DE PAGO
 // ============================================================
 
 .payment-card {
+  width: 100%;
   max-width: 720px;
+
   margin: 0 auto;
   padding: 22px;
+
   border: 1px solid $border;
   border-radius: $radius-lg;
+
   background: $white;
+
   box-shadow: $shadow-sm;
 }
 
 .payment-header {
   display: flex;
   align-items: center;
+
   gap: 12px;
+
   margin-bottom: 20px;
 
   .payment-icon {
     display: grid;
     place-items: center;
+
     width: 42px;
     height: 42px;
+    flex-shrink: 0;
+
     border-radius: 11px;
+
     background: $navy;
     color: $white;
+
     font-size: 18px;
   }
 
   h3 {
     margin: 0;
+
     color: $navy;
+
     font-size: 16px;
   }
 
   p {
     margin: 4px 0 0;
+
     color: $text-muted;
+
     font-size: 11px;
   }
 }
@@ -1362,7 +1792,10 @@ tbody tr {
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 12px;
 }
 
@@ -1371,39 +1804,72 @@ tbody tr {
 
   label {
     display: block;
+
     margin-bottom: 6px;
+
     color: $text-soft;
+
     font-size: 10px;
     font-weight: 800;
   }
 
   small {
     display: block;
+
     margin-top: 5px;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 
   input,
-  select {
+  select,
+  textarea {
     width: 100%;
-    height: 40px;
-    padding: 0 11px;
+
     border: 1px solid $border;
     border-radius: 7px;
+
     outline: none;
+
     background: $white;
     color: $text;
+
     font-size: 12px;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
 
     &:focus {
       border-color: $navy;
-      box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.07);
+
+      box-shadow:
+        0 0 0 3px rgba(11, 31, 58, 0.07);
     }
   }
 
+  input,
+  select {
+    height: 40px;
+
+    padding: 0 11px;
+  }
+
+  textarea {
+    min-height: 80px;
+
+    padding: 10px 11px;
+
+    resize: vertical;
+  }
+
   input[type='file'] {
+    height: auto;
+
     padding: 8px;
+
     font-size: 10px;
   }
 }
@@ -1411,33 +1877,48 @@ tbody tr {
 .money-input {
   display: flex;
   align-items: center;
+
   overflow: hidden;
+
   height: 40px;
+
   border: 1px solid $border;
   border-radius: 7px;
+
   background: $white;
 
   &:focus-within {
     border-color: $navy;
-    box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.07);
+
+    box-shadow:
+      0 0 0 3px rgba(11, 31, 58, 0.07);
   }
 
   > span {
     display: grid;
     place-items: center;
+
     align-self: stretch;
+
     min-width: 38px;
+
     border-right: 1px solid $border;
+
     background: #f8fafc;
     color: $text-soft;
+
     font-size: 11px;
     font-weight: 800;
   }
 
   input {
     height: 100% !important;
+
     border: 0 !important;
     border-radius: 0 !important;
+
+    outline: none;
+
     box-shadow: none !important;
   }
 }
@@ -1447,6 +1928,7 @@ tbody tr {
 
   > span {
     min-width: 48px;
+
     font-size: 14px;
   }
 
@@ -1458,79 +1940,105 @@ tbody tr {
 
 .payment-summary {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 10px;
+
   margin-bottom: 14px;
 
   > div {
     padding: 12px;
+
     border: 1px solid $border;
     border-radius: 8px;
+
     background: #f8fafc;
   }
 
   span {
     display: block;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 
   strong {
     display: block;
+
     margin-top: 5px;
+
     color: $navy;
+
     font-size: 14px;
   }
 }
 
 
 // ============================================================
-// SIDEBAR
+// SIDEBAR DEL MODAL
 // ============================================================
 
 .sidebar-section {
   padding: 15px;
+
   margin-bottom: 12px;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: $white;
 }
 
 .sidebar-title {
   margin: 0 0 12px;
+
   color: $navy;
+
   font-size: 12px;
   font-weight: 800;
 }
 
 .sidebar-description {
   margin: -5px 0 13px;
+
   color: $text-muted;
+
   font-size: 10px;
   line-height: 1.5;
 }
 
 .detail-card {
   padding: 10px 0;
+
   border-bottom: 1px solid #eef1f5;
 
   &:last-child {
-    border-bottom: 0;
     padding-bottom: 0;
+
+    border-bottom: 0;
   }
 
   .label {
     display: block;
+
     margin-bottom: 4px;
+
     color: $text-muted;
+
     font-size: 9px;
-    text-transform: uppercase;
     font-weight: 700;
+
+    text-transform: uppercase;
   }
 
   strong {
     display: block;
+
     color: $text;
+
     font-size: 11px;
     line-height: 1.4;
   }
@@ -1547,6 +2055,7 @@ tbody tr {
 
 .recalculo-grid {
   display: grid;
+
   gap: 4px;
 }
 
@@ -1556,30 +2065,40 @@ tbody tr {
 
 
 // ============================================================
-// MINI MODAL
+// MINI MODALES
 // ============================================================
 
 .mini-modal {
   position: fixed;
   inset: 0;
   z-index: 1200;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 18px;
+
   background: rgba(4, 15, 30, 0.68);
+
   backdrop-filter: blur(5px);
+
   animation: fadeIn 0.15s ease;
 }
 
 .mini-content {
   width: min(460px, 94vw);
   max-height: 90vh;
+
   overflow: auto;
+
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: $radius-xl;
+
   background: $white;
+
   box-shadow: $shadow-lg;
+
   animation: modalIn 0.18s ease;
 }
 
@@ -1587,39 +2106,54 @@ tbody tr {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 15px;
+
   padding: 18px 20px;
+
   border-bottom: 1px solid $border;
 
   h3 {
     margin: 0;
+
     color: $navy;
+
     font-size: 16px;
     font-weight: 800;
   }
 
   small {
     display: block;
+
     margin-top: 5px;
+
     color: $text-muted;
+
     font-size: 10px;
   }
 
   > button {
     display: grid;
     place-items: center;
+
     width: 30px;
     height: 30px;
+    flex-shrink: 0;
+
     border: 1px solid $border;
     border-radius: 7px;
+
     background: $white;
     color: $text-soft;
+
     cursor: pointer;
 
+    transition: 0.15s ease;
+
     &:hover {
-      color: $danger;
       border-color: $danger;
       background: $danger-bg;
+      color: $danger;
     }
   }
 }
@@ -1631,31 +2165,45 @@ tbody tr {
 .mini-footer {
   display: flex;
   justify-content: flex-end;
+
   gap: 8px;
+
   padding: 14px 20px;
+
   border-top: 1px solid $border;
+
   background: #fafbfc;
 }
 
 .mini-user {
   display: flex;
   align-items: center;
+
   gap: 10px;
+
   padding: 11px;
+
   margin-bottom: 13px;
+
   border-radius: 9px;
+
   background: #f8fafc;
 
   strong {
     display: block;
+
     color: $navy;
+
     font-size: 12px;
   }
 
   span {
     display: block;
+
     margin-top: 3px;
+
     color: $text-muted;
+
     font-size: 10px;
   }
 }
@@ -1665,45 +2213,76 @@ tbody tr {
 
   label {
     display: block;
+
     margin-bottom: 6px;
+
     color: $text-soft;
+
     font-size: 10px;
     font-weight: 800;
   }
 
   input,
-  select {
+  select,
+  textarea {
     width: 100%;
-    height: 40px;
-    padding: 0 10px;
+
     border: 1px solid $border;
     border-radius: 7px;
+
     outline: none;
+
     background: $white;
     color: $text;
+
     font-size: 12px;
 
     &:focus {
       border-color: $navy;
-      box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.07);
+
+      box-shadow:
+        0 0 0 3px rgba(11, 31, 58, 0.07);
     }
   }
 
+  input,
+  select {
+    height: 40px;
+
+    padding: 0 10px;
+  }
+
+  textarea {
+    min-height: 80px;
+
+    padding: 10px;
+
+    resize: vertical;
+  }
+
   input[type='file'] {
+    height: auto;
+
     padding: 8px;
+
     font-size: 10px;
   }
 
   small {
     display: block;
+
     margin-top: 5px;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 
   &.danger {
     padding: 12px;
+
     border-radius: 8px;
+
     background: $danger-bg;
 
     strong {
@@ -1714,7 +2293,7 @@ tbody tr {
 
 
 // ============================================================
-// MODAL EDITAR CUOTA
+// EDITAR CUOTA
 // ============================================================
 
 .edit-cuota-modal {
@@ -1723,28 +2302,39 @@ tbody tr {
 
 .edit-cuota-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 8px;
+
   margin-bottom: 18px;
 }
 
 .edit-summary-item {
   padding: 11px;
+
   border: 1px solid $border;
   border-radius: 9px;
+
   background: #f8fafc;
 
   span {
     display: block;
+
     margin-bottom: 5px;
+
     color: $text-muted;
+
     font-size: 9px;
     font-weight: 700;
   }
 
   strong {
     display: block;
+
     color: $navy;
+
     font-size: 13px;
     font-weight: 800;
   }
@@ -1758,31 +2348,43 @@ tbody tr {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 15px;
+
   padding: 14px;
+
   margin-bottom: 15px;
+
   border: 1px solid #dbeafe;
   border-radius: 10px;
+
   background: $info-bg;
 
   span {
     display: block;
+
     color: $navy;
+
     font-size: 11px;
     font-weight: 800;
   }
 
   small {
     display: block;
+
     margin-top: 3px;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 
   strong {
     color: $info;
+
     font-size: 17px;
     font-weight: 800;
+
     white-space: nowrap;
   }
 }
@@ -1790,26 +2392,35 @@ tbody tr {
 .edit-cuota-warning {
   display: flex;
   align-items: flex-start;
+
   gap: 10px;
+
   padding: 12px;
+
   border: 1px solid #fde68a;
   border-radius: 9px;
+
   background: $warning-bg;
 
   .warning-icon {
     flex-shrink: 0;
+
     font-size: 16px;
   }
 
   strong {
     display: block;
+
     color: $warning;
+
     font-size: 10px;
   }
 
   p {
     margin: 4px 0 0;
+
     color: #92400e;
+
     font-size: 10px;
     line-height: 1.5;
   }
@@ -1825,8 +2436,11 @@ tbody tr {
 
   > label {
     display: block;
+
     margin-bottom: 7px;
+
     color: $text-soft;
+
     font-size: 11px;
     font-weight: 800;
   }
@@ -1835,48 +2449,89 @@ tbody tr {
 .search-manual {
   display: flex;
   align-items: center;
+
   gap: 9px;
+
   height: 44px;
+
   padding: 0 12px;
+
   border: 1px solid $border;
   border-radius: 8px;
+
   background: $white;
 
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $navy;
+
+    box-shadow:
+      0 0 0 3px rgba(11, 31, 58, 0.07);
+  }
+
   span {
+    flex-shrink: 0;
+
+    color: $text-muted;
+
     font-size: 14px;
   }
 
   input {
     flex: 1;
+
+    width: 100%;
     height: 100%;
+
     border: 0;
     outline: 0;
+
+    color: $text;
+
     font-size: 12px;
   }
 }
 
 .search-results {
   position: absolute;
+
   z-index: 20;
+
   left: 0;
   right: 0;
+
   max-height: 270px;
+
   overflow-y: auto;
+
   margin: 6px 0 0;
   padding: 5px;
+
   border: 1px solid $border;
   border-radius: 10px;
+
   background: $white;
+
   box-shadow: $shadow-md;
+
   list-style: none;
 
   li {
     display: flex;
     align-items: center;
+
     gap: 10px;
+
     padding: 9px;
+
     border-radius: 7px;
+
     cursor: pointer;
+
+    transition: background 0.15s ease;
 
     &:hover,
     &.selected {
@@ -1886,7 +2541,10 @@ tbody tr {
     img {
       width: 34px;
       height: 34px;
+      flex-shrink: 0;
+
       border-radius: 50%;
+
       object-fit: cover;
     }
   }
@@ -1894,159 +2552,240 @@ tbody tr {
 
 .result-info {
   flex: 1;
+
   min-width: 0;
 
   strong {
     display: block;
+
+    overflow: hidden;
+
     color: $text;
+
     font-size: 11px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   span {
     display: block;
+
     margin-top: 3px;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 }
 
 .badge {
   display: inline-flex;
+  align-items: center;
+
   padding: 5px 7px;
+
   border-radius: 5px;
+
   background: #f1f5f9;
   color: $navy;
+
   font-size: 9px;
   font-weight: 800;
 }
 
 .modal-content hr {
   height: 1px;
+
   margin: 20px 0;
+
   border: 0;
+
   background: $border;
 }
 
 .grid-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+
+  grid-template-columns:
+    minmax(0, 0.9fr)
+    minmax(0, 1.1fr);
+
   gap: 18px;
 }
 
 .config-panel,
 .preview-panel {
   min-width: 0;
+
   padding: 18px;
+
   border: 1px solid $border;
   border-radius: $radius-md;
+
   background: #fbfcfe;
 }
 
 .panel-heading {
   display: flex;
   align-items: flex-start;
+
   gap: 10px;
+
   margin-bottom: 16px;
 
   .panel-icon {
     display: grid;
     place-items: center;
+
     width: 32px;
     height: 32px;
+    flex-shrink: 0;
+
     border-radius: 8px;
+
     background: $navy;
     color: $white;
+
     font-size: 13px;
   }
 
   h4 {
     margin: 0;
+
     color: $navy;
+
     font-size: 13px;
     font-weight: 800;
   }
 
   p {
     margin: 3px 0 0;
+
     color: $text-muted;
+
     font-size: 9px;
   }
 }
 
 .builder-divider {
   height: 1px;
+
   margin: 18px 0;
+
   background: $border;
 }
 
 .add-cuota-grid {
   display: grid;
-  grid-template-columns: 65px minmax(0, 1fr) 110px auto;
+
+  grid-template-columns:
+    65px
+    minmax(0, 1fr)
+    110px
+    auto;
+
   align-items: end;
+
   gap: 8px;
 
   > div {
+    min-width: 0;
+
     label {
       display: block;
+
       margin-bottom: 5px;
+
       color: $text-soft;
+
       font-size: 9px;
       font-weight: 800;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       height: 38px;
+
       padding: 0 8px;
+
       border: 1px solid $border;
       border-radius: 7px;
+
       outline: none;
+
       background: $white;
+      color: $text;
+
       font-size: 11px;
+
+      &:focus {
+        border-color: $navy;
+
+        box-shadow:
+          0 0 0 3px rgba(11, 31, 58, 0.07);
+      }
     }
   }
 
   .btn-secondary {
     height: 38px;
     min-height: 38px;
+
     padding: 0 10px;
+
     font-size: 10px;
   }
 }
 
 .preview-summary {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 8px;
+
   margin-bottom: 12px;
 
   > div {
     padding: 9px;
-    border-radius: 7px;
-    background: $white;
+
     border: 1px solid $border;
+    border-radius: 7px;
+
+    background: $white;
   }
 
   span {
     display: block;
+
     color: $text-muted;
+
     font-size: 8px;
-    text-transform: uppercase;
     font-weight: 700;
+
+    text-transform: uppercase;
   }
 
   strong {
     display: block;
+
     margin-top: 3px;
+
     color: $navy;
+
     font-size: 12px;
   }
 }
 
 .preview-table-wrapper {
   overflow-x: auto;
+
   border: 1px solid $border;
   border-radius: 8px;
+
   background: $white;
 
   table {
@@ -2055,11 +2794,13 @@ tbody tr {
 
   th {
     padding: 9px;
+
     font-size: 8px;
   }
 
   td {
     padding: 9px;
+
     font-size: 10px;
   }
 }
@@ -2067,11 +2808,15 @@ tbody tr {
 .number-badge {
   display: inline-grid;
   place-items: center;
+
   width: 23px;
   height: 23px;
+
   border-radius: 6px;
+
   background: #f1f5f9;
   color: $navy;
+
   font-size: 9px;
   font-weight: 800;
 }
@@ -2079,16 +2824,26 @@ tbody tr {
 .btn-danger-icon {
   display: grid;
   place-items: center;
+
   width: 27px;
   height: 27px;
+
   border: 1px solid #fecaca;
   border-radius: 6px;
+
   background: $danger-bg;
   color: $danger;
+
   cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 
   &:hover {
     background: #fee2e2;
+
+    transform: translateY(-1px);
   }
 }
 
@@ -2097,26 +2852,35 @@ tbody tr {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   min-height: 260px;
+
   border: 1px dashed $border-dark;
   border-radius: $radius-md;
+
   background: #fafbfc;
+
   text-align: center;
 
   > div {
     font-size: 32px;
+
     opacity: 0.65;
   }
 
   h4 {
     margin: 12px 0 4px;
+
     color: $navy;
+
     font-size: 14px;
   }
 
   p {
     margin: 0;
+
     color: $text-muted;
+
     font-size: 11px;
   }
 }
@@ -2124,9 +2888,13 @@ tbody tr {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+
   gap: 8px;
+
   padding: 15px 20px;
+
   border-top: 1px solid $border;
+
   background: #fafbfc;
 }
 
@@ -2137,18 +2905,28 @@ tbody tr {
 
 .toast-notification {
   position: fixed;
-  z-index: 3000;
+
   right: 24px;
   bottom: 24px;
+
+  z-index: 3000;
+
   display: flex;
   align-items: center;
+
   gap: 11px;
+
   width: min(390px, calc(100vw - 30px));
+
   padding: 13px 15px;
+
   border: 1px solid $border;
   border-radius: 12px;
+
   background: $white;
+
   box-shadow: $shadow-lg;
+
   animation: toastIn 0.25s ease;
 
   &.success {
@@ -2167,12 +2945,16 @@ tbody tr {
 .toast-icon {
   display: grid;
   place-items: center;
+
   width: 32px;
   height: 32px;
   flex-shrink: 0;
+
   border-radius: 50%;
+
   background: #f1f5f9;
   color: $navy;
+
   font-size: 14px;
   font-weight: 900;
 }
@@ -2182,17 +2964,35 @@ tbody tr {
 
   strong {
     display: block;
+
     color: $navy;
+
     font-size: 11px;
   }
 
   span {
     display: block;
+
     margin-top: 3px;
+
     color: $text-soft;
+
     font-size: 10px;
     line-height: 1.4;
   }
+}
+
+
+// ============================================================
+// FOCUS / ACCESIBILIDAD
+// ============================================================
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(212, 160, 23, 0.55);
+  outline-offset: 2px;
 }
 
 
@@ -2262,7 +3062,7 @@ tbody tr {
 
 
 // ============================================================
-// RESPONSIVE
+// RESPONSIVE - 1100px
 // ============================================================
 
 @media (max-width: 1100px) {
@@ -2288,6 +3088,8 @@ tbody tr {
   }
 
   .modal-sidebar {
+    max-height: 300px;
+
     border-top: 1px solid $border;
     border-left: 0;
   }
@@ -2298,6 +3100,10 @@ tbody tr {
 
 }
 
+
+// ============================================================
+// RESPONSIVE - 800px
+// ============================================================
 
 @media (max-width: 800px) {
 
@@ -2339,11 +3145,14 @@ tbody tr {
   }
 
   .history-item {
-    grid-template-columns: 36px minmax(0, 1fr);
+    grid-template-columns:
+      36px
+      minmax(0, 1fr);
   }
 
   .h-actions {
     grid-column: 1 / -1;
+
     align-items: flex-start;
   }
 
@@ -2358,14 +3167,29 @@ tbody tr {
 }
 
 
+// ============================================================
+// RESPONSIVE - 600px
+// ============================================================
+
 @media (max-width: 600px) {
 
   .pagos-container {
     padding: 12px;
   }
 
-  .header-info h1 {
-    font-size: 24px;
+  .header-info {
+
+    .header-kicker {
+      font-size: 9px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    p {
+      font-size: 12px;
+    }
   }
 
   .toolbar {
@@ -2376,19 +3200,43 @@ tbody tr {
     flex: 1 1 100%;
   }
 
+  .grupo-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 14px;
+  }
+
+  .grupo-count {
+    align-self: flex-start;
+  }
+
   .modal-overlay {
     align-items: flex-start;
+
     padding: 8px;
   }
 
   .modal-content {
     width: 100%;
     max-height: 96vh;
+
     border-radius: 15px;
   }
 
   .modal-header {
     padding: 15px;
+  }
+
+  .user-meta-extended {
+
+    h3 {
+      font-size: 15px;
+    }
+
+    .subtext {
+      font-size: 10px;
+    }
   }
 
   .modal-body {
@@ -2400,12 +3248,21 @@ tbody tr {
   }
 
   .modal-tabs {
-    overflow-x: auto;
+    padding: 0 10px;
 
     button {
       min-width: max-content;
+
       white-space: nowrap;
     }
+  }
+
+  .payment-card {
+    padding: 15px;
+  }
+
+  .payment-summary {
+    grid-template-columns: 1fr;
   }
 
   .add-cuota-grid {
@@ -2422,6 +3279,12 @@ tbody tr {
 
   .mini-content {
     width: 100%;
+
+    border-radius: 15px;
+  }
+
+  .mini-body {
+    padding: 16px;
   }
 
   .mini-footer {
@@ -2440,7 +3303,35 @@ tbody tr {
 }
 
 
+// ============================================================
+// RESPONSIVE - 420px
+// ============================================================
+
 @media (max-width: 420px) {
+
+  .pagos-container {
+    padding: 9px;
+  }
+
+  .header-info h1 {
+    font-size: 21px;
+  }
+
+  .search-box {
+    min-width: 0;
+  }
+
+  .grupo-title {
+
+    .grupo-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    h3 {
+      font-size: 13px;
+    }
+  }
 
   .add-cuota-grid {
     grid-template-columns: 1fr;
@@ -2452,6 +3343,9 @@ tbody tr {
   }
 
   .user-meta-extended {
+
+    align-items: flex-start;
+
     .extra-data {
       flex-direction: column;
       gap: 3px;
@@ -2465,6 +3359,20 @@ tbody tr {
     a,
     button {
       justify-content: center;
+      width: 100%;
+    }
+  }
+
+  .new-balance-preview {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
     }
   }
 
