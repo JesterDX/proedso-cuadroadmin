@@ -31,7 +31,6 @@ import {
   MatriculaPayload,
   PrevisualizacionCuotasData,
   MatriculaAceleradaPayload,
-  MaquinaMatriculaAceleradaPayload,
   CuotaMatriculaAceleradaPayload
 } from '../../models/matricula.model';
 
@@ -69,13 +68,13 @@ interface CuotaCronograma {
 
   fecha?: string;
 
-  monto?: number;
+  monto?: number | string | null;
 
-  monto_cuota?: number;
+  monto_cuota?: number | string | null;
 
-  importe?: number;
+  importe?: number | string | null;
 
-  total?: number;
+  total?: number | string | null;
 
   [key: string]: any;
 
@@ -84,13 +83,13 @@ interface CuotaCronograma {
 
 interface CuotaCronogramaPayload {
 
-  numero_cuota?: number;
+  numero_cuota: number;
 
-  fecha_programada?: string;
+  fecha_programada: string;
 
-  fecha_vencimiento?: string;
+  fecha_vencimiento: string;
 
-  monto?: number;
+  monto: number;
 
   [key: string]: any;
 
@@ -145,6 +144,22 @@ interface CuotaAceleradaForm {
   styleUrl: './matriculas-list.scss'
 })
 export class MatriculasList implements OnInit {
+
+  // ==========================================================
+  // COMPATIBILIDAD CON EL HTML
+  // ==========================================================
+
+  /**
+   * Angular no expone directamente Number() dentro de los
+   * templates. Esta propiedad permite que el HTML actual
+   * pueda seguir utilizando:
+   *
+   * Number($event)
+   *
+   * sin generar TS2339.
+   */
+  readonly Number = Number;
+
 
   // ==========================================================
   // SERVICES
@@ -419,7 +434,7 @@ export class MatriculasList implements OnInit {
 
     return this.formAcelerada.pago.cuotas.reduce(
       (total, cuota) =>
-        total + Number(cuota.monto ?? 0),
+        total + this.parsearMontoCuota(cuota.monto),
       0
     );
 
@@ -433,14 +448,14 @@ export class MatriculasList implements OnInit {
   get totalAcelerada(): number {
 
     return (
-      Number(
-        this.formAcelerada.pago.monto_matricula ?? 0
+      this.parsearMontoCuota(
+        this.formAcelerada.pago.monto_matricula
       ) +
 
       this.totalCuotasAceleradas +
 
-      Number(
-        this.formAcelerada.pago.monto_certificacion ?? 0
+      this.parsearMontoCuota(
+        this.formAcelerada.pago.monto_certificacion
       )
     );
 
@@ -838,32 +853,316 @@ export class MatriculasList implements OnInit {
 
   }
 
-  parsearMontoCuota(valor: string | number | null | undefined): number {
-  if (valor === null || valor === undefined || valor === '') {
-    return 0;
+
+  // ==========================================================
+  // PARSEAR MONTO
+  // ==========================================================
+
+  parsearMontoCuota(
+    valor: string | number | null | undefined
+  ): number {
+
+    if (
+      valor === null ||
+      valor === undefined ||
+      valor === ''
+    ) {
+
+      return 0;
+
+    }
+
+
+    let numero: number;
+
+
+    if (
+      typeof valor === 'number'
+    ) {
+
+      numero = valor;
+
+    } else {
+
+      const texto =
+        String(valor)
+          .trim()
+          .replace(',', '.');
+
+      numero =
+        Number(texto);
+
+    }
+
+
+    return Number.isFinite(numero)
+      ? numero
+      : 0;
+
   }
 
-  const numero = typeof valor === 'number'
-    ? valor
-    : Number(String(valor).replace(',', '.'));
 
-  return Number.isFinite(numero) ? numero : 0;
-}
+  // ==========================================================
+  // SINCRONIZAR COLECCIONES
+  // ==========================================================
 
-sincronizarColeccionesAceleradas(): void {
-  // Sincroniza los montos de las cuotas antes de continuar.
-  // Esto evita que queden valores string, null o NaN provenientes
-  // de los inputs del formulario.
+  /**
+   * Normaliza las cuotas normales y aceleradas.
+   *
+   * IMPORTANTE:
+   * La propiedad correcta para las cuotas normales es
+   * previewCuotas.
+   *
+   * Antes estaba usando cuotasPreview, que no existe.
+   */
+  sincronizarColeccionesAceleradas(): void {
 
-  if (!this.cuotasPreview) {
-    return;
+    // --------------------------------------------------------
+    // CUOTAS NORMALES
+    // --------------------------------------------------------
+
+    if (
+      Array.isArray(
+        this.previewCuotas
+      )
+    ) {
+
+      this.previewCuotas =
+        this.previewCuotas.map(
+          (cuota, index) => {
+
+            const numero =
+              Number(
+                cuota.numero_cuota ??
+                cuota.nro_cuota ??
+                cuota.numero ??
+                index + 1
+              );
+
+
+            const monto =
+              this.parsearMontoCuota(
+                cuota.monto ??
+                cuota.monto_cuota ??
+                cuota.importe ??
+                cuota.total
+              );
+
+
+            return {
+
+              ...cuota,
+
+              numero_cuota:
+                Number.isInteger(numero) &&
+                numero > 0
+                  ? numero
+                  : index + 1,
+
+              monto
+
+            };
+
+          }
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // CRONOGRAMA CONFIRMADO
+    // --------------------------------------------------------
+
+    this.cronogramaConfirmado =
+      this.previewCuotas.map(
+        (cuota, index) => {
+
+          const fecha =
+            this.getFechaCuota(
+              cuota
+            ) || '';
+
+
+          const numero =
+            Number(
+              cuota.numero_cuota ??
+              cuota.nro_cuota ??
+              cuota.numero ??
+              index + 1
+            );
+
+
+          return {
+
+            numero_cuota:
+              Number.isInteger(numero) &&
+              numero > 0
+                ? numero
+                : index + 1,
+
+            fecha_programada:
+              (
+                cuota.fecha_programada ??
+                fecha
+              ).split('T')[0],
+
+            fecha_vencimiento:
+              (
+                cuota.fecha_vencimiento ??
+                fecha
+              ).split('T')[0],
+
+            monto:
+              this.parsearMontoCuota(
+                cuota.monto ??
+                cuota.monto_cuota ??
+                cuota.importe ??
+                cuota.total
+              )
+
+          };
+
+        }
+      );
+
+
+    // --------------------------------------------------------
+    // CUOTAS ACELERADAS
+    // --------------------------------------------------------
+
+    if (
+      Array.isArray(
+        this.formAcelerada?.pago?.cuotas
+      )
+    ) {
+
+      this.formAcelerada.pago.cuotas =
+        this.formAcelerada.pago.cuotas.map(
+          (cuota, index) => ({
+
+            ...cuota,
+
+            numero_cuota:
+              Number(
+                cuota.numero_cuota
+              ) || index + 1,
+
+            monto:
+              this.parsearMontoCuota(
+                cuota.monto
+              )
+
+          })
+        );
+
+
+      this.cuotasAceleradas =
+        this.formAcelerada.pago.cuotas.map(
+          (cuota) => ({
+
+            numero_cuota:
+              cuota.numero_cuota,
+
+            fecha_programada:
+              cuota.fecha_programada,
+
+            fecha_vencimiento:
+              cuota.fecha_vencimiento,
+
+            monto:
+              cuota.monto
+
+          })
+        );
+
+    }
+
+
+    this.cd.detectChanges();
+
   }
 
-  this.cuotasPreview = this.cuotasPreview.map((cuota: any) => ({
-    ...cuota,
-    monto: this.parsearMontoCuota(cuota.monto)
-  }));
-}
+
+  // ==========================================================
+  // EDITAR MONTO CUOTA NORMAL
+  // ==========================================================
+
+  editarMontoCuota(
+    cuota: CuotaCronograma,
+    valor: string | number | null
+  ): void {
+
+    const monto =
+      this.parsearMontoCuota(
+        valor
+      );
+
+
+    cuota.monto =
+      monto;
+
+
+    this.sincronizarColeccionesAceleradas();
+
+  }
+
+
+  // ==========================================================
+  // EDITAR MONTO CUOTA ACELERADA
+  // ==========================================================
+
+  editarMontoCuotaAcelerada(
+    index: number,
+    valor: string | number | null
+  ): void {
+
+    const cuota =
+      this.formAcelerada
+        .pago
+        .cuotas[index];
+
+
+    if (!cuota) {
+
+      return;
+
+    }
+
+
+    cuota.monto =
+      this.parsearMontoCuota(
+        valor
+      );
+
+
+    this.cuotasAceleradas =
+      this.formAcelerada
+        .pago
+        .cuotas
+        .map(
+          (item) => ({
+
+            numero_cuota:
+              item.numero_cuota,
+
+            fecha_programada:
+              item.fecha_programada,
+
+            fecha_vencimiento:
+              item.fecha_vencimiento,
+
+            monto:
+              this.parsearMontoCuota(
+                item.monto
+              )
+
+          })
+        );
+
+
+    this.cd.detectChanges();
+
+  }
 
 
   // ==========================================================
@@ -983,10 +1282,6 @@ sincronizarColeccionesAceleradas(): void {
   agregarMaquinaAcelerada(
     maquinaId?: number
   ): void {
-
-    // --------------------------------------------------------
-    // Si el HTML no envía ID, simplemente agrega una fila.
-    // --------------------------------------------------------
 
     if (
       maquinaId === undefined ||
@@ -1367,7 +1662,9 @@ sincronizarColeccionesAceleradas(): void {
             item.fecha_vencimiento,
 
           monto:
-            item.monto
+            this.parsearMontoCuota(
+              item.monto
+            )
 
         })
       );
@@ -1411,7 +1708,12 @@ sincronizarColeccionesAceleradas(): void {
           ...cuota,
 
           numero_cuota:
-            index + 1
+            index + 1,
+
+          monto:
+            this.parsearMontoCuota(
+              cuota.monto
+            )
 
         })
       );
@@ -1444,6 +1746,8 @@ sincronizarColeccionesAceleradas(): void {
   // ==========================================================
 
   recalcularTotalAcelerada(): void {
+
+    this.sincronizarColeccionesAceleradas();
 
     this.cd.detectChanges();
 
@@ -1636,10 +1940,10 @@ sincronizarColeccionesAceleradas(): void {
     // ========================================================
 
     const montoMatricula =
-      Number(
+      this.parsearMontoCuota(
         this.formAcelerada
           .pago
-          .monto_matricula ?? 0
+          .monto_matricula
       );
 
 
@@ -1722,6 +2026,12 @@ sincronizarColeccionesAceleradas(): void {
     cuotas.forEach(
       (cuota, index) => {
 
+        const monto =
+          this.parsearMontoCuota(
+            cuota.monto
+          );
+
+
         if (
           !Number.isInteger(
             Number(
@@ -1741,16 +2051,7 @@ sincronizarColeccionesAceleradas(): void {
 
 
         if (
-          cuota.monto === null ||
-          cuota.monto === undefined ||
-          !Number.isFinite(
-            Number(
-              cuota.monto
-            )
-          ) ||
-          Number(
-            cuota.monto
-          ) <= 0
+          monto <= 0
         ) {
 
           errores.push(
@@ -1790,10 +2091,10 @@ sincronizarColeccionesAceleradas(): void {
     // ========================================================
 
     const montoCertificacion =
-      Number(
+      this.parsearMontoCuota(
         this.formAcelerada
           .pago
-          .monto_certificacion ?? 0
+          .monto_certificacion
       );
 
 
@@ -1847,6 +2148,14 @@ sincronizarColeccionesAceleradas(): void {
     }
 
 
+    // --------------------------------------------------------
+    // MUY IMPORTANTE:
+    // Antes de validar/guardar normalizamos las cuotas.
+    // --------------------------------------------------------
+
+    this.sincronizarColeccionesAceleradas();
+
+
     const errores =
       this.validarFormulario();
 
@@ -1887,6 +2196,155 @@ sincronizarColeccionesAceleradas(): void {
           ]
         : [];
 
+
+    // ========================================================
+    // CONSTRUIR CRONOGRAMA REAL
+    // ========================================================
+
+    const cronograma =
+      this.previewCuotas.map(
+        (cuota, index) => {
+
+          const numero =
+            Number(
+              cuota.numero_cuota ??
+              cuota.nro_cuota ??
+              cuota.numero ??
+              index + 1
+            );
+
+
+          const fechaBase =
+            this.getFechaCuota(
+              cuota
+            ) || '';
+
+
+          const fechaProgramada =
+            (
+              cuota.fecha_programada ??
+              fechaBase
+            )
+              .split('T')[0];
+
+
+          const fechaVencimiento =
+            (
+              cuota.fecha_vencimiento ??
+              fechaBase
+            )
+              .split('T')[0];
+
+
+          const monto =
+            this.parsearMontoCuota(
+              cuota.monto ??
+              cuota.monto_cuota ??
+              cuota.importe ??
+              cuota.total
+            );
+
+
+          return {
+
+            numero_cuota:
+              Number.isInteger(numero) &&
+              numero > 0
+                ? numero
+                : index + 1,
+
+            fecha_programada:
+              fechaProgramada,
+
+            fecha_vencimiento:
+              fechaVencimiento,
+
+            monto
+
+          };
+
+        }
+      );
+
+
+    // --------------------------------------------------------
+    // Guardamos también en la propiedad oficial.
+    // --------------------------------------------------------
+
+    this.cronogramaConfirmado =
+      cronograma;
+
+
+    // --------------------------------------------------------
+    // VALIDACIÓN FINAL DE CUOTAS
+    // --------------------------------------------------------
+
+    const cuotasInvalidas =
+      cronograma.filter(
+        cuota =>
+          !Number.isFinite(
+            cuota.monto
+          ) ||
+          cuota.monto <= 0 ||
+          !cuota.fecha_programada ||
+          !cuota.fecha_vencimiento
+      );
+
+
+    if (
+      cronograma.length === 0
+    ) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title: 'Cronograma requerido',
+
+        text:
+          'Debes generar y revisar el cronograma de cuotas antes de guardar la matrícula.',
+
+        confirmButtonText:
+          'Entendido'
+
+      });
+
+      return;
+
+    }
+
+
+    if (
+      cuotasInvalidas.length > 0
+    ) {
+
+      Swal.fire({
+
+        icon: 'warning',
+
+        title: 'Cuotas inválidas',
+
+        html:
+          cuotasInvalidas
+            .map(
+              cuota =>
+                `• La cuota ${cuota.numero_cuota} debe tener un monto válido.`
+            )
+            .join('<br>'),
+
+        confirmButtonText:
+          'Entendido'
+
+      });
+
+      return;
+
+    }
+
+
+    // ========================================================
+    // PAYLOAD NORMAL
+    // ========================================================
 
     const payload:
       MatriculaPayload = {
@@ -1939,10 +2397,29 @@ sincronizarColeccionesAceleradas(): void {
         this.form.costo_certificacion ??
         null,
 
+      // IMPORTANTE:
+      // Ya no mandamos previewCuotas directamente.
+      // Mandamos el cronograma normalizado.
       cronograma_confirmado:
-        this.previewCuotas as any
+        cronograma
 
     };
+
+
+    console.log(
+      '🚀 PAYLOAD MATRÍCULA NORMAL:',
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+
+
+    console.log(
+      '💰 CRONOGRAMA ENVIADO:',
+      cronograma
+    );
 
 
     this.saving = true;
@@ -2011,6 +2488,17 @@ sincronizarColeccionesAceleradas(): void {
         this.cd.detectChanges();
 
 
+        console.error(
+          'Error al guardar matrícula:',
+          err
+        );
+
+        console.error(
+          'Respuesta backend:',
+          err?.error
+        );
+
+
         Swal.fire({
 
           icon: 'error',
@@ -2038,6 +2526,10 @@ sincronizarColeccionesAceleradas(): void {
   // ==========================================================
 
   guardarMatriculaAcelerada(): void {
+
+    // Normalizamos antes de validar.
+    this.sincronizarColeccionesAceleradas();
+
 
     const errores =
       this.validarFormularioAcelerada();
@@ -2147,10 +2639,10 @@ sincronizarColeccionesAceleradas(): void {
       pago: {
 
         monto_matricula:
-          Number(
+          this.parsearMontoCuota(
             this.formAcelerada
               .pago
-              .monto_matricula ?? 0
+              .monto_matricula
           ),
 
         fecha_matricula:
@@ -2160,10 +2652,10 @@ sincronizarColeccionesAceleradas(): void {
           null,
 
         monto_certificacion:
-          Number(
+          this.parsearMontoCuota(
             this.formAcelerada
               .pago
-              .monto_certificacion ?? 0
+              .monto_certificacion
           ),
 
         fecha_certificacion:
@@ -2191,7 +2683,7 @@ sincronizarColeccionesAceleradas(): void {
                   cuota.fecha_vencimiento,
 
                 monto:
-                  Number(
+                  this.parsearMontoCuota(
                     cuota.monto
                   )
 
@@ -2205,7 +2697,11 @@ sincronizarColeccionesAceleradas(): void {
 
     console.log(
       '🚀 MATRÍCULA ACELERADA:',
-      payload
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
     );
 
 
@@ -2615,12 +3111,41 @@ sincronizarColeccionesAceleradas(): void {
           }
 
 
+          // ==================================================
+          // NORMALIZAR INMEDIATAMENTE LAS CUOTAS RECIBIDAS
+          // ==================================================
+
           this.previewCuotas =
-            cuotas;
+            cuotas.map(
+              (cuota, index) => ({
+
+                ...cuota,
+
+                numero_cuota:
+                  Number(
+                    cuota.numero_cuota ??
+                    cuota.nro_cuota ??
+                    cuota.numero ??
+                    index + 1
+                  ),
+
+                monto:
+                  this.parsearMontoCuota(
+                    cuota.monto ??
+                    cuota.monto_cuota ??
+                    cuota.importe ??
+                    cuota.total
+                  )
+
+              })
+            );
 
 
           this.cronogramaConfirmado =
-            cuotas as CuotaCronogramaPayload[];
+            [];
+
+
+          this.sincronizarColeccionesAceleradas();
 
 
           if (
@@ -2821,8 +3346,8 @@ sincronizarColeccionesAceleradas(): void {
   ): string {
 
     const numero =
-      Number(
-        valor ?? 0
+      this.parsearMontoCuota(
+        valor
       );
 
 
@@ -2938,7 +3463,7 @@ sincronizarColeccionesAceleradas(): void {
     }
 
 
-    this.cd.detectChanges();
+    this.sincronizarColeccionesAceleradas();
 
   }
 
@@ -2951,12 +3476,11 @@ sincronizarColeccionesAceleradas(): void {
     cuota: any
   ): number {
 
-    return Number(
+    return this.parsearMontoCuota(
       cuota?.monto ??
       cuota?.monto_cuota ??
       cuota?.importe ??
-      cuota?.total ??
-      0
+      cuota?.total
     );
 
   }
@@ -3156,11 +3680,6 @@ sincronizarColeccionesAceleradas(): void {
   abrirModalEditar(
     matricula: Matricula
   ): void {
-
-    /*
-     * La edición acelerada todavía no se mezcla
-     * con la edición ordinaria.
-     */
 
     if (
       (matricula as any)
@@ -4073,18 +4592,31 @@ sincronizarColeccionesAceleradas(): void {
   // NOMBRE PLAN
   // ==========================================================
 
-getNombrePlan(planId: number | null | undefined): string {
-  // Las matrículas aceleradas no tienen plan_curso_id
-  if (planId == null) {
-    return 'Curso acelerado';
+  getNombrePlan(
+    planId: number | null | undefined
+  ): string {
+
+    if (
+      planId == null
+    ) {
+
+      return 'Curso acelerado';
+
+    }
+
+
+    const plan =
+      this.planesCurso.find(
+        p =>
+          Number(p.id) ===
+          Number(planId)
+      );
+
+
+    return plan?.nombre ??
+      'Plan no encontrado';
+
   }
-
-  const plan = this.planesCurso.find(
-    p => Number(p.id) === Number(planId)
-  );
-
-  return plan?.nombre ?? 'Plan no encontrado';
-}
 
 
   // ==========================================================
