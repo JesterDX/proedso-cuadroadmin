@@ -838,6 +838,33 @@ export class MatriculasList implements OnInit {
 
   }
 
+  parsearMontoCuota(valor: string | number | null | undefined): number {
+  if (valor === null || valor === undefined || valor === '') {
+    return 0;
+  }
+
+  const numero = typeof valor === 'number'
+    ? valor
+    : Number(String(valor).replace(',', '.'));
+
+  return Number.isFinite(numero) ? numero : 0;
+}
+
+sincronizarColeccionesAceleradas(): void {
+  // Sincroniza los montos de las cuotas antes de continuar.
+  // Esto evita que queden valores string, null o NaN provenientes
+  // de los inputs del formulario.
+
+  if (!this.cuotasPreview) {
+    return;
+  }
+
+  this.cuotasPreview = this.cuotasPreview.map((cuota: any) => ({
+    ...cuota,
+    monto: this.parsearMontoCuota(cuota.monto)
+  }));
+}
+
 
   // ==========================================================
   // ABRIR MODAL ACELERADA
