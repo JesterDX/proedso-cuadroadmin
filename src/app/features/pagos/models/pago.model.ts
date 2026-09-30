@@ -8,10 +8,12 @@ export interface PagoResumen {
 
 export interface CuotaDetalle {
   id: number;
+  numero_cuota: number | null;
   concepto_nombre: string;
   concepto_codigo: string;
   fecha_vencimiento: string;
   monto_programado: number;
+  monto_pagado: number;
   saldo_pendiente: number;
   estado: string;
 }
