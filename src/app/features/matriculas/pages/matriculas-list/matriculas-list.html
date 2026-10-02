@@ -1735,13 +1735,15 @@
 
                         <td class="preview-table__amount">
 
-                          {{
-                            formatMonto(
-                              getMontoCuota(
-                                cuota
-                              )
-                            )
-                          }}
+                          <input
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            [ngModel]="getMontoCuota(cuota)"
+                            (ngModelChange)="editarMontoCuota(cuota, $event)"
+                            class="preview-amount-input"
+                            placeholder="0.00"
+                          />
 
                         </td>
 
@@ -2460,7 +2462,7 @@
 
                     <tr
                       *ngFor="
-                        let cuota of cuotasAceleradas;
+                        let cuota of formAcelerada.pago.cuotas;
                         let i = index
                       "
                     >
@@ -2480,10 +2482,7 @@
 
                       <!-- ================================================= -->
                       <!-- MONTO -->
-                      <!-- IMPORTANTE:
-                           NO ejecutar recalcularTotalAcelerada()
-                           en cada ngModelChange.
-                      -->
+                      <!-- SE EDITA DIRECTAMENTE SOBRE EL FORMULARIO REAL -->
                       <!-- ================================================= -->
 
                       <td>
@@ -2492,8 +2491,9 @@
                           type="number"
                           min="0.01"
                           step="0.01"
-                          [(ngModel)]="cuota.monto"
+                          [(ngModel)]="formAcelerada.pago.cuotas[i].monto"
                           (blur)="recalcularTotalAcelerada()"
+                          class="accelerated-amount-input"
                           placeholder="0.00"
                         />
 
@@ -2508,7 +2508,7 @@
 
                         <input
                           type="date"
-                          [(ngModel)]="cuota.fecha_programada"
+                          [(ngModel)]="formAcelerada.pago.cuotas[i].fecha_programada"
                         />
 
                       </td>
@@ -2522,7 +2522,7 @@
 
                         <input
                           type="date"
-                          [(ngModel)]="cuota.fecha_vencimiento"
+                          [(ngModel)]="formAcelerada.pago.cuotas[i].fecha_vencimiento"
                         />
 
                       </td>
@@ -2537,9 +2537,7 @@
                         <button
                           type="button"
                           class="btn-table btn-delete"
-                          (click)="
-                            eliminarCuotaAcelerada(i)
-                          "
+                          (click)="eliminarCuotaAcelerada(i)"
                           [disabled]="saving"
                         >
                           Eliminar
