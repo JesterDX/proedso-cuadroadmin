@@ -940,13 +940,21 @@ export class MatriculasList implements OnInit {
               );
 
 
+            const valorMonto =
+              cuota.monto ??
+              cuota.monto_cuota ??
+              cuota.importe ??
+              cuota.total;
+
+
             const monto =
-              this.parsearMontoCuota(
-                cuota.monto ??
-                cuota.monto_cuota ??
-                cuota.importe ??
-                cuota.total
-              );
+              valorMonto === null ||
+              valorMonto === undefined ||
+              valorMonto === ''
+                ? null
+                : this.parsearMontoCuota(
+                    valorMonto
+                  );
 
 
             return {
@@ -1092,17 +1100,34 @@ export class MatriculasList implements OnInit {
     valor: string | number | null
   ): void {
 
-    const monto =
-      this.parsearMontoCuota(
-        valor
-      );
+    if (
+      valor === null ||
+      valor === undefined ||
+      valor === ''
+    ) {
+
+      cuota.monto =
+        null;
+
+      return;
+
+    }
+
+
+    const numero =
+      typeof valor === 'number'
+        ? valor
+        : Number(
+            String(valor)
+              .trim()
+              .replace(',', '.')
+          );
 
 
     cuota.monto =
-      monto;
-
-
-    this.sincronizarColeccionesAceleradas();
+      Number.isFinite(numero)
+        ? numero
+        : null;
 
   }
 
@@ -1129,10 +1154,32 @@ export class MatriculasList implements OnInit {
     }
 
 
-    cuota.monto =
-      this.parsearMontoCuota(
-        valor
-      );
+    if (
+      valor === null ||
+      valor === undefined ||
+      valor === ''
+    ) {
+
+      cuota.monto =
+        null;
+
+    } else {
+
+      const numero =
+        typeof valor === 'number'
+          ? valor
+          : Number(
+              String(valor)
+                .trim()
+                .replace(',', '.')
+            );
+
+      cuota.monto =
+        Number.isFinite(numero)
+          ? numero
+          : null;
+
+    }
 
 
     this.cuotasAceleradas =
@@ -1152,9 +1199,7 @@ export class MatriculasList implements OnInit {
               item.fecha_vencimiento,
 
             monto:
-              this.parsearMontoCuota(
-                item.monto
-              )
+              item.monto
 
           })
         );
@@ -1163,7 +1208,6 @@ export class MatriculasList implements OnInit {
     this.cd.detectChanges();
 
   }
-
 
   // ==========================================================
   // ABRIR MODAL ACELERADA
