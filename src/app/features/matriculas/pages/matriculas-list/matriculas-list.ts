@@ -1095,119 +1095,57 @@ export class MatriculasList implements OnInit {
   // EDITAR MONTO CUOTA NORMAL
   // ==========================================================
 
-  editarMontoCuota(
-    cuota: CuotaCronograma,
-    valor: string | number | null
-  ): void {
+// ==========================================================
+// EDITAR MONTO CUOTA ACELERADA
+// ==========================================================
 
-    if (
-      valor === null ||
-      valor === undefined ||
-      valor === ''
-    ) {
+editarMontoCuotaAcelerada(
+  index: number,
+  valor: string | number | null
+): void {
 
-      cuota.monto =
-        null;
+  const cuota =
+    this.formAcelerada
+      .pago
+      .cuotas[index];
 
-      return;
-
-    }
-
-
-    const numero =
-      typeof valor === 'number'
-        ? valor
-        : Number(
-            String(valor)
-              .trim()
-              .replace(',', '.')
-          );
-
-
-    cuota.monto =
-      Number.isFinite(numero)
-        ? numero
-        : null;
-
+  if (!cuota) {
+    return;
   }
 
+  const numero =
+    this.parsearMontoCuota(valor);
 
-  // ==========================================================
-  // EDITAR MONTO CUOTA ACELERADA
-  // ==========================================================
+  cuota.monto =
+    numero;
 
-  editarMontoCuotaAcelerada(
-    index: number,
-    valor: string | number | null
-  ): void {
+  this.cuotasAceleradas =
+    this.formAcelerada
+      .pago
+      .cuotas
+      .map(
+        (item) => ({
 
-    const cuota =
-      this.formAcelerada
-        .pago
-        .cuotas[index];
+          numero_cuota:
+            item.numero_cuota,
 
+          fecha_programada:
+            item.fecha_programada,
 
-    if (!cuota) {
+          fecha_vencimiento:
+            item.fecha_vencimiento,
 
-      return;
-
-    }
-
-
-    if (
-      valor === null ||
-      valor === undefined ||
-      valor === ''
-    ) {
-
-      cuota.monto =
-        null;
-
-    } else {
-
-      const numero =
-        typeof valor === 'number'
-          ? valor
-          : Number(
-              String(valor)
-                .trim()
-                .replace(',', '.')
-            );
-
-      cuota.monto =
-        Number.isFinite(numero)
-          ? numero
-          : null;
-
-    }
-
-
-    this.cuotasAceleradas =
-      this.formAcelerada
-        .pago
-        .cuotas
-        .map(
-          (item) => ({
-
-            numero_cuota:
-              item.numero_cuota,
-
-            fecha_programada:
-              item.fecha_programada,
-
-            fecha_vencimiento:
-              item.fecha_vencimiento,
-
-            monto:
+          monto:
+            this.parsearMontoCuota(
               item.monto
+            )
 
-          })
-        );
+        })
+      );
 
+  this.cd.detectChanges();
+}
 
-    this.cd.detectChanges();
-
-  }
 
   // ==========================================================
   // ABRIR MODAL ACELERADA
@@ -4591,23 +4529,25 @@ export class MatriculasList implements OnInit {
   // NOMBRE ALUMNO
   // ==========================================================
 
-  getNombreAlumno(
-    alumnoId: number
-  ): string {
+getNombreAlumno(
+  alumnoId: number | null | undefined
+): string {
 
-    const alumno =
-      this.alumnos.find(
-        (a) =>
-          Number(a.id) ===
-          Number(alumnoId)
-      );
-
-
-    return alumno
-      ? `${alumno.apellidos ?? ''} ${alumno.nombres ?? ''}`.trim()
-      : '-';
-
+  if (alumnoId == null) {
+    return '-';
   }
+
+  const alumno =
+    this.alumnos.find(
+      (a) =>
+        Number(a.id) ===
+        Number(alumnoId)
+    );
+
+  return alumno
+    ? `${alumno.apellidos ?? ''} ${alumno.nombres ?? ''}`.trim()
+    : '-';
+}
 
 
   // ==========================================================
