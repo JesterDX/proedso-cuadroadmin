@@ -3268,6 +3268,45 @@ editarMontoCuotaAcelerada(
 
   }
 
+  // ==========================================================
+// EDITAR MONTO CUOTA NORMAL
+// ==========================================================
+
+editarMontoCuota(
+  cuota: CuotaCronograma,
+  valor: string | number | null
+): void {
+
+  if (
+    valor === null ||
+    valor === undefined ||
+    valor === ''
+  ) {
+
+    cuota.monto =
+      null;
+
+    return;
+  }
+
+
+  const numero =
+    typeof valor === 'number'
+      ? valor
+      : Number(
+          String(valor)
+            .trim()
+            .replace(',', '.')
+        );
+
+
+  cuota.monto =
+    Number.isFinite(numero)
+      ? numero
+      : null;
+
+}
+
 
   // ==========================================================
   // CAMBIO MONTO
