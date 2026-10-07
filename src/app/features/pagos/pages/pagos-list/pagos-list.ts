@@ -156,10 +156,11 @@ export class PagosList implements OnInit {
   };
 
 
-  formRecalculo = {
-    tipo: 'MENSUAL' as 'MENSUAL' | 'QUINCENAL',
-    fecha_inicio: new Date().toISOString().split('T')[0],
-    cantidad_cuotas: 4
+  // Formulario del sidebar para añadir una cuota a un plan existente
+  formNuevaCuota = {
+    fecha_vencimiento: '',
+    monto: null as number | null,
+    observaciones: ''
   };
 
 
@@ -1743,15 +1744,21 @@ export class PagosList implements OnInit {
 
 
   // ============================================================
-  // RECALCULAR PLAN
+  // AGREGAR CUOTA A UN PLAN EXISTENTE
   // ============================================================
 
-  recalcularPlan() {
+  agregarCuotaAlPlan() {
 
-    if (
-      !this.alumnoSeleccionado
-        ?.plan_pago_alumno_id
-    ) {
+    const planId =
+      this.alumnoSeleccionado
+        ?.plan_pago_alumno_id;
+
+    const matriculaId =
+      this.alumnoSeleccionado
+        ?.matricula_id;
+
+
+    if (!planId || !matriculaId) {
 
       this.mostrarNotificacion(
         'No hay plan de pago disponible',
@@ -1763,24 +1770,45 @@ export class PagosList implements OnInit {
     }
 
 
+    const monto =
+      Number(
+        this.formNuevaCuota.monto
+      );
+
+
+    if (
+      !this.formNuevaCuota
+        .fecha_vencimiento ||
+      !Number.isFinite(monto) ||
+      monto <= 0
+    ) {
+
+      this.mostrarNotificacion(
+        'Ingresa la fecha y un monto válido',
+        'warning'
+      );
+
+      return;
+
+    }
+
+
     this.pagosService
-      .recalcularPlan({
+      .agregarCuota({
 
         plan_pago_alumno_id:
-          this.alumnoSeleccionado
-            .plan_pago_alumno_id,
+          Number(planId),
 
-        tipo:
-          this.formRecalculo
-            .tipo,
+        fecha_vencimiento:
+          this.formNuevaCuota
+            .fecha_vencimiento,
 
-        fecha_inicio:
-          this.formRecalculo
-            .fecha_inicio,
+        monto,
 
-        cantidad_cuotas:
-          this.formRecalculo
-            .cantidad_cuotas
+        observaciones:
+          this.formNuevaCuota
+            .observaciones ||
+          undefined
 
       })
       .subscribe({
@@ -1788,19 +1816,27 @@ export class PagosList implements OnInit {
         next: () => {
 
           this.mostrarNotificacion(
-            'Plan de pagos recalculado con éxito',
+            'Cuota añadida correctamente',
             'success'
           );
 
 
-          this.miniModalOpen =
-            false;
+          this.formNuevaCuota = {
+
+            fecha_vencimiento: '',
+
+            monto: null,
+
+            observaciones: ''
+
+          };
 
 
           this.verDetalle(
-            this.alumnoSeleccionado
-              .matricula_id
+            matriculaId
           );
+
+          this.cargar();
 
         },
 
@@ -1808,8 +1844,8 @@ export class PagosList implements OnInit {
         error: (err) => {
 
           this.mostrarNotificacion(
-            err?.error?.error ||
-            'Error al recalcular el plan',
+            err?.error?.message ||
+            'Error al añadir la cuota',
             'error'
           );
 
@@ -1819,96 +1855,90 @@ export class PagosList implements OnInit {
 
   }
 
+
   // ============================================================
-// AGREGAR CUOTA A UN PLAN EXISTENTE
-// ============================================================
+  // ELIMINAR CUOTA DE UN PLAN EXISTENTE
+  // ============================================================
 
-agregarCuotaAlPlan() {
+  eliminarCuotaDelPlan(c: any) {
 
-  const planId = this.alumnoSeleccionado?.plan_pago_alumno_id;
+    if (
+      Number(
+        c.monto_pagado || 0
+      ) > 0
+    ) {
 
-  if (!planId) {
-    this.mostrarNotificacion('No hay plan de pago disponible', 'error');
-    return;
-  }
-
-  const monto = Number(this.formNuevaCuota.monto);
-
-  if (!this.formNuevaCuota.fecha_vencimiento || !Number.isFinite(monto) || monto <= 0) {
-    this.mostrarNotificacion('Ingresa la fecha y un monto válido', 'warning');
-    return;
-  }
-
-  this.pagosService.agregarCuota({
-    plan_pago_alumno_id: Number(planId),
-    fecha_vencimiento: this.formNuevaCuota.fecha_vencimiento,
-    monto,
-    observaciones: this.formNuevaCuota.observaciones || undefined
-  }).subscribe({
-
-    next: () => {
-      this.mostrarNotificacion('Cuota añadida correctamente', 'success');
-
-      this.formNuevaCuota = {
-        fecha_vencimiento: '',
-        monto: null,
-        observaciones: ''
-      };
-
-      this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      this.cargar();
-    },
-
-    error: (err) => {
       this.mostrarNotificacion(
-        err?.error?.message || 'Error al añadir la cuota',
-        'error'
+        'No se puede eliminar una cuota con pagos registrados',
+        'warning'
       );
+
+      return;
+
     }
 
-  });
-}
+
+    const matriculaId =
+      this.alumnoSeleccionado
+        ?.matricula_id;
 
 
-// ============================================================
-// ELIMINAR CUOTA DE UN PLAN EXISTENTE
-// ============================================================
-
-eliminarCuotaDelPlan(c: any) {
-
-  if (Number(c.monto_pagado || 0) > 0) {
-    this.mostrarNotificacion(
-      'No se puede eliminar una cuota con pagos registrados',
-      'warning'
-    );
-    return;
-  }
-
-  const nombre = c.numero_cuota
-    ? `${c.concepto_nombre} #${c.numero_cuota}`
-    : c.concepto_nombre;
-
-  if (!confirm(`¿Eliminar ${nombre} por ${this.formatMonto(c.monto_programado)}?`)) {
-    return;
-  }
-
-  this.pagosService.eliminarCuota(Number(c.id)).subscribe({
-
-    next: () => {
-      this.mostrarNotificacion('Cuota eliminada correctamente', 'success');
-      this.verDetalle(this.alumnoSeleccionado.matricula_id);
-      this.cargar();
-    },
-
-    error: (err) => {
-      this.mostrarNotificacion(
-        err?.error?.message || 'Error al eliminar la cuota',
-        'error'
-      );
+    if (!matriculaId) {
+      return;
     }
 
-  });
-}
+
+    const nombre =
+      c.numero_cuota
+        ? `${c.concepto_nombre} #${c.numero_cuota}`
+        : c.concepto_nombre;
+
+
+    if (
+      !confirm(
+        `¿Eliminar ${nombre} por ${this.formatMonto(c.monto_programado)}?`
+      )
+    ) {
+      return;
+    }
+
+
+    this.pagosService
+      .eliminarCuota(
+        Number(c.id)
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.mostrarNotificacion(
+            'Cuota eliminada correctamente',
+            'success'
+          );
+
+
+          this.verDetalle(
+            matriculaId
+          );
+
+          this.cargar();
+
+        },
+
+
+        error: (err) => {
+
+          this.mostrarNotificacion(
+            err?.error?.message ||
+            'Error al eliminar la cuota',
+            'error'
+          );
+
+        }
+
+      });
+
+  }
 
 
   // ============================================================
