@@ -2918,3 +2918,27 @@ tbody tr:hover {
     gap: 6px;
   }
 }
+
+.btn-delete-cuota {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #dc2626;
+    color: #fff;
+  }
+}
