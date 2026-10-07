@@ -1075,6 +1075,30 @@
 
                       </button>
 
+
+                      <button
+                        type="button"
+                        class="btn-delete-cuota"
+                        *ngIf="!(c.monto_pagado > 0)"
+                        title="Eliminar cuota"
+                        (click)="eliminarCuotaDelPlan(c)"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M3 6h18"></path>
+                          <path d="M8 6V4h8v2"></path>
+                          <path d="M19 6v14H5V6"></path>
+                          <path d="M10 11v5"></path>
+                          <path d="M14 11v5"></path>
+                        </svg>
+                      </button>
+
                     </td>
 
                   </tr>
@@ -1842,80 +1866,57 @@
         </div>
 
 
-        <!-- RECALCULAR -->
-        <div class="sidebar-section recalculo-box">
-
+        <!-- AGREGAR CUOTA -->
+        <div class="sidebar-section agregar-cuota-box">
+        
           <h4 class="sidebar-title">
-            Reprogramar cuotas
+            Añadir cuota
           </h4>
-
+        
           <p class="sidebar-description">
-            Genera nuevamente las fechas de las cuotas pendientes.
+            Agrega una cuota extra a este plan de pagos.
           </p>
-
-
+        
           <div class="recalculo-grid">
-
+        
             <div class="form-group">
-
-              <label>
-                Tipo
-              </label>
-
-              <select
-                [(ngModel)]="formRecalculo.tipo"
-              >
-
-                <option value="MENSUAL">
-                  Mensual
-                </option>
-
-                <option value="QUINCENAL">
-                  Quincenal
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Fecha inicio
-              </label>
-
+              <label>Vencimiento</label>
               <input
                 type="date"
-                [(ngModel)]="formRecalculo.fecha_inicio"
+                [(ngModel)]="formNuevaCuota.fecha_vencimiento"
               />
-
             </div>
-
-
+        
             <div class="form-group">
-
-              <label>
-                Cantidad cuotas
-              </label>
-
-              <input
-                type="number"
-                min="1"
-                [(ngModel)]="formRecalculo.cantidad_cuotas"
-              />
-
+              <label>Monto</label>
+              <div class="money-input">
+                <span>S/</span>
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  [(ngModel)]="formNuevaCuota.monto"
+                />
+              </div>
             </div>
-
+        
+            <div class="form-group">
+              <label>Observación (opcional)</label>
+              <input
+                type="text"
+                placeholder="Ej: Cuota adicional"
+                [(ngModel)]="formNuevaCuota.observaciones"
+              />
+            </div>
+        
           </div>
-
-
+        
           <button
             type="button"
             class="btn-recalcular"
-            (click)="recalcularPlan()"
+            (click)="agregarCuotaAlPlan()"
           >
-
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -1924,16 +1925,13 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path d="M21 12a9 9 0 0 0-15.5-6.3L3 8"></path>
-              <path d="M3 3v5h5"></path>
-              <path d="M3 12a9 9 0 0 0 15.5 6.3L21 16"></path>
-              <path d="M21 21v-5h-5"></path>
+              <path d="M12 5v14"></path>
+              <path d="M5 12h14"></path>
             </svg>
-
-            Recalcular plan
-
+        
+            Añadir cuota
           </button>
-
+        
         </div>
 
 
