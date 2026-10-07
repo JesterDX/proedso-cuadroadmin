@@ -73,5 +73,18 @@ export class PagosService {
     }
   );
 }
+  agregarCuota(data: {
+    plan_pago_alumno_id: number;
+    fecha_vencimiento: string;
+    monto: number;
+    observaciones?: string;
+  }) {
+    return this.http.post(`${this.apiUrl}/cuotas`, data);
+  }
+
+  eliminarCuota(cuotaId: number) {
+    return this.http.delete(`${this.apiUrl}/cuotas/${cuotaId}`);
+  }
+  
   
 }
