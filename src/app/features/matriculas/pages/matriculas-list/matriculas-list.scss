@@ -4011,6 +4011,35 @@ $shadow-xl:
   }
 }
 
+/* SweetAlert2 por encima de los modales de Angular */
+.swal2-container {
+  z-index: 20000 !important;
+}
+
+.swal2-popup {
+  position: relative;
+  z-index: 20001 !important;
+}
+
+/* Asegurar que los campos de fecha sean visibles */
+.swal2-html-container {
+  overflow: visible !important;
+}
+
+.swal2-html-container input[type="date"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 20002 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+}
+
 
 // ==========================================================================
 // 41. REDUCED MOTION
