@@ -4802,111 +4802,247 @@ getNombreAlumno(
   // CAMBIAR ESTADO
   // ==========================================================
 
-  cambiarEstadoMatricula(
-    matricula: Matricula,
-    codigoEstado:
-      | 'RETIRADO'
-      | 'EGRESADO'
-      | 'RESERVA'
-      | 'MATRICULADO'
-  ): void {
+cambiarEstadoMatricula(
+  matricula: Matricula,
+  codigoEstado: 'RETIRADO' | 'EGRESADO' | 'RESERVA' | 'MATRICULADO'
+): void {
 
-    const nombreEstado =
-      this.getNombreEstadoPorCodigo(
-        codigoEstado
-      );
+  const nombreEstado =
+    this.getNombreEstadoPorCodigo(codigoEstado);
 
+  // ==========================================================
+  // SI ES UNA RESERVA, SOLICITAR LAS FECHAS
+  // ==========================================================
+
+  if (codigoEstado === 'RESERVA') {
 
     Swal.fire({
+      icon: 'question',
+      title: 'Registrar reserva',
 
-      icon:
-        'question',
+      html: `
+        <div style="text-align: left; margin-top: 20px;">
 
-      title:
-        'Confirmar cambio',
+          <p style="margin-bottom: 18px; color: #64748b;">
+            Selecciona el periodo durante el cual se reservará
+            la matrícula del alumno.
+          </p>
 
-      text:
-        `La matrícula pasará al estado ${nombreEstado}.`,
+          <div style="margin-bottom: 16px;">
+            <label
+              for="fecha_reserva_inicio"
+              style="
+                display: block;
+                margin-bottom: 7px;
+                font-weight: 600;
+                color: #334155;
+              "
+            >
+              Fecha de inicio de reserva
+            </label>
 
-      showCancelButton:
-        true,
+            <input
+              id="fecha_reserva_inicio"
+              type="date"
+              class="swal2-input"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin: 0;
+              "
+              required
+            />
+          </div>
 
-      confirmButtonText:
-        'Sí, continuar',
+          <div>
+            <label
+              for="fecha_reserva_fin"
+              style="
+                display: block;
+                margin-bottom: 7px;
+                font-weight: 600;
+                color: #334155;
+              "
+            >
+              Fecha de fin de reserva
+            </label>
 
-      cancelButtonText:
-        'Cancelar'
+            <input
+              id="fecha_reserva_fin"
+              type="date"
+              class="swal2-input"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin: 0;
+              "
+              required
+            />
+          </div>
 
-    }).then(
-      (result) => {
+        </div>
+      `,
 
-        if (
-          !result.isConfirmed
-        ) {
+      showCancelButton: true,
+      confirmButtonText: 'Guardar reserva',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#b7791f',
+      cancelButtonColor: '#64748b',
+      focusConfirm: false,
 
-          return;
+      preConfirm: () => {
 
+        const inicio = (
+          document.getElementById(
+            'fecha_reserva_inicio'
+          ) as HTMLInputElement
+        )?.value;
+
+        const fin = (
+          document.getElementById(
+            'fecha_reserva_fin'
+          ) as HTMLInputElement
+        )?.value;
+
+        if (!inicio || !fin) {
+
+          Swal.showValidationMessage(
+            'Debes seleccionar ambas fechas.'
+          );
+
+          return false;
         }
 
+        if (fin < inicio) {
 
-        this.matriculasService
-          .cambiarEstado(
-            matricula.id,
-            codigoEstado
-          )
-          .subscribe({
+          Swal.showValidationMessage(
+            'La fecha de fin no puede ser anterior a la fecha de inicio.'
+          );
 
-            next: (
-              resp:
-                ApiResponse<Matricula>
-            ) => {
+          return false;
+        }
 
-              Swal.fire({
-
-                icon:
-                  'success',
-
-                title:
-                  'Estado actualizado',
-
-                text:
-                  resp.message ||
-                  'El estado de la matrícula fue actualizado.'
-
-              });
-
-
-              this.cargarTodo();
-
-            },
-
-
-            error: (
-              err: any
-            ) => {
-
-              Swal.fire({
-
-                icon:
-                  'error',
-
-                title:
-                  'Error',
-
-                text:
-                  err?.error?.message ||
-                  'No se pudo cambiar el estado de la matrícula.'
-
-              });
-
-            }
-
-          });
-
+        return {
+          fecha_reserva_inicio: inicio,
+          fecha_reserva_fin: fin
+        };
       }
+
+    }).then((result) => {
+
+      if (!result.isConfirmed || !result.value) {
+        return;
+      }
+
+      const reserva = result.value;
+
+      this.ejecutarCambioEstado(
+        matricula,
+        codigoEstado,
+        nombreEstado,
+        reserva
+      );
+
+    });
+
+    return;
+  }
+
+  // ==========================================================
+  // OTROS CAMBIOS DE ESTADO
+  // ==========================================================
+
+  Swal.fire({
+    icon: 'question',
+    title: 'Confirmar cambio',
+
+    text: `La matrícula pasará al estado ${nombreEstado}.`,
+
+    showCancelButton: true,
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#1d4ed8',
+    cancelButtonColor: '#64748b'
+
+  }).then((result) => {
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    this.ejecutarCambioEstado(
+      matricula,
+      codigoEstado,
+      nombreEstado
     );
 
+  });
+
+}
+
+
+// ==========================================================
+// EJECUTAR CAMBIO DE ESTADO
+// ==========================================================
+
+private ejecutarCambioEstado(
+  matricula: Matricula,
+  codigoEstado: 'RETIRADO' | 'EGRESADO' | 'RESERVA' | 'MATRICULADO',
+  nombreEstado: string,
+  reserva?: {
+    fecha_reserva_inicio: string;
+    fecha_reserva_fin: string;
   }
+): void {
+
+  this.matriculasService
+    .cambiarEstado(
+      matricula.id,
+      codigoEstado,
+      reserva
+    )
+    .subscribe({
+
+      next: (resp: ApiResponse<Matricula>) => {
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Estado actualizado',
+
+          text: resp.message ||
+            (
+              codigoEstado === 'RESERVA'
+                ? 'La reserva y sus fechas se registraron correctamente.'
+                : `La matrícula pasó al estado ${nombreEstado}.`
+            ),
+
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#1d4ed8'
+        });
+
+        this.cargarTodo();
+
+      },
+
+      error: (err: any) => {
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al actualizar',
+
+          text:
+            err?.error?.message ||
+            'No se pudo actualizar el estado de la matrícula.',
+
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#dc2626'
+        });
+
+      }
+
+    });
+
+}
 
 
   // ==========================================================
