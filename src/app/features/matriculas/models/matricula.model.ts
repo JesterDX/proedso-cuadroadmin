@@ -65,6 +65,13 @@ export interface Matricula {
   certificacionIncluida?: boolean;
 
   costo_certificacion?: number | null;
+
+
+  fecha_reserva_inicio?: string | null;
+  
+  fecha_reserva_fin?: string | null;
+  
+  dias_restantes_reserva?: number | null; 
 }
 
 
@@ -159,6 +166,14 @@ export interface MatriculaPayload {
   // ========================================================
 
   cronograma_confirmado?: CuotaCronogramaPayload[];
+
+
+  fecha_reserva_inicio?: string | null;
+  
+  fecha_reserva_fin?: string | null;
+  
+  dias_restantes_reserva?: number | null; 
+  
 }
 
 
@@ -340,4 +355,8 @@ export interface MatriculaAceleradaPayload {
   // ========================================================
 
   pago: PagoMatriculaAceleradaPayload;
+
+  fecha_reserva_inicio?: string | null;
+  fecha_reserva_fin?: string | null;
+  dias_restantes_reserva?: number | null; 
 }
