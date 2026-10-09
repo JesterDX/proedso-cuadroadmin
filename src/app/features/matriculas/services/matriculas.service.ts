@@ -163,16 +163,20 @@ export class MatriculasService {
   // ==========================================================
   // CAMBIAR ESTADO
   // ==========================================================
-
   cambiarEstado(
     id: number,
-    codigoEstado: string
+    codigoEstado: string,
+    reserva?: {
+      fecha_reserva_inicio: string;
+      fecha_reserva_fin: string;
+    }
   ): Observable<ApiResponse<Matricula>> {
 
     return this.http.patch<ApiResponse<Matricula>>(
       `${this.apiUrl}/${id}/estado`,
       {
-        codigo_estado: codigoEstado
+        codigo_estado: codigoEstado,
+        ...(reserva ?? {})
       }
     );
   }
