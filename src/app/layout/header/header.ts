@@ -95,6 +95,10 @@ export class HeaderComponent implements OnInit {
     this.cargarNotificaciones();
   }
 
+
+  reservaAlertas = inject(ReservaAlertasService);
+w
+
   // ==========================================================
   // CARGAR NOTIFICACIONES
   // ==========================================================
