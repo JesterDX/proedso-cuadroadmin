@@ -1,124 +1,89 @@
 <header class="main-header">
 
-  <!-- ======================================================
-       IZQUIERDA
-       ====================================================== -->
-
+  <!-- IZQUIERDA -->
   <div class="header-left">
-
-    <button
-      type="button"
-      class="header-icon-button"
-      title="Buscar"
-      aria-label="Buscar"
-    >
-
-      <lucide-icon
-        [img]="icons.search"
-        [size]="20"
-      />
-
+    <button type="button" class="header-icon-button" title="Buscar" aria-label="Buscar">
+      <lucide-icon [img]="icons.search" [size]="20" />
     </button>
-
   </div>
 
-
-  <!-- ======================================================
-       DERECHA
-       ====================================================== -->
-
+  <!-- DERECHA -->
   <div class="header-right">
 
-
-    <!-- ====================================================
-         EXPORTAR EXCEL
-         ==================================================== -->
-
+    <!-- EXPORTAR EXCEL -->
     <button
       type="button"
       class="excel-button"
       title="Exportar notificaciones a Excel"
       (click)="exportarExcel()"
     >
-
-      <lucide-icon
-        [img]="icons.download"
-        [size]="18"
-      />
-
-      <span>
-        Exportar Excel
-      </span>
-
+      <lucide-icon [img]="icons.download" [size]="18" />
+      <span>Exportar Excel</span>
     </button>
 
+    <!-- CAMPANA DE RESERVAS -->
+    <div class="reserva-bell-wrapper" (click)="$event.stopPropagation()">
 
-    <!-- ============ CAMPANA DE RESERVAS ============ -->
-<div class="reserva-bell-wrapper" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="reserva-bell"
+        [class.reserva-bell--activa]="reservaAlertas.total() > 0"
+        [class.reserva-bell--critica]="reservaAlertas.hayCritica()"
+        title="Reservas por vencer"
+        aria-label="Reservas por vencer"
+        (click)="togglePanelReservas($event)"
+      >
+        <lucide-icon
+          [img]="reservaAlertas.total() > 0 ? icons.bellRing : icons.bell"
+          [size]="21"
+        />
 
-  <button
-    type="button"
-    class="reserva-bell"
-    [class.reserva-bell--activa]="reservaAlertas.total() > 0"
-    [class.reserva-bell--critica]="reservaAlertas.hayCritica()"
-    title="Reservas por vencer"
-    aria-label="Reservas por vencer"
-    (click)="togglePanelReservas($event)"
-  >
-    <lucide-icon
-      [img]="reservaAlertas.total() > 0 ? icons.bellRing : icons.bell"
-      [size]="21"
-    />
-
-    @if (reservaAlertas.total() > 0) {
-      <span class="reserva-bell__badge">{{ reservaAlertas.total() }}</span>
-    }
-  </button>
-
-  @if (panelReservasAbierto()) {
-    <div class="reserva-panel">
-
-      <div class="reserva-panel__head">
-        <lucide-icon [img]="icons.calendarClock" [size]="18" />
-        <div>
-          <strong>Reservas por vencer</strong>
-          <small>Próximos 3 días y vencidas</small>
-        </div>
-      </div>
-
-      <div class="reserva-panel__body">
-        @for (a of reservaAlertas.alertas(); track a.matriculaId) {
-          <a class="reserva-item" [class]="'reserva-item reserva-item--' + a.nivel.toLowerCase()"
-             routerLink="/matriculas/reservas">
-
-            <span class="reserva-item__dias">
-              {{ a.dias <= 0 ? (a.dias === 0 ? 'HOY' : '!') : a.dias + 'd' }}
-            </span>
-
-            <span class="reserva-item__info">
-              <strong>{{ a.alumno }}</strong>
-              <small>{{ a.texto }} · {{ a.fechaFin }}</small>
-            </span>
-          </a>
-        } @empty {
-          <div class="reserva-panel__vacio">
-            🎉 No hay reservas próximas a vencer
-          </div>
+        @if (reservaAlertas.total() > 0) {
+          <span class="reserva-bell__badge">{{ reservaAlertas.total() }}</span>
         }
-      </div>
+      </button>
 
-      <a class="reserva-panel__footer" routerLink="/matriculas/reservas">
-        Ver todas las reservas →
-      </a>
+      @if (panelReservasAbierto()) {
+        <div class="reserva-panel">
+
+          <div class="reserva-panel__head">
+            <lucide-icon [img]="icons.calendarClock" [size]="18" />
+            <div>
+              <strong>Reservas por vencer</strong>
+              <small>Próximos 3 días y vencidas</small>
+            </div>
+          </div>
+
+          <div class="reserva-panel__body">
+            @for (a of reservaAlertas.alertas(); track a.matriculaId) {
+              <a
+                class="reserva-item reserva-item--{{ a.nivel.toLowerCase() }}"
+                routerLink="/matriculas/reservas"
+              >
+                <span class="reserva-item__dias">
+                  {{ a.dias === 0 ? 'HOY' : a.dias < 0 ? '!' : a.dias + 'd' }}
+                </span>
+
+                <span class="reserva-item__info">
+                  <strong>{{ a.alumno }}</strong>
+                  <small>{{ a.texto }} · {{ a.fechaFin }}</small>
+                </span>
+              </a>
+            } @empty {
+              <div class="reserva-panel__vacio">
+                🎉 No hay reservas próximas a vencer
+              </div>
+            }
+          </div>
+
+          <a class="reserva-panel__footer" routerLink="/matriculas/reservas">
+            Ver todas las reservas →
+          </a>
+        </div>
+      }
     </div>
-  }
-</div>
 
-
-    <!-- ====================================================
-         NOTIFICACIONES
-         ==================================================== -->
-
+    <!-- NOTIFICACIONES (TU CAMPANA ORIGINAL) -->
     <button
       type="button"
       class="notification-button"
@@ -126,79 +91,28 @@
       aria-label="Notificaciones"
       (click)="abrirNotificaciones()"
     >
-
-      <lucide-icon
-        [img]="icons.bell"
-        [size]="21"
-      />
-
-
-      <!-- ================================================
-           BADGE
-           ================================================ -->
+      <lucide-icon [img]="icons.bell" [size]="21" />
 
       @if (notificaciones().total > 0) {
-
         <span class="notification-badge">
-
-          {{
-            notificaciones().total > 99
-              ? '99+'
-              : notificaciones().total
-          }}
-
+          {{ notificaciones().total > 99 ? '99+' : notificaciones().total }}
         </span>
-
       }
-
     </button>
 
-
-    <!-- ====================================================
-         USUARIO
-         ==================================================== -->
-
+    <!-- USUARIO -->
     <div class="user-container">
-
       <div class="user-avatar">
-
-        <lucide-icon
-          [img]="icons.user"
-          [size]="22"
-        />
-
+        <lucide-icon [img]="icons.user" [size]="22" />
       </div>
-
 
       <div class="user-information">
-
-        <span class="user-name">
-
-          {{
-            usuarioLogueado()?.nombre
-            || 'Usuario'
-          }}
-
-        </span>
-
-        <span class="user-role">
-
-          {{
-            usuarioLogueado()?.rol
-            || 'Usuario'
-          }}
-
-        </span>
-
+        <span class="user-name">{{ usuarioLogueado()?.nombre || 'Usuario' }}</span>
+        <span class="user-role">{{ usuarioLogueado()?.rol || 'Usuario' }}</span>
       </div>
-
     </div>
 
-
-    <!-- ====================================================
-         LOGOUT
-         ==================================================== -->
-
+    <!-- LOGOUT -->
     <button
       type="button"
       class="logout-button"
@@ -206,14 +120,8 @@
       aria-label="Cerrar sesión"
       (click)="onLogout()"
     >
-
-      <lucide-icon
-        [img]="icons.logout"
-        [size]="19"
-      />
-
+      <lucide-icon [img]="icons.logout" [size]="19" />
     </button>
 
   </div>
-
 </header>
