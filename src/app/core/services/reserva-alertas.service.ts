@@ -1,8 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { forkJoin, interval, startWith, switchMap, catchError, of, Subscription } from 'rxjs';
 
-import { MatriculasService } from '../../services/matriculas.service';
-import { AlumnosService } from '../../../alumnos/services/alumnos.service';
+import { MatriculasService } from '../../features/matriculas/services/matriculas.service';
+import { AlumnosService } from '../../features/alumnos/services/alumnos.service';
 
 export type NivelReserva = 'HOY' | 'URGENTE' | 'PROXIMA' | 'VENCIDA';
 
@@ -21,10 +21,7 @@ export class ReservaAlertasService {
   private matriculasService = inject(MatriculasService);
   private alumnosService = inject(AlumnosService);
 
-  /** Días en los que SUENA (3, 2 y el día exacto) */
   private readonly DIAS_CON_SONIDO = [3, 2, 0];
-
-  /** Se muestran en el panel las reservas que vencen en <= 3 días */
   private readonly DIAS_VISIBLES = 3;
 
   alertas = signal<ReservaAlerta[]>([]);
@@ -36,12 +33,10 @@ export class ReservaAlertasService {
   private sub?: Subscription;
   private iniciado = false;
 
-  // ------------------------------------------------------------
   iniciar(): void {
     if (this.iniciado) return;
     this.iniciado = true;
 
-    // Los navegadores bloquean audio hasta que el usuario interactúa.
     const desbloquear = () => {
       this.getAudio().resume().then(() => {
         if (this.sonidoPendiente) {
@@ -53,7 +48,6 @@ export class ReservaAlertasService {
     document.addEventListener('click', desbloquear, { once: true });
     document.addEventListener('keydown', desbloquear, { once: true });
 
-    // Revisa al abrir y luego cada 5 minutos
     this.sub = interval(5 * 60 * 1000).pipe(
       startWith(0),
       switchMap(() =>
@@ -62,7 +56,7 @@ export class ReservaAlertasService {
           alumnos: this.alumnosService.listar('', true)
         }).pipe(catchError(() => of(null)))
       )
-    ).subscribe(resp => {
+    ).subscribe((resp: any) => {
       if (!resp) return;
       this.procesar(resp.matriculas?.data ?? [], resp.alumnos?.data ?? []);
     });
@@ -73,22 +67,20 @@ export class ReservaAlertasService {
     this.iniciado = false;
   }
 
-  // ------------------------------------------------------------
   private procesar(matriculas: any[], alumnos: any[]): void {
-
     const alertas: ReservaAlerta[] = [];
 
     for (const m of matriculas) {
       const dias = this.diasRestantes(m.fecha_reserva_fin);
       if (dias === null || dias > this.DIAS_VISIBLES) continue;
 
-      const a = alumnos.find(x => Number(x.id) === Number(m.alumno_id));
+      const a = alumnos.find((x: any) => Number(x.id) === Number(m.alumno_id));
       const nombre = a ? `${a.apellidos ?? ''} ${a.nombres ?? ''}`.trim() : 'Alumno';
 
       alertas.push({
         matriculaId: m.id,
         alumno: nombre,
-        fechaFin: m.fecha_reserva_fin.split('T')[0],
+        fechaFin: String(m.fecha_reserva_fin).split('T')[0],
         dias,
         nivel: dias < 0 ? 'VENCIDA' : dias === 0 ? 'HOY' : dias <= 2 ? 'URGENTE' : 'PROXIMA',
         texto: this.texto(dias)
@@ -97,14 +89,10 @@ export class ReservaAlertasService {
 
     alertas.sort((a, b) => a.dias - b.dias);
     this.alertas.set(alertas);
-
     this.evaluarSonido(alertas);
   }
 
-  // ------------------------------------------------------------
-  /** Suena UNA sola vez por (matrícula + día restante + fecha de hoy). */
   private evaluarSonido(alertas: ReservaAlerta[]): void {
-
     const hoy = new Date().toISOString().slice(0, 10);
     let nivelMax: NivelReserva | null = null;
 
@@ -127,7 +115,7 @@ export class ReservaAlertasService {
     if (this.getAudio().state === 'running') {
       this.reproducir(nivelMax);
     } else {
-      this.sonidoPendiente = nivelMax; // suena al primer clic
+      this.sonidoPendiente = nivelMax;
     }
   }
 
@@ -135,9 +123,6 @@ export class ReservaAlertasService {
     return n === 'HOY' ? 0 : n === 'URGENTE' ? 2 : 3;
   }
 
-  // ------------------------------------------------------------
-  // SONIDO (Web Audio API: no necesitas archivo .mp3)
-  // ------------------------------------------------------------
   private getAudio(): AudioContext {
     if (!this.audioCtx) {
       this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -145,7 +130,6 @@ export class ReservaAlertasService {
     return this.audioCtx;
   }
 
-  /** 3 días: 1 tono suave · 2 días: 2 tonos · HOY/VENCIDA: 3 tonos agudos */
   reproducir(nivel: NivelReserva): void {
     const patron: Record<NivelReserva, number[]> = {
       PROXIMA: [660],
@@ -173,10 +157,9 @@ export class ReservaAlertasService {
     });
   }
 
-  // ------------------------------------------------------------
   private diasRestantes(fin?: string | null): number | null {
     if (!fin) return null;
-    const [y, m, d] = fin.split('T')[0].split('-').map(Number);
+    const [y, m, d] = String(fin).split('T')[0].split('-').map(Number);
     if (!y || !m || !d) return null;
 
     const hoy = new Date();
