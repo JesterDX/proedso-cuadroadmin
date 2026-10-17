@@ -557,7 +557,11 @@ export class MatriculasList implements OnInit {
 
       certificacionIncluida: true,
 
-      costo_certificacion: null
+      costo_certificacion: null,
+
+      fecha_reserva_inicio: null,
+
+      fecha_reserva_fin: null
 
     };
 
@@ -591,6 +595,10 @@ export class MatriculasList implements OnInit {
       fecha_fin_estimada: null,
 
       notas: '',
+
+      fecha_reserva_inicio: null,
+
+      fecha_reserva_fin: null,
 
       maquinas: [],
 
@@ -1849,6 +1857,15 @@ editarMontoCuotaAcelerada(
     }
 
 
+    errores.push(
+      ...this.validarReserva(
+        this.formAcelerada.estado_alumno_id,
+        this.formAcelerada.fecha_reserva_inicio,
+        this.formAcelerada.fecha_reserva_fin
+      )
+    );
+
+
     // ========================================================
     // MÁQUINAS
     // ========================================================
@@ -2383,7 +2400,22 @@ editarMontoCuotaAcelerada(
       // Ya no mandamos previewCuotas directamente.
       // Mandamos el cronograma normalizado.
       cronograma_confirmado:
-        cronograma
+        cronograma,
+
+      // RESERVA: solo se envían si el estado es RESERVA.
+      fecha_reserva_inicio:
+        this.esEstadoReserva(
+          this.form.estado_alumno_id
+        )
+          ? this.form.fecha_reserva_inicio || null
+          : null,
+
+      fecha_reserva_fin:
+        this.esEstadoReserva(
+          this.form.estado_alumno_id
+        )
+          ? this.form.fecha_reserva_fin || null
+          : null
 
     };
 
@@ -2584,6 +2616,21 @@ editarMontoCuotaAcelerada(
       notas:
         this.formAcelerada
           .notas || null,
+
+      // RESERVA: solo se envían si el estado es RESERVA.
+      fecha_reserva_inicio:
+        this.esEstadoReserva(
+          this.formAcelerada.estado_alumno_id
+        )
+          ? this.formAcelerada.fecha_reserva_inicio || null
+          : null,
+
+      fecha_reserva_fin:
+        this.esEstadoReserva(
+          this.formAcelerada.estado_alumno_id
+        )
+          ? this.formAcelerada.fecha_reserva_fin || null
+          : null,
 
       maquinas:
         this.maquinasAceleradas
@@ -3806,7 +3853,19 @@ editarMontoCuota(
 
       costo_certificacion:
         matricula.costo_certificacion ??
-        null
+        null,
+
+      fecha_reserva_inicio:
+        matricula.fecha_reserva_inicio
+          ? matricula.fecha_reserva_inicio
+              .split('T')[0]
+          : null,
+
+      fecha_reserva_fin:
+        matricula.fecha_reserva_fin
+          ? matricula.fecha_reserva_fin
+              .split('T')[0]
+          : null
 
     };
 
@@ -4097,6 +4156,15 @@ editarMontoCuota(
       );
 
     }
+
+
+    errores.push(
+      ...this.validarReserva(
+        this.form.estado_alumno_id,
+        this.form.fecha_reserva_inicio,
+        this.form.fecha_reserva_fin
+      )
+    );
 
 
     if (
@@ -4683,6 +4751,284 @@ getNombreAlumno(
       plan.tipo_curso_codigo ===
       'MULTIPLE'
     );
+
+  }
+
+
+  // ==========================================================
+  // RESERVA
+  // ==========================================================
+
+  /**
+   * ¿El estado indicado es RESERVA?
+   */
+  esEstadoReserva(
+    estadoId: number | null | undefined
+  ): boolean {
+
+    if (
+      estadoId === null ||
+      estadoId === undefined
+    ) {
+
+      return false;
+
+    }
+
+    return (
+      this.getCodigoEstado(
+        Number(estadoId)
+      ) === 'RESERVA'
+    );
+
+  }
+
+
+  /**
+   * Se ejecuta cuando cambia el estado en el formulario
+   * (ordinaria o acelerada). Si deja de ser RESERVA,
+   * se limpian las fechas de reserva.
+   */
+  onEstadoChange(): void {
+
+    const estadoId =
+      this.esMatriculaAcelerada()
+        ? this.formAcelerada.estado_alumno_id
+        : this.form.estado_alumno_id;
+
+
+    if (
+      !this.esEstadoReserva(estadoId)
+    ) {
+
+      this.form.fecha_reserva_inicio =
+        null;
+
+      this.form.fecha_reserva_fin =
+        null;
+
+      this.formAcelerada.fecha_reserva_inicio =
+        null;
+
+      this.formAcelerada.fecha_reserva_fin =
+        null;
+
+    }
+
+    this.cd.detectChanges();
+
+  }
+
+
+  /**
+   * ¿Se está mostrando la vista de reservas?
+   */
+  esVistaReserva(): boolean {
+
+    return (
+      this.vistaActual ===
+      'RESERVA'
+    );
+
+  }
+
+
+  /**
+   * Fecha de reserva (inicio o fin) actual del formulario
+   * activo, para el resumen lateral.
+   */
+  get reservaInicioActiva(): string | null {
+
+    return this.esMatriculaAcelerada()
+      ? this.formAcelerada.fecha_reserva_inicio ?? null
+      : this.form.fecha_reserva_inicio ?? null;
+
+  }
+
+
+  get reservaFinActiva(): string | null {
+
+    return this.esMatriculaAcelerada()
+      ? this.formAcelerada.fecha_reserva_fin ?? null
+      : this.form.fecha_reserva_fin ?? null;
+
+  }
+
+
+  /**
+   * Días que faltan para que termine la reserva.
+   * Negativo = reserva vencida. null = sin fecha fin.
+   */
+  getDiasRestantesReserva(
+    matricula: Matricula
+  ): number | null {
+
+    const fin =
+      matricula.fecha_reserva_fin;
+
+    if (!fin) {
+
+      return null;
+
+    }
+
+    const [anio, mes, dia] =
+      fin
+        .split('T')[0]
+        .split('-')
+        .map(Number);
+
+    if (
+      !anio ||
+      !mes ||
+      !dia
+    ) {
+
+      return null;
+
+    }
+
+    const hoy =
+      new Date();
+
+    hoy.setHours(0, 0, 0, 0);
+
+    const fechaFin =
+      new Date(
+        anio,
+        mes - 1,
+        dia
+      );
+
+    return Math.round(
+      (
+        fechaFin.getTime() -
+        hoy.getTime()
+      ) /
+      86400000
+    );
+
+  }
+
+
+  getTextoDiasReserva(
+    matricula: Matricula
+  ): string {
+
+    const dias =
+      this.getDiasRestantesReserva(
+        matricula
+      );
+
+    if (dias === null) {
+
+      return '';
+
+    }
+
+    if (dias < 0) {
+
+      return `Vencida hace ${Math.abs(dias)} día(s)`;
+
+    }
+
+    if (dias === 0) {
+
+      return 'Vence hoy';
+
+    }
+
+    if (dias === 1) {
+
+      return 'Vence mañana';
+
+    }
+
+    return `Faltan ${dias} días`;
+
+  }
+
+
+  getClaseDiasReserva(
+    matricula: Matricula
+  ): string {
+
+    const dias =
+      this.getDiasRestantesReserva(
+        matricula
+      );
+
+    if (dias === null) {
+
+      return 'reserva-chip';
+
+    }
+
+    if (dias < 0) {
+
+      return 'reserva-chip reserva-chip--vencida';
+
+    }
+
+    if (dias <= 3) {
+
+      return 'reserva-chip reserva-chip--proxima';
+
+    }
+
+    return 'reserva-chip reserva-chip--ok';
+
+  }
+
+
+  /**
+   * Valida las fechas de reserva de un formulario.
+   */
+  private validarReserva(
+    estadoId: number | null | undefined,
+    inicio: string | null | undefined,
+    fin: string | null | undefined
+  ): string[] {
+
+    const errores: string[] = [];
+
+    if (
+      !this.esEstadoReserva(estadoId)
+    ) {
+
+      return errores;
+
+    }
+
+    if (!inicio) {
+
+      errores.push(
+        'Debes indicar la fecha de inicio de la reserva.'
+      );
+
+    }
+
+    if (!fin) {
+
+      errores.push(
+        'Debes indicar la fecha de fin de la reserva.'
+      );
+
+    }
+
+    if (
+      inicio &&
+      fin &&
+      fin < inicio
+    ) {
+
+      errores.push(
+        'La fecha fin de la reserva no puede ser anterior a la fecha de inicio.'
+      );
+
+    }
+
+    return errores;
 
   }
 
