@@ -1,17 +1,8 @@
-import {
-  Component,
-  inject,
-  signal,
-  OnInit
-} from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideAngularModule,
-  Search,
-  Bell,
-  UserCircle2,
-  LogOut,
-  Download
+  Search, Bell, BellRing, CalendarClock, User, LogOut, Download
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 import ExcelJS from 'exceljs';
@@ -22,6 +13,11 @@ import {
   ResumenNotificaciones,
   NotificacionCuota
 } from '../../core/services/notificaciones.service';
+
+
+import { RouterLink } from '@angular/router';
+
+import { ReservaAlertasService } from '../../core/services/reserva-alertas.service';
 
 @Component({
   selector: 'app-header',
