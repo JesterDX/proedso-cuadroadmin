@@ -1,11 +1,15 @@
 // ============================================================
-// PAGOS - ESTILOS COMPLETOS
-// PROEDSO
+// PAGOS - ESTILOS COMPLETOS  |  PROEDSO
 // ============================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 // ============================================================
 // VARIABLES
 // ============================================================
+
+$font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
 
 $navy: #0b1f3a;
 $navy-dark: #07162b;
@@ -15,7 +19,6 @@ $gold: #d4a017;
 $gold-light: #f4c95d;
 
 $white: #ffffff;
-
 $bg: #f5f7fb;
 $surface: #ffffff;
 
@@ -28,13 +31,10 @@ $border-dark: #d5dae3;
 
 $success: #15803d;
 $success-bg: #ecfdf3;
-
 $danger: #dc2626;
 $danger-bg: #fef2f2;
-
 $warning: #b45309;
 $warning-bg: #fffbeb;
-
 $info: #2563eb;
 $info-bg: #eff6ff;
 
@@ -46,6 +46,53 @@ $radius-sm: 6px;
 $radius-md: 10px;
 $radius-lg: 14px;
 $radius-xl: 18px;
+
+// ------------------------------------------------------------
+// ESCALA DE UI
+// s(14) => calc(14px * var(--ui))
+// --ui crece automáticamente en pantallas grandes (ver abajo)
+// ------------------------------------------------------------
+@function s($v) {
+  @return unquote('calc(#{$v}px * var(--ui))');
+}
+
+
+// ============================================================
+// BASE GLOBAL DEL MÓDULO (tipografía + escala)
+// ============================================================
+
+.pagos-container,
+.modal-overlay,
+.mini-modal,
+.toast-notification {
+  --ui: 1.1;                       // laptop / pantallas normales
+  font-family: $font-sans;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  @media (min-width: 1600px) { --ui: 1.25; }   // Full HD grande
+  @media (min-width: 1920px) { --ui: 1.35; }   // monitores 1080p/1440p
+  @media (min-width: 2400px) { --ui: 1.6; }    // 2K / 4K
+  @media (min-width: 3200px) { --ui: 2; }      // 4K nativo
+  @media (max-width: 800px)  { --ui: 1; }      // móvil / tablet
+}
+
+// Números con fuente mono y cifras tabulares
+.mono,
+.mini-stat .value,
+.summary-card .amount:not(.status),
+.h-amount,
+.new-balance-preview strong,
+.payment-summary strong,
+.edit-summary-item strong,
+.preview-summary strong,
+.mini-field.danger strong {
+  font-family: $font-mono;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
 
 
 // ============================================================
@@ -88,9 +135,10 @@ $radius-xl: 18px;
 .pagos-container {
   width: 100%;
   min-height: 100%;
-  padding: 24px;
+  padding: s(24);
   background: $bg;
   color: $text;
+  font-size: s(14);
 }
 
 
@@ -103,7 +151,7 @@ $radius-xl: 18px;
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 22px;
+  margin-bottom: s(22);
 }
 
 .header-info {
@@ -112,16 +160,16 @@ $radius-xl: 18px;
   h1 {
     margin: 4px 0 4px;
     color: $navy;
-    font-size: 26px;
-    font-weight: 750;
+    font-size: s(30);
+    font-weight: 800;
     line-height: 1.2;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
 
   p {
     margin: 0;
     color: $text-soft;
-    font-size: 13px;
+    font-size: s(15);
   }
 }
 
@@ -130,16 +178,16 @@ $radius-xl: 18px;
   align-items: center;
   gap: 7px;
   color: $gold;
-  font-size: 11px;
-  font-weight: 750;
+  font-size: s(12);
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .kicker-dot {
-  width: 7px;
-  height: 7px;
-  flex: 0 0 7px;
+  width: s(8);
+  height: s(8);
+  flex: 0 0 auto;
   border-radius: 50%;
   background: $gold;
   box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
@@ -152,8 +200,8 @@ $radius-xl: 18px;
 }
 
 .mini-stat {
-  min-width: 125px;
-  padding: 10px 14px;
+  min-width: s(140);
+  padding: s(12) s(16);
   border: 1px solid $border;
   border-radius: $radius-md;
   background: $surface;
@@ -163,8 +211,8 @@ $radius-xl: 18px;
     display: block;
     margin-bottom: 2px;
     color: $text-muted;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(11);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -172,8 +220,8 @@ $radius-xl: 18px;
   .value {
     display: block;
     color: $navy;
-    font-size: 19px;
-    font-weight: 750;
+    font-size: s(22);
+    font-weight: 700;
   }
 }
 
@@ -185,9 +233,9 @@ $radius-xl: 18px;
 .toolbar {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
-  margin-bottom: 18px;
-  padding: 14px;
+  gap: 12px;
+  margin-bottom: s(18);
+  padding: s(16);
   border: 1px solid $border;
   border-radius: $radius-lg;
   background: $surface;
@@ -206,28 +254,28 @@ $radius-xl: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 17px;
-    height: 17px;
+    width: s(18);
+    height: s(18);
     color: $text-muted;
     transform: translateY(-50%);
     pointer-events: none;
 
     svg {
-      width: 17px !important;
-      height: 17px !important;
+      width: s(18) !important;
+      height: s(18) !important;
     }
   }
 
   input {
     width: 100%;
-    height: 40px;
-    padding: 0 12px 0 38px;
+    height: s(46);
+    padding: 0 12px 0 s(42);
     border: 1px solid $border;
     border-radius: $radius-md;
     outline: none;
     background: #fff;
     color: $text;
-    font-size: 13px;
+    font-size: s(14);
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
     &::placeholder {
@@ -245,26 +293,26 @@ $radius-xl: 18px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  min-width: 125px;
+  min-width: s(140);
 
   label {
     color: $text-soft;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(11);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
   select {
     width: 100%;
-    height: 40px;
-    padding: 0 30px 0 11px;
+    height: s(46);
+    padding: 0 30px 0 12px;
     border: 1px solid $border;
     border-radius: $radius-md;
     outline: none;
     background: #fff;
     color: $text;
-    font-size: 12px;
+    font-size: s(14);
     cursor: pointer;
 
     &:focus {
@@ -290,15 +338,16 @@ $radius-xl: 18px;
 .btn-voucher,
 .btn-edit-payment,
 .btn-delete-payment,
+.btn-pdf,
 .btn-edit-cuota,
 .btn-quick-pay,
 .page-btn {
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   cursor: pointer;
+  text-decoration: none;
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -318,10 +367,7 @@ $radius-xl: 18px;
   }
 }
 
-
-// IMPORTANTÍSIMO:
-// TODOS LOS SVG DE BOTONES QUEDAN CONTROLADOS AQUÍ.
-
+// TODOS LOS SVG DE BOTONES QUEDAN CONTROLADOS AQUÍ
 .btn-primary,
 .btn-secondary,
 .btn-success,
@@ -332,25 +378,25 @@ $radius-xl: 18px;
 .btn-detail,
 .btn-voucher,
 .btn-edit-payment,
-.btn-delete-payment {
-
+.btn-delete-payment,
+.btn-pdf {
   svg {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
+    width: s(17) !important;
+    height: s(17) !important;
+    min-width: s(17) !important;
+    min-height: s(17) !important;
   }
 }
 
 .btn-primary {
-  height: 40px;
-  padding: 0 14px;
+  height: s(46);
+  padding: 0 s(18);
   border: 1px solid $navy;
   border-radius: $radius-md;
   background: $navy;
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(14);
+  font-weight: 600;
   white-space: nowrap;
 
   &:hover:not(:disabled) {
@@ -360,14 +406,14 @@ $radius-xl: 18px;
 }
 
 .btn-secondary {
-  min-height: 38px;
-  padding: 0 13px;
+  min-height: s(42);
+  padding: 0 s(15);
   border: 1px solid $border-dark;
   border-radius: $radius-md;
   background: #fff;
   color: $navy;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(13);
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     border-color: $navy;
@@ -376,13 +422,13 @@ $radius-xl: 18px;
 }
 
 .btn-success {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: s(44);
+  padding: 0 s(18);
   border-radius: $radius-md;
   background: $success;
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(14);
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     background: #166534;
@@ -390,14 +436,14 @@ $radius-xl: 18px;
 }
 
 .btn-cancel {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: s(42);
+  padding: 0 s(16);
   border: 1px solid $border-dark;
   border-radius: $radius-md;
   background: #fff;
   color: $text-soft;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(13);
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     background: #f8fafc;
@@ -406,13 +452,13 @@ $radius-xl: 18px;
 }
 
 .btn-pay {
-  min-height: 38px;
-  padding: 0 15px;
+  min-height: s(42);
+  padding: 0 s(17);
   border-radius: $radius-md;
   background: $navy;
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(13);
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     background: $navy-soft;
@@ -421,13 +467,13 @@ $radius-xl: 18px;
 
 .btn-recalcular {
   width: 100%;
-  min-height: 38px;
+  min-height: s(42);
   padding: 0 12px;
   border-radius: $radius-md;
   background: $navy;
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: s(13);
+  font-weight: 600;
 
   &:hover:not(:disabled) {
     background: $navy-soft;
@@ -436,14 +482,14 @@ $radius-xl: 18px;
 
 .btn-save-payment {
   width: 100%;
-  min-height: 42px;
+  min-height: s(48);
   margin-top: 14px;
   padding: 0 15px;
   border-radius: $radius-md;
   background: $navy;
   color: #fff;
-  font-size: 12px;
-  font-weight: 750;
+  font-size: s(14);
+  font-weight: 700;
 
   &:hover:not(:disabled) {
     background: $navy-soft;
@@ -451,20 +497,20 @@ $radius-xl: 18px;
 }
 
 .btn-detail {
-  min-height: 32px;
-  padding: 0 10px;
+  min-height: s(36);
+  padding: 0 s(12);
   border: 1px solid $border;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #fff;
   color: $navy;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
 
   svg {
-    width: 14px !important;
-    height: 14px !important;
-    min-width: 14px !important;
-    min-height: 14px !important;
+    width: s(15) !important;
+    height: s(15) !important;
+    min-width: s(15) !important;
+    min-height: s(15) !important;
   }
 
   &:hover {
@@ -473,20 +519,39 @@ $radius-xl: 18px;
   }
 }
 
+// Botón PDF (dorado)
+.btn-pdf {
+  min-height: s(38);
+  padding: 0 s(14);
+  border: 1px solid rgba(212, 160, 23, 0.5);
+  border-radius: $radius-md;
+  background: rgba(212, 160, 23, 0.1);
+  color: #8a6508;
+  font-size: s(12);
+  font-weight: 700;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: $gold;
+    border-color: $gold;
+    color: #fff;
+  }
+}
+
 .btn-edit-cuota,
 .btn-quick-pay,
-.btn-danger-icon {
-
-  width: 30px;
-  height: 30px;
+.btn-danger-icon,
+.btn-delete-cuota {
+  width: s(34);
+  height: s(34);
   padding: 0;
-  border-radius: 7px;
+  border-radius: 8px;
 
   svg {
-    width: 15px !important;
-    height: 15px !important;
-    min-width: 15px !important;
-    min-height: 15px !important;
+    width: s(16) !important;
+    height: s(16) !important;
+    min-width: s(16) !important;
+    min-height: s(16) !important;
   }
 }
 
@@ -514,11 +579,11 @@ $radius-xl: 18px;
 .btn-voucher,
 .btn-edit-payment,
 .btn-delete-payment {
-  min-height: 30px;
-  padding: 0 9px;
-  border-radius: 7px;
-  font-size: 10px;
-  font-weight: 700;
+  min-height: s(34);
+  padding: 0 s(11);
+  border-radius: 8px;
+  font-size: s(11);
+  font-weight: 600;
 }
 
 .btn-voucher {
@@ -551,6 +616,23 @@ $radius-xl: 18px;
   }
 }
 
+.btn-danger-icon,
+.btn-delete-cuota {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fecaca;
+  background: $danger-bg;
+  color: $danger;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $danger;
+    color: #fff;
+  }
+}
+
 .w-100 {
   width: 100%;
 }
@@ -567,7 +649,7 @@ $radius-xl: 18px;
 .groups-container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .card {
@@ -586,7 +668,7 @@ $radius-xl: 18px;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 16px;
+  padding: s(16) s(18);
   border-bottom: 1px solid $border;
   background: #fbfcfe;
 }
@@ -594,19 +676,19 @@ $radius-xl: 18px;
 .grupo-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 
   h3 {
     margin: 0 0 2px;
     color: $navy;
-    font-size: 13px;
-    font-weight: 750;
+    font-size: s(16);
+    font-weight: 700;
   }
 
   span {
     color: $text-muted;
-    font-size: 10px;
+    font-size: s(12);
   }
 }
 
@@ -614,26 +696,26 @@ $radius-xl: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  border-radius: 9px;
+  width: s(40);
+  height: s(40);
+  flex: 0 0 auto;
+  border-radius: 10px;
   background: rgba(212, 160, 23, 0.1);
   color: $gold;
 
   svg {
-    width: 17px !important;
-    height: 17px !important;
+    width: s(20) !important;
+    height: s(20) !important;
   }
 }
 
 .grupo-count {
-  padding: 5px 9px;
+  padding: s(6) s(11);
   border-radius: 20px;
   background: #f1f5f9;
   color: $text-soft;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -657,11 +739,11 @@ thead {
 }
 
 th {
-  padding: 10px 14px;
+  padding: s(12) s(16);
   border-bottom: 1px solid $border;
   color: $text-muted;
-  font-size: 9px;
-  font-weight: 750;
+  font-size: s(11);
+  font-weight: 700;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -669,10 +751,10 @@ th {
 }
 
 td {
-  padding: 11px 14px;
+  padding: s(13) s(16);
   border-bottom: 1px solid #eef1f5;
   color: $text-soft;
-  font-size: 12px;
+  font-size: s(14);
   vertical-align: middle;
 }
 
@@ -687,32 +769,32 @@ tbody tr:hover {
 .td-alumno {
   display: flex;
   align-items: center;
-  gap: 9px;
-  min-width: 200px;
+  gap: 11px;
+  min-width: 220px;
 }
 
 .avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
+  width: s(40);
+  height: s(40);
+  flex: 0 0 auto;
   border-radius: 50%;
   background: $navy;
   color: #fff;
-  font-size: 12px;
-  font-weight: 750;
+  font-size: s(14);
+  font-weight: 700;
   text-transform: uppercase;
 }
 
 .avatar-img {
   display: block;
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  min-height: 34px !important;
-  flex: 0 0 34px;
+  width: s(40) !important;
+  height: s(40) !important;
+  min-width: s(40) !important;
+  min-height: s(40) !important;
+  flex: 0 0 auto;
   border: 1px solid $border;
   border-radius: 50%;
   object-fit: cover;
@@ -723,11 +805,11 @@ tbody tr:hover {
 
   .nombre {
     display: block;
-    max-width: 210px;
+    max-width: s(260);
     overflow: hidden;
     color: $text;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: s(14);
+    font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -736,21 +818,22 @@ tbody tr:hover {
     display: block;
     margin-top: 2px;
     color: $text-muted;
-    font-size: 10px;
+    font-size: s(12);
+    font-family: $font-mono;
   }
 }
 
 .curso-tag {
   display: inline-flex;
   align-items: center;
-  max-width: 190px;
-  padding: 4px 8px;
+  max-width: s(240);
+  padding: s(5) s(10);
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   background: #f8fafc;
   color: $navy;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
 }
 
 .fade-in {
@@ -771,10 +854,10 @@ tbody tr:hover {
 }
 
 .status-pill {
-  padding: 5px 8px;
+  padding: s(6) s(11);
   border-radius: 20px;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
 
   &.paid {
     background: $success-bg;
@@ -793,8 +876,8 @@ tbody tr:hover {
 }
 
 .mini-status {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
 
   &.pagado {
     color: $success;
@@ -806,9 +889,9 @@ tbody tr:hover {
 }
 
 .status-dot {
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
+  width: s(7);
+  height: s(7);
+  flex: 0 0 auto;
   border-radius: 50%;
   background: currentColor;
 }
@@ -822,7 +905,7 @@ tbody tr:hover {
 }
 
 .font-bold {
-  font-weight: 750 !important;
+  font-weight: 700 !important;
 }
 
 .text-danger {
@@ -846,24 +929,24 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  margin-top: 18px;
+  gap: 6px;
+  margin-top: s(20);
 }
 
 .page-btn {
-  width: 32px;
-  height: 32px;
+  width: s(38);
+  height: s(38);
   padding: 0;
   border: 1px solid $border;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #fff;
   color: $text-soft;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: s(13);
+  font-weight: 600;
 
   svg {
-    width: 15px !important;
-    height: 15px !important;
+    width: s(17) !important;
+    height: s(17) !important;
   }
 
   &:hover:not(:disabled) {
@@ -888,7 +971,7 @@ tbody tr:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 260px;
+  min-height: s(260);
   border: 1px solid $border;
   border-radius: $radius-lg;
   background: #fff;
@@ -896,13 +979,13 @@ tbody tr:hover {
   p {
     margin: 12px 0 0;
     color: $text-muted;
-    font-size: 12px;
+    font-size: s(14);
   }
 }
 
 .spinner {
-  width: 30px;
-  height: 30px;
+  width: s(34);
+  height: s(34);
   border: 3px solid #e8edf3;
   border-top-color: $gold;
   border-radius: 50%;
@@ -919,7 +1002,7 @@ tbody tr:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 280px;
+  min-height: s(280);
   padding: 30px;
   border: 1px dashed $border-dark;
   border-radius: $radius-lg;
@@ -929,13 +1012,13 @@ tbody tr:hover {
   h3 {
     margin: 12px 0 5px;
     color: $navy;
-    font-size: 15px;
+    font-size: s(18);
   }
 
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 12px;
+    font-size: s(14);
   }
 }
 
@@ -943,15 +1026,15 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 14px;
+  width: s(64);
+  height: s(64);
+  border-radius: 16px;
   background: #f1f5f9;
   color: $text-muted;
 
   svg {
-    width: 30px !important;
-    height: 30px !important;
+    width: s(32) !important;
+    height: s(32) !important;
   }
 }
 
@@ -977,7 +1060,7 @@ tbody tr:hover {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: min(1120px, 100%);
+  width: min(#{s(1120)}, 100%);
   max-height: calc(100vh - 44px);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -988,7 +1071,7 @@ tbody tr:hover {
 }
 
 .wide-modal {
-  width: min(1180px, 100%);
+  width: min(#{s(1180)}, 100%);
 }
 
 
@@ -1001,16 +1084,23 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 76px;
-  padding: 15px 20px;
+  min-height: s(84);
+  padding: s(16) s(22);
   border-bottom: 1px solid $border;
   background: #fff;
+}
+
+.header-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
 }
 
 .user-meta-extended {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 
   .info {
@@ -1020,8 +1110,8 @@ tbody tr:hover {
       margin: 0 0 2px;
       overflow: hidden;
       color: $navy;
-      font-size: 16px;
-      font-weight: 750;
+      font-size: s(19);
+      font-weight: 700;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -1030,7 +1120,7 @@ tbody tr:hover {
       display: block;
       overflow: hidden;
       color: $text-soft;
-      font-size: 11px;
+      font-size: s(13);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -1039,11 +1129,11 @@ tbody tr:hover {
 
 .avatar-lg,
 .avatar-lg-img {
-  width: 46px !important;
-  height: 46px !important;
-  min-width: 46px !important;
-  min-height: 46px !important;
-  flex: 0 0 46px;
+  width: s(54) !important;
+  height: s(54) !important;
+  min-width: s(54) !important;
+  min-height: s(54) !important;
+  flex: 0 0 auto;
   border-radius: 50%;
 }
 
@@ -1053,8 +1143,8 @@ tbody tr:hover {
   justify-content: center;
   background: $navy;
   color: #fff;
-  font-size: 15px;
-  font-weight: 750;
+  font-size: s(18);
+  font-weight: 700;
 }
 
 .avatar-lg-img {
@@ -1066,7 +1156,7 @@ tbody tr:hover {
 .extra-data {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 14px;
+  gap: 10px 16px;
   margin-top: 6px;
 
   span {
@@ -1074,14 +1164,14 @@ tbody tr:hover {
     align-items: center;
     gap: 5px;
     color: $text-muted;
-    font-size: 9px;
+    font-size: s(12);
   }
 
   svg {
-    width: 13px !important;
-    height: 13px !important;
-    min-width: 13px !important;
-    min-height: 13px !important;
+    width: s(14) !important;
+    height: s(14) !important;
+    min-width: s(14) !important;
+    min-height: s(14) !important;
   }
 }
 
@@ -1089,22 +1179,23 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: s(38);
+  height: s(38);
+  flex: 0 0 auto;
   padding: 0;
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: 9px;
   background: #fff;
   color: $text-soft;
+  font-size: s(15);
   cursor: pointer;
   transition: 0.18s ease;
 
   svg {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
+    width: s(18) !important;
+    height: s(18) !important;
+    min-width: s(18) !important;
+    min-height: s(18) !important;
   }
 
   &:hover {
@@ -1119,8 +1210,8 @@ tbody tr:hover {
   display: block;
   margin-bottom: 3px;
   color: $gold;
-  font-size: 9px;
-  font-weight: 750;
+  font-size: s(11);
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1128,17 +1219,17 @@ tbody tr:hover {
 .modal-header h3 {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   margin: 0;
   color: $navy;
-  font-size: 16px;
-  font-weight: 750;
+  font-size: s(19);
+  font-weight: 700;
 
   svg {
-    width: 17px !important;
-    height: 17px !important;
-    min-width: 17px !important;
-    min-height: 17px !important;
+    width: s(20) !important;
+    height: s(20) !important;
+    min-width: s(20) !important;
+    min-height: s(20) !important;
     color: $gold;
   }
 }
@@ -1150,7 +1241,7 @@ tbody tr:hover {
 
 .modal-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 270px;
+  grid-template-columns: minmax(0, 1fr) s(300);
   min-height: 0;
   flex: 1;
   overflow: hidden;
@@ -1167,7 +1258,7 @@ tbody tr:hover {
 .modal-sidebar {
   min-width: 0;
   overflow-y: auto;
-  padding: 16px;
+  padding: s(18);
   border-left: 1px solid $border;
   background: #fafbfc;
 }
@@ -1180,14 +1271,14 @@ tbody tr:hover {
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  padding: 14px 16px;
+  gap: 12px;
+  padding: s(16) s(18);
   border-bottom: 1px solid $border;
 }
 
 .summary-card {
   min-width: 0;
-  padding: 11px 13px;
+  padding: s(13) s(16);
   border: 1px solid $border;
   border-radius: $radius-md;
   background: #fff;
@@ -1196,8 +1287,8 @@ tbody tr:hover {
     display: block;
     margin-bottom: 5px;
     color: $text-muted;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: s(11);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -1206,8 +1297,8 @@ tbody tr:hover {
     display: block;
     overflow: hidden;
     color: $navy;
-    font-size: 17px;
-    font-weight: 750;
+    font-size: s(21);
+    font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -1249,7 +1340,7 @@ tbody tr:hover {
   }
 
   .status {
-    font-size: 14px;
+    font-size: s(17);
   }
 }
 
@@ -1261,7 +1352,7 @@ tbody tr:hover {
 .modal-tabs {
   display: flex;
   gap: 2px;
-  padding: 0 16px;
+  padding: 0 s(18);
   border-bottom: 1px solid $border;
   background: #fff;
 
@@ -1270,21 +1361,21 @@ tbody tr:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    min-height: 44px;
-    padding: 0 11px;
+    gap: 8px;
+    min-height: s(50);
+    padding: 0 s(14);
     border: 0;
     background: transparent;
     color: $text-muted;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: s(13);
+    font-weight: 600;
     cursor: pointer;
 
     svg {
-      width: 16px !important;
-      height: 16px !important;
-      min-width: 16px !important;
-      min-height: 16px !important;
+      width: s(18) !important;
+      height: s(18) !important;
+      min-width: s(18) !important;
+      min-height: s(18) !important;
     }
 
     &::after {
@@ -1340,7 +1431,7 @@ tbody tr:hover {
 }
 
 .tab-content {
-  padding: 16px;
+  padding: s(18);
 }
 
 .section-heading {
@@ -1348,29 +1439,37 @@ tbody tr:hover {
   align-items: flex-start;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 
   h3 {
     margin: 0 0 3px;
     color: $navy;
-    font-size: 14px;
-    font-weight: 750;
+    font-size: s(17);
+    font-weight: 700;
   }
 
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 10px;
+    font-size: s(12);
   }
 }
 
+.section-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .section-total {
-  padding: 5px 8px;
+  padding: s(6) s(11);
   border-radius: 20px;
   background: #f1f5f9;
   color: $text-soft;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: s(12);
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -1390,25 +1489,25 @@ tbody tr:hover {
   min-width: 800px;
 
   th {
-    padding: 9px 10px;
-    font-size: 8px;
+    padding: s(11) s(12);
+    font-size: s(10);
   }
 
   td {
-    padding: 9px 10px;
-    font-size: 10px;
+    padding: s(11) s(12);
+    font-size: s(13);
   }
 }
 
 .tag-concepto {
   display: inline-flex;
   align-items: center;
-  padding: 4px 7px;
+  padding: s(5) s(9);
   border-radius: 5px;
   background: #f1f5f9;
   color: $navy;
-  font-size: 9px;
-  font-weight: 750;
+  font-size: s(11);
+  font-weight: 700;
   white-space: nowrap;
 
   &.matricula {
@@ -1431,7 +1530,7 @@ tbody tr:hover {
   display: block;
   margin-top: 3px;
   color: $text-muted;
-  font-size: 8px;
+  font-size: s(11);
 }
 
 .amount-programmed {
@@ -1443,15 +1542,15 @@ tbody tr:hover {
 }
 
 .table-input {
-  width: 120px;
-  height: 30px;
-  padding: 0 7px;
+  width: s(140);
+  height: s(36);
+  padding: 0 8px;
   border: 1px solid $border;
   border-radius: 6px;
   outline: none;
   background: #fff;
   color: $text;
-  font-size: 10px;
+  font-size: s(12);
 
   &:focus {
     border-color: $gold;
@@ -1463,7 +1562,8 @@ tbody tr:hover {
   white-space: nowrap;
 
   .btn-edit-cuota,
-  .btn-quick-pay {
+  .btn-quick-pay,
+  .btn-delete-cuota {
     display: inline-flex;
     vertical-align: middle;
     margin: 0 2px;
@@ -1484,15 +1584,15 @@ tbody tr:hover {
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .history-item {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: s(40) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 11px;
+  gap: 12px;
+  padding: s(13);
   border: 1px solid $border;
   border-radius: $radius-md;
   background: #fff;
@@ -1508,15 +1608,15 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: s(40);
+  height: s(40);
+  border-radius: 9px;
   background: $success-bg;
   color: $success;
 
   svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: s(18) !important;
+    height: s(18) !important;
   }
 }
 
@@ -1527,8 +1627,8 @@ tbody tr:hover {
     display: block;
     overflow: hidden;
     color: $navy;
-    font-size: 11px;
-    font-weight: 750;
+    font-size: s(14);
+    font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -1537,22 +1637,22 @@ tbody tr:hover {
 .h-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 8px 14px;
   margin-top: 5px;
 
   span {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     color: $text-muted;
-    font-size: 8px;
+    font-size: s(11);
   }
 
   svg {
-    width: 12px !important;
-    height: 12px !important;
-    min-width: 12px !important;
-    min-height: 12px !important;
+    width: s(13) !important;
+    height: s(13) !important;
+    min-width: s(13) !important;
+    min-height: s(13) !important;
   }
 }
 
@@ -1560,12 +1660,12 @@ tbody tr:hover {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 7px;
+  gap: 8px;
 }
 
 .h-amount {
-  font-size: 12px;
-  font-weight: 750;
+  font-size: s(15);
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -1573,7 +1673,7 @@ tbody tr:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 5px;
+  gap: 6px;
 }
 
 .empty-mini {
@@ -1581,7 +1681,7 @@ tbody tr:hover {
   border: 1px dashed $border-dark;
   border-radius: $radius-md;
   color: $text-muted;
-  font-size: 11px;
+  font-size: s(13);
   text-align: center;
 }
 
@@ -1591,9 +1691,9 @@ tbody tr:hover {
 // ============================================================
 
 .payment-card {
-  max-width: 680px;
+  max-width: s(720);
   margin: 0 auto;
-  padding: 18px;
+  padding: s(22);
   border: 1px solid $border;
   border-radius: $radius-lg;
   background: #fff;
@@ -1603,20 +1703,20 @@ tbody tr:hover {
 .payment-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 20px;
 
   h3 {
     margin: 0 0 2px;
     color: $navy;
-    font-size: 14px;
-    font-weight: 750;
+    font-size: s(17);
+    font-weight: 700;
   }
 
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 10px;
+    font-size: s(12);
   }
 }
 
@@ -1624,16 +1724,16 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  border-radius: 9px;
+  width: s(44);
+  height: s(44);
+  flex: 0 0 auto;
+  border-radius: 10px;
   background: $info-bg;
   color: $info;
 
   svg {
-    width: 18px !important;
-    height: 18px !important;
+    width: s(21) !important;
+    height: s(21) !important;
   }
 }
 
@@ -1645,39 +1745,39 @@ tbody tr:hover {
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .form-group,
 .mini-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 14px;
 
   label {
     color: $text-soft;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(12);
+    font-weight: 600;
   }
 
   > small {
     color: $text-muted;
-    font-size: 9px;
+    font-size: s(11);
   }
 
   input,
   select,
   textarea {
     width: 100%;
-    min-height: 38px;
-    padding: 0 10px;
+    min-height: s(44);
+    padding: 0 12px;
     border: 1px solid $border;
-    border-radius: 7px;
+    border-radius: 8px;
     outline: none;
     background: #fff;
     color: $text;
-    font-size: 11px;
+    font-size: s(14);
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
     &:focus {
@@ -1687,10 +1787,10 @@ tbody tr:hover {
   }
 
   input[type="file"] {
-    min-height: 38px;
-    padding: 8px;
+    min-height: s(44);
+    padding: 9px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: s(12);
   }
 }
 
@@ -1698,9 +1798,9 @@ tbody tr:hover {
   display: flex;
   align-items: stretch;
   overflow: hidden;
-  min-height: 38px;
+  min-height: s(44);
   border: 1px solid $border;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #fff;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
@@ -1713,61 +1813,64 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 34px;
-    padding: 0 8px;
+    min-width: s(40);
+    padding: 0 10px;
     border-right: 1px solid $border;
     background: #f8fafc;
     color: $text-soft;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(13);
+    font-weight: 600;
+    font-family: $font-mono;
   }
 
   input {
-    min-height: 36px;
+    min-height: s(42);
     border: 0;
     border-radius: 0;
     box-shadow: none !important;
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
   }
 }
 
 .money-input-large {
-  min-height: 44px;
+  min-height: s(52);
 
   > span {
-    min-width: 42px;
-    font-size: 12px;
+    min-width: s(48);
+    font-size: s(15);
   }
 
   input {
-    min-height: 42px;
-    font-size: 15px;
-    font-weight: 700;
+    min-height: s(50);
+    font-size: s(18);
+    font-weight: 600;
   }
 }
 
 .payment-summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 16px;
 
   > div {
-    padding: 10px;
+    padding: s(12);
     border: 1px solid $border;
-    border-radius: 8px;
+    border-radius: 9px;
     background: #fafbfc;
 
     span {
       display: block;
       margin-bottom: 4px;
       color: $text-muted;
-      font-size: 9px;
+      font-size: s(11);
     }
 
     strong {
       display: block;
       color: $navy;
-      font-size: 14px;
+      font-size: s(17);
     }
   }
 }
@@ -1778,8 +1881,8 @@ tbody tr:hover {
 // ============================================================
 
 .sidebar-section {
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
   border-bottom: 1px solid $border;
 
   &:last-child {
@@ -1792,14 +1895,14 @@ tbody tr:hover {
 .sidebar-title {
   margin: 0 0 8px;
   color: $navy;
-  font-size: 11px;
-  font-weight: 750;
+  font-size: s(14);
+  font-weight: 700;
 }
 
 .sidebar-description {
-  margin: 0 0 11px;
+  margin: 0 0 12px;
   color: $text-muted;
-  font-size: 9px;
+  font-size: s(12);
   line-height: 1.5;
 }
 
@@ -1807,24 +1910,24 @@ tbody tr:hover {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 9px 10px;
-  margin-bottom: 7px;
+  padding: s(11) s(12);
+  margin-bottom: 8px;
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: 9px;
   background: #fff;
 
   .label {
     color: $text-muted;
-    font-size: 8px;
-    font-weight: 700;
+    font-size: s(10);
+    font-weight: 600;
     text-transform: uppercase;
   }
 
   strong {
     overflow: hidden;
     color: $text;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(13);
+    font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -1847,10 +1950,10 @@ tbody tr:hover {
   .btn-secondary,
   .btn-primary {
     svg {
-      width: 15px !important;
-      height: 15px !important;
-      min-width: 15px !important;
-      min-height: 15px !important;
+      width: s(16) !important;
+      height: s(16) !important;
+      min-width: s(16) !important;
+      min-height: s(16) !important;
     }
   }
 }
@@ -1880,7 +1983,7 @@ tbody tr:hover {
 }
 
 .mini-content {
-  width: min(450px, 100%);
+  width: min(#{s(480)}, 100%);
   max-height: calc(100vh - 36px);
   overflow: hidden;
   border: 1px solid $border;
@@ -1895,29 +1998,36 @@ tbody tr:hover {
   align-items: flex-start;
   justify-content: space-between;
   gap: 15px;
-  padding: 16px 18px;
+  padding: s(18) s(20);
   border-bottom: 1px solid $border;
 
   h3 {
     margin: 0;
     color: $navy;
-    font-size: 15px;
-    font-weight: 750;
+    font-size: s(18);
+    font-weight: 700;
+  }
+
+  small {
+    display: block;
+    margin-top: 3px;
+    color: $text-muted;
+    font-size: s(12);
   }
 
   > button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    flex: 0 0 28px;
+    width: s(34);
+    height: s(34);
+    flex: 0 0 auto;
     padding: 0;
     border: 1px solid $border;
-    border-radius: 7px;
+    border-radius: 8px;
     background: #fff;
     color: $text-muted;
-    font-size: 14px;
+    font-size: s(16);
     cursor: pointer;
 
     &:hover {
@@ -1930,14 +2040,14 @@ tbody tr:hover {
 .mini-body {
   max-height: calc(100vh - 190px);
   overflow-y: auto;
-  padding: 16px 18px;
+  padding: s(18) s(20);
 }
 
 .mini-footer {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 12px 18px;
+  padding: s(14) s(20);
   border-top: 1px solid $border;
   background: #fafbfc;
 }
@@ -1945,43 +2055,37 @@ tbody tr:hover {
 .mini-user {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px;
-  margin-bottom: 13px;
+  gap: 11px;
+  padding: s(11);
+  margin-bottom: 14px;
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: 9px;
   background: #fafbfc;
-
-  .avatar {
-    width: 34px;
-    height: 34px;
-    flex-basis: 34px;
-  }
 
   strong {
     display: block;
     color: $navy;
-    font-size: 11px;
+    font-size: s(14);
   }
 
   span {
     display: block;
     margin-top: 2px;
     color: $text-muted;
-    font-size: 9px;
+    font-size: s(12);
   }
 }
 
 .mini-field {
-  margin-bottom: 11px;
+  margin-bottom: 12px;
 
   &.danger {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
+    padding: s(12);
     border: 1px solid #fee2e2;
-    border-radius: 8px;
+    border-radius: 9px;
     background: $danger-bg;
 
     label {
@@ -1991,7 +2095,7 @@ tbody tr:hover {
 
     strong {
       color: $danger;
-      font-size: 14px;
+      font-size: s(17);
     }
   }
 }
@@ -2002,43 +2106,43 @@ tbody tr:hover {
 // ============================================================
 
 .edit-cuota-modal {
-  width: min(500px, 100%);
+  width: min(#{s(540)}, 100%);
 }
 
 .edit-cuota-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-  margin-bottom: 15px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .edit-summary-item {
-  padding: 9px;
+  padding: s(11);
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: 9px;
   background: #fafbfc;
 
   span {
     display: block;
     margin-bottom: 4px;
     color: $text-muted;
-    font-size: 8px;
+    font-size: s(11);
   }
 
   strong {
     display: block;
     color: $navy;
-    font-size: 12px;
+    font-size: s(15);
   }
 }
 
 .edit-cuota-input {
-  margin-bottom: 13px;
+  margin-bottom: 14px;
 
   > small {
     margin-top: 2px;
     color: $text-muted;
-    font-size: 9px;
+    font-size: s(11);
   }
 }
 
@@ -2047,55 +2151,55 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  padding: 11px 12px;
-  margin-bottom: 13px;
+  padding: s(13) s(14);
+  margin-bottom: 14px;
   border: 1px solid #dbeafe;
-  border-radius: 9px;
+  border-radius: 10px;
   background: $info-bg;
 
   span {
     display: block;
     color: $info;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(13);
+    font-weight: 600;
   }
 
   small {
     display: block;
     margin-top: 2px;
     color: #60a5fa;
-    font-size: 8px;
+    font-size: s(11);
   }
 
   strong {
     color: $info;
-    font-size: 16px;
+    font-size: s(19);
   }
 }
 
 .edit-cuota-warning {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
-  padding: 10px;
+  gap: 10px;
+  padding: s(12);
   border: 1px solid #fde68a;
-  border-radius: 8px;
+  border-radius: 9px;
   background: $warning-bg;
 
   .warning-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
+    width: s(26);
+    height: s(26);
+    flex: 0 0 auto;
     color: $warning;
 
     svg {
-      width: 18px !important;
-      height: 18px !important;
-      min-width: 18px !important;
-      min-height: 18px !important;
+      width: s(20) !important;
+      height: s(20) !important;
+      min-width: s(20) !important;
+      min-height: s(20) !important;
     }
   }
 
@@ -2103,13 +2207,13 @@ tbody tr:hover {
     display: block;
     margin-bottom: 2px;
     color: $warning;
-    font-size: 10px;
+    font-size: s(13);
   }
 
   p {
     margin: 0;
     color: #92400e;
-    font-size: 9px;
+    font-size: s(12);
     line-height: 1.5;
   }
 }
@@ -2127,8 +2231,8 @@ tbody tr:hover {
     display: block;
     margin-bottom: 6px;
     color: $text-soft;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: s(12);
+    font-weight: 600;
   }
 }
 
@@ -2138,11 +2242,11 @@ tbody tr:hover {
   > svg {
     position: absolute;
     top: 50%;
-    left: 11px;
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
+    left: 12px;
+    width: s(18) !important;
+    height: s(18) !important;
+    min-width: s(18) !important;
+    min-height: s(18) !important;
     color: $text-muted;
     transform: translateY(-50%);
     pointer-events: none;
@@ -2150,13 +2254,13 @@ tbody tr:hover {
 
   input {
     width: 100%;
-    height: 40px;
-    padding: 0 12px 0 36px;
+    height: s(46);
+    padding: 0 12px 0 s(40);
     border: 1px solid $border;
-    border-radius: 8px;
+    border-radius: 9px;
     outline: none;
     color: $text;
-    font-size: 11px;
+    font-size: s(14);
 
     &:focus {
       border-color: $gold;
@@ -2171,12 +2275,12 @@ tbody tr:hover {
   right: 0;
   left: 0;
   z-index: 30;
-  max-height: 250px;
+  max-height: s(280);
   overflow-y: auto;
   padding: 5px;
   margin: 0;
   border: 1px solid $border;
-  border-radius: 9px;
+  border-radius: 10px;
   background: #fff;
   box-shadow: $shadow-md;
   list-style: none;
@@ -2184,9 +2288,9 @@ tbody tr:hover {
   li {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 8px;
-    border-radius: 7px;
+    gap: 10px;
+    padding: s(10);
+    border-radius: 8px;
     cursor: pointer;
     transition: background 0.15s ease;
 
@@ -2196,11 +2300,11 @@ tbody tr:hover {
     }
 
     > img {
-      width: 32px !important;
-      height: 32px !important;
-      min-width: 32px !important;
-      min-height: 32px !important;
-      flex: 0 0 32px;
+      width: s(38) !important;
+      height: s(38) !important;
+      min-width: s(38) !important;
+      min-height: s(38) !important;
+      flex: 0 0 auto;
       border-radius: 50%;
       object-fit: cover;
     }
@@ -2215,7 +2319,7 @@ tbody tr:hover {
     display: block;
     overflow: hidden;
     color: $navy;
-    font-size: 10px;
+    font-size: s(13);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -2224,17 +2328,17 @@ tbody tr:hover {
     display: block;
     margin-top: 2px;
     color: $text-muted;
-    font-size: 8px;
+    font-size: s(11);
   }
 }
 
 .badge {
-  padding: 4px 7px;
+  padding: s(5) s(9);
   border-radius: 5px;
   background: #f1f5f9;
   color: $navy;
-  font-size: 8px;
-  font-weight: 700;
+  font-size: s(11);
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -2249,13 +2353,13 @@ tbody tr:hover {
 .grid-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 14px;
+  gap: 16px;
 }
 
 .config-panel,
 .preview-panel {
   min-width: 0;
-  padding: 15px;
+  padding: s(17);
   border: 1px solid $border;
   border-radius: $radius-lg;
   background: #fff;
@@ -2264,20 +2368,20 @@ tbody tr:hover {
 .panel-heading {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
+  gap: 10px;
   margin-bottom: 14px;
 
   h4 {
     margin: 0 0 2px;
     color: $navy;
-    font-size: 12px;
-    font-weight: 750;
+    font-size: s(15);
+    font-weight: 700;
   }
 
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 9px;
+    font-size: s(12);
   }
 }
 
@@ -2285,32 +2389,32 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  border-radius: 7px;
+  width: s(36);
+  height: s(36);
+  flex: 0 0 auto;
+  border-radius: 8px;
   background: rgba(212, 160, 23, 0.1);
   color: $gold;
 
   svg {
-    width: 15px !important;
-    height: 15px !important;
-    min-width: 15px !important;
-    min-height: 15px !important;
+    width: s(18) !important;
+    height: s(18) !important;
+    min-width: s(18) !important;
+    min-height: s(18) !important;
   }
 }
 
 .builder-divider {
   height: 1px;
-  margin: 15px 0;
+  margin: 16px 0;
   background: $border;
 }
 
 .add-cuota-grid {
   display: grid;
-  grid-template-columns: 65px minmax(130px, 1fr) 100px auto;
+  grid-template-columns: s(70) minmax(150px, 1fr) s(120) auto;
   align-items: end;
-  gap: 7px;
+  gap: 8px;
 
   > div {
     min-width: 0;
@@ -2320,18 +2424,18 @@ tbody tr:hover {
     display: block;
     margin-bottom: 5px;
     color: $text-soft;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: s(11);
+    font-weight: 600;
   }
 
   input {
     width: 100%;
-    height: 36px;
-    padding: 0 8px;
+    height: s(42);
+    padding: 0 9px;
     border: 1px solid $border;
-    border-radius: 7px;
+    border-radius: 8px;
     outline: none;
-    font-size: 10px;
+    font-size: s(13);
 
     &:focus {
       border-color: $gold;
@@ -2340,13 +2444,13 @@ tbody tr:hover {
   }
 
   .btn-secondary {
-    min-height: 36px;
+    min-height: s(42);
 
     svg {
-      width: 14px !important;
-      height: 14px !important;
-      min-width: 14px !important;
-      min-height: 14px !important;
+      width: s(16) !important;
+      height: s(16) !important;
+      min-width: s(16) !important;
+      min-height: s(16) !important;
     }
   }
 }
@@ -2354,34 +2458,34 @@ tbody tr:hover {
 .preview-summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
+  gap: 8px;
   margin-bottom: 12px;
 
   > div {
-    padding: 9px;
+    padding: s(11);
     border: 1px solid $border;
-    border-radius: 8px;
+    border-radius: 9px;
     background: #fafbfc;
 
     span {
       display: block;
       margin-bottom: 3px;
       color: $text-muted;
-      font-size: 8px;
+      font-size: s(11);
     }
 
     strong {
       color: $navy;
-      font-size: 13px;
+      font-size: s(16);
     }
   }
 }
 
 .preview-table-wrapper {
-  max-height: 290px;
+  max-height: s(320);
   overflow: auto;
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: 9px;
 
   table {
     min-width: 460px;
@@ -2389,8 +2493,8 @@ tbody tr:hover {
 
   th,
   td {
-    padding: 8px;
-    font-size: 9px;
+    padding: s(10);
+    font-size: s(12);
   }
 }
 
@@ -2398,27 +2502,13 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 23px;
-  height: 23px;
+  width: s(28);
+  height: s(28);
   border-radius: 6px;
   background: $navy;
   color: #fff;
-  font-size: 9px;
-  font-weight: 750;
-}
-
-.btn-danger-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #fecaca;
-  background: $danger-bg;
-  color: $danger;
-  cursor: pointer;
-
-  &:hover {
-    background: #fee2e2;
-  }
+  font-size: s(12);
+  font-weight: 700;
 }
 
 .builder-empty {
@@ -2426,7 +2516,7 @@ tbody tr:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 230px;
+  min-height: s(240);
   padding: 30px;
   border: 1px dashed $border-dark;
   border-radius: $radius-lg;
@@ -2437,29 +2527,29 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: s(56);
+    height: s(56);
+    border-radius: 14px;
     background: #f1f5f9;
     color: $text-muted;
 
     svg {
-      width: 25px !important;
-      height: 25px !important;
+      width: s(28) !important;
+      height: s(28) !important;
     }
   }
 
   h4 {
     margin: 10px 0 4px;
     color: $navy;
-    font-size: 13px;
+    font-size: s(16);
   }
 
   p {
-    max-width: 320px;
+    max-width: 360px;
     margin: 0;
     color: $text-muted;
-    font-size: 10px;
+    font-size: s(13);
     line-height: 1.5;
   }
 }
@@ -2469,7 +2559,7 @@ tbody tr:hover {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  padding: 12px 18px;
+  padding: s(14) s(20);
   border-top: 1px solid $border;
   background: #fafbfc;
 }
@@ -2486,9 +2576,9 @@ tbody tr:hover {
   z-index: 3000;
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: min(360px, calc(100vw - 30px));
-  padding: 11px 13px;
+  gap: 12px;
+  width: min(#{s(400)}, calc(100vw - 30px));
+  padding: s(13) s(15);
   border: 1px solid $border;
   border-radius: 10px;
   background: #fff;
@@ -2527,12 +2617,12 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  width: s(36);
+  height: s(36);
+  flex: 0 0 auto;
   border-radius: 50%;
   background: #f1f5f9;
-  font-size: 14px;
+  font-size: s(17);
   font-weight: 800;
 }
 
@@ -2543,13 +2633,13 @@ tbody tr:hover {
     display: block;
     margin-bottom: 2px;
     color: $text;
-    font-size: 11px;
+    font-size: s(14);
   }
 
   span {
     display: block;
     color: $text-soft;
-    font-size: 10px;
+    font-size: s(13);
     line-height: 1.4;
   }
 }
@@ -2639,7 +2729,7 @@ tbody tr:hover {
   }
 
   .modal-layout {
-    grid-template-columns: minmax(0, 1fr) 240px;
+    grid-template-columns: minmax(0, 1fr) 260px;
   }
 
   .grid-layout {
@@ -2647,7 +2737,7 @@ tbody tr:hover {
   }
 
   .preview-table-wrapper {
-    max-height: 240px;
+    max-height: 260px;
   }
 }
 
@@ -2721,13 +2811,13 @@ tbody tr:hover {
   }
 
   .history-item {
-    grid-template-columns: 34px minmax(0, 1fr);
+    grid-template-columns: 40px minmax(0, 1fr);
   }
 
   .h-actions {
     grid-column: 1 / -1;
     align-items: flex-start;
-    padding-left: 44px;
+    padding-left: 50px;
   }
 
   .history-buttons {
@@ -2740,6 +2830,10 @@ tbody tr:hover {
 
   .add-cuota-grid > button {
     width: 100%;
+  }
+
+  .btn-pdf .pdf-label {
+    display: none;
   }
 }
 
@@ -2755,24 +2849,11 @@ tbody tr:hover {
   }
 
   .header-info h1 {
-    font-size: 22px;
+    font-size: 24px;
   }
 
   .grupo-header {
     padding: 12px;
-  }
-
-  .grupo-title {
-    .grupo-icon {
-      width: 30px;
-      height: 30px;
-      flex-basis: 30px;
-
-      svg {
-        width: 15px !important;
-        height: 15px !important;
-      }
-    }
   }
 
   .summary-grid {
@@ -2789,7 +2870,7 @@ tbody tr:hover {
 
     button {
       min-width: max-content;
-      padding: 0 9px;
+      padding: 0 10px;
     }
   }
 
@@ -2799,7 +2880,7 @@ tbody tr:hover {
 
   .section-heading {
     flex-direction: column;
-    gap: 7px;
+    gap: 8px;
   }
 
   .form-row {
@@ -2818,14 +2899,7 @@ tbody tr:hover {
     width: calc(100vw - 24px);
   }
 
-  .mini-footer {
-    flex-direction: column-reverse;
-
-    button {
-      width: 100%;
-    }
-  }
-
+  .mini-footer,
   .modal-footer {
     flex-direction: column-reverse;
 
@@ -2852,11 +2926,7 @@ tbody tr:hover {
   }
 
   .header-info h1 {
-    font-size: 20px;
-  }
-
-  .header-info p {
-    font-size: 11px;
+    font-size: 22px;
   }
 
   .grupo-count {
@@ -2871,12 +2941,9 @@ tbody tr:hover {
     max-height: 96vh;
   }
 
-  .user-meta-extended {
-
-    .info h3 {
-      max-width: 190px;
-      font-size: 14px;
-    }
+  .user-meta-extended .info h3 {
+    max-width: 180px;
+    font-size: 16px;
   }
 
   .extra-data {
@@ -2884,19 +2951,9 @@ tbody tr:hover {
     gap: 4px;
   }
 
-  .modal-tabs {
-
-    button {
-      font-size: 9px;
-      gap: 5px;
-
-      svg {
-        width: 14px !important;
-        height: 14px !important;
-        min-width: 14px !important;
-        min-height: 14px !important;
-      }
-    }
+  .modal-tabs button {
+    font-size: 12px;
+    gap: 5px;
   }
 
   .add-cuota-grid {
@@ -2916,29 +2973,5 @@ tbody tr:hover {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
-  }
-}
-
-.btn-delete-cuota {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    background: #dc2626;
-    color: #fff;
   }
 }
