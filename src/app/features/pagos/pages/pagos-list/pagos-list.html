@@ -1,91 +1,46 @@
 <section class="pagos-container">
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
+  <!-- ========================= HEADER ========================= -->
   <header class="main-header">
-
     <div class="header-info">
-
       <div class="header-kicker">
         <span class="kicker-dot"></span>
         Administración financiera
       </div>
-
       <h1>Gestión de Pagos</h1>
-
-      <p>
-        Panel de control y seguimiento financiero de alumnos
-      </p>
-
+      <p>Panel de control y seguimiento financiero de alumnos</p>
     </div>
 
-
-    <div
-      class="header-actions"
-      *ngIf="!loading"
-    >
-
+    <div class="header-actions" *ngIf="!loading">
       <div class="mini-stat">
-
-        <span class="label">
-          Total Alumnos
-        </span>
-
-        <span class="value">
-          {{ alumnosFiltrados.length }}
-        </span>
-
+        <span class="label">Total Alumnos</span>
+        <span class="value">{{ alumnosFiltrados.length }}</span>
       </div>
-
     </div>
-
   </header>
 
 
-  <!-- =========================================================
-       TOOLBAR
-       ========================================================= -->
+  <!-- ========================= TOOLBAR ========================= -->
   <div class="toolbar">
 
-    <!-- BUSCADOR -->
     <div class="search-box">
-
       <span class="icon" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m20 20-3.5-3.5"></path>
         </svg>
       </span>
-
       <input
         type="text"
         placeholder="Buscar alumno o programa..."
         [(ngModel)]="search"
         (ngModelChange)="filtrar()"
       />
-
     </div>
 
-
-    <!-- MES -->
     <div class="filter-box">
-
-      <label>
-        Mes
-      </label>
-
-      <select
-        [(ngModel)]="mesMatricula"
-        (ngModelChange)="filtrar()"
-      >
+      <label>Mes</label>
+      <select [(ngModel)]="mesMatricula" (ngModelChange)="filtrar()">
         <option value="">Todos</option>
         <option value="1">Enero</option>
         <option value="2">Febrero</option>
@@ -100,232 +55,86 @@
         <option value="11">Noviembre</option>
         <option value="12">Diciembre</option>
       </select>
-
     </div>
 
-
-    <!-- AÑO -->
     <div class="filter-box">
-
-      <label>
-        Año
-      </label>
-
-      <select
-        [(ngModel)]="anioMatricula"
-        (ngModelChange)="filtrar()"
-      >
-
-        <option value="">
-          Todos
-        </option>
-
-        <option
-          *ngFor="let anio of aniosDisponibles"
-          [value]="anio"
-        >
-          {{ anio }}
-        </option>
-
+      <label>Año</label>
+      <select [(ngModel)]="anioMatricula" (ngModelChange)="filtrar()">
+        <option value="">Todos</option>
+        <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
       </select>
-
     </div>
 
-
-    <!-- ESTADO -->
     <div class="filter-box">
-
-      <label>
-        Estado
-      </label>
-
-      <select
-        [(ngModel)]="estado"
-        (ngModelChange)="filtrar()"
-      >
-
-        <option value="">
-          Todos los registros
-        </option>
-
-        <option value="PENDIENTE">
-          🔴 Solo Pendientes
-        </option>
-
-        <option value="PAGADO">
-          🟢 Solo Pagados
-        </option>
-
+      <label>Estado</label>
+      <select [(ngModel)]="estado" (ngModelChange)="filtrar()">
+        <option value="">Todos los registros</option>
+        <option value="PENDIENTE">🔴 Solo Pendientes</option>
+        <option value="PAGADO">🟢 Solo Pagados</option>
       </select>
-
     </div>
 
-
-    <!-- ACCIÓN -->
-    <button
-      type="button"
-      class="btn-primary"
-      (click)="abrirModalPlanManual()"
-    >
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
+    <button type="button" class="btn-primary" (click)="abrirModalPlanManual()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 5v14"></path>
         <path d="M5 12h14"></path>
       </svg>
-
       Asignar plan de pagos
-
     </button>
 
   </div>
 
 
-  <!-- =========================================================
-       LOADING
-       ========================================================= -->
-  <div
-    class="loader-container"
-    *ngIf="loading"
-  >
-
+  <!-- ========================= LOADING ========================= -->
+  <div class="loader-container" *ngIf="loading">
     <div class="spinner"></div>
-
-    <p>
-      Sincronizando datos...
-    </p>
-
+    <p>Sincronizando datos...</p>
   </div>
 
 
-  <!-- =========================================================
-       LISTADO
-       ========================================================= -->
-  <div
-    *ngIf="gruposPaginados.length && !loading"
-    class="groups-container"
-  >
+  <!-- ========================= LISTADO ========================= -->
+  <div *ngIf="gruposPaginados.length && !loading" class="groups-container">
 
-    <div
-      class="card table-wrapper"
-      *ngFor="let grupo of gruposPaginados"
-    >
+    <div class="card table-wrapper" *ngFor="let grupo of gruposPaginados">
 
-      <!-- HEADER GRUPO -->
       <div class="grupo-header">
-
         <div class="grupo-title">
-
           <div class="grupo-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <rect
-                x="3"
-                y="4"
-                width="18"
-                height="17"
-                rx="2"
-              ></rect>
-
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="17" rx="2"></rect>
               <path d="M16 2v4"></path>
               <path d="M8 2v4"></path>
               <path d="M3 10h18"></path>
             </svg>
-
           </div>
-
           <div>
-
-            <h3>
-              {{ grupo.mes }}
-            </h3>
-
-            <span>
-              Registro de matrículas
-            </span>
-
+            <h3>{{ grupo.mes }}</h3>
+            <span>Registro de matrículas</span>
           </div>
-
         </div>
-
 
         <div class="grupo-count">
-
           {{ grupo.alumnos.length }}
-
-          {{
-            grupo.alumnos.length === 1
-              ? 'alumno'
-              : 'alumnos'
-          }}
-
+          {{ grupo.alumnos.length === 1 ? 'alumno' : 'alumnos' }}
         </div>
-
       </div>
 
-
-      <!-- TABLA -->
       <div class="table-scroll">
-
         <table>
-
           <thead>
-
             <tr>
-
-              <th>
-                Alumno
-              </th>
-
-              <th>
-                Programa / Curso
-              </th>
-
-              <th class="text-right">
-                Deuda Total
-              </th>
-
-              <th>
-                Estado de Cuenta
-              </th>
-
-              <th class="text-center">
-                Acciones
-              </th>
-
+              <th>Alumno</th>
+              <th>Programa / Curso</th>
+              <th class="text-right">Deuda Total</th>
+              <th>Estado de Cuenta</th>
+              <th class="text-center">Acciones</th>
             </tr>
-
           </thead>
 
-
           <tbody>
+            <tr *ngFor="let a of grupo.alumnos; trackBy: trackByAlumno" class="fade-in">
 
-            <tr
-              *ngFor="
-                let a of grupo.alumnos;
-                trackBy: trackByAlumno
-              "
-              class="fade-in"
-            >
-
-              <!-- ALUMNO -->
               <td class="td-alumno">
-
                 <img
                   *ngIf="a.foto_url; else avatarDefault"
                   [src]="a.foto_url"
@@ -333,60 +142,29 @@
                   class="avatar-img"
                   alt="Foto"
                 />
-
                 <ng-template #avatarDefault>
-
-                  <div class="avatar">
-
-                    {{
-                      a.alumno?.charAt(0) || '?'
-                    }}
-
-                  </div>
-
+                  <div class="avatar">{{ a.alumno?.charAt(0) || '?' }}</div>
                 </ng-template>
 
-
                 <div class="alumno-info">
-
-                  <span class="nombre">
-                    {{ a.alumno }}
-                  </span>
-
-                  <small>
-                    Matrícula #{{ a.matricula_id }}
-                  </small>
-
+                  <span class="nombre">{{ a.alumno }}</span>
+                  <small>Matrícula #{{ a.matricula_id }}</small>
                 </div>
-
               </td>
 
-
-              <!-- PROGRAMA -->
               <td>
-
-                <span class="curso-tag">
-                  {{ a.plan_nombre }}
-                </span>
-
+                <span class="curso-tag">{{ a.plan_nombre }}</span>
               </td>
 
-
-              <!-- DEUDA -->
               <td
-                class="text-right font-bold"
+                class="text-right font-bold mono"
                 [class.text-danger]="a.tiene_deuda"
                 [class.text-success]="!a.tiene_deuda"
               >
-
                 {{ formatMonto(a.total_deuda) }}
-
               </td>
 
-
-              <!-- ESTADO -->
               <td>
-
                 <span
                   [class]="
                     a.estado_financiero === 'AL_DIA'
@@ -396,9 +174,7 @@
                         : 'status-pill pending'
                   "
                 >
-
                   <span class="status-dot"></span>
-
                   {{
                     a.estado_financiero === 'AL_DIA'
                       ? 'Al día'
@@ -406,83 +182,36 @@
                         ? 'Por vencer'
                         : 'Moroso'
                   }}
-
                 </span>
-
               </td>
 
-
-              <!-- ACCIONES -->
               <td class="text-center">
-
-                <button
-                  type="button"
-                  class="btn-detail"
-                  (click)="verDetalle(a.matricula_id)"
-                >
-
+                <button type="button" class="btn-detail" (click)="verDetalle(a.matricula_id)">
                   Ver detalles
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M5 12h14"></path>
                     <path d="m13 6 6 6-6 6"></path>
                   </svg>
-
                 </button>
-
               </td>
 
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
 
     </div>
-
   </div>
 
 
-  <!-- =========================================================
-       PAGINACIÓN
-       ========================================================= -->
-  <div
-    class="pagination-container"
-    *ngIf="totalPaginas > 1"
-  >
+  <!-- ========================= PAGINACIÓN ========================= -->
+  <div class="pagination-container" *ngIf="totalPaginas > 1">
 
-    <button
-      type="button"
-      class="page-btn"
-      (click)="paginaAnterior()"
-      [disabled]="paginaActual === 1"
-      aria-label="Página anterior"
-    >
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
+    <button type="button" class="page-btn" (click)="paginaAnterior()" [disabled]="paginaActual === 1" aria-label="Página anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m15 18-6-6 6-6"></path>
       </svg>
-
     </button>
-
 
     <button
       type="button"
@@ -494,65 +223,25 @@
       {{ p }}
     </button>
 
-
-    <button
-      type="button"
-      class="page-btn"
-      (click)="paginaSiguiente()"
-      [disabled]="paginaActual === totalPaginas"
-      aria-label="Página siguiente"
-    >
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
+    <button type="button" class="page-btn" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas" aria-label="Página siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m9 18 6-6-6-6"></path>
       </svg>
-
     </button>
 
   </div>
 
 
-  <!-- =========================================================
-       EMPTY STATE
-       ========================================================= -->
-  <div
-    class="empty-state"
-    *ngIf="!gruposPaginados.length && !loading"
-  >
-
+  <!-- ========================= EMPTY STATE ========================= -->
+  <div class="empty-state" *ngIf="!gruposPaginados.length && !loading">
     <div class="empty-icon">
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 7h5l2 2h11v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h3"></path>
       </svg>
-
     </div>
-
-    <h3>
-      No se encontraron resultados
-    </h3>
-
-    <p>
-      Intenta ajustar los filtros o el término de búsqueda.
-    </p>
-
+    <h3>No se encontraron resultados</h3>
+    <p>Intenta ajustar los filtros o el término de búsqueda.</p>
   </div>
 
 </section>
@@ -561,16 +250,9 @@
 <!-- =============================================================
      MODAL DETALLE DEL ALUMNO
      ============================================================= -->
-<div
-  class="modal-overlay"
-  *ngIf="modalOpen"
-  (click)="cerrarModal()"
->
+<div class="modal-overlay" *ngIf="modalOpen" (click)="cerrarModal()">
 
-  <div
-    class="modal-content"
-    (click)="$event.stopPropagation()"
-  >
+  <div class="modal-content" (click)="$event.stopPropagation()">
 
     <!-- MODAL HEADER -->
     <header class="modal-header">
@@ -578,113 +260,68 @@
       <div class="user-meta-extended">
 
         <img
-          *ngIf="
-            alumnoSeleccionado?.foto_url;
-            else avatarDefaultLg
-          "
+          *ngIf="alumnoSeleccionado?.foto_url; else avatarDefaultLg"
           [src]="alumnoSeleccionado.foto_url"
           (error)="alumnoSeleccionado.foto_url=null"
           class="avatar-lg-img"
           alt="Foto"
         />
-
         <ng-template #avatarDefaultLg>
-
-          <div class="avatar-lg">
-
-            {{
-              alumnoSeleccionado?.alumno?.charAt(0) || '?'
-            }}
-
-          </div>
-
+          <div class="avatar-lg">{{ alumnoSeleccionado?.alumno?.charAt(0) || '?' }}</div>
         </ng-template>
 
-
         <div class="info">
-
-          <h3>
-            {{ alumnoSeleccionado?.alumno }}
-          </h3>
-
-          <span class="subtext">
-            {{ alumnoSeleccionado?.plan_nombre }}
-          </span>
+          <h3>{{ alumnoSeleccionado?.alumno }}</h3>
+          <span class="subtext">{{ alumnoSeleccionado?.plan_nombre }}</span>
 
           <div class="extra-data">
-
             <span>
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.08 5.18 2 2 0 0 1 5.06 3h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L9 10.73a16 16 0 0 0 4.27 4.27l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 21 15.9z"></path>
               </svg>
-
               {{ alumnoSeleccionado?.telefono || 'Sin teléfono' }}
-
             </span>
 
-
             <span>
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect
-                  x="3"
-                  y="4"
-                  width="18"
-                  height="17"
-                  rx="2"
-                ></rect>
-
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="17" rx="2"></rect>
                 <path d="M16 2v4"></path>
                 <path d="M8 2v4"></path>
                 <path d="M3 10h18"></path>
               </svg>
-
               Matrícula #{{ alumnoSeleccionado?.matricula_id }}
-
             </span>
-
           </div>
-
         </div>
-
       </div>
 
+      <div class="header-btns">
 
-      <button
-        type="button"
-        class="btn-close"
-        (click)="cerrarModal()"
-        aria-label="Cerrar"
-      >
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+        <!-- ★ NUEVO: REPORTE PDF COMPLETO -->
+        <button
+          type="button"
+          class="btn-pdf"
+          (click)="generarReportePDF('completo')"
+          [disabled]="generandoPdf"
+          title="Descargar estado de cuenta + historial en PDF"
         >
-          <path d="M18 6 6 18"></path>
-          <path d="m6 6 12 12"></path>
-        </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <path d="M14 2v6h6"></path>
+            <path d="M12 12v6"></path>
+            <path d="m9 15 3 3 3-3"></path>
+          </svg>
+          <span class="pdf-label">{{ generandoPdf ? 'Generando...' : 'Reporte PDF' }}</span>
+        </button>
 
-      </button>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+
+      </div>
 
     </header>
 
@@ -698,49 +335,24 @@
         <div class="summary-grid">
 
           <div class="summary-card danger">
-
-            <span class="label">
-              Deuda Pendiente
-            </span>
-
-            <span class="amount">
-              {{ formatMonto(getTotalDeuda()) }}
-            </span>
-
+            <span class="label">Deuda Pendiente</span>
+            <span class="amount">{{ formatMonto(getTotalDeuda()) }}</span>
           </div>
-
 
           <div class="summary-card info">
-
-            <span class="label">
-              Total Cuotas
-            </span>
-
-            <span class="amount">
-              {{ getTotalCuotas() }}
-            </span>
-
+            <span class="label">Total Cuotas</span>
+            <span class="amount">{{ getTotalCuotas() }}</span>
           </div>
-
 
           <div
             class="summary-card"
             [class.success]="getTotalDeuda() === 0"
             [class.warning]="getTotalDeuda() > 0"
           >
-
-            <span class="label">
-              Estado Global
-            </span>
-
+            <span class="label">Estado Global</span>
             <span class="amount status">
-              {{
-                getTotalDeuda() > 0
-                  ? 'Con deuda'
-                  : 'Al día'
-              }}
+              {{ getTotalDeuda() > 0 ? 'Con deuda' : 'Al día' }}
             </span>
-
           </div>
 
         </div>
@@ -749,20 +361,8 @@
         <!-- TABS -->
         <nav class="modal-tabs">
 
-          <button
-            type="button"
-            (click)="cambiarTab('cuotas')"
-            [class.active]="tab === 'cuotas'"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+          <button type="button" (click)="cambiarTab('cuotas')" [class.active]="tab === 'cuotas'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M8 6h13"></path>
               <path d="M8 12h13"></path>
               <path d="M8 18h13"></path>
@@ -770,65 +370,25 @@
               <path d="M3 12h.01"></path>
               <path d="M3 18h.01"></path>
             </svg>
-
             Estado de cuenta
-
           </button>
 
-
-          <button
-            type="button"
-            (click)="cambiarTab('historial')"
-            [class.active]="tab === 'historial'"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+          <button type="button" (click)="cambiarTab('historial')" [class.active]="tab === 'historial'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 12a9 9 0 1 0 3-6.7"></path>
               <path d="M3 4v5h5"></path>
               <path d="M12 7v5l3 2"></path>
             </svg>
-
             Historial de pagos
-
           </button>
 
-
-          <button
-            type="button"
-            (click)="cambiarTab('pago')"
-            [class.active]="tab === 'pago'"
-            class="tab-highlight"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect
-                x="2"
-                y="5"
-                width="20"
-                height="14"
-                rx="2"
-              ></rect>
-
+          <button type="button" (click)="cambiarTab('pago')" [class.active]="tab === 'pago'" class="tab-highlight">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
               <path d="M2 10h20"></path>
               <path d="M6 15h4"></path>
             </svg>
-
             Registrar pago
-
           </button>
 
         </nav>
@@ -837,79 +397,49 @@
         <!-- MODAL BODY -->
         <main class="modal-body">
 
-          <!-- =================================================
-               TAB CUOTAS
-               ================================================= -->
-          <div
-            *ngIf="tab === 'cuotas'"
-            class="tab-content animate-in"
-          >
+          <!-- ================= TAB CUOTAS ================= -->
+          <div *ngIf="tab === 'cuotas'" class="tab-content animate-in">
 
             <div class="section-heading">
-
               <div>
-
-                <h3>
-                  Estado de cuenta
-                </h3>
-
-                <p>
-                  Gestiona las cuotas y montos programados.
-                </p>
-
+                <h3>Estado de cuenta</h3>
+                <p>Gestiona las cuotas y montos programados.</p>
               </div>
 
-              <div class="section-total">
-                {{ cuotasDetalle.length }}
-                registros
+              <div class="section-tools">
+                <button
+                  type="button"
+                  class="btn-pdf"
+                  (click)="generarReportePDF('cuotas')"
+                  [disabled]="generandoPdf"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 2v6h6"></path>
+                    <path d="M12 12v6"></path>
+                    <path d="m9 15 3 3 3-3"></path>
+                  </svg>
+                  <span class="pdf-label">PDF</span>
+                </button>
+                <div class="section-total">{{ cuotasDetalle.length }} registros</div>
               </div>
-
             </div>
 
-
             <div class="inner-table-wrapper">
-
               <table class="inner-table">
-
                 <thead>
-
                   <tr>
-
-                    <th>
-                      Concepto
-                    </th>
-
-                    <th>
-                      Vencimiento
-                    </th>
-
-                    <th class="text-right">
-                      Programado
-                    </th>
-
-                    <th class="text-right">
-                      Pagado
-                    </th>
-
-                    <th class="text-right">
-                      Saldo
-                    </th>
-
-                    <th>
-                      Estado
-                    </th>
-
-                    <th class="text-center">
-                      Acción
-                    </th>
-
+                    <th>Concepto</th>
+                    <th>Vencimiento</th>
+                    <th class="text-right">Programado</th>
+                    <th class="text-right">Pagado</th>
+                    <th class="text-right">Saldo</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acción</th>
                   </tr>
-
                 </thead>
 
-
                 <tbody>
-
                   <tr
                     *ngFor="let c of cuotasOrdenadas"
                     [class.row-paid]="c.saldo_pendiente <= 0"
@@ -918,7 +448,6 @@
                   >
 
                     <td>
-
                       <span
                         class="tag-concepto"
                         [class.matricula]="c.concepto_codigo === 'MATRICULA'"
@@ -927,170 +456,67 @@
                       >
                         {{ c.concepto_nombre }}
                       </span>
-
-                      <small
-                        class="quota-number"
-                        *ngIf="c.numero_cuota"
-                      >
-                        Cuota #{{ c.numero_cuota }}
-                      </small>
-
+                      <small class="quota-number" *ngIf="c.numero_cuota">Cuota #{{ c.numero_cuota }}</small>
                     </td>
 
-
-                    <td
-                      (click)="$event.stopPropagation()"
-                    >
-
-                      <span
-                        *ngIf="
-                          !editandoFechas ||
-                          c.saldo_pendiente <= 0
-                        "
-                      >
+                    <td class="mono" (click)="$event.stopPropagation()">
+                      <span *ngIf="!editandoFechas || c.saldo_pendiente <= 0">
                         {{ formatFecha(c.fecha_vencimiento) }}
                       </span>
-
-
                       <input
-                        *ngIf="
-                          editandoFechas &&
-                          c.saldo_pendiente > 0
-                        "
+                        *ngIf="editandoFechas && c.saldo_pendiente > 0"
                         type="date"
                         [(ngModel)]="c.fecha_vencimiento"
                         class="table-input"
                         (click)="$event.stopPropagation()"
                       />
-
                     </td>
 
-
-                    <td class="text-right">
-
-                      <strong class="amount-programmed">
-                        {{ formatMonto(c.monto_programado) }}
-                      </strong>
-
+                    <td class="text-right mono">
+                      <strong class="amount-programmed">{{ formatMonto(c.monto_programado) }}</strong>
                     </td>
 
-
-                    <td class="text-right">
-
-                      <span class="amount-paid">
-                        {{ formatMonto(c.monto_pagado || 0) }}
-                      </span>
-
+                    <td class="text-right mono">
+                      <span class="amount-paid">{{ formatMonto(c.monto_pagado || 0) }}</span>
                     </td>
-
 
                     <td
-                      class="text-right"
+                      class="text-right mono"
                       [class.text-danger]="c.saldo_pendiente > 0"
                       [class.text-success]="c.saldo_pendiente <= 0"
                     >
-
-                      <strong>
-                        {{ formatMonto(c.saldo_pendiente) }}
-                      </strong>
-
+                      <strong>{{ formatMonto(c.saldo_pendiente) }}</strong>
                     </td>
 
-
                     <td>
-
                       <span
                         class="mini-status"
                         [class.pagado]="c.estado === 'PAGADO'"
                         [class.pendiente]="c.estado !== 'PAGADO'"
                       >
-
                         <span class="status-dot"></span>
-
                         {{ c.estado }}
-
                       </span>
-
                     </td>
 
+                    <td class="text-center quota-actions" (click)="$event.stopPropagation()">
 
-                    <td
-                      class="text-center quota-actions"
-                      (click)="$event.stopPropagation()"
-                    >
-
-                      <button
-                        type="button"
-                        class="btn-edit-cuota"
-                        title="Editar monto de esta cuota"
-                        (click)="abrirEditarMontoCuota(c)"
-                      >
-
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path
-                            d="M12 20h9"
-                          ></path>
-
-                          <path
-                            d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
-                          ></path>
+                      <button type="button" class="btn-edit-cuota" title="Editar monto de esta cuota" (click)="abrirEditarMontoCuota(c)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
                         </svg>
-
                       </button>
 
-
-                      <button
-                        type="button"
-                        class="btn-quick-pay"
-                        *ngIf="c.saldo_pendiente > 0"
-                        title="Registrar pago"
-                        (click)="abrirMiniPago(c)"
-                      >
-
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <rect
-                            x="2"
-                            y="5"
-                            width="20"
-                            height="14"
-                            rx="2"
-                          ></rect>
-
+                      <button type="button" class="btn-quick-pay" *ngIf="c.saldo_pendiente > 0" title="Registrar pago" (click)="abrirMiniPago(c)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                           <path d="M2 10h20"></path>
                         </svg>
-
                       </button>
 
-
-                      <button
-                        type="button"
-                        class="btn-delete-cuota"
-                        *ngIf="!(c.monto_pagado > 0)"
-                        title="Eliminar cuota"
-                        (click)="eliminarCuotaDelPlan(c)"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
+                      <button type="button" class="btn-delete-cuota" *ngIf="!(c.monto_pagado > 0)" title="Eliminar cuota" (click)="eliminarCuotaDelPlan(c)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M3 6h18"></path>
                           <path d="M8 6V4h8v2"></path>
                           <path d="M19 6v14H5V6"></path>
@@ -1103,189 +529,90 @@
 
                   </tr>
 
-
                   <tr *ngIf="!cuotasOrdenadas.length">
-
-                    <td
-                      colspan="7"
-                      class="empty-table"
-                    >
-                      No existen cuotas registradas.
-                    </td>
-
+                    <td colspan="7" class="empty-table">No existen cuotas registradas.</td>
                   </tr>
-
                 </tbody>
-
               </table>
-
             </div>
 
           </div>
 
 
-          <!-- =================================================
-               TAB HISTORIAL
-               ================================================= -->
-          <div
-            *ngIf="tab === 'historial'"
-            class="tab-content animate-in"
-          >
+          <!-- ================= TAB HISTORIAL ================= -->
+          <div *ngIf="tab === 'historial'" class="tab-content animate-in">
 
             <div class="section-heading">
-
               <div>
-
-                <h3>
-                  Historial de pagos
-                </h3>
-
-                <p>
-                  Movimientos registrados para esta matrícula.
-                </p>
-
+                <h3>Historial de pagos</h3>
+                <p>Movimientos registrados para esta matrícula.</p>
               </div>
 
-              <div class="section-total">
-                {{ historial.length }}
-                movimientos
+              <div class="section-tools">
+                <!-- ★ NUEVO: PDF SOLO HISTORIAL -->
+                <button
+                  type="button"
+                  class="btn-pdf"
+                  (click)="generarReportePDF('historial')"
+                  [disabled]="generandoPdf || !historial.length"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 2v6h6"></path>
+                    <path d="M12 12v6"></path>
+                    <path d="m9 15 3 3 3-3"></path>
+                  </svg>
+                  <span class="pdf-label">{{ generandoPdf ? 'Generando...' : 'Exportar historial PDF' }}</span>
+                </button>
+                <div class="section-total">{{ historial.length }} movimientos</div>
               </div>
-
             </div>
 
+            <div class="history-list" *ngIf="historial.length">
 
-            <div
-              class="history-list"
-              *ngIf="historial.length"
-            >
-
-              <div
-                class="history-item"
-                *ngFor="let h of historial"
-              >
+              <div class="history-item" *ngFor="let h of historial">
 
                 <div class="history-icon">
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect
-                      x="2"
-                      y="5"
-                      width="20"
-                      height="14"
-                      rx="2"
-                    ></rect>
-
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                     <path d="M2 10h20"></path>
                   </svg>
-
                 </div>
 
-
                 <div class="h-info">
-
-                  <strong>
-                    {{ h.concepto_nombre }}
-                  </strong>
+                  <strong>{{ h.concepto_nombre }}</strong>
 
                   <div class="h-meta">
-
                     <span>
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <rect
-                          x="3"
-                          y="4"
-                          width="18"
-                          height="17"
-                          rx="2"
-                        ></rect>
-
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="17" rx="2"></rect>
                         <path d="M16 2v4"></path>
                         <path d="M8 2v4"></path>
                         <path d="M3 10h18"></path>
                       </svg>
-
                       {{ formatFecha(h.fecha_pago) }}
-
                     </span>
 
-
                     <span>
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <rect
-                          x="2"
-                          y="5"
-                          width="20"
-                          height="14"
-                          rx="2"
-                        ></rect>
-
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                         <path d="M2 10h20"></path>
                       </svg>
-
                       {{ h.metodo_pago || 'Sin método' }}
-
                     </span>
-
 
                     <span>
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path
-                          d="M20 21a8 8 0 0 0-16 0"
-                        ></path>
-
-                        <circle
-                          cx="12"
-                          cy="7"
-                          r="4"
-                        ></circle>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21a8 8 0 0 0-16 0"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
                       </svg>
-
                       {{ h.usuario || 'Admin' }}
-
                     </span>
-
                   </div>
-
                 </div>
 
-
                 <div class="h-actions">
-
-                  <div class="h-amount text-success">
-                    + {{ formatMonto(h.monto) }}
-                  </div>
-
+                  <div class="h-amount text-success">+ {{ formatMonto(h.monto) }}</div>
 
                   <div class="history-buttons">
 
@@ -1296,332 +623,129 @@
                       rel="noopener noreferrer"
                       class="btn-voucher"
                     >
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path
-                          d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
-                        ></path>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                       </svg>
-
                       Ver comprobante
-
                     </a>
 
-
-                    <button
-                      type="button"
-                      class="btn-edit-payment"
-                      (click)="editarPago(h)"
-                    >
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
+                    <button type="button" class="btn-edit-payment" (click)="editarPago(h)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h9"></path>
-
-                        <path
-                          d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
-                        ></path>
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
                       </svg>
-
                       Editar
-
                     </button>
 
-
-                    <button
-                      type="button"
-                      class="btn-delete-payment"
-                      (click)="eliminarPago(h.id)"
-                    >
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
+                    <button type="button" class="btn-delete-payment" (click)="eliminarPago(h.id)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 6h18"></path>
                         <path d="M8 6V4h8v2"></path>
                         <path d="M19 6v14H5V6"></path>
                         <path d="M10 11v5"></path>
                         <path d="M14 11v5"></path>
                       </svg>
-
                       Eliminar
-
                     </button>
 
                   </div>
-
                 </div>
 
               </div>
 
             </div>
 
-
-            <div
-              class="empty-mini"
-              *ngIf="!historial.length"
-            >
+            <div class="empty-mini" *ngIf="!historial.length">
               No existen movimientos registrados.
             </div>
 
           </div>
 
 
-          <!-- =================================================
-               TAB REGISTRAR PAGO
-               ================================================= -->
-          <div
-            *ngIf="tab === 'pago'"
-            class="tab-content animate-in"
-          >
+          <!-- ================= TAB REGISTRAR PAGO ================= -->
+          <div *ngIf="tab === 'pago'" class="tab-content animate-in">
 
             <div class="payment-card">
 
               <div class="payment-header">
-
                 <div class="payment-icon">
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect
-                      x="2"
-                      y="5"
-                      width="20"
-                      height="14"
-                      rx="2"
-                    ></rect>
-
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                     <path d="M2 10h20"></path>
                   </svg>
-
                 </div>
-
                 <div>
-
-                  <h3>
-                    Registrar pago
-                  </h3>
-
-                  <p>
-                    Selecciona una cuota pendiente.
-                  </p>
-
+                  <h3>Registrar pago</h3>
+                  <p>Selecciona una cuota pendiente.</p>
                 </div>
-
               </div>
-
 
               <div class="form-group">
-
-                <label>
-                  Cuota
-                </label>
-
-                <select
-                  [(ngModel)]="formPago.cuota_id"
-                  (change)="onSelectCuota()"
-                >
-
-                  <option [ngValue]="null">
-                    Seleccionar cuota...
-                  </option>
-
-                  <option
-                    *ngFor="let c of cuotasPendientes"
-                    [ngValue]="c.id"
-                  >
-
+                <label>Cuota</label>
+                <select [(ngModel)]="formPago.cuota_id" (change)="onSelectCuota()">
+                  <option [ngValue]="null">Seleccionar cuota...</option>
+                  <option *ngFor="let c of cuotasPendientes" [ngValue]="c.id">
                     {{ c.concepto_nombre }}
-
-                    {{
-                      c.numero_cuota
-                        ? ' #' + c.numero_cuota
-                        : ''
-                    }}
-
+                    {{ c.numero_cuota ? ' #' + c.numero_cuota : '' }}
                     -
-
                     {{ formatMonto(c.saldo_pendiente) }}
-
                   </option>
-
                 </select>
-
               </div>
 
-
-              <div
-                class="payment-summary"
-                *ngIf="formPago.cuota_id"
-              >
-
+              <div class="payment-summary" *ngIf="formPago.cuota_id">
                 <div>
-
-                  <span>
-                    Saldo actual
-                  </span>
-
-                  <strong>
-                    {{
-                      formatMonto(
-                        getCuotaSeleccionada()?.saldo_pendiente || 0
-                      )
-                    }}
-                  </strong>
-
+                  <span>Saldo actual</span>
+                  <strong>{{ formatMonto(getCuotaSeleccionada()?.saldo_pendiente || 0) }}</strong>
                 </div>
-
-
                 <div>
-
-                  <span>
-                    Después del pago
-                  </span>
-
+                  <span>Después del pago</span>
                   <strong class="text-success">
-
                     {{
                       formatMonto(
                         Math.max(
-                          (getCuotaSeleccionada()?.saldo_pendiente || 0)
-                          -
-                          (formPago.monto || 0),
+                          (getCuotaSeleccionada()?.saldo_pendiente || 0) - (formPago.monto || 0),
                           0
                         )
                       )
                     }}
-
                   </strong>
-
                 </div>
-
               </div>
-
 
               <div class="form-group">
-
-                <label>
-                  Monto a pagar
-                </label>
-
+                <label>Monto a pagar</label>
                 <div class="money-input">
-
-                  <span>
-                    S/
-                  </span>
-
-                  <input
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    [(ngModel)]="formPago.monto"
-                    placeholder="0.00"
-                  />
-
+                  <span>S/</span>
+                  <input type="number" min="0.01" step="0.01" [(ngModel)]="formPago.monto" placeholder="0.00" />
                 </div>
-
               </div>
-
 
               <div class="form-row">
-
                 <div class="form-group">
-
-                  <label>
-                    Método
-                  </label>
-
-                  <select
-                    [(ngModel)]="formPago.metodo_pago"
-                  >
-
-                    <option value="EFECTIVO">
-                      💵 Efectivo
-                    </option>
-
-                    <option value="YAPE">
-                      📱 Yape
-                    </option>
-
-                    <option value="PLIN">
-                      💳 Plin
-                    </option>
-
-                    <option value="TRANSFERENCIA">
-                      🏦 Transferencia
-                    </option>
-
+                  <label>Método</label>
+                  <select [(ngModel)]="formPago.metodo_pago">
+                    <option value="EFECTIVO">💵 Efectivo</option>
+                    <option value="YAPE">📱 Yape</option>
+                    <option value="PLIN">💳 Plin</option>
+                    <option value="TRANSFERENCIA">🏦 Transferencia</option>
                   </select>
-
                 </div>
-
 
                 <div class="form-group">
-
-                  <label>
-                    Voucher
-                  </label>
-
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    (change)="onFileSelected($event)"
-                  />
-
-                  <small>
-                    PDF o imagen
-                  </small>
-
+                  <label>Voucher</label>
+                  <input type="file" accept=".pdf,image/*" (change)="onFileSelected($event)" />
+                  <small>PDF o imagen</small>
                 </div>
-
               </div>
 
-
-              <button
-                type="button"
-                class="btn-save-payment"
-                (click)="registrarPago()"
-              >
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
+              <button type="button" class="btn-save-payment" (click)="registrarPago()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
                   <path d="M17 21v-8H7v8"></path>
                   <path d="M7 3v5h8"></path>
                 </svg>
-
                 Registrar pago
-
               </button>
 
             </div>
@@ -1629,180 +753,66 @@
           </div>
 
 
-          <!-- =================================================
-               MINI MODAL PAGO RÁPIDO
-               ================================================= -->
-          <div
-            class="mini-modal"
-            *ngIf="miniModalOpen"
-          >
+          <!-- ================= MINI MODAL PAGO RÁPIDO ================= -->
+          <div class="mini-modal" *ngIf="miniModalOpen">
 
             <div class="mini-content">
 
               <div class="mini-header">
-
                 <div>
-
-                  <span class="mini-kicker">
-                    Operación financiera
-                  </span>
-
-                  <h3>
-                    Pago rápido
-                  </h3>
-
+                  <span class="mini-kicker">Operación financiera</span>
+                  <h3>Pago rápido</h3>
                 </div>
-
-                <button
-                  type="button"
-                  (click)="miniModalOpen=false"
-                  aria-label="Cerrar"
-                >
-                  ✕
-                </button>
-
+                <button type="button" (click)="miniModalOpen=false" aria-label="Cerrar">✕</button>
               </div>
-
 
               <div class="mini-body">
 
                 <div class="mini-user">
-
-                  <div class="avatar">
-                    {{ miniPago?.alumno?.charAt(0) || '?' }}
-                  </div>
-
+                  <div class="avatar">{{ miniPago?.alumno?.charAt(0) || '?' }}</div>
                   <div>
-
-                    <strong>
-                      {{ miniPago?.alumno }}
-                    </strong>
-
-                    <span>
-                      {{ miniPago?.concepto_nombre }}
-                    </span>
-
+                    <strong>{{ miniPago?.alumno }}</strong>
+                    <span>{{ miniPago?.concepto_nombre }}</span>
                   </div>
-
                 </div>
-
 
                 <div class="mini-field danger">
-
-                  <label>
-                    Saldo pendiente
-                  </label>
-
-                  <strong>
-                    {{ formatMonto(miniPago?.saldo_pendiente || 0) }}
-                  </strong>
-
+                  <label>Saldo pendiente</label>
+                  <strong>{{ formatMonto(miniPago?.saldo_pendiente || 0) }}</strong>
                 </div>
 
-
                 <div class="mini-field">
-
-                  <label>
-                    Monto
-                  </label>
-
-                  <input
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    [(ngModel)]="miniPagoForm.monto"
-                  />
-
+                  <label>Monto</label>
+                  <input type="number" min="0.01" step="0.01" [(ngModel)]="miniPagoForm.monto" />
                 </div>
 
-
                 <div class="mini-field">
-
-                  <label>
-                    Comprobante
-                  </label>
-
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    (change)="onMiniFileSelected($event)"
-                  />
-
+                  <label>Comprobante</label>
+                  <input type="file" accept=".pdf,image/*" (change)="onMiniFileSelected($event)" />
                 </div>
 
-
                 <div class="mini-field">
-
-                  <label>
-                    Método
-                  </label>
-
-                  <select
-                    [(ngModel)]="miniPagoForm.metodo_pago"
-                  >
-
-                    <option value="EFECTIVO">
-                      💵 Efectivo
-                    </option>
-
-                    <option value="YAPE">
-                      📱 Yape
-                    </option>
-
-                    <option value="PLIN">
-                      💳 Plin
-                    </option>
-
-                    <option value="TRANSFERENCIA">
-                      🏦 Transferencia
-                    </option>
-
+                  <label>Método</label>
+                  <select [(ngModel)]="miniPagoForm.metodo_pago">
+                    <option value="EFECTIVO">💵 Efectivo</option>
+                    <option value="YAPE">📱 Yape</option>
+                    <option value="PLIN">💳 Plin</option>
+                    <option value="TRANSFERENCIA">🏦 Transferencia</option>
                   </select>
-
                 </div>
 
               </div>
 
-
               <div class="mini-footer">
+                <button type="button" class="btn-cancel" (click)="miniModalOpen=false">Cancelar</button>
 
-                <button
-                  type="button"
-                  class="btn-cancel"
-                  (click)="miniModalOpen=false"
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  type="button"
-                  class="btn-pay"
-                  (click)="pagarMini()"
-                >
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect
-                      x="2"
-                      y="5"
-                      width="20"
-                      height="14"
-                      rx="2"
-                    ></rect>
-
+                <button type="button" class="btn-pay" (click)="pagarMini()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                     <path d="M2 10h20"></path>
                   </svg>
-
                   Registrar pago
-
                 </button>
-
               </div>
 
             </div>
@@ -1817,182 +827,86 @@
       <!-- SIDEBAR -->
       <aside class="modal-sidebar">
 
-        <!-- DETALLES -->
         <div class="sidebar-section">
-
-          <h4 class="sidebar-title">
-            Detalles de matrícula
-          </h4>
-
+          <h4 class="sidebar-title">Detalles de matrícula</h4>
 
           <div class="detail-card">
-
-            <span class="label">
-              Alumno
-            </span>
-
-            <strong>
-              {{ alumnoSeleccionado?.alumno }}
-            </strong>
-
+            <span class="label">Alumno</span>
+            <strong>{{ alumnoSeleccionado?.alumno }}</strong>
           </div>
-
 
           <div class="detail-card">
-
-            <span class="label">
-              Programa
-            </span>
-
-            <strong>
-              {{ alumnoSeleccionado?.plan_nombre }}
-            </strong>
-
+            <span class="label">Programa</span>
+            <strong>{{ alumnoSeleccionado?.plan_nombre }}</strong>
           </div>
-
 
           <div class="detail-card">
-
-            <span class="label">
-              Máquinas
-            </span>
-
-            <strong>
-              {{ alumnoSeleccionado?.maquinas || '-' }}
-            </strong>
-
+            <span class="label">Máquinas</span>
+            <strong>{{ alumnoSeleccionado?.maquinas || '-' }}</strong>
           </div>
-
         </div>
 
 
         <!-- AGREGAR CUOTA -->
         <div class="sidebar-section agregar-cuota-box">
-        
-          <h4 class="sidebar-title">
-            Añadir cuota
-          </h4>
-        
-          <p class="sidebar-description">
-            Agrega una cuota extra a este plan de pagos.
-          </p>
-        
+
+          <h4 class="sidebar-title">Añadir cuota</h4>
+          <p class="sidebar-description">Agrega una cuota extra a este plan de pagos.</p>
+
           <div class="recalculo-grid">
-        
+
             <div class="form-group">
               <label>Vencimiento</label>
-              <input
-                type="date"
-                [(ngModel)]="formNuevaCuota.fecha_vencimiento"
-              />
+              <input type="date" [(ngModel)]="formNuevaCuota.fecha_vencimiento" />
             </div>
-        
+
             <div class="form-group">
               <label>Monto</label>
               <div class="money-input">
                 <span>S/</span>
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  placeholder="0.00"
-                  [(ngModel)]="formNuevaCuota.monto"
-                />
+                <input type="number" min="0.01" step="0.01" placeholder="0.00" [(ngModel)]="formNuevaCuota.monto" />
               </div>
             </div>
-        
+
             <div class="form-group">
               <label>Observación (opcional)</label>
-              <input
-                type="text"
-                placeholder="Ej: Cuota adicional"
-                [(ngModel)]="formNuevaCuota.observaciones"
-              />
+              <input type="text" placeholder="Ej: Cuota adicional" [(ngModel)]="formNuevaCuota.observaciones" />
             </div>
-        
+
           </div>
-        
-          <button
-            type="button"
-            class="btn-recalcular"
-            (click)="agregarCuotaAlPlan()"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+
+          <button type="button" class="btn-recalcular" (click)="agregarCuotaAlPlan()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 5v14"></path>
               <path d="M5 12h14"></path>
             </svg>
-        
             Añadir cuota
           </button>
-        
+
         </div>
 
 
         <!-- FECHAS -->
         <div class="sidebar-section acciones-fechas">
 
-          <h4 class="sidebar-title">
-            Gestión de fechas
-          </h4>
+          <h4 class="sidebar-title">Gestión de fechas</h4>
+          <p class="sidebar-description">Modifica las fechas de vencimiento de las cuotas pendientes.</p>
 
-          <p class="sidebar-description">
-            Modifica las fechas de vencimiento de las cuotas pendientes.
-          </p>
-
-
-          <button
-            type="button"
-            class="btn-secondary w-100"
-            (click)="toggleEditarFechas()"
-          >
-
-            <svg
-              *ngIf="!editandoFechas"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+          <button type="button" class="btn-secondary w-100" (click)="toggleEditarFechas()">
+            <svg *ngIf="!editandoFechas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"></path>
               <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
             </svg>
-
             {{ editandoFechas ? 'Cancelar edición' : 'Editar fechas' }}
-
           </button>
 
-
-          <button
-            type="button"
-            *ngIf="editandoFechas"
-            class="btn-primary w-100 mt-2"
-            (click)="guardarFechas()"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+          <button type="button" *ngIf="editandoFechas" class="btn-primary w-100 mt-2" (click)="guardarFechas()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
               <path d="M17 21v-8H7v8"></path>
               <path d="M7 3v5h8"></path>
             </svg>
-
             Guardar fechas
-
           </button>
 
         </div>
@@ -2009,50 +923,24 @@
 <!-- =============================================================
      MODAL PLAN MANUAL
      ============================================================= -->
-<div
-  class="modal-overlay"
-  *ngIf="modalManualAbierto"
->
+<div class="modal-overlay" *ngIf="modalManualAbierto">
 
   <div class="modal-content wide-modal">
 
     <header class="modal-header">
 
       <div>
-
-        <span class="modal-kicker">
-          Administración
-        </span>
-
+        <span class="modal-kicker">Administración</span>
         <h3>
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3v18"></path>
             <path d="M3 12h18"></path>
           </svg>
-
           Constructor de Plan Manual
-
         </h3>
-
       </div>
 
-
-      <button
-        type="button"
-        class="btn-close"
-        (click)="cerrarModalPlanManual()"
-        aria-label="Cerrar"
-      >
-        ✕
-      </button>
+      <button type="button" class="btn-close" (click)="cerrarModalPlanManual()" aria-label="Cerrar">✕</button>
 
     </header>
 
@@ -2062,89 +950,39 @@
       <!-- BUSCAR ALUMNO -->
       <div class="search-section">
 
-        <label>
-          Buscar alumno
-        </label>
+        <label>Buscar alumno</label>
 
         <div class="search-manual">
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="m20 20-3.5-3.5"></path>
           </svg>
-
-          <input
-            type="text"
-            placeholder="DNI o nombre del alumno..."
-            (input)="buscarMatricula($event)"
-          />
-
+          <input type="text" placeholder="DNI o nombre del alumno..." (input)="buscarMatricula($event)" />
         </div>
 
-
-        <ul
-          class="search-results"
-          *ngIf="resultadosBusqueda.length > 0"
-        >
-
+        <ul class="search-results" *ngIf="resultadosBusqueda.length > 0">
           <li
             *ngFor="let res of resultadosBusqueda"
             (click)="seleccionarMatricula(res)"
-            [class.selected]="
-              matriculaSeleccionada?.matricula_id ===
-              res.matricula_id
-            "
+            [class.selected]="matriculaSeleccionada?.matricula_id === res.matricula_id"
           >
-
-            <img
-              [src]="
-                res.foto_url ||
-                'assets/default-avatar.png'
-              "
-              alt="Foto"
-            />
-
+            <img [src]="res.foto_url || 'assets/default-avatar.png'" alt="Foto" />
 
             <div class="result-info">
-
-              <strong>
-                {{ res.nombres }} {{ res.apellidos }}
-              </strong>
-
-              <span>
-                Documento:
-                {{ res.numero_documento || res.dni || '-' }}
-              </span>
-
+              <strong>{{ res.nombres }} {{ res.apellidos }}</strong>
+              <span>Documento: {{ res.numero_documento || res.dni || '-' }}</span>
             </div>
 
-
-            <span class="badge">
-              {{ res.plan_nombre }}
-            </span>
-
+            <span class="badge">{{ res.plan_nombre }}</span>
           </li>
-
         </ul>
 
       </div>
 
-
       <hr />
 
-
       <!-- CONSTRUCTOR -->
-      <div
-        class="builder-section"
-        *ngIf="matriculaSeleccionada"
-      >
+      <div class="builder-section" *ngIf="matriculaSeleccionada">
 
         <div class="grid-layout">
 
@@ -2152,241 +990,89 @@
           <div class="config-panel">
 
             <div class="panel-heading">
-
               <span class="panel-icon">
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"></circle>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06-1.7 1.7-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V20h-2.4v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06-1.7-1.7.06-.06A1.65 1.65 0 0 0 8.6 15a1.65 1.65 0 0 0-1.51-1H7v-2.4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06 1.7-1.7.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V5h2.4v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06 1.7 1.7-.06.06A1.65 1.65 0 0 0 19.4 10a1.65 1.65 0 0 0 1.51 1H21v2.4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
                 </svg>
-
               </span>
-
               <div>
-
-                <h4>
-                  Datos del plan
-                </h4>
-
-                <p>
-                  Configura los valores del plan.
-                </p>
-
+                <h4>Datos del plan</h4>
+                <p>Configura los valores del plan.</p>
               </div>
-
             </div>
 
-
             <div class="form-group">
-
-              <label>
-                Modalidad de pago
-              </label>
-
-              <select
-                [(ngModel)]="formularioPlan.modalidad_pago"
-              >
-
-                <option value="MENSUAL">
-                  Mensual
-                </option>
-
-                <option value="QUINCENAL">
-                  Quincenal
-                </option>
-
-                <option value="PERSONALIZADO">
-                  Personalizado
-                </option>
-
+              <label>Modalidad de pago</label>
+              <select [(ngModel)]="formularioPlan.modalidad_pago">
+                <option value="MENSUAL">Mensual</option>
+                <option value="QUINCENAL">Quincenal</option>
+                <option value="PERSONALIZADO">Personalizado</option>
               </select>
-
             </div>
-
 
             <div class="form-group">
-
-              <label>
-                Monto matrícula
-              </label>
-
+              <label>Monto matrícula</label>
               <div class="money-input">
-
-                <span>
-                  S/
-                </span>
-
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  [(ngModel)]="formularioPlan.monto_matricula"
-                />
-
+                <span>S/</span>
+                <input type="number" min="0" step="0.01" [(ngModel)]="formularioPlan.monto_matricula" />
               </div>
-
             </div>
-
 
             <div class="form-group">
-
-              <label>
-                Monto certificación
-              </label>
-
+              <label>Monto certificación</label>
               <div class="money-input">
-
-                <span>
-                  S/
-                </span>
-
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  [(ngModel)]="formularioPlan.monto_certificacion"
-                />
-
+                <span>S/</span>
+                <input type="number" min="0" step="0.01" [(ngModel)]="formularioPlan.monto_certificacion" />
               </div>
-
             </div>
-
 
             <div class="form-group">
-
-              <label>
-                Monto total del curso
-              </label>
-
+              <label>Monto total del curso</label>
               <div class="money-input">
-
-                <span>
-                  S/
-                </span>
-
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  [(ngModel)]="formularioPlan.monto_total"
-                />
-
+                <span>S/</span>
+                <input type="number" min="0" step="0.01" [(ngModel)]="formularioPlan.monto_total" />
               </div>
-
             </div>
-
 
             <div class="builder-divider"></div>
 
-
             <div class="panel-heading">
-
               <span class="panel-icon">
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 5v14"></path>
                   <path d="M5 12h14"></path>
                 </svg>
-
               </span>
-
               <div>
-
-                <h4>
-                  Añadir cuota
-                </h4>
-
-                <p>
-                  Define fecha y monto.
-                </p>
-
+                <h4>Añadir cuota</h4>
+                <p>Define fecha y monto.</p>
               </div>
-
             </div>
-
 
             <div class="add-cuota-grid">
 
               <div>
-
-                <label>
-                  N°
-                </label>
-
-                <input
-                  type="number"
-                  min="1"
-                  [(ngModel)]="cuotaTemporal.numero_cuota"
-                />
-
+                <label>N°</label>
+                <input type="number" min="1" [(ngModel)]="cuotaTemporal.numero_cuota" />
               </div>
-
 
               <div>
-
-                <label>
-                  Vencimiento
-                </label>
-
-                <input
-                  type="date"
-                  [(ngModel)]="cuotaTemporal.fecha_vencimiento"
-                />
-
+                <label>Vencimiento</label>
+                <input type="date" [(ngModel)]="cuotaTemporal.fecha_vencimiento" />
               </div>
-
 
               <div>
-
-                <label>
-                  Monto
-                </label>
-
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  [(ngModel)]="cuotaTemporal.monto"
-                  placeholder="0.00"
-                />
-
+                <label>Monto</label>
+                <input type="number" min="0.01" step="0.01" [(ngModel)]="cuotaTemporal.monto" placeholder="0.00" />
               </div>
 
-
-              <button
-                type="button"
-                class="btn-secondary"
-                (click)="agregarCuota()"
-              >
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
+              <button type="button" class="btn-secondary" (click)="agregarCuota()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 5v14"></path>
                   <path d="M5 12h14"></path>
                 </svg>
-
                 Añadir
-
               </button>
 
             </div>
@@ -2398,185 +1084,67 @@
           <div class="preview-panel">
 
             <div class="panel-heading">
-
               <span class="panel-icon">
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <path d="M14 2v6h6"></path>
                   <path d="M8 13h8"></path>
                   <path d="M8 17h8"></path>
                 </svg>
-
               </span>
-
               <div>
-
-                <h4>
-                  Cuotas del alumno
-                </h4>
-
-                <p>
-                  Vista previa del plan.
-                </p>
-
+                <h4>Cuotas del alumno</h4>
+                <p>Vista previa del plan.</p>
               </div>
-
             </div>
-
 
             <div class="preview-summary">
-
               <div>
-
-                <span>
-                  Cuotas
-                </span>
-
-                <strong>
-                  {{ formularioPlan.cuotas.length }}
-                </strong>
-
+                <span>Cuotas</span>
+                <strong>{{ formularioPlan.cuotas.length }}</strong>
               </div>
-
-
               <div>
-
-                <span>
-                  Total
-                </span>
-
+                <span>Total</span>
                 <strong>
-
-                  {{ formatMonto(
-                    formularioPlan.cuotas
-                      .reduce(
-                        (s, c) =>
-                          s + Number(c.monto || 0),
-                        0
-                      )
-                  ) }}
-
+                  {{ formatMonto(formularioPlan.cuotas.reduce((s, c) => s + Number(c.monto || 0), 0)) }}
                 </strong>
-
               </div>
-
             </div>
 
-
             <div class="preview-table-wrapper">
-
               <table>
-
                 <thead>
-
                   <tr>
-
-                    <th>
-                      N°
-                    </th>
-
-                    <th>
-                      Vencimiento
-                    </th>
-
-                    <th class="text-right">
-                      Monto
-                    </th>
-
+                    <th>N°</th>
+                    <th>Vencimiento</th>
+                    <th class="text-right">Monto</th>
                     <th></th>
-
                   </tr>
-
                 </thead>
 
-
                 <tbody>
-
-                  <tr
-                    *ngFor="
-                      let c of formularioPlan.cuotas;
-                      let i = index
-                    "
-                  >
-
+                  <tr *ngFor="let c of formularioPlan.cuotas; let i = index">
+                    <td><span class="number-badge">{{ c.numero_cuota }}</span></td>
+                    <td class="mono">{{ formatFecha(c.fecha_vencimiento) }}</td>
+                    <td class="text-right mono"><strong>{{ formatMonto(c.monto || 0) }}</strong></td>
                     <td>
-
-                      <span class="number-badge">
-                        {{ c.numero_cuota }}
-                      </span>
-
-                    </td>
-
-                    <td>
-                      {{ formatFecha(c.fecha_vencimiento) }}
-                    </td>
-
-                    <td class="text-right">
-
-                      <strong>
-                        {{ formatMonto(c.monto || 0) }}
-                      </strong>
-
-                    </td>
-
-                    <td>
-
-                      <button
-                        type="button"
-                        class="btn-danger-icon"
-                        (click)="eliminarCuota(i)"
-                        title="Eliminar cuota"
-                      >
-
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
+                      <button type="button" class="btn-danger-icon" (click)="eliminarCuota(i)" title="Eliminar cuota">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M3 6h18"></path>
                           <path d="M8 6V4h8v2"></path>
                           <path d="M19 6v14H5V6"></path>
                           <path d="M10 11v5"></path>
                           <path d="M14 11v5"></path>
                         </svg>
-
                       </button>
-
                     </td>
-
                   </tr>
 
-
-                  <tr
-                    *ngIf="
-                      formularioPlan.cuotas.length === 0
-                    "
-                  >
-
-                    <td
-                      colspan="4"
-                      class="text-center text-muted"
-                    >
-                      No hay cuotas añadidas.
-                    </td>
-
+                  <tr *ngIf="formularioPlan.cuotas.length === 0">
+                    <td colspan="4" class="text-center text-muted">No hay cuotas añadidas.</td>
                   </tr>
-
                 </tbody>
-
               </table>
-
             </div>
 
           </div>
@@ -2587,86 +1155,36 @@
 
 
       <!-- SIN ALUMNO -->
-      <div
-        class="builder-empty"
-        *ngIf="!matriculaSeleccionada"
-      >
-
+      <div class="builder-empty" *ngIf="!matriculaSeleccionada">
         <div>
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle
-              cx="12"
-              cy="8"
-              r="4"
-            ></circle>
-
-            <path
-              d="M4 21a8 8 0 0 1 16 0"
-            ></path>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21a8 8 0 0 1 16 0"></path>
           </svg>
-
         </div>
-
-        <h4>
-          Selecciona un alumno
-        </h4>
-
-        <p>
-          Busca una matrícula para comenzar a construir el plan.
-        </p>
-
+        <h4>Selecciona un alumno</h4>
+        <p>Busca una matrícula para comenzar a construir el plan.</p>
       </div>
 
     </div>
 
 
-    <footer
-      class="modal-footer"
-      *ngIf="matriculaSeleccionada"
-    >
+    <footer class="modal-footer" *ngIf="matriculaSeleccionada">
 
-      <button
-        type="button"
-        class="btn-cancel"
-        (click)="cerrarModalPlanManual()"
-      >
-        Cancelar
-      </button>
-
+      <button type="button" class="btn-cancel" (click)="cerrarModalPlanManual()">Cancelar</button>
 
       <button
         type="button"
         class="btn-success"
-        [disabled]="
-          formularioPlan.cuotas.length === 0 ||
-          !formularioPlan.monto_total
-        "
+        [disabled]="formularioPlan.cuotas.length === 0 || !formularioPlan.monto_total"
         (click)="guardarPlanManual()"
       >
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
           <path d="M17 21v-8H7v8"></path>
           <path d="M7 3v5h8"></path>
         </svg>
-
         Guardar plan manual
-
       </button>
 
     </footer>
@@ -2679,150 +1197,57 @@
 <!-- =============================================================
      MODAL EDITAR PAGO
      ============================================================= -->
-<div
-  class="mini-modal modal-global"
-  *ngIf="modalEditarPago"
->
+<div class="mini-modal modal-global" *ngIf="modalEditarPago">
 
   <div class="mini-content">
 
     <div class="mini-header">
-
       <div>
-
-        <span class="mini-kicker">
-          Movimiento registrado
-        </span>
-
-        <h3>
-          Editar pago
-        </h3>
-
+        <span class="mini-kicker">Movimiento registrado</span>
+        <h3>Editar pago</h3>
       </div>
-
-      <button
-        type="button"
-        (click)="modalEditarPago=false"
-        aria-label="Cerrar"
-      >
-        ✕
-      </button>
-
+      <button type="button" (click)="modalEditarPago=false" aria-label="Cerrar">✕</button>
     </div>
-
 
     <div class="mini-body">
 
       <div class="mini-field">
-
-        <label>
-          Monto
-        </label>
-
+        <label>Monto</label>
         <div class="money-input">
-
-          <span>
-            S/
-          </span>
-
-          <input
-            type="number"
-            min="0.01"
-            step="0.01"
-            [(ngModel)]="formEditarPago.monto"
-          />
-
+          <span>S/</span>
+          <input type="number" min="0.01" step="0.01" [(ngModel)]="formEditarPago.monto" />
         </div>
-
       </div>
 
-
       <div class="mini-field">
-
-        <label>
-          Método de pago
-        </label>
-
-        <select
-          [(ngModel)]="formEditarPago.metodo_pago"
-        >
-
-          <option value="EFECTIVO">
-            💵 Efectivo
-          </option>
-
-          <option value="YAPE">
-            📱 Yape
-          </option>
-
-          <option value="PLIN">
-            💳 Plin
-          </option>
-
-          <option value="TRANSFERENCIA">
-            🏦 Transferencia
-          </option>
-
+        <label>Método de pago</label>
+        <select [(ngModel)]="formEditarPago.metodo_pago">
+          <option value="EFECTIVO">💵 Efectivo</option>
+          <option value="YAPE">📱 Yape</option>
+          <option value="PLIN">💳 Plin</option>
+          <option value="TRANSFERENCIA">🏦 Transferencia</option>
         </select>
-
       </div>
 
-
       <div class="mini-field">
-
-        <label>
-          Nuevo comprobante
-        </label>
-
-        <input
-          type="file"
-          accept=".pdf,image/*"
-          (change)="onEditarFileSelected($event)"
-        />
-
-        <small>
-          Opcional
-        </small>
-
+        <label>Nuevo comprobante</label>
+        <input type="file" accept=".pdf,image/*" (change)="onEditarFileSelected($event)" />
+        <small>Opcional</small>
       </div>
 
     </div>
 
-
     <div class="mini-footer">
+      <button type="button" class="btn-cancel" (click)="modalEditarPago=false">Cancelar</button>
 
-      <button
-        type="button"
-        class="btn-cancel"
-        (click)="modalEditarPago=false"
-      >
-        Cancelar
-      </button>
-
-
-      <button
-        type="button"
-        class="btn-pay"
-        (click)="guardarEditarPago()"
-      >
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" class="btn-pay" (click)="guardarEditarPago()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
           <path d="M17 21v-8H7v8"></path>
           <path d="M7 3v5h8"></path>
         </svg>
-
         Guardar cambios
-
       </button>
-
     </div>
 
   </div>
@@ -2833,224 +1258,86 @@
 <!-- =============================================================
      MODAL EDITAR MONTO DE CUOTA
      ============================================================= -->
-<div
-  class="mini-modal modal-global"
-  *ngIf="modalEditarCuota"
->
+<div class="mini-modal modal-global" *ngIf="modalEditarCuota">
 
   <div class="mini-content edit-cuota-modal">
 
     <div class="mini-header">
-
       <div>
-
-        <span class="mini-kicker">
-          Estado de cuenta
-        </span>
-
-        <h3>
-          Editar monto de cuota
-        </h3>
-
+        <span class="mini-kicker">Estado de cuenta</span>
+        <h3>Editar monto de cuota</h3>
         <small *ngIf="cuotaEditando">
-
           {{ cuotaEditando.concepto_nombre }}
-
-          <span *ngIf="cuotaEditando.numero_cuota">
-            · Cuota #{{ cuotaEditando.numero_cuota }}
-          </span>
-
+          <span *ngIf="cuotaEditando.numero_cuota">· Cuota #{{ cuotaEditando.numero_cuota }}</span>
         </small>
-
       </div>
-
-
-      <button
-        type="button"
-        (click)="modalEditarCuota=false"
-        aria-label="Cerrar"
-      >
-        ✕
-      </button>
-
+      <button type="button" (click)="modalEditarCuota=false" aria-label="Cerrar">✕</button>
     </div>
-
 
     <div class="mini-body">
 
       <div class="edit-cuota-summary">
-
         <div class="edit-summary-item">
-
-          <span>
-            Monto actual
-          </span>
-
-          <strong>
-            {{ formatMonto(
-              cuotaEditando?.monto_programado || 0
-            ) }}
-          </strong>
-
+          <span>Monto actual</span>
+          <strong>{{ formatMonto(cuotaEditando?.monto_programado || 0) }}</strong>
         </div>
-
-
         <div class="edit-summary-item">
-
-          <span>
-            Ya pagado
-          </span>
-
-          <strong class="text-success">
-            {{ formatMonto(
-              cuotaEditando?.monto_pagado || 0
-            ) }}
-          </strong>
-
+          <span>Ya pagado</span>
+          <strong class="text-success">{{ formatMonto(cuotaEditando?.monto_pagado || 0) }}</strong>
         </div>
-
-
         <div class="edit-summary-item">
-
-          <span>
-            Saldo actual
-          </span>
-
-          <strong class="text-danger">
-            {{ formatMonto(
-              cuotaEditando?.saldo_pendiente || 0
-            ) }}
-          </strong>
-
+          <span>Saldo actual</span>
+          <strong class="text-danger">{{ formatMonto(cuotaEditando?.saldo_pendiente || 0) }}</strong>
         </div>
-
       </div>
-
 
       <div class="mini-field edit-cuota-input">
-
-        <label>
-          Nuevo monto programado
-        </label>
-
+        <label>Nuevo monto programado</label>
         <div class="money-input money-input-large">
-
-          <span>
-            S/
-          </span>
-
-          <input
-            type="number"
-            min="0.01"
-            step="0.01"
-            [(ngModel)]="formEditarCuota.monto"
-            placeholder="0.00"
-          />
-
+          <span>S/</span>
+          <input type="number" min="0.01" step="0.01" [(ngModel)]="formEditarCuota.monto" placeholder="0.00" />
         </div>
-
-        <small>
-          El monto no puede ser menor al monto ya pagado.
-        </small>
-
+        <small>El monto no puede ser menor al monto ya pagado.</small>
       </div>
-
 
       <div class="new-balance-preview">
-
         <div>
-
-          <span>
-            Nuevo saldo pendiente
-          </span>
-
-          <small>
-            Calculado automáticamente
-          </small>
-
+          <span>Nuevo saldo pendiente</span>
+          <small>Calculado automáticamente</small>
         </div>
-
-        <strong>
-          {{ formatMonto(getNuevoSaldoCuota()) }}
-        </strong>
-
+        <strong>{{ formatMonto(getNuevoSaldoCuota()) }}</strong>
       </div>
 
-
       <div class="edit-cuota-warning">
-
         <span class="warning-icon">
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M10.3 3.6 2.1 18a2 2 0 0 0 1.7 3h16.4a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"
-            ></path>
-
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.3 3.6 2.1 18a2 2 0 0 0 1.7 3h16.4a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"></path>
             <path d="M12 9v4"></path>
             <path d="M12 17h.01"></path>
           </svg>
-
         </span>
-
         <div>
-
-          <strong>
-            Importante
-          </strong>
-
+          <strong>Importante</strong>
           <p>
             Solo se modificará el monto programado de esta cuota.
             Los pagos que ya fueron registrados no se modificarán.
           </p>
-
         </div>
-
       </div>
 
     </div>
 
-
     <div class="mini-footer">
+      <button type="button" class="btn-cancel" (click)="modalEditarCuota=false">Cancelar</button>
 
-      <button
-        type="button"
-        class="btn-cancel"
-        (click)="modalEditarCuota=false"
-      >
-        Cancelar
-      </button>
-
-
-      <button
-        type="button"
-        class="btn-pay"
-        (click)="guardarEditarMontoCuota()"
-      >
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" class="btn-pay" (click)="guardarEditarMontoCuota()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
           <path d="M17 21v-8H7v8"></path>
           <path d="M7 3v5h8"></path>
         </svg>
-
         Guardar monto
-
       </button>
-
     </div>
 
   </div>
@@ -3070,20 +1357,10 @@
 >
 
   <div class="toast-icon">
-
-    {{
-      notificacion.tipo === 'success'
-        ? '✓'
-        : notificacion.tipo === 'error'
-          ? '!'
-          : '⚠'
-    }}
-
+    {{ notificacion.tipo === 'success' ? '✓' : notificacion.tipo === 'error' ? '!' : '⚠' }}
   </div>
 
-
   <div class="toast-content">
-
     <strong>
       {{
         notificacion.tipo === 'success'
@@ -3093,11 +1370,7 @@
             : 'Atención'
       }}
     </strong>
-
-    <span>
-      {{ notificacion.mensaje }}
-    </span>
-
+    <span>{{ notificacion.mensaje }}</span>
   </div>
 
 </div>
